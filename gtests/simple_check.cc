@@ -9,7 +9,9 @@ template <class D>
 class SimpleClass : public ::testing::Test
 {
 public:
-  Triangulation<D::value> tria;
+  static constexpr int dim = D::value;
+
+  Triangulation<dim> tria;
 
 protected:
   SimpleClass()
@@ -23,13 +25,13 @@ using dimensions = ::testing::Types<std::integral_constant<unsigned int, 1>,
                                     std::integral_constant<unsigned int, 2>,
                                     std::integral_constant<unsigned int, 3>>;
 
-TYPED_TEST_SUITE(SimpleClass, dimensions, );
+// TYPED_TEST_SUITE(SimpleClass, dimensions);
 
 
 
-TYPED_TEST(SimpleClass, CheckSize) // NOLINT
-{
-  auto n_cells = std::pow(2.0, this->tria.dimension);
+// TYPED_TEST(SimpleClass, CheckSize) // NOLINT
+// {
+//   auto n_cells = std::pow(2.0, this->tria.dimension);
 
-  ASSERT_EQ(n_cells, this->tria.n_active_cells());
-}
+//   ASSERT_EQ(n_cells, this->tria.n_active_cells());
+// }

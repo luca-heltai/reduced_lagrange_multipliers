@@ -18,14 +18,40 @@
  */
 
 #include "laplacian.h"
-
 int
-main()
+main(int argc, char *argv[])
 {
+  using namespace dealii;
+  deallog.depth_console(1);
   try
     {
-      Laplacian<DEAL_DIMENSION> laplace_problem;
-      laplace_problem.run();
+      Utilities::MPI::MPI_InitFinalize mpi_initialization(argc, argv, 1);
+      std::string                      prm_file;
+      if (argc > 1)
+        prm_file = argv[1];
+      else
+        prm_file = "parameters.prm";
+      if (prm_file.find("23") != std::string::npos)
+        {
+          ProblemParameters<2, 3> par;
+          ParameterAcceptor::initialize(prm_file);
+          PoissonProblem<2, 3> problem(par);
+          problem.run();
+        }
+      else if (prm_file.find("3") != std::string::npos)
+        {
+          ProblemParameters<3> par;
+          ParameterAcceptor::initialize(prm_file);
+          PoissonProblem<3> problem(par);
+          problem.run();
+        }
+      else
+        {
+          ProblemParameters<2> par;
+          ParameterAcceptor::initialize(prm_file);
+          PoissonProblem<2> problem(par);
+          problem.run();
+        }
     }
   catch (std::exception &exc)
     {
@@ -38,7 +64,6 @@ main()
                 << "Aborting!" << std::endl
                 << "----------------------------------------------------"
                 << std::endl;
-
       return 1;
     }
   catch (...)
@@ -53,6 +78,5 @@ main()
                 << std::endl;
       return 1;
     }
-
   return 0;
 }

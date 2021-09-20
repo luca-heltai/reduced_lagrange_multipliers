@@ -91,7 +91,7 @@ FOREACH(_build_type ${_d2_build_types})
     SET(TEST_LIBRARIES_${_BUILD_TYPE} ${_lib})
 
     # Setup one executable per dimension/per build type
-    FOREACH(_dim 1 2 3)
+    FOREACH(_dim 2 3)
       SET(_exe "${_main_target}_${_dim}d${${_build_type}_postfix}")
       MESSAGE("-- Configuring executable ${_exe}")
       ADD_EXECUTABLE(${_exe} ${_main})
