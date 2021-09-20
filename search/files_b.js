@@ -41,12 +41,13 @@ var searchData=
   ['cuda_2eh_38',['cuda.h',['http://www.dealii.org/developer/doxygen/deal.II/doc_2doxygen_2headers_2cuda_8h.html',1,'(Global Namespace)'],['http://www.dealii.org/developer/doxygen/deal.II/include_2deal_8II_2base_2cuda_8h.html',1,'(Global Namespace)']]],
   ['cuda_5fatomic_2eh_39',['cuda_atomic.h',['http://www.dealii.org/developer/doxygen/deal.II/cuda__atomic_8h.html',1,'']]],
   ['cuda_5ffe_5fevaluation_2eh_40',['cuda_fe_evaluation.h',['http://www.dealii.org/developer/doxygen/deal.II/cuda__fe__evaluation_8h.html',1,'']]],
-  ['cuda_5fkernels_2eh_41',['cuda_kernels.h',['http://www.dealii.org/developer/doxygen/deal.II/cuda__kernels_8h.html',1,'']]],
-  ['cuda_5fmatrix_5ffree_2eh_42',['cuda_matrix_free.h',['http://www.dealii.org/developer/doxygen/deal.II/cuda__matrix__free_8h.html',1,'']]],
-  ['cuda_5fprecondition_2eh_43',['cuda_precondition.h',['http://www.dealii.org/developer/doxygen/deal.II/cuda__precondition_8h.html',1,'']]],
-  ['cuda_5fsize_2eh_44',['cuda_size.h',['http://www.dealii.org/developer/doxygen/deal.II/cuda__size_8h.html',1,'']]],
-  ['cuda_5fsolver_5fdirect_2eh_45',['cuda_solver_direct.h',['http://www.dealii.org/developer/doxygen/deal.II/cuda__solver__direct_8h.html',1,'']]],
-  ['cuda_5fsparse_5fmatrix_2eh_46',['cuda_sparse_matrix.h',['http://www.dealii.org/developer/doxygen/deal.II/cuda__sparse__matrix_8h.html',1,'']]],
-  ['cuda_5ftensor_5fproduct_5fkernels_2eh_47',['cuda_tensor_product_kernels.h',['http://www.dealii.org/developer/doxygen/deal.II/cuda__tensor__product__kernels_8h.html',1,'']]],
-  ['cuda_5fvector_2eh_48',['cuda_vector.h',['http://www.dealii.org/developer/doxygen/deal.II/cuda__vector_8h.html',1,'']]]
+  ['cuda_5fhanging_5fnodes_5finternal_2eh_41',['cuda_hanging_nodes_internal.h',['http://www.dealii.org/developer/doxygen/deal.II/cuda__hanging__nodes__internal_8h.html',1,'']]],
+  ['cuda_5fkernels_2eh_42',['cuda_kernels.h',['http://www.dealii.org/developer/doxygen/deal.II/cuda__kernels_8h.html',1,'']]],
+  ['cuda_5fmatrix_5ffree_2eh_43',['cuda_matrix_free.h',['http://www.dealii.org/developer/doxygen/deal.II/cuda__matrix__free_8h.html',1,'']]],
+  ['cuda_5fprecondition_2eh_44',['cuda_precondition.h',['http://www.dealii.org/developer/doxygen/deal.II/cuda__precondition_8h.html',1,'']]],
+  ['cuda_5fsize_2eh_45',['cuda_size.h',['http://www.dealii.org/developer/doxygen/deal.II/cuda__size_8h.html',1,'']]],
+  ['cuda_5fsolver_5fdirect_2eh_46',['cuda_solver_direct.h',['http://www.dealii.org/developer/doxygen/deal.II/cuda__solver__direct_8h.html',1,'']]],
+  ['cuda_5fsparse_5fmatrix_2eh_47',['cuda_sparse_matrix.h',['http://www.dealii.org/developer/doxygen/deal.II/cuda__sparse__matrix_8h.html',1,'']]],
+  ['cuda_5ftensor_5fproduct_5fkernels_2eh_48',['cuda_tensor_product_kernels.h',['http://www.dealii.org/developer/doxygen/deal.II/cuda__tensor__product__kernels_8h.html',1,'']]],
+  ['cuda_5fvector_2eh_49',['cuda_vector.h',['http://www.dealii.org/developer/doxygen/deal.II/cuda__vector_8h.html',1,'']]]
 ];
