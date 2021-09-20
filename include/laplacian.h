@@ -143,9 +143,6 @@ ProblemParameters<dim, spacedim>::ProblemParameters()
     add_parameter("Maximum number of cells", max_cells);
   }
   leave_subsection();
-  rhs.declare_parameters_call_back.connect([&]() {
-    Functions::ParsedFunction<spacedim>::declare_parameters(this->prm, 1);
-  });
   enter_subsection("Immersed inclusions");
   {
     add_parameter("Inclusions", inclusions);
@@ -165,6 +162,7 @@ struct ReferenceInclusion
     , n_coefficients(n_coefficients)
     , support_points(n_q_points)
     , theta(n_q_points)
+    , current_support_points(n_q_points)
     , current_fe_values(n_coefficients)
   {
     static_assert(spacedim > 1, "Not implemented in dim = 1");
@@ -406,14 +404,7 @@ PoissonProblem<dim, spacedim>::setup_inclusions_particles()
   if (par.inclusions.empty())
     return;
 
-  std::vector<Point<spacedim>> unit_circle(par.inclusions_refinement);
-
-
-  const unsigned int n_properties = 0; // inclusions[0].size() - spacedim;
-
-  inclusions_as_particles.initialize(tria,
-                                     StaticMappingQ1<spacedim>::mapping,
-                                     n_properties);
+  inclusions_as_particles.initialize(tria, StaticMappingQ1<spacedim>::mapping);
 
   std::vector<Point<spacedim>> particles_positions;
   particles_positions.reserve(inclusion->n_q_points * par.inclusions.size());
@@ -422,6 +413,18 @@ PoissonProblem<dim, spacedim>::setup_inclusions_particles()
       const auto &p = inclusion->get_current_support_points(par.inclusions[i]);
       particles_positions.insert(particles_positions.end(), p.begin(), p.end());
     }
+
+  std::vector<BoundingBox<spacedim>> all_boxes;
+  all_boxes.reserve(tria.n_locally_owned_active_cells());
+  for (const auto &cell : tria.active_cell_iterators())
+    if (cell->is_locally_owned())
+      all_boxes.emplace_back(cell->bounding_box());
+  const auto tree = pack_rtree(all_boxes);
+  const auto local_boxes =
+    extract_rtree_level(tree, par.rtree_extraction_level);
+
+  global_bounding_boxes =
+    Utilities::MPI::all_gather(mpi_communicator, local_boxes);
 
   Assert(!global_bounding_boxes.empty(),
          ExcInternalError(
@@ -515,6 +518,7 @@ PoissonProblem<dim, spacedim>::setup_dofs()
                                                mpi_communicator,
                                                relevant_dofs[0]);
     coupling_matrix.reinit(owned_dofs[0], owned_dofs[1], dsp, mpi_communicator);
+    inclusion_constraints.close();
   }
 
   locally_relevant_solution.reinit(owned_dofs, relevant_dofs, mpi_communicator);
@@ -696,27 +700,44 @@ PoissonProblem<dim, spacedim>::solve()
 
   const auto A    = linear_operator<LA::MPI::Vector>(stiffness_matrix);
   const auto amgA = linear_operator(A, prec_A);
+  const auto Bt   = linear_operator<LA::MPI::Vector>(coupling_matrix);
+  const auto B    = transpose_operator(Bt);
   // const auto S = linear_operator<LA::MPI::Vector>(coupling_matrix.block(1,
   // 1)); const auto amgS = linear_operator(S, prec_S);
-  ReductionControl inner_solver_control(100,
-                                        1e-8 * system_rhs.l2_norm(),
-                                        1.e-2);
-  LA::SolverCG     cg(inner_solver_control);
-  const auto       invA = inverse_operator(A, cg, amgA);
-  // const auto       P    = block_diagonal_operator<2, LA::MPI::BlockVector>(
-  //   std::array<LinearOperator<typename LA::MPI::BlockVector::BlockType>,
-  //   2>{
-  //     {amgA, amgS}});
-  // SolverControl                      solver_control(stiffness_matrix.m(),
-  //                              1e-10 * system_rhs.l2_norm());
-  // SolverFGMRES<LA::MPI::BlockVector> solver(solver_control);
-  constraints.set_zero(solution);
-  solution.block(0) = invA * system_rhs.block(0);
+  ReductionControl solver_control_stiffness(
+    100, std::max(1e-12, 1e-8 * system_rhs.block(0).l2_norm()), 1.e-6);
 
-  // solver.solve(stiffness_matrix, solution, system_rhs, P);
-  pcout << "   Solved in " << inner_solver_control.last_step() << " iterations."
+  LA::SolverCG cg_stiffness(solver_control_stiffness);
+  const auto   invA = inverse_operator(A, cg_stiffness, amgA);
+
+  // Schur complement
+  const auto S = B * invA * Bt;
+
+  SolverControl   solver_control(stiffness_matrix.m(),
+                               1e-10 * system_rhs.l2_norm());
+  LA::SolverCG    cg_schur(solver_control);
+  LA::SolverGMRES gmres_schur(solver_control);
+  const auto      invS = inverse_operator(S, gmres_schur);
+
+  auto &u      = solution.block(0);
+  auto &lambda = solution.block(1);
+
+  const auto &f = system_rhs.block(0);
+  const auto &g = system_rhs.block(1);
+
+  pcout << "   f norm: " << f.l2_norm() << ", g norm: " << g.l2_norm()
         << std::endl;
-  constraints.distribute(solution);
+
+  lambda = invS * g;
+  pcout << "   Solved for lambda in " << solver_control.last_step()
+        << " iterations." << std::endl;
+
+  u = invA * (f - Bt * lambda);
+
+  pcout << "   Solved for u in " << solver_control.last_step() << " iterations."
+        << std::endl;
+  constraints.distribute(u);
+  inclusion_constraints.distribute(lambda);
   locally_relevant_solution = solution;
 }
 
@@ -775,7 +796,7 @@ PoissonProblem<dim, spacedim>::output_solution() const
   std::string        solution_name = "solution";
   DataOut<spacedim>  data_out;
   data_out.attach_dof_handler(dh);
-  data_out.add_data_vector(locally_relevant_solution, solution_name);
+  data_out.add_data_vector(locally_relevant_solution.block(0), solution_name);
   Vector<float> subdomain(tria.n_active_cells());
   for (unsigned int i = 0; i < subdomain.size(); ++i)
     subdomain(i) = tria.locally_owned_subdomain();
@@ -826,12 +847,12 @@ PoissonProblem<dim, spacedim>::run()
   setup_fe();
   make_grid();
   setup_inclusions_particles();
+  output_particles();
   setup_dofs();
   assemble_poisson_system();
   assemble_coupling();
   solve();
   output_solution();
-  output_particles();
 }
 
 #endif
