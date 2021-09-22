@@ -115,7 +115,7 @@ public:
 
 template <int dim, int spacedim>
 ProblemParameters<dim, spacedim>::ProblemParameters()
-  : ParameterAcceptor("Stokes Immersed Problem/")
+  : ParameterAcceptor("Immersed Problem/")
   , rhs("Right hand side")
   , bc("Dirichlet boundary conditions")
   , inclusions_rhs("Immersed inclusions/Boundary data")
@@ -202,11 +202,16 @@ struct ReferenceInclusion
   reinit(const types::global_dof_index           particle_id,
          const std::vector<std::vector<double>> &inclusions)
   {
+    if (n_coefficients == 0)
+      return current_fe_values;
     const auto q  = particle_id % n_q_points;
     const auto id = particle_id / n_q_points;
-    const auto r  = inclusions[id][spacedim];
-    const auto ds = 2 * numbers::PI * r / n_q_points;
-    for (unsigned int c = 0; c < n_coefficients; ++c)
+    AssertIndexRange(id, inclusions.size());
+    AssertDimension(inclusions[id].size(), spacedim + 1);
+    const auto r         = inclusions[id][spacedim];
+    const auto ds        = 2 * numbers::PI * r / n_q_points;
+    current_fe_values[0] = ds;
+    for (unsigned int c = 1; c < n_coefficients; ++c)
       {
         unsigned int omega = (c + 1) / 2;
         const double rho   = std::pow(r, omega);
@@ -215,7 +220,6 @@ struct ReferenceInclusion
         else
           current_fe_values[c] = ds * rho * std::sin(theta[q] * omega);
       }
-
     return current_fe_values;
   }
 
@@ -476,7 +480,6 @@ PoissonProblem<dim, spacedim>::setup_dofs()
   TimerOutput::Scope t(computing_timer, "Setup dofs");
   dh.distribute_dofs(*fe);
 
-  pcout << "   Number of degrees of freedom: " << dh.n_dofs() << std::endl;
   owned_dofs.resize(2);
   owned_dofs[0] = dh.locally_owned_dofs();
   relevant_dofs.resize(2);
@@ -524,6 +527,11 @@ PoissonProblem<dim, spacedim>::setup_dofs()
   locally_relevant_solution.reinit(owned_dofs, relevant_dofs, mpi_communicator);
   system_rhs.reinit(owned_dofs, mpi_communicator);
   solution.reinit(owned_dofs, mpi_communicator);
+
+  pcout << "   Number of degrees of freedom: " << owned_dofs[0].size() << " + "
+        << owned_dofs[1].size()
+        << " (locally owned: " << owned_dofs[0].n_elements() << " + "
+        << owned_dofs[1].n_elements() << ")" << std::endl;
 }
 
 template <int dim, int spacedim>
@@ -631,8 +639,8 @@ template <int dim, int spacedim>
 void
 PoissonProblem<dim, spacedim>::assemble_coupling()
 {
-  TimerOutput::Scope               t(computing_timer, "Assemble Nitsche terms");
-  const FEValuesExtractors::Scalar scalar(0);
+  TimerOutput::Scope t(computing_timer, "Assemble Coupling matrix");
+  const FEValuesExtractors::Scalar     scalar(0);
   std::vector<types::global_dof_index> fe_dof_indices(fe->n_dofs_per_cell());
   std::vector<types::global_dof_index> inclusion_dof_indices(
     inclusion->n_coefficients);
@@ -672,13 +680,13 @@ PoissonProblem<dim, spacedim>::assemble_coupling()
                                                  fe_dof_indices,
                                                  inclusion_constraints,
                                                  inclusion_dof_indices,
-                                                 stiffness_matrix);
+                                                 coupling_matrix);
           inclusion_constraints.distribute_local_to_global(
             local_rhs, inclusion_dof_indices, system_rhs.block(1));
         }
       particle = pic.end();
     }
-  stiffness_matrix.compress(VectorOperation::add);
+  coupling_matrix.compress(VectorOperation::add);
   system_rhs.compress(VectorOperation::add);
 }
 
@@ -702,10 +710,8 @@ PoissonProblem<dim, spacedim>::solve()
   const auto amgA = linear_operator(A, prec_A);
   const auto Bt   = linear_operator<LA::MPI::Vector>(coupling_matrix);
   const auto B    = transpose_operator(Bt);
-  // const auto S = linear_operator<LA::MPI::Vector>(coupling_matrix.block(1,
-  // 1)); const auto amgS = linear_operator(S, prec_S);
-  ReductionControl solver_control_stiffness(
-    100, std::max(1e-12, 1e-8 * system_rhs.block(0).l2_norm()), 1.e-6);
+
+  ReductionControl solver_control_stiffness(1000, 1e-12, 1.e-8);
 
   LA::SolverCG cg_stiffness(solver_control_stiffness);
   const auto   invA = inverse_operator(A, cg_stiffness, amgA);
@@ -713,11 +719,10 @@ PoissonProblem<dim, spacedim>::solve()
   // Schur complement
   const auto S = B * invA * Bt;
 
-  SolverControl   solver_control(stiffness_matrix.m(),
-                               1e-10 * system_rhs.l2_norm());
-  LA::SolverCG    cg_schur(solver_control);
-  LA::SolverGMRES gmres_schur(solver_control);
-  const auto      invS = inverse_operator(S, gmres_schur);
+  ReductionControl solver_control(dh.n_dofs(), 1e-12, 1.e-8);
+  LA::SolverCG     cg_schur(solver_control);
+  LA::SolverGMRES  gmres_schur(solver_control);
+  const auto       invS = inverse_operator(S, gmres_schur);
 
   auto &u      = solution.block(0);
   auto &lambda = solution.block(1);
