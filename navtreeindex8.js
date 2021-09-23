@@ -1,5 +1,7 @@
 var NAVTREEINDEX8 =
 {
+"namespaceTrilinosWrappers.html#aad2e4edaa75177581c4a0cf1112d7d42":[0,0,66,22],
+"namespaceTrilinosWrappers.html#ab83df1312c8c2072e5a6666c6fc8c346":[0,0,66,20],
 "namespaceTrilinosWrappers_1_1MPI.html#a5dc3ddc43667ba31268e5d6531bfd8e7":[0,0,66,2,0],
 "namespaceTrilinosWrappers_1_1MPI.html#af853f838d421f8a008f6a57f3231bdc3":[0,0,66,2,1],
 "namespaceTrilinosWrappers_1_1internal.html#a1b809ddbd21bdb6826e2fc49fc441f4a":[0,0,66,0,5],
@@ -247,7 +249,5 @@ var NAVTREEINDEX8 =
 "namespacedeal__II__exceptions_1_1internals.html#a09c94831a71bb8a5e21bcdf4b0b7a318":[0,0,6,0,3],
 "namespacedeal__II__exceptions_1_1internals.html#a17c4a70860f8fecf216cf8860e3bd98c":[0,0,6,0,12],
 "namespacedeal__II__exceptions_1_1internals.html#a195c4a77c41e0e0ba3392eb7e5541a24":[0,0,6,0,5],
-"namespacedeal__II__exceptions_1_1internals.html#a2248e7b7933509f19a2d21fc56ea3897":[0,0,6,0,7],
-"namespacedeal__II__exceptions_1_1internals.html#a23dd83b69ab097fbc2f2f7be9d252fae":[0,0,6,0,2],
-"namespacedeal__II__exceptions_1_1internals.html#a262c3f6ed8ff5ed894edbada5541a829":[0,0,6,0,8]
+"namespacedeal__II__exceptions_1_1internals.html#a2248e7b7933509f19a2d21fc56ea3897":[0,0,6,0,7]
 };
