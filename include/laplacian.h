@@ -109,16 +109,21 @@ public:
   std::vector<std::vector<double>> inclusions             = {{-.2, -.2, .3}};
   unsigned int                     inclusions_refinement  = 1000;
   unsigned int                     n_fourier_coefficients = 1;
+
+  mutable ParameterAcceptorProxy<ReductionControl> inner_control;
+  mutable ParameterAcceptorProxy<ReductionControl> outer_control;
 };
 
 
 
 template <int dim, int spacedim>
 ProblemParameters<dim, spacedim>::ProblemParameters()
-  : ParameterAcceptor("Immersed Problem/")
-  , rhs("Right hand side")
-  , bc("Dirichlet boundary conditions")
-  , inclusions_rhs("Immersed inclusions/Boundary data")
+  : ParameterAcceptor("/Immersed Problem/")
+  , rhs("/Immersed Problem/Right hand side")
+  , bc("/Immersed Problem/Dirichlet boundary conditions")
+  , inclusions_rhs("/Immersed Problem/Immersed inclusions/Boundary data")
+  , inner_control("/Immersed Problem/Solver/Inner control")
+  , outer_control("/Immersed Problem/Solver/Outer control")
 {
   add_parameter("FE degree", fe_degree, "", this->prm, Patterns::Integer(1));
   add_parameter("Output directory", output_directory);
@@ -711,18 +716,17 @@ PoissonProblem<dim, spacedim>::solve()
   const auto Bt   = linear_operator<LA::MPI::Vector>(coupling_matrix);
   const auto B    = transpose_operator(Bt);
 
-  ReductionControl solver_control_stiffness(1000, 1e-12, 1.e-8);
-
-  LA::SolverCG cg_stiffness(solver_control_stiffness);
-  const auto   invA = inverse_operator(A, cg_stiffness, amgA);
+  // LA::SolverCG cg_stiffness(par.inner_control);
+  SolverCG<LA::MPI::Vector> cg_stiffness(par.inner_control);
+  const auto                invA = inverse_operator(A, cg_stiffness, amgA);
 
   // Schur complement
   const auto S = B * invA * Bt;
 
-  ReductionControl solver_control(dh.n_dofs(), 1e-12, 1.e-8);
-  LA::SolverCG     cg_schur(solver_control);
-  LA::SolverGMRES  gmres_schur(solver_control);
-  const auto       invS = inverse_operator(S, gmres_schur);
+  LA::SolverCG cg_schur(par.outer_control);
+  // LA::SolverGMRES              gmres_schur(solver_control);
+  SolverGMRES<LA::MPI::Vector> gmres_schur(par.outer_control);
+  const auto                   invS = inverse_operator(S, gmres_schur);
 
   auto &u      = solution.block(0);
   auto &lambda = solution.block(1);
@@ -733,14 +737,16 @@ PoissonProblem<dim, spacedim>::solve()
   pcout << "   f norm: " << f.l2_norm() << ", g norm: " << g.l2_norm()
         << std::endl;
 
-  lambda = invS * g;
-  pcout << "   Solved for lambda in " << solver_control.last_step()
+  // Compute Lambda first
+  lambda = invS * (B * invA * f - g);
+  pcout << "   Solved for lambda in " << par.outer_control.last_step()
         << " iterations." << std::endl;
 
+  // Then compute u
   u = invA * (f - Bt * lambda);
 
-  pcout << "   Solved for u in " << solver_control.last_step() << " iterations."
-        << std::endl;
+  pcout << "   Solved for u in " << par.inner_control.last_step()
+        << " iterations." << std::endl;
   constraints.distribute(u);
   inclusion_constraints.distribute(lambda);
   locally_relevant_solution = solution;
