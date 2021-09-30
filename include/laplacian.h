@@ -90,7 +90,7 @@ public:
   ProblemParameters();
 
   std::string                   output_directory       = ".";
-  unsigned int                  fe_degree              = 2;
+  unsigned int                  fe_degree              = 1;
   unsigned int                  initial_refinement     = 5;
   unsigned int                  rtree_extraction_level = 1;
   std::list<types::boundary_id> dirichlet_ids{0};
@@ -99,6 +99,7 @@ public:
   std::string                   refinement_strategy = "fixed_fraction";
   double                        coarsening_fraction = 0.3;
   double                        refinement_fraction = 0.3;
+  unsigned int                  n_refinement_cycles = 1;
   unsigned int                  max_cells           = 20000;
   mutable ParameterAcceptorProxy<Functions::ParsedFunction<spacedim>> rhs;
   mutable ParameterAcceptorProxy<Functions::ParsedFunction<spacedim>> bc;
@@ -112,6 +113,8 @@ public:
 
   mutable ParameterAcceptorProxy<ReductionControl> inner_control;
   mutable ParameterAcceptorProxy<ReductionControl> outer_control;
+
+  bool output_results_before_solving = false;
 };
 
 
@@ -127,6 +130,8 @@ ProblemParameters<dim, spacedim>::ProblemParameters()
 {
   add_parameter("FE degree", fe_degree, "", this->prm, Patterns::Integer(1));
   add_parameter("Output directory", output_directory);
+  add_parameter("Output results also before solving",
+                output_results_before_solving);
   add_parameter("Initial refinement", initial_refinement);
   add_parameter("Bounding boxes extraction level", rtree_extraction_level);
   add_parameter("Dirichlet boundary ids", dirichlet_ids);
@@ -146,6 +151,7 @@ ProblemParameters<dim, spacedim>::ProblemParameters()
     add_parameter("Coarsening fraction", coarsening_fraction);
     add_parameter("Refinement fraction", refinement_fraction);
     add_parameter("Maximum number of cells", max_cells);
+    add_parameter("Number of refinement cycles", n_refinement_cycles);
   }
   leave_subsection();
   enter_subsection("Immersed inclusions");
@@ -274,11 +280,15 @@ public:
   solve();
   void
   refine_and_transfer();
-  void
+
+  std::string
   output_solution() const;
 
-  void
+  std::string
   output_particles() const;
+
+  void
+  output_results() const;
 
   void
   print_parameters() const;
@@ -310,6 +320,7 @@ private:
   LA::MPI::BlockVector                            locally_relevant_solution;
   LA::MPI::BlockVector                            system_rhs;
   std::vector<std::vector<BoundingBox<spacedim>>> global_bounding_boxes;
+  unsigned int                                    cycle = 0;
 };
 
 
@@ -410,10 +421,11 @@ template <int dim, int spacedim>
 void
 PoissonProblem<dim, spacedim>::setup_inclusions_particles()
 {
+  inclusions_as_particles.clear();
+  inclusions_as_particles.initialize(tria, StaticMappingQ1<spacedim>::mapping);
+
   if (par.inclusions.empty())
     return;
-
-  inclusions_as_particles.initialize(tria, StaticMappingQ1<spacedim>::mapping);
 
   std::vector<Point<spacedim>> particles_positions;
   particles_positions.reserve(inclusion->n_q_points * par.inclusions.size());
@@ -459,10 +471,10 @@ PoissonProblem<dim, spacedim>::setup_fe()
 {
   TimerOutput::Scope t(computing_timer, "Initial setup");
   fe = std::make_unique<FESystem<spacedim>>(FE_Q<spacedim>(par.fe_degree), 1);
-  quadrature = std::make_unique<QGauss<spacedim>>(par.fe_degree + 1);
-  inclusion =
-    std::make_unique<ReferenceInclusion<spacedim>>(par.inclusions_refinement,
-                                                   par.n_fourier_coefficients);
+  quadrature        = std::make_unique<QGauss<spacedim>>(par.fe_degree + 1);
+  const auto factor = std::pow(2, cycle);
+  inclusion         = std::make_unique<ReferenceInclusion<spacedim>>(
+    par.inclusions_refinement * factor, par.n_fourier_coefficients);
 }
 
 
@@ -713,37 +725,48 @@ PoissonProblem<dim, spacedim>::solve()
 
   const auto A    = linear_operator<LA::MPI::Vector>(stiffness_matrix);
   const auto amgA = linear_operator(A, prec_A);
-  const auto Bt   = linear_operator<LA::MPI::Vector>(coupling_matrix);
-  const auto B    = transpose_operator(Bt);
 
   // LA::SolverCG cg_stiffness(par.inner_control);
   SolverCG<LA::MPI::Vector> cg_stiffness(par.inner_control);
   const auto                invA = inverse_operator(A, cg_stiffness, amgA);
 
-  // Schur complement
-  const auto S = B * invA * Bt;
-
-  LA::SolverCG cg_schur(par.outer_control);
-  // LA::SolverGMRES              gmres_schur(solver_control);
-  SolverGMRES<LA::MPI::Vector> gmres_schur(par.outer_control);
-  const auto                   invS = inverse_operator(S, gmres_schur);
-
+  // Some aliases
   auto &u      = solution.block(0);
   auto &lambda = solution.block(1);
 
   const auto &f = system_rhs.block(0);
   const auto &g = system_rhs.block(1);
 
-  pcout << "   f norm: " << f.l2_norm() << ", g norm: " << g.l2_norm()
-        << std::endl;
+  if (par.inclusions.empty())
+    {
+      u = invA * f;
+    }
+  else
+    {
+      const auto Bt = linear_operator<LA::MPI::Vector>(coupling_matrix);
+      const auto B  = transpose_operator(Bt);
 
-  // Compute Lambda first
-  lambda = invS * (B * invA * f - g);
-  pcout << "   Solved for lambda in " << par.outer_control.last_step()
-        << " iterations." << std::endl;
 
-  // Then compute u
-  u = invA * (f - Bt * lambda);
+      // Schur complement
+      const auto S = B * invA * Bt;
+
+      LA::SolverCG cg_schur(par.outer_control);
+      // LA::SolverGMRES              gmres_schur(solver_control);
+      SolverGMRES<LA::MPI::Vector> gmres_schur(par.outer_control);
+      const auto                   invS = inverse_operator(S, gmres_schur);
+
+
+      pcout << "   f norm: " << f.l2_norm() << ", g norm: " << g.l2_norm()
+            << std::endl;
+
+      // Compute Lambda first
+      lambda = invS * (B * invA * f - g);
+      pcout << "   Solved for lambda in " << par.outer_control.last_step()
+            << " iterations." << std::endl;
+
+      // Then compute u
+      u = invA * (f - Bt * lambda);
+    }
 
   pcout << "   Solved for u in " << par.inner_control.last_step()
         << " iterations." << std::endl;
@@ -758,16 +781,14 @@ template <int dim, int spacedim>
 void
 PoissonProblem<dim, spacedim>::refine_and_transfer()
 {
-  TimerOutput::Scope               t(computing_timer, "Refine");
-  const FEValuesExtractors::Vector velocity(0);
-  Vector<float>                    error_per_cell(tria.n_active_cells());
+  TimerOutput::Scope t(computing_timer, "Refine");
+  Vector<float>      error_per_cell(tria.n_active_cells());
   KellyErrorEstimator<spacedim>::estimate(dh,
                                           QGauss<spacedim - 1>(par.fe_degree +
                                                                1),
                                           {},
-                                          locally_relevant_solution,
-                                          error_per_cell,
-                                          fe->component_mask(velocity));
+                                          locally_relevant_solution.block(0),
+                                          error_per_cell);
   if (par.refinement_strategy == "fixed_fraction")
     {
       parallel::distributed::GridRefinement::refine_and_coarsen_fixed_fraction(
@@ -782,25 +803,31 @@ PoissonProblem<dim, spacedim>::refine_and_transfer()
         par.coarsening_fraction,
         par.max_cells);
     }
-  for (const auto &cell : tria.active_cell_iterators())
-    {
-      if (cell->refine_flag_set() && cell->level() == par.max_level_refinement)
-        cell->clear_refine_flag();
-      if (cell->coarsen_flag_set() && cell->level() == par.min_level_refinement)
-        cell->clear_coarsen_flag();
-    }
-  parallel::distributed::SolutionTransfer<spacedim, LA::MPI::BlockVector>
-    transfer(dh);
+  // for (const auto &cell : tria.active_cell_iterators())
+  //   {
+  //     if (cell->refine_flag_set() && cell->level() ==
+  //     par.max_level_refinement)
+  //       cell->clear_refine_flag();
+  //     if (cell->coarsen_flag_set() && cell->level() ==
+  //     par.min_level_refinement)
+  //       cell->clear_coarsen_flag();
+  //   }
+  parallel::distributed::SolutionTransfer<spacedim, LA::MPI::Vector> transfer(
+    dh);
   tria.prepare_coarsening_and_refinement();
-  transfer.prepare_for_coarsening_and_refinement(locally_relevant_solution);
+  transfer.prepare_for_coarsening_and_refinement(
+    locally_relevant_solution.block(0));
   tria.execute_coarsening_and_refinement();
   setup_dofs();
-  transfer.interpolate(solution);
-  constraints.distribute(solution);
-  locally_relevant_solution = solution;
+  transfer.interpolate(solution.block(0));
+  constraints.distribute(solution.block(0));
+  locally_relevant_solution.block(0) = solution.block(0);
 }
+
+
+
 template <int dim, int spacedim>
-void
+std::string
 PoissonProblem<dim, spacedim>::output_solution() const
 {
   TimerOutput::Scope t(computing_timer, "Output results");
@@ -813,25 +840,45 @@ PoissonProblem<dim, spacedim>::output_solution() const
     subdomain(i) = tria.locally_owned_subdomain();
   data_out.add_data_vector(subdomain, "subdomain");
   data_out.build_patches();
-  const std::string filename = "solution.vtu";
+  const std::string filename = "solution_" + std::to_string(cycle) + ".vtu";
   data_out.write_vtu_in_parallel(par.output_directory + "/" + filename,
                                  mpi_communicator);
+  return filename;
 }
 
 
 
 template <int dim, int spacedim>
-void
+std::string
 PoissonProblem<dim, spacedim>::output_particles() const
 {
   Particles::DataOut<spacedim> particles_out;
   particles_out.build_patches(inclusions_as_particles);
-  const std::string filename = "particles.vtu";
+  const std::string filename = "particles_" + std::to_string(cycle) + ".vtu";
   particles_out.write_vtu_in_parallel(par.output_directory + "/" + filename,
                                       mpi_communicator);
+  return filename;
 }
 
 
+template <int dim, int spacedim>
+void
+PoissonProblem<dim, spacedim>::output_results() const
+{
+  static std::vector<std::pair<double, std::string>> cycles_and_solutions;
+  static std::vector<std::pair<double, std::string>> cycles_and_particles;
+
+  if (cycles_and_solutions.size() == cycle)
+    {
+      cycles_and_solutions.push_back({(double)cycle, output_solution()});
+      cycles_and_particles.push_back({(double)cycle, output_particles()});
+
+      std::ofstream pvd_solutions(par.output_directory + "/solutions.pvd");
+      std::ofstream pvd_particles(par.output_directory + "/particles.pvd");
+      DataOutBase::write_pvd_record(pvd_solutions, cycles_and_solutions);
+      DataOutBase::write_pvd_record(pvd_particles, cycles_and_particles);
+    }
+}
 
 template <int dim, int spacedim>
 void
@@ -855,15 +902,21 @@ void
 PoissonProblem<dim, spacedim>::run()
 {
   print_parameters();
-  setup_fe();
   make_grid();
+  setup_fe();
   setup_inclusions_particles();
-  output_particles();
-  setup_dofs();
-  assemble_poisson_system();
-  assemble_coupling();
-  solve();
-  output_solution();
+  for (cycle = 0; cycle < par.n_refinement_cycles; ++cycle)
+    {
+      setup_dofs();
+      if (par.output_results_before_solving)
+        output_results();
+      assemble_poisson_system();
+      assemble_coupling();
+      solve();
+      output_results();
+      if (cycle != par.n_refinement_cycles - 1)
+        refine_and_transfer();
+    }
 }
 
 #endif
