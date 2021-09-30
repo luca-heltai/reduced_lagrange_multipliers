@@ -147,7 +147,7 @@ ProblemParameters<dim, spacedim>::ProblemParameters()
                   refinement_strategy,
                   "",
                   this->prm,
-                  Patterns::Selection("fixed_fraction|fixed_number"));
+                  Patterns::Selection("fixed_fraction|fixed_number|global"));
     add_parameter("Coarsening fraction", coarsening_fraction);
     add_parameter("Refinement fraction", refinement_fraction);
     add_parameter("Maximum number of cells", max_cells);
@@ -802,6 +802,11 @@ PoissonProblem<dim, spacedim>::refine_and_transfer()
         par.refinement_fraction,
         par.coarsening_fraction,
         par.max_cells);
+    }
+  else if (par.refinement_strategy == "global")
+    {
+      for (const auto &cell : tria.active_cell_iterators())
+        cell->set_refine_flag();
     }
   // for (const auto &cell : tria.active_cell_iterators())
   //   {

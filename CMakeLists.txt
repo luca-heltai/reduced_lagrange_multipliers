@@ -69,7 +69,7 @@ OPTION(ENABLE_GOOGLE_TESTING
 # The debug library and program are postfixed with ".g"
 SET(_d2_build_types "Release;Debug")
 SET(Release_postfix "")
-SET(Debug_postfix ".g")
+SET(Debug_postfix "_debug")
 
 FOREACH(_build_type ${_d2_build_types})
   # Postfix to use everywhere
@@ -83,7 +83,7 @@ FOREACH(_build_type ${_d2_build_types})
     STRING(TOUPPER "${_build_type}" _BUILD_TYPE)
 
     # Setup library
-    SET(_lib "${_main_target}${_p}")
+    SET(_lib "${_main_target}_lib${_p}")
     MESSAGE("-- Configuring library ${_lib}")
 
     ADD_LIBRARY(${_lib} SHARED ${_files})
@@ -91,14 +91,11 @@ FOREACH(_build_type ${_d2_build_types})
     SET(TEST_LIBRARIES_${_BUILD_TYPE} ${_lib})
 
     # Setup one executable per dimension/per build type
-    FOREACH(_dim 2 3)
-      SET(_exe "${_main_target}_${_dim}d${${_build_type}_postfix}")
-      MESSAGE("-- Configuring executable ${_exe}")
-      ADD_EXECUTABLE(${_exe} ${_main})
-      TARGET_LINK_LIBRARIES(${_exe} ${_lib})      
-      TARGET_COMPILE_DEFINITIONS(${_exe} PUBLIC DEAL_DIMENSION=${_dim})
-      DEAL_II_SETUP_TARGET(${_exe} ${_BUILD_TYPE})
-    ENDFOREACH()
+    SET(_exe "${_main_target}${${_build_type}_postfix}")
+    MESSAGE("-- Configuring executable ${_exe}")
+    ADD_EXECUTABLE(${_exe} ${_main})
+    TARGET_LINK_LIBRARIES(${_exe} ${_lib})      
+    DEAL_II_SETUP_TARGET(${_exe} ${_BUILD_TYPE})
   ENDIF()
 ENDFOREACH()
 
