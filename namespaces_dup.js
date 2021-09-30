@@ -994,6 +994,8 @@ var namespaces_dup =
       [ "get_degree", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal.html#acbc4eb5d23ccaa14762fb4d43251f15b", null ],
       [ "get_vector_element", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal.html#a1abbd3708ff77e51e423519e0de47abf", null ],
       [ "get_vector_element", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal.html#abbe24563a98cda68ab415dc609a3e0e9", null ],
+      [ "instantiation_helper_degree_run", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal.html#a34999ad82068a5c9cda395535f3ee6c5", null ],
+      [ "instantiation_helper_run", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal.html#a7ddfe48622908518d4fdab6c6577e8fd", null ],
       [ "integrate_add_tensor_product_value_and_gradient", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal.html#a20f9445bbd4f53b81ffc15b973bf0930", null ],
       [ "is_active_iterator", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal.html#a6483ca5883dfa75ec1093963fab0c486", null ],
       [ "is_active_iterator", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal.html#a43d17ad28db4a56fb7b8be1a1b348669", null ],
