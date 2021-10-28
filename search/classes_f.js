@@ -32,7 +32,7 @@ var searchData=
   ['pex_29',['PEX',['http://www.dealii.org/developer/doxygen/deal.II/classUtilities_1_1MPI_1_1ConsensusAlgorithms_1_1PEX.html',1,'Utilities::MPI::ConsensusAlgorithms']]],
   ['piecewisepolynomial_30',['PiecewisePolynomial',['http://www.dealii.org/developer/doxygen/deal.II/classPolynomials_1_1PiecewisePolynomial.html',1,'Polynomials']]],
   ['pillowfunction_31',['PillowFunction',['http://www.dealii.org/developer/doxygen/deal.II/classFunctions_1_1PillowFunction.html',1,'Functions']]],
-  ['plane_32',['Plane',['http://www.dealii.org/developer/doxygen/deal.II/classFunctions_1_1LevelSet_1_1Plane.html',1,'Functions::LevelSet']]],
+  ['plane_32',['Plane',['http://www.dealii.org/developer/doxygen/deal.II/classFunctions_1_1SignedDistance_1_1Plane.html',1,'Functions::SignedDistance']]],
   ['point_33',['Point',['http://www.dealii.org/developer/doxygen/deal.II/classPoint.html',1,'']]],
   ['point3comp_34',['Point3Comp',['http://www.dealii.org/developer/doxygen/deal.II/structDataOutBase_1_1DataOutFilter_1_1Point3Comp.html',1,'DataOutBase::DataOutFilter']]],
   ['point_3c_200_20_3e_35',['Point&lt; 0 &gt;',['http://www.dealii.org/developer/doxygen/deal.II/classPoint.html',1,'']]],

@@ -202,7 +202,7 @@ var searchData=
   ['sparsevanka_199',['SparseVanka',['http://www.dealii.org/developer/doxygen/deal.II/classSparseVanka.html',1,'']]],
   ['sparsitypattern_200',['SparsityPattern',['http://www.dealii.org/developer/doxygen/deal.II/classSparsityPattern.html',1,'SparsityPattern'],['http://www.dealii.org/developer/doxygen/deal.II/classTrilinosWrappers_1_1SparsityPattern.html',1,'TrilinosWrappers::SparsityPattern']]],
   ['sparsitypatternbase_201',['SparsityPatternBase',['http://www.dealii.org/developer/doxygen/deal.II/classSparsityPatternBase.html',1,'']]],
-  ['sphere_202',['Sphere',['http://www.dealii.org/developer/doxygen/deal.II/classFunctions_1_1LevelSet_1_1Sphere.html',1,'Functions::LevelSet']]],
+  ['sphere_202',['Sphere',['http://www.dealii.org/developer/doxygen/deal.II/classFunctions_1_1SignedDistance_1_1Sphere.html',1,'Functions::SignedDistance']]],
   ['spherical_203',['Spherical',['http://www.dealii.org/developer/doxygen/deal.II/classFunctions_1_1Spherical.html',1,'Functions']]],
   ['sphericalmanifold_204',['SphericalManifold',['http://www.dealii.org/developer/doxygen/deal.II/classSphericalManifold.html',1,'']]],
   ['squarefunction_205',['SquareFunction',['http://www.dealii.org/developer/doxygen/deal.II/classFunctions_1_1SquareFunction.html',1,'Functions']]],

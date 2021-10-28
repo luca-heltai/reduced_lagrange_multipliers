@@ -16,7 +16,8 @@ var searchData=
   ['internaldata_13',['InternalData',['http://www.dealii.org/developer/doxygen/deal.II/structFE__Enriched_1_1InternalData_1_1EnrichmentValues.html',1,'FE_Enriched']]],
   ['levelset_14',['LevelSet',['http://www.dealii.org/developer/doxygen/deal.II/namespaceFunctions_1_1LevelSet.html',1,'Functions']]],
   ['scalar_15',['Scalar',['http://www.dealii.org/developer/doxygen/deal.II/structFEValuesViews_1_1Scalar_1_1OutputType.html',1,'FEValuesViews']]],
-  ['symmetrictensor_16',['SymmetricTensor',['http://www.dealii.org/developer/doxygen/deal.II/structFEValuesViews_1_1SymmetricTensor_3_012_00_01dim_00_01spacedim_01_4_1_1OutputType.html',1,'FEValuesViews']]],
-  ['tensor_17',['Tensor',['http://www.dealii.org/developer/doxygen/deal.II/structFEValuesViews_1_1Tensor_3_012_00_01dim_00_01spacedim_01_4_1_1OutputType.html',1,'FEValuesViews']]],
-  ['vector_18',['Vector',['http://www.dealii.org/developer/doxygen/deal.II/structFEValuesViews_1_1Vector_1_1OutputType.html',1,'FEValuesViews']]]
+  ['signeddistance_16',['SignedDistance',['http://www.dealii.org/developer/doxygen/deal.II/namespaceFunctions_1_1SignedDistance.html',1,'Functions']]],
+  ['symmetrictensor_17',['SymmetricTensor',['http://www.dealii.org/developer/doxygen/deal.II/structFEValuesViews_1_1SymmetricTensor_3_012_00_01dim_00_01spacedim_01_4_1_1OutputType.html',1,'FEValuesViews']]],
+  ['tensor_18',['Tensor',['http://www.dealii.org/developer/doxygen/deal.II/structFEValuesViews_1_1Tensor_3_012_00_01dim_00_01spacedim_01_4_1_1OutputType.html',1,'FEValuesViews']]],
+  ['vector_19',['Vector',['http://www.dealii.org/developer/doxygen/deal.II/structFEValuesViews_1_1Vector_1_1OutputType.html',1,'FEValuesViews']]]
 ];

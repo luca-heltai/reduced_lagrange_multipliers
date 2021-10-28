@@ -96,6 +96,7 @@ var searchData=
   ['the_20step_2d78_20tutorial_20program_93',['The step-78 tutorial program',['http://www.dealii.org/developer/doxygen/deal.II/step_78.html',1,'']]],
   ['the_20step_2d79_20tutorial_20program_94',['The step-79 tutorial program',['http://www.dealii.org/developer/doxygen/deal.II/step_79.html',1,'']]],
   ['the_20step_2d8_20tutorial_20program_95',['The step-8 tutorial program',['http://www.dealii.org/developer/doxygen/deal.II/step_8.html',1,'']]],
-  ['the_20step_2d9_20tutorial_20program_96',['The step-9 tutorial program',['http://www.dealii.org/developer/doxygen/deal.II/step_9.html',1,'']]],
-  ['tutorial_20programs_97',['Tutorial programs',['http://www.dealii.org/developer/doxygen/deal.II/Tutorial.html',1,'']]]
+  ['the_20step_2d82_20tutorial_20program_96',['The step-82 tutorial program',['http://www.dealii.org/developer/doxygen/deal.II/step_82.html',1,'']]],
+  ['the_20step_2d9_20tutorial_20program_97',['The step-9 tutorial program',['http://www.dealii.org/developer/doxygen/deal.II/step_9.html',1,'']]],
+  ['tutorial_20programs_98',['Tutorial programs',['http://www.dealii.org/developer/doxygen/deal.II/Tutorial.html',1,'']]]
 ];

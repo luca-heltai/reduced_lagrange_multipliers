@@ -1,5 +1,8 @@
 var NAVTREEINDEX7 =
 {
+"namespaceNonMatching.html#ae76f0a03103368d5444b0da1533ecfaf":[0,0,47,41],
+"namespaceNonMatching.html#ae779e48405c1504fc85746a81db486d1":[0,0,47,408],
+"namespaceNonMatching.html#ae795e5498b12b840b053be849b5bd7cf":[0,0,47,424],
 "namespaceNonMatching.html#ae7c80920213547b54b1a356495920135":[0,0,47,713],
 "namespaceNonMatching.html#ae7cf283cacf1966d5c22028e37c36084":[0,0,47,25],
 "namespaceNonMatching.html#ae814f25d1280b32f9591a909532c6818":[0,0,47,202],
@@ -162,9 +165,10 @@ var NAVTREEINDEX7 =
 "namespacePatterns_1_1Tools_1_1internal.html#a977cf1116509feb6d6578b5f5a0b2f12":[0,0,51,1,0,0],
 "namespacePatterns_1_1Tools_1_1internal.html#ae6fb329da02421cd2793b28a6137338a":[0,0,51,1,0,2],
 "namespacePatterns_1_1internal.html#a3cb7cf7c260acaeb90d4e60a288894d1":[0,0,51,0,0],
-"namespacePolynomials.html#a1cb749462a4b600923ea340c55f703df":[0,0,53,3],
+"namespacePolynomials.html#a1cb749462a4b600923ea340c55f703df":[0,0,53,4],
+"namespacePolynomials.html#a63cd45c355a34891c9b9e69d67a06c8e":[0,0,53,2],
 "namespacePolynomials.html#a6e1c59213be4f495e0bd193a37f2568b":[0,0,53,0],
-"namespacePolynomials.html#adc782b64b1a5c3d009eb24dd372be6e4":[0,0,53,2],
+"namespacePolynomials.html#adc782b64b1a5c3d009eb24dd372be6e4":[0,0,53,3],
 "namespacePolynomials.html#ae66b65dc61a9dca786ec84a122651ab9":[0,0,53,1],
 "namespaceReferenceCells.html#a0c212a545f1f9d88893231c66d78d552":[0,0,54,7],
 "namespaceReferenceCells.html#a14badca7aa0e6d807934973e046a2e2f":[0,0,54,6],
@@ -245,9 +249,5 @@ var NAVTREEINDEX7 =
 "namespaceTriangulationDescription_1_1Utilities.html#af575881c2cf233fe6f85d1a3a65a73f6":[0,0,65,0,0],
 "namespaceTrilinosWrappers.html#a0fa35a38e466d9c3b2dab8beca1df5b2":[0,0,66,11],
 "namespaceTrilinosWrappers.html#a0ff199060f012806ea1458864aabe49a":[0,0,66,23],
-"namespaceTrilinosWrappers.html#a1fc7a95abc642e46a4f3d3fe8d6f1d20":[0,0,66,12],
-"namespaceTrilinosWrappers.html#a311192e52312da90df9b74ad998c6af2":[0,0,66,18],
-"namespaceTrilinosWrappers.html#a3f6cf7b2dfdd6b19180b34d455b8e8bf":[0,0,66,9],
-"namespaceTrilinosWrappers.html#a43008b76bb20edc141ae77d4e0784923":[0,0,66,21],
-"namespaceTrilinosWrappers.html#a449d0ddb1311f4c3beb27531dc861ede":[0,0,66,19]
+"namespaceTrilinosWrappers.html#a1fc7a95abc642e46a4f3d3fe8d6f1d20":[0,0,66,12]
 };
