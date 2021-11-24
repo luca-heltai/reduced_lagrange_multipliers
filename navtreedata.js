@@ -60,8 +60,8 @@ var NAVTREEINDEX =
 "namespaceNonMatching.html#a98e18eb999d58cf58dedf5a81c523eb6",
 "namespaceNonMatching.html#ae76f0a03103368d5444b0da1533ecfaf",
 "namespaceTrilinosWrappers.html#a311192e52312da90df9b74ad998c6af2",
-"namespacedeal__II__exceptions.html#a3953411a9013d21af68e53fa5bbd4f8e",
-"namespaceinternal_1_1VectorOperations.html#aa53e962206a1926aaed4c1b42bb374c1",
+"namespacedeal__II__exceptions.html#a0a5db0650b1c82f4bc04217f9a6eb388",
+"namespaceinternal_1_1VectorOperations.html#a6b2af57142650ac86095f27a444e0355",
 ""
 ];
 

@@ -1,5 +1,8 @@
 var NAVTREEINDEX10 =
 {
+"namespaceinternal_1_1VectorOperations.html#a6b2af57142650ac86095f27a444e0355":[0,0,26,31,4],
+"namespaceinternal_1_1VectorOperations.html#a78e5e292980a79ec673cfae898cbb443":[0,0,26,31,5],
+"namespaceinternal_1_1VectorOperations.html#a80cfc0fc565b4fc3e5c5c9d27d5034a8":[0,0,26,31,3],
 "namespaceinternal_1_1VectorOperations.html#aa53e962206a1926aaed4c1b42bb374c1":[0,0,26,31,11],
 "namespaceinternal_1_1VectorOperations.html#aba65842c0c5356e666014b43715b74e1":[0,0,26,31,2],
 "namespaceinternal_1_1VectorOperations.html#ad71ef0063bb4afbfaa39182f5f1f2fb3":[0,0,26,31,0],
@@ -246,8 +249,5 @@ var NAVTREEINDEX10 =
 "":[0,0,52,1],
 "":[0,0,52,0],
 "":[0,0,51,1,0],
-"":[0,0,26,3],
-"":[0,0,51,1],
-"":[0,0,51,0],
-"":[0,0,51]
+"":[0,0,26,3]
 };
