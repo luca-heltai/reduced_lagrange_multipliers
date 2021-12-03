@@ -10,14 +10,22 @@ jobs:
   debug:
 
     runs-on: ubuntu-latest
+    container: dealii/dealii:master-focal
 
     steps:
     - uses: actions/checkout@v2
+    - name: Build debug
+      run: |
+         rm -rf build_linux_debug
+         mkdir build_linux_debug 
+         cd build_linux_debug 
+         cmake .. -GNinja -DCMAKE_BUILD_TYPE=Debug
+         ninja
     - name: Test debug
       run: |
-         ./scripts/dr.sh "rm -rf build_linux_debug"
-         ./scripts/dr.sh "mkdir build_linux_debug; cd build_linux_debug; cmake .. -GNinja -DCMAKE_BUILD_TYPE=Debug; ninja"
-         ./scripts/dr.sh "cd build_linux_debug; ctest -N; ctest --output-on-failure"
+         cd build_linux_debug
+         ctest -N; 
+         ctest --output-on-failure
 
   release:
 
@@ -27,6 +35,13 @@ jobs:
     - uses: actions/checkout@v2
     - name: Test release
       run: |
-          ./scripts/dr.sh "rm -rf build_linux_release"
-          ./scripts/dr.sh "mkdir build_linux_release; cd build_linux_release; cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release; ninja"
-          ./scripts/dr.sh "cd build_linux_release; ctest -N; ctest --output-on-failure"
+          rm -rf build_linux_release
+          mkdir build_linux_release
+          cd build_linux_release
+          cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release
+          ninja
+    - name: Test release
+      run: |
+          cd build_linux_release
+          ctest -N 
+          ctest --output-on-failure
