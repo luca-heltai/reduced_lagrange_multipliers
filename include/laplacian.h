@@ -218,7 +218,7 @@ public:
   n_inclusions_dofs() const;
 
 private:
-  const ProblemParameters<dim, spacedim>        &par;
+  const ProblemParameters<dim, spacedim> &       par;
   MPI_Comm                                       mpi_communicator;
   ConditionalOStream                             pcout;
   mutable TimerOutput                            computing_timer;
