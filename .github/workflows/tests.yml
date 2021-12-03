@@ -7,7 +7,7 @@ on:
     branches: [ master ]
 
 jobs:
-  debug:
+  build-and-test:
 
     runs-on: ubuntu-latest
     container: dealii/dealii:master-focal
@@ -27,13 +27,6 @@ jobs:
          ctest -N; 
          ctest --output-on-failure
 
-  release:
-
-    runs-on: self-hosted
-    container: dealii/dealii:master-focal
-
-    steps:
-    - uses: actions/checkout@v2
     - name: Build release
       run: |
           rm -rf build_linux_release
