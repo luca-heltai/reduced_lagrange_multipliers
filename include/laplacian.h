@@ -180,7 +180,6 @@ ProblemParameters<dim, spacedim>::ProblemParameters()
     add_parameter("Number of refinement cycles", n_refinement_cycles);
   }
   leave_subsection();
-
   this->prm.enter_subsection("Error");
   convergence_table.add_parameters(this->prm);
   this->prm.leave_subsection();
@@ -233,7 +232,7 @@ public:
   print_parameters() const;
 
 private:
-  const ProblemParameters<dim, spacedim>        &par;
+  const ProblemParameters<dim, spacedim> &       par;
   MPI_Comm                                       mpi_communicator;
   ConditionalOStream                             pcout;
   mutable TimerOutput                            computing_timer;
