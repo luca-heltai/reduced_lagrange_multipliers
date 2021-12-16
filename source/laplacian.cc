@@ -41,8 +41,8 @@ PoissonProblem<dim, spacedim>::PoissonProblem(
 
 template <int dim, int spacedim>
 void
-read_grid_and_cad_files(const std::string            &grid_file_name,
-                        const std::string            &ids_and_cad_file_names,
+read_grid_and_cad_files(const std::string &           grid_file_name,
+                        const std::string &           ids_and_cad_file_names,
                         Triangulation<dim, spacedim> &tria)
 {
   GridIn<dim, spacedim> grid_in;
@@ -685,8 +685,11 @@ PoissonProblem<dim, spacedim>::run()
       assemble_coupling();
       solve();
       output_results();
+      par.convergence_table.error_from_exact(dh, solution.block(0), par.bc);
       if (cycle != par.n_refinement_cycles - 1)
         refine_and_transfer();
+      if (pcout.is_active())
+        par.convergence_table.output_table(pcout.get_stream());
     }
 }
 

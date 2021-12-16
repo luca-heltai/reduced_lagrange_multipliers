@@ -4,6 +4,7 @@
 #define dealii_distributed_lagrange_multiplier_h
 
 #include <deal.II/base/function.h>
+#include <deal.II/base/parsed_convergence_table.h>
 #include <deal.II/base/quadrature_lib.h>
 #include <deal.II/base/timer.h>
 
@@ -128,6 +129,8 @@ public:
   mutable ParameterAcceptorProxy<ReductionControl> outer_control;
 
   bool output_results_before_solving = false;
+
+  mutable ParsedConvergenceTable convergence_table;
 };
 
 
@@ -169,11 +172,16 @@ ProblemParameters<dim, spacedim>::ProblemParameters()
   leave_subsection();
   enter_subsection("Immersed inclusions");
   {
+    add_parameter("alpha1 (Dirichlet factor)", alpha1);
+    add_parameter("alpha2 (Neumann factor)", alpha2);
     add_parameter("Inclusions", inclusions);
     add_parameter("Inclusions refinement", inclusions_refinement);
     add_parameter("Number of fourier coefficients", n_fourier_coefficients);
   }
   leave_subsection();
+  this->prm.enter_subsection("Error");
+  convergence_table.add_parameters(this->prm);
+  this->prm.leave_subsection();
 }
 
 
@@ -226,7 +234,7 @@ public:
   n_inclusions_dofs() const;
 
 private:
-  const ProblemParameters<dim, spacedim>        &par;
+  const ProblemParameters<dim, spacedim> &       par;
   MPI_Comm                                       mpi_communicator;
   ConditionalOStream                             pcout;
   mutable TimerOutput                            computing_timer;
@@ -245,6 +253,7 @@ private:
 
   LA::MPI::SparseMatrix                           stiffness_matrix;
   LA::MPI::SparseMatrix                           coupling_matrix;
+  LA::MPI::SparseMatrix                           inclusion_matrix;
   LA::MPI::BlockVector                            solution;
   LA::MPI::BlockVector                            locally_relevant_solution;
   LA::MPI::BlockVector                            system_rhs;
