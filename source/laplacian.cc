@@ -235,6 +235,19 @@ PoissonProblem<dim, spacedim>::setup_dofs()
                                                relevant_dofs[0]);
     coupling_matrix.reinit(owned_dofs[0], owned_dofs[1], dsp, mpi_communicator);
     inclusion_constraints.close();
+
+    DynamicSparsityPattern idsp(n_inclusions_dofs(), n_inclusions_dofs());
+    for (const auto i : owned_dofs[1])
+      idsp.add(i, i);
+
+    SparsityTools::distribute_sparsity_pattern(idsp,
+                                               owned_dofs[1],
+                                               mpi_communicator,
+                                               relevant_dofs[1]);
+    inclusion_matrix.reinit(owned_dofs[1],
+                            owned_dofs[1],
+                            idsp,
+                            mpi_communicator);
   }
 
   locally_relevant_solution.reinit(owned_dofs, relevant_dofs, mpi_communicator);
@@ -353,14 +366,24 @@ void
 PoissonProblem<dim, spacedim>::assemble_coupling()
 {
   TimerOutput::Scope t(computing_timer, "Assemble Coupling matrix");
+  pcout << "Assembling for alpha1 = " << par.alpha1
+        << " and alpha2 = " << par.alpha2 << std::endl;
+
   const FEValuesExtractors::Scalar     scalar(0);
   std::vector<types::global_dof_index> fe_dof_indices(fe->n_dofs_per_cell());
   std::vector<types::global_dof_index> inclusion_dof_indices(
     inclusion->n_coefficients);
 
-  FullMatrix<double> local_matrix(fe->n_dofs_per_cell(),
-                                  inclusion->n_coefficients);
-  Vector<double>     local_rhs(inclusion->n_coefficients);
+  FullMatrix<double> local_coupling_matrix(fe->n_dofs_per_cell(),
+                                           inclusion->n_coefficients);
+
+  FullMatrix<double> local_bulk_matrix(fe->n_dofs_per_cell(),
+                                       fe->n_dofs_per_cell());
+
+  FullMatrix<double> local_inclusion_matrix(inclusion->n_coefficients,
+                                            inclusion->n_coefficients);
+
+  Vector<double> local_rhs(inclusion->n_coefficients);
 
   auto particle = inclusions_as_particles.begin();
   while (particle != inclusions_as_particles.end())
@@ -378,11 +401,12 @@ PoissonProblem<dim, spacedim>::assemble_coupling()
         {
           const auto inclusion_id = inclusion->get_inclusion_id(p->get_id());
           inclusion_dof_indices   = inclusion->get_dof_indices(p->get_id());
-          local_matrix            = 0;
+          local_coupling_matrix   = 0;
+          local_inclusion_matrix  = 0;
+          local_bulk_matrix       = 0;
           local_rhs               = 0;
-          const auto alpha1       = par.inclusions[inclusion_id][spacedim + 1];
-          const auto alpha2       = par.inclusions[inclusion_id][spacedim + 2];
 
+          // Extract all points that refer to the same inclusion
           std::vector<Point<spacedim>> ref_q_points;
           for (; next_p != pic.end() &&
                  inclusion->get_inclusion_id(next_p->get_id()) == inclusion_id;
@@ -399,31 +423,53 @@ PoissonProblem<dim, spacedim>::assemble_coupling()
                 inclusion->reinit(id, par.inclusions);
               const auto &real_q = p->get_location();
 
+              // Coupling and inclusions matrix
               for (unsigned int j = 0; j < inclusion->n_coefficients; ++j)
                 {
                   for (unsigned int i = 0; i < fe->n_dofs_per_cell(); ++i)
-                    local_matrix(i, j) += (alpha1 * fev.shape_value(i, q) +
-                                           alpha2 * fev.shape_grad(i, q) *
-                                             inclusion->get_normal(id)) *
-                                          inclusion_fe_values[j];
+                    local_coupling_matrix(i, j) +=
+                      (fev.shape_value(i, q)) * inclusion_fe_values[j];
                   local_rhs(j) +=
                     inclusion_fe_values[j] * par.inclusions_rhs.value(real_q);
+
+                  local_inclusion_matrix(j, j) +=
+                    (inclusion_fe_values[j] * inclusion_fe_values[j] /
+                     inclusion_fe_values[0]);
                 }
+              // Bulk matrix. This is the only one with alpha explicitly
+              if (par.alpha2 != 0)
+                for (unsigned int i = 0; i < fe->n_dofs_per_cell(); ++i)
+                  for (unsigned int j = 0; j < fe->n_dofs_per_cell(); ++j)
+                    local_bulk_matrix(i, j) -=
+                      (2 * par.alpha2 * fev.shape_value(i, q) *
+                       (fev.shape_grad(j, q) * inclusion->get_normal(id))) *
+                      inclusion_fe_values[0]; // this is JxW on Gamma
               ++p;
             }
           // I expect p and next_p to be the same now.
           Assert(p == next_p, ExcInternalError());
-          constraints.distribute_local_to_global(local_matrix,
+
+          // Add local matrices to global ones
+          constraints.distribute_local_to_global(local_bulk_matrix,
+                                                 fe_dof_indices,
+                                                 stiffness_matrix);
+
+          constraints.distribute_local_to_global(local_coupling_matrix,
                                                  fe_dof_indices,
                                                  inclusion_constraints,
                                                  inclusion_dof_indices,
                                                  coupling_matrix);
           inclusion_constraints.distribute_local_to_global(
             local_rhs, inclusion_dof_indices, system_rhs.block(1));
+
+          inclusion_constraints.distribute_local_to_global(
+            local_inclusion_matrix, inclusion_dof_indices, inclusion_matrix);
         }
       particle = pic.end();
     }
   coupling_matrix.compress(VectorOperation::add);
+  stiffness_matrix.compress(VectorOperation::add);
+  inclusion_matrix.compress(VectorOperation::add);
   system_rhs.compress(VectorOperation::add);
 }
 

@@ -107,14 +107,22 @@ public:
     inclusions_rhs;
 
   /**
-   * Each inclusion has: cx, cy, R, alpha1, alpha2
-   *
-   * Where $\alpha_1$ is the Dirichlet coefficient, and $\alpha_2$ is the
-   * Neumann coefficient.
+   * Each inclusion has: cx, cy, R
    */
-  std::vector<std::vector<double>> inclusions = {{-.2, -.2, .3, 1, 0}};
-  unsigned int                     inclusions_refinement  = 1000;
-  unsigned int                     n_fourier_coefficients = 1;
+  std::vector<std::vector<double>> inclusions = {{-.2, -.2, .3}};
+
+  /**
+   * $\alpha_1$ is the Dirichlet coefficient.
+   */
+  double alpha1 = 1.0;
+
+  /**
+   * $\alpha_2$ is the Neumann coefficient.
+   */
+  double alpha2 = 0.0;
+
+  unsigned int inclusions_refinement  = 1000;
+  unsigned int n_fourier_coefficients = 1;
 
   mutable ParameterAcceptorProxy<ReductionControl> inner_control;
   mutable ParameterAcceptorProxy<ReductionControl> outer_control;
