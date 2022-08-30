@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['updateflags_0',['UpdateFlags',['http://www.dealii.org/developer/doxygen/deal.II/group__feaccess.html#gaa94b67d2fdcc390690c523f28019e52f',1,]]],
-  ['userdatatype_1',['UserDataType',['http://www.dealii.org/developer/doxygen/deal.II/classinternal_1_1TriangulationImplementation_1_1TriaObjects.html#a9775aeca5733c8d321aee3298c9bd9ab',1,'internal::TriangulationImplementation::TriaObjects']]]
+  ['tasksparallelscheme_0',['TasksParallelScheme',['http://www.dealii.org/developer/doxygen/deal.II/structMatrixFree_1_1AdditionalData.html#a5b3198735af965d2fc5019543263f927',1,'MatrixFree::AdditionalData::TasksParallelScheme()'],['http://www.dealii.org/developer/doxygen/deal.II/structinternal_1_1MatrixFreeFunctions_1_1TaskInfo.html#a262bea64ec193764b22635454f978f9f',1,'internal::MatrixFreeFunctions::TaskInfo::TasksParallelScheme()']]],
+  ['textoutputformat_1',['TextOutputFormat',['http://www.dealii.org/developer/doxygen/deal.II/classTableHandler.html#a84255fd53f3c75dcbdc4706079d56d8a',1,'ConvergenceTable::TextOutputFormat()'],['http://www.dealii.org/developer/doxygen/deal.II/classTableHandler.html#a84255fd53f3c75dcbdc4706079d56d8a',1,'TableHandler::TextOutputFormat()']]]
 ];

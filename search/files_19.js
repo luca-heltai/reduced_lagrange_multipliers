@@ -6,7 +6,7 @@ var searchData=
   ['qr_2ecc_3',['qr.cc',['http://www.dealii.org/developer/doxygen/deal.II/qr_8cc.html',1,'']]],
   ['qr_2eh_4',['qr.h',['http://www.dealii.org/developer/doxygen/deal.II/qr_8h.html',1,'']]],
   ['quadrature_2ecc_5',['quadrature.cc',['http://www.dealii.org/developer/doxygen/deal.II/quadrature_8cc.html',1,'']]],
-  ['quadrature_2eh_6',['quadrature.h',['http://www.dealii.org/developer/doxygen/deal.II/include_2deal_8II_2base_2quadrature_8h.html',1,'(Global Namespace)'],['http://www.dealii.org/developer/doxygen/deal.II/doc_2doxygen_2headers_2quadrature_8h.html',1,'(Global Namespace)']]],
+  ['quadrature_2eh_6',['quadrature.h',['http://www.dealii.org/developer/doxygen/deal.II/doc_2doxygen_2headers_2quadrature_8h.html',1,'(Global Namespace)'],['http://www.dealii.org/developer/doxygen/deal.II/include_2deal_8II_2base_2quadrature_8h.html',1,'(Global Namespace)']]],
   ['quadrature_5fgenerator_2ecc_7',['quadrature_generator.cc',['http://www.dealii.org/developer/doxygen/deal.II/quadrature__generator_8cc.html',1,'']]],
   ['quadrature_5fgenerator_2eh_8',['quadrature_generator.h',['http://www.dealii.org/developer/doxygen/deal.II/quadrature__generator_8h.html',1,'']]],
   ['quadrature_5flib_2ecc_9',['quadrature_lib.cc',['http://www.dealii.org/developer/doxygen/deal.II/quadrature__lib_8cc.html',1,'']]],

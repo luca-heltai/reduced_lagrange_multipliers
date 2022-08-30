@@ -1,0 +1,27 @@
+var class_inclusions =
+[
+    [ "Inclusions", "class_inclusions.html#afe4ccabe43988a29fbcfc43b3c131dc9", null ],
+    [ "get_center", "class_inclusions.html#ac2677741f77e3e03f562849c11e88974", null ],
+    [ "get_current_support_points", "class_inclusions.html#af09de1f02f56635cb666a9e5ab2b4401", null ],
+    [ "get_direction", "class_inclusions.html#aad11eaa80754a56b3fb301e0e4c6e516", null ],
+    [ "get_dof_indices", "class_inclusions.html#a9b410791a0125d035d7453893da3517d", null ],
+    [ "get_fe_values", "class_inclusions.html#a60a042f0cd689fcb00484389f5e71979", null ],
+    [ "get_inclusion_id", "class_inclusions.html#a63fcb60efd027925d9bc73a7f334a87e", null ],
+    [ "get_normal", "class_inclusions.html#ac147dae3f7a1e6d074173da1cb613f45", null ],
+    [ "get_radius", "class_inclusions.html#ae553d2932cc5f7ee315a56b99acf366f", null ],
+    [ "get_rotation", "class_inclusions.html#af70ea0aa1f0428ebb718d6fc68b19dd7", null ],
+    [ "initialize", "class_inclusions.html#af4294f474f555ee43b1fa648bd5e2690", null ],
+    [ "n_dofs", "class_inclusions.html#af8f442f14f79f5f43a71bd1795bd2ce5", null ],
+    [ "n_inclusions", "class_inclusions.html#a92da48ebcd3e5a8afdf3ed2c58d9e9f8", null ],
+    [ "n_particles", "class_inclusions.html#ab030a4810736b56d67fc32e72565da15", null ],
+    [ "current_fe_values", "class_inclusions.html#a4d873c86db44d9facbf528bec5d1cd7d", null ],
+    [ "current_support_points", "class_inclusions.html#aa4d1ca89709fb8cbedbbc72c0a58d632", null ],
+    [ "inclusions", "class_inclusions.html#a73cc88ee481401bc91d73baf4c4ca37c", null ],
+    [ "inclusions_file", "class_inclusions.html#ae1e2329a3ed403d4063d2db8c3e12898", null ],
+    [ "inclusions_rhs", "class_inclusions.html#acfb0dea20aee159aafaa7a9fbd34d5e3", null ],
+    [ "n_coefficients", "class_inclusions.html#a68bce0c49a4d6b4f4d674ffbae07d4b3", null ],
+    [ "n_q_points", "class_inclusions.html#a50f980c471a5f75106562ab2e064d2c8", null ],
+    [ "normals", "class_inclusions.html#a15536b60fd2017e71ac89e5ddf4ffe44", null ],
+    [ "support_points", "class_inclusions.html#aa57d1e9be466ba3a8124b2867dffe74c", null ],
+    [ "theta", "class_inclusions.html#a2be28d176be85f6b4415d4cfa878ba74", null ]
+];

@@ -42,6 +42,8 @@ var searchData=
   ['changes_20between_20version_209_2e2_2e0_20and_209_2e3_2e0_39',['Changes between Version 9.2.0 and 9.3.0',['http://www.dealii.org/developer/doxygen/deal.II/changes_between_9_2_0_and_9_3_0.html',1,'']]],
   ['changes_20between_20version_209_2e3_2e0_20and_209_2e3_2e1_40',['Changes between Version 9.3.0 and 9.3.1',['http://www.dealii.org/developer/doxygen/deal.II/changes_between_9_3_0_and_9_3_1.html',1,'']]],
   ['changes_20between_20version_209_2e3_2e1_20and_209_2e3_2e2_41',['Changes between Version 9.3.1 and 9.3.2',['http://www.dealii.org/developer/doxygen/deal.II/changes_between_9_3_1_and_9_3_2.html',1,'']]],
-  ['changes_20since_20the_20last_20release_42',['Changes since the last release',['http://www.dealii.org/developer/doxygen/deal.II/recent_changes.html',1,'']]],
-  ['coding_20conventions_20used_20throughout_20deal_2eii_43',['Coding conventions used throughout deal.II',['http://www.dealii.org/developer/doxygen/deal.II/CodingConventions.html',1,'']]]
+  ['changes_20between_20version_209_2e3_2e2_20and_209_2e3_2e3_42',['Changes between Version 9.3.2 and 9.3.3',['http://www.dealii.org/developer/doxygen/deal.II/changes_between_9_3_2_and_9_3_3.html',1,'']]],
+  ['changes_20between_20version_209_2e3_2e3_20and_209_2e4_2e0_43',['Changes between Version 9.3.3 and 9.4.0',['http://www.dealii.org/developer/doxygen/deal.II/changes_between_9_3_3_and_9_4_0.html',1,'']]],
+  ['changes_20since_20the_20last_20release_44',['Changes since the last release',['http://www.dealii.org/developer/doxygen/deal.II/recent_changes.html',1,'']]],
+  ['coding_20conventions_20used_20throughout_20deal_2eii_45',['Coding conventions used throughout deal.II',['http://www.dealii.org/developer/doxygen/deal.II/CodingConventions.html',1,'']]]
 ];

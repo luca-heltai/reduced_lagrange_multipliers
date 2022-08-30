@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['zlibcompressionlevel_0',['ZlibCompressionLevel',['http://www.dealii.org/developer/doxygen/deal.II/structDataOutBase_1_1VtkFlags.html#a7ad65742b9dbfb7eeb04b511b5a08d63',1,'GridOutFlags::Vtk::ZlibCompressionLevel()'],['http://www.dealii.org/developer/doxygen/deal.II/structDataOutBase_1_1VtkFlags.html#a7ad65742b9dbfb7eeb04b511b5a08d63',1,'DataOutBase::VtkFlags::ZlibCompressionLevel()'],['http://www.dealii.org/developer/doxygen/deal.II/structDataOutBase_1_1VtkFlags.html#a7ad65742b9dbfb7eeb04b511b5a08d63',1,'GridOutFlags::Vtu::ZlibCompressionLevel()']]]
+  ['whicheigenvalues_0',['WhichEigenvalues',['http://www.dealii.org/developer/doxygen/deal.II/classArpackSolver.html#ad8d0a4392fc4cd6f45eaa8a16bf18a7c',1,'ArpackSolver::WhichEigenvalues()'],['http://www.dealii.org/developer/doxygen/deal.II/classPArpackSolver.html#a61e6ecc371924100bc132fba84bc9b67',1,'PArpackSolver::WhichEigenvalues()']]]
 ];
