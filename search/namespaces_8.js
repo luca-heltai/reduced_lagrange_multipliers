@@ -76,12 +76,13 @@ var searchData=
   ['templateconstraints_73',['TemplateConstraints',['http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1TemplateConstraints.html',1,'internal']]],
   ['tensorimplementation_74',['TensorImplementation',['http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1TensorImplementation.html',1,'internal']]],
   ['tensorproductmanifoldimplementation_75',['TensorProductManifoldImplementation',['http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1TensorProductManifoldImplementation.html',1,'internal']]],
-  ['timerimplementation_76',['TimerImplementation',['http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1TimerImplementation.html',1,'internal']]],
-  ['triaaccessorimplementation_77',['TriaAccessorImplementation',['http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1TriaAccessorImplementation.html',1,'internal']]],
-  ['triangulationimplementation_78',['TriangulationImplementation',['http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1TriangulationImplementation.html',1,'internal']]],
-  ['triaobjects_79',['TriaObjects',['http://www.dealii.org/developer/doxygen/deal.II/structinternal_1_1TriangulationImplementation_1_1TriaObjects_1_1BoundaryOrMaterialId.html',1,'internal::TriangulationImplementation']]],
-  ['utilitiesimplementation_80',['UtilitiesImplementation',['http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1UtilitiesImplementation.html',1,'internal']]],
-  ['vectordataexchange_81',['VectorDataExchange',['http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1MatrixFreeFunctions_1_1VectorDataExchange.html',1,'internal::MatrixFreeFunctions']]],
-  ['vectorimplementation_82',['VectorImplementation',['http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1VectorImplementation.html',1,'internal']]],
-  ['vectoroperations_83',['VectorOperations',['http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1VectorOperations.html',1,'internal']]]
+  ['tensorproductmatrixsymmetricsum_76',['TensorProductMatrixSymmetricSum',['http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1TensorProductMatrixSymmetricSum.html',1,'internal']]],
+  ['timerimplementation_77',['TimerImplementation',['http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1TimerImplementation.html',1,'internal']]],
+  ['triaaccessorimplementation_78',['TriaAccessorImplementation',['http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1TriaAccessorImplementation.html',1,'internal']]],
+  ['triangulationimplementation_79',['TriangulationImplementation',['http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1TriangulationImplementation.html',1,'internal']]],
+  ['triaobjects_80',['TriaObjects',['http://www.dealii.org/developer/doxygen/deal.II/structinternal_1_1TriangulationImplementation_1_1TriaObjects_1_1BoundaryOrMaterialId.html',1,'internal::TriangulationImplementation']]],
+  ['utilitiesimplementation_81',['UtilitiesImplementation',['http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1UtilitiesImplementation.html',1,'internal']]],
+  ['vectordataexchange_82',['VectorDataExchange',['http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1MatrixFreeFunctions_1_1VectorDataExchange.html',1,'internal::MatrixFreeFunctions']]],
+  ['vectorimplementation_83',['VectorImplementation',['http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1VectorImplementation.html',1,'internal']]],
+  ['vectoroperations_84',['VectorOperations',['http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1VectorOperations.html',1,'internal']]]
 ];
