@@ -108,9 +108,6 @@ var NAVTREEINDEX0 =
 "laplacian_8h.html":[2,0,0,0,0,1],
 "laplacian_8h.html#a68c9ebb48889d54523bff3c6dc3870c4":[2,0,0,0,0,1,2],
 "laplacian_8h_source.html":[2,0,0,0,0,1],
-"main_8cc.html":[2,0,0,0,1,1],
-"main_8cc.html#a0ddf1224851353fc92bfbff6f499fa97":[2,0,0,0,1,1,0],
-"main_8cc_source.html":[2,0,0,0,1,1],
 "namespace_l_a.html":[0,0,0],
 "namespaces.html":[0,0],
 "pages.html":[]
