@@ -14,9 +14,9 @@ var class_problem_parameters =
     [ "name_of_grid", "class_problem_parameters.html#a731162c53d1ef913cde45fd780294c5b", null ],
     [ "outer_control", "class_problem_parameters.html#a1678f2af5f3cb38f673558a394e5a95d", null ],
     [ "output_directory", "class_problem_parameters.html#ac85c367581045cf7199733b97072a7b0", null ],
+    [ "output_name", "class_problem_parameters.html#a052929e8913f2aae2e5c1b7be7dde6a2", null ],
     [ "output_results_before_solving", "class_problem_parameters.html#a844a8b341996720ff77aa71f684ff33c", null ],
     [ "refinement_fraction", "class_problem_parameters.html#a3bd623cda6f6bede38c619100011c107", null ],
     [ "refinement_strategy", "class_problem_parameters.html#acf1d03cdf12df30f333bf384623db6fd", null ],
-    [ "rhs", "class_problem_parameters.html#a4378f295e381c4cd1ee4372e82a76273", null ],
-    [ "rtree_extraction_level", "class_problem_parameters.html#a05ab25adeb4c398127cb655ce6c86ab3", null ]
+    [ "rhs", "class_problem_parameters.html#a4378f295e381c4cd1ee4372e82a76273", null ]
 ];

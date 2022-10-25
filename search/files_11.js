@@ -16,8 +16,10 @@ var searchData=
   ['integrators_2eh_13',['integrators.h',['http://www.dealii.org/developer/doxygen/deal.II/integrators_8h.html',1,'']]],
   ['intergrid_5fmap_2ecc_14',['intergrid_map.cc',['http://www.dealii.org/developer/doxygen/deal.II/intergrid__map_8cc.html',1,'']]],
   ['intergrid_5fmap_2eh_15',['intergrid_map.h',['http://www.dealii.org/developer/doxygen/deal.II/intergrid__map_8h.html',1,'']]],
-  ['io_2eh_16',['io.h',['http://www.dealii.org/developer/doxygen/deal.II/io_8h.html',1,'']]],
-  ['iota_5fview_2eh_17',['iota_view.h',['http://www.dealii.org/developer/doxygen/deal.II/iota__view_8h.html',1,'']]],
-  ['iterator_5frange_2eh_18',['iterator_range.h',['http://www.dealii.org/developer/doxygen/deal.II/iterator__range_8h.html',1,'']]],
-  ['iterators_2eh_19',['iterators.h',['http://www.dealii.org/developer/doxygen/deal.II/iterators_8h.html',1,'']]]
+  ['intersections_2ecc_16',['intersections.cc',['http://www.dealii.org/developer/doxygen/deal.II/intersections_8cc.html',1,'']]],
+  ['intersections_2eh_17',['intersections.h',['http://www.dealii.org/developer/doxygen/deal.II/intersections_8h.html',1,'']]],
+  ['io_2eh_18',['io.h',['http://www.dealii.org/developer/doxygen/deal.II/io_8h.html',1,'']]],
+  ['iota_5fview_2eh_19',['iota_view.h',['http://www.dealii.org/developer/doxygen/deal.II/iota__view_8h.html',1,'']]],
+  ['iterator_5frange_2eh_20',['iterator_range.h',['http://www.dealii.org/developer/doxygen/deal.II/iterator__range_8h.html',1,'']]],
+  ['iterators_2eh_21',['iterators.h',['http://www.dealii.org/developer/doxygen/deal.II/iterators_8h.html',1,'']]]
 ];

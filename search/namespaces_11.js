@@ -1,7 +1,7 @@
 var searchData=
 [
   ['blocklinearoperatorimplementation_0',['BlockLinearOperatorImplementation',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers_1_1internal_1_1BlockLinearOperatorImplementation.html',1,'TrilinosWrappers::internal']]],
-  ['internal_1',['internal',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTensorAccessors_1_1internal.html',1,'TensorAccessors::internal'],['http://www.dealii.org/developer/doxygen/deal.II/namespaceThreads_1_1internal.html',1,'Threads::internal'],['http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers_1_1internal.html',1,'TrilinosWrappers::internal']]],
+  ['internal_1',['internal',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTensorAccessors_1_1internal.html',1,'TensorAccessors::internal'],['http://www.dealii.org/developer/doxygen/deal.II/namespaceTensorProductMatrixCreator_1_1internal.html',1,'TensorProductMatrixCreator::internal'],['http://www.dealii.org/developer/doxygen/deal.II/namespaceThreads_1_1internal.html',1,'Threads::internal'],['http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers_1_1internal.html',1,'TrilinosWrappers::internal']]],
   ['internals_2',['internals',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers_1_1internals.html',1,'TrilinosWrappers']]],
   ['linearoperatorimplementation_3',['LinearOperatorImplementation',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers_1_1internal_1_1LinearOperatorImplementation.html',1,'TrilinosWrappers::internal']]],
   ['mpi_4',['MPI',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers_1_1MPI.html',1,'TrilinosWrappers']]],
@@ -33,16 +33,17 @@ var searchData=
   ['sparsitypatterniterators_30',['SparsityPatternIterators',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers_1_1SparsityPatternIterators.html',1,'TrilinosWrappers']]],
   ['tablehandler_31',['TableHandler',['http://www.dealii.org/developer/doxygen/deal.II/structTableHandler_1_1Column.html',1,'']]],
   ['tensoraccessors_32',['TensorAccessors',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTensorAccessors.html',1,'']]],
-  ['tf_33',['tf',['http://www.dealii.org/developer/doxygen/deal.II/namespacetf.html',1,'']]],
-  ['threads_34',['Threads',['http://www.dealii.org/developer/doxygen/deal.II/namespaceThreads.html',1,'']]],
-  ['timer_35',['Timer',['http://www.dealii.org/developer/doxygen/deal.II/structTimer_1_1ClockMeasurements.html',1,'']]],
-  ['timeroutput_36',['TimerOutput',['http://www.dealii.org/developer/doxygen/deal.II/classTimerOutput_1_1Scope.html',1,'']]],
-  ['timestepbase_5ftria_5fflags_37',['TimeStepBase_Tria_Flags',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTimeStepBase__Tria__Flags.html',1,'']]],
-  ['timestepping_38',['TimeStepping',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTimeStepping.html',1,'TimeStepping'],['http://www.dealii.org/developer/doxygen/deal.II/structTimeStepping_1_1TimeStepping_1_1Status.html',1,'TimeStepping::TimeStepping']]],
-  ['triaaccessorexceptions_39',['TriaAccessorExceptions',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTriaAccessorExceptions.html',1,'']]],
-  ['triangulation_40',['Triangulation',['http://www.dealii.org/developer/doxygen/deal.II/structTriangulation_1_1CellWeightSum.html',1,'']]],
-  ['triangulationdescription_41',['TriangulationDescription',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTriangulationDescription.html',1,'']]],
-  ['trilinoswrappers_42',['TrilinosWrappers',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers.html',1,'']]],
-  ['types_43',['types',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers_1_1types.html',1,'TrilinosWrappers::types'],['http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html',1,'types']]],
-  ['utilities_44',['Utilities',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTriangulationDescription_1_1Utilities.html',1,'TriangulationDescription']]]
+  ['tensorproductmatrixcreator_33',['TensorProductMatrixCreator',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTensorProductMatrixCreator.html',1,'']]],
+  ['tf_34',['tf',['http://www.dealii.org/developer/doxygen/deal.II/namespacetf.html',1,'']]],
+  ['threads_35',['Threads',['http://www.dealii.org/developer/doxygen/deal.II/namespaceThreads.html',1,'']]],
+  ['timer_36',['Timer',['http://www.dealii.org/developer/doxygen/deal.II/structTimer_1_1ClockMeasurements.html',1,'']]],
+  ['timeroutput_37',['TimerOutput',['http://www.dealii.org/developer/doxygen/deal.II/classTimerOutput_1_1Scope.html',1,'']]],
+  ['timestepbase_5ftria_5fflags_38',['TimeStepBase_Tria_Flags',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTimeStepBase__Tria__Flags.html',1,'']]],
+  ['timestepping_39',['TimeStepping',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTimeStepping.html',1,'TimeStepping'],['http://www.dealii.org/developer/doxygen/deal.II/structTimeStepping_1_1TimeStepping_1_1Status.html',1,'TimeStepping::TimeStepping']]],
+  ['triaaccessorexceptions_40',['TriaAccessorExceptions',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTriaAccessorExceptions.html',1,'']]],
+  ['triangulation_41',['Triangulation',['http://www.dealii.org/developer/doxygen/deal.II/structTriangulation_1_1CellWeightSum.html',1,'']]],
+  ['triangulationdescription_42',['TriangulationDescription',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTriangulationDescription.html',1,'']]],
+  ['trilinoswrappers_43',['TrilinosWrappers',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers.html',1,'']]],
+  ['types_44',['types',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers_1_1types.html',1,'TrilinosWrappers::types'],['http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html',1,'types']]],
+  ['utilities_45',['Utilities',['http://www.dealii.org/developer/doxygen/deal.II/namespaceTriangulationDescription_1_1Utilities.html',1,'TriangulationDescription']]]
 ];

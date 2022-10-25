@@ -6,7 +6,7 @@ var searchData=
   ['chunksparsitypatterniterators_3',['ChunkSparsityPatternIterators',['http://www.dealii.org/developer/doxygen/deal.II/namespaceChunkSparsityPatternIterators.html',1,'']]],
   ['colorenriched_4',['ColorEnriched',['http://www.dealii.org/developer/doxygen/deal.II/namespaceColorEnriched.html',1,'']]],
   ['cudawrappers_5',['CUDAWrappers',['http://www.dealii.org/developer/doxygen/deal.II/namespaceCUDAWrappers.html',1,'']]],
-  ['internal_6',['internal',['http://www.dealii.org/developer/doxygen/deal.II/namespaceColorEnriched_1_1internal.html',1,'ColorEnriched::internal'],['http://www.dealii.org/developer/doxygen/deal.II/namespaceCUDAWrappers_1_1internal.html',1,'CUDAWrappers::internal']]],
+  ['internal_6',['internal',['http://www.dealii.org/developer/doxygen/deal.II/namespaceCGALWrappers_1_1internal.html',1,'CGALWrappers::internal'],['http://www.dealii.org/developer/doxygen/deal.II/namespaceColorEnriched_1_1internal.html',1,'ColorEnriched::internal'],['http://www.dealii.org/developer/doxygen/deal.II/namespaceCUDAWrappers_1_1internal.html',1,'CUDAWrappers::internal']]],
   ['matrixfree_7',['MatrixFree',['http://www.dealii.org/developer/doxygen/deal.II/structCUDAWrappers_1_1MatrixFree_1_1AdditionalData.html',1,'CUDAWrappers']]],
   ['preconditionic_8',['PreconditionIC',['http://www.dealii.org/developer/doxygen/deal.II/structCUDAWrappers_1_1PreconditionIC_1_1AdditionalData.html',1,'CUDAWrappers']]],
   ['preconditionilu_9',['PreconditionILU',['http://www.dealii.org/developer/doxygen/deal.II/structCUDAWrappers_1_1PreconditionILU_1_1AdditionalData.html',1,'CUDAWrappers']]],
