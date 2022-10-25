@@ -150,6 +150,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac147dae3f7a1e6d074173da1cb613f45"><td class="memItemLeft" align="right" valign="top">const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html">Tensor</a>&lt; 1, spacedim &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_inclusions.html#ac147dae3f7a1e6d074173da1cb613f45">get_normal</a> (const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#a3543786f7dc7c57385fc923a6afd5917">types::global_dof_index</a> &amp;quadrature_id) const</td></tr>
 <tr class="memdesc:ac147dae3f7a1e6d074173da1cb613f45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the normal.  <a href="class_inclusions.html#ac147dae3f7a1e6d074173da1cb613f45">More...</a><br /></td></tr>
 <tr class="separator:ac147dae3f7a1e6d074173da1cb613f45"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1fcaf5e0d364a10e0fcccad3deafdd29"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_inclusions.html#a1fcaf5e0d364a10e0fcccad3deafdd29">get_JxW</a> (const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#a3543786f7dc7c57385fc923a6afd5917">types::global_dof_index</a> &amp;particle_id) const</td></tr>
+<tr class="separator:a1fcaf5e0d364a10e0fcccad3deafdd29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a60a042f0cd689fcb00484389f5e71979"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; double &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_inclusions.html#a60a042f0cd689fcb00484389f5e71979">get_fe_values</a> (const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#a3543786f7dc7c57385fc923a6afd5917">types::global_dof_index</a> particle_id) const</td></tr>
 <tr class="separator:a60a042f0cd689fcb00484389f5e71979"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2677741f77e3e03f562849c11e88974"><td class="memItemLeft" align="right" valign="top"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classPoint.html">Point</a>&lt; spacedim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_inclusions.html#ac2677741f77e3e03f562849c11e88974">get_center</a> (const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#a3543786f7dc7c57385fc923a6afd5917">types::global_dof_index</a> &amp;inclusion_id) const</td></tr>
@@ -256,8 +258,14 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a50f980c471a5f75106562ab2e064d2c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68bce0c49a4d6b4f4d674ffbae07d4b3"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_inclusions.html#a68bce0c49a4d6b4f4d674ffbae07d4b3">n_coefficients</a> = 1</td></tr>
 <tr class="separator:a68bce0c49a4d6b4f4d674ffbae07d4b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacbcacdfd82ca2e9fea6654d59773786"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_inclusions.html#aacbcacdfd82ca2e9fea6654d59773786">offset_coefficients</a> = 0</td></tr>
+<tr class="separator:aacbcacdfd82ca2e9fea6654d59773786"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad4989d037e998039487530d669b3aa51"><td class="memItemLeft" align="right" valign="top"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParticles_1_1ParticleHandler.html">Particles::ParticleHandler</a>&lt; spacedim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_inclusions.html#ad4989d037e998039487530d669b3aa51">inclusions_as_particles</a></td></tr>
 <tr class="separator:ad4989d037e998039487530d669b3aa51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28d9ef857f35a00d3efe46f89f177a06"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_inclusions.html#a28d9ef857f35a00d3efe46f89f177a06">data_file</a> = &quot;&quot;</td></tr>
+<tr class="separator:a28d9ef857f35a00d3efe46f89f177a06"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9b900fa508ef76a40148980f0c5f3e4"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_inclusions.html#aa9b900fa508ef76a40148980f0c5f3e4">inclusions_data</a></td></tr>
+<tr class="separator:aa9b900fa508ef76a40148980f0c5f3e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_classParameterAcceptor"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_classParameterAcceptor')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el"  href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html">ParameterAcceptor</a></td></tr>
 <tr class="memitem:a1704a7098e692599c254a14c15ab05d2 inherit pub_attribs_classParameterAcceptor"><td class="memItemLeft" align="right" valign="top">boost::signals2::signal&lt; void()&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#a1704a7098e692599c254a14c15ab05d2">declare_parameters_call_back</a></td></tr>
 <tr class="separator:a1704a7098e692599c254a14c15ab05d2 inherit pub_attribs_classParameterAcceptor"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -349,7 +357,7 @@ template&lt;int spacedim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00027">27</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#af2a534c7f1ea5bfa165fa8a469744a5d">ParameterAcceptor::add_parameter()</a>, <a class="el" href="inclusions_8h_source.html#l00386">Inclusions&lt; spacedim &gt;::inclusions</a>, <a class="el" href="inclusions_8h_source.html#l00403">Inclusions&lt; spacedim &gt;::inclusions_file</a>, <a class="el" href="inclusions_8h_source.html#l00388">Inclusions&lt; spacedim &gt;::n_coefficients</a>, <a class="el" href="inclusions_8h_source.html#l00387">Inclusions&lt; spacedim &gt;::n_q_points</a>, and <a class="el" href="inclusions_8h_source.html#l00404">Inclusions&lt; spacedim &gt;::rtree_extraction_level</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#af2a534c7f1ea5bfa165fa8a469744a5d">ParameterAcceptor::add_parameter()</a>, <a class="el" href="inclusions_8h_source.html#l00433">Inclusions&lt; spacedim &gt;::data_file</a>, <a class="el" href="inclusions_8h_source.html#l00426">Inclusions&lt; spacedim &gt;::inclusions</a>, <a class="el" href="inclusions_8h_source.html#l00447">Inclusions&lt; spacedim &gt;::inclusions_file</a>, <a class="el" href="inclusions_8h_source.html#l00428">Inclusions&lt; spacedim &gt;::n_coefficients</a>, <a class="el" href="inclusions_8h_source.html#l00427">Inclusions&lt; spacedim &gt;::n_q_points</a>, <a class="el" href="inclusions_8h_source.html#l00429">Inclusions&lt; spacedim &gt;::offset_coefficients</a>, and <a class="el" href="inclusions_8h_source.html#l00448">Inclusions&lt; spacedim &gt;::rtree_extraction_level</a>.</p>
 
 </div>
 </div>
@@ -389,11 +397,11 @@ template&lt;int spacedim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classPoint.html">Point&lt;spacedim&gt;</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00264">264</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00304">304</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#gaafbb69cc2a791ae55880fd8d57d0c1b0">AssertIndexRange</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/data__out__base_8cc.html#a8188ef4709fc9a4cc076d37447783ba1">center</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a15728437b942dab0b0042eb06a407d2c">d()</a>, and <a class="el" href="inclusions_8h_source.html#l00386">Inclusions&lt; spacedim &gt;::inclusions</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#gaafbb69cc2a791ae55880fd8d57d0c1b0">AssertIndexRange</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/data__out__base_8cc.html#a8188ef4709fc9a4cc076d37447783ba1">center</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a15728437b942dab0b0042eb06a407d2c">d()</a>, and <a class="el" href="inclusions_8h_source.html#l00426">Inclusions&lt; spacedim &gt;::inclusions</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00362">Inclusions&lt; spacedim &gt;::get_current_support_points()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00402">Inclusions&lt; spacedim &gt;::get_current_support_points()</a>.</p>
 
 </div>
 </div>
@@ -432,9 +440,9 @@ template&lt;int spacedim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>unsigned int The index of the current component </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00198">198</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00231">231</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00393">Inclusions&lt; spacedim &gt;::n_vector_components</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00437">Inclusions&lt; spacedim &gt;::n_vector_components</a>.</p>
 
 </div>
 </div>
@@ -464,11 +472,11 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00362">362</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00402">402</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/data__out__base_8cc.html#a8188ef4709fc9a4cc076d37447783ba1">center</a>, <a class="el" href="inclusions_8h_source.html#l00400">Inclusions&lt; spacedim &gt;::current_support_points</a>, <a class="el" href="inclusions_8h_source.html#l00264">Inclusions&lt; spacedim &gt;::get_center()</a>, <a class="el" href="inclusions_8h_source.html#l00278">Inclusions&lt; spacedim &gt;::get_radius()</a>, <a class="el" href="inclusions_8h_source.html#l00323">Inclusions&lt; spacedim &gt;::get_rotation()</a>, <a class="el" href="inclusions_8h_source.html#l00387">Inclusions&lt; spacedim &gt;::n_q_points</a>, and <a class="el" href="inclusions_8h_source.html#l00395">Inclusions&lt; spacedim &gt;::support_points</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/data__out__base_8cc.html#a8188ef4709fc9a4cc076d37447783ba1">center</a>, <a class="el" href="inclusions_8h_source.html#l00444">Inclusions&lt; spacedim &gt;::current_support_points</a>, <a class="el" href="inclusions_8h_source.html#l00304">Inclusions&lt; spacedim &gt;::get_center()</a>, <a class="el" href="inclusions_8h_source.html#l00318">Inclusions&lt; spacedim &gt;::get_radius()</a>, <a class="el" href="inclusions_8h_source.html#l00363">Inclusions&lt; spacedim &gt;::get_rotation()</a>, <a class="el" href="inclusions_8h_source.html#l00427">Inclusions&lt; spacedim &gt;::n_q_points</a>, and <a class="el" href="inclusions_8h_source.html#l00439">Inclusions&lt; spacedim &gt;::support_points</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00135">Inclusions&lt; spacedim &gt;::setup_inclusions_particles()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00168">Inclusions&lt; spacedim &gt;::setup_inclusions_particles()</a>.</p>
 
 </div>
 </div>
@@ -498,11 +506,11 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00297">297</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00337">337</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga9442b63275c9ef3fab29bc222831c49c">AssertDimension</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#gaafbb69cc2a791ae55880fd8d57d0c1b0">AssertIndexRange</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#gafc0ca7ad85b3ebd64e8e51689ac85caf">AssertThrow</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a15728437b942dab0b0042eb06a407d2c">d()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a9587d5229555daa5b1fa1ba2f8a40adb">e()</a>, <a class="el" href="inclusions_8h_source.html#l00386">Inclusions&lt; spacedim &gt;::inclusions</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html#afd0934b4edd71063f66a9c67540e79fc">Tensor&lt; rank_, dim, class &gt;::norm()</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga9442b63275c9ef3fab29bc222831c49c">AssertDimension</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#gaafbb69cc2a791ae55880fd8d57d0c1b0">AssertIndexRange</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#gafc0ca7ad85b3ebd64e8e51689ac85caf">AssertThrow</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a15728437b942dab0b0042eb06a407d2c">d()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a9587d5229555daa5b1fa1ba2f8a40adb">e()</a>, <a class="el" href="inclusions_8h_source.html#l00426">Inclusions&lt; spacedim &gt;::inclusions</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html#afd0934b4edd71063f66a9c67540e79fc">Tensor&lt; rank_, dim, class &gt;::norm()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00231">Inclusions&lt; spacedim &gt;::get_fe_values()</a>, and <a class="el" href="inclusions_8h_source.html#l00323">Inclusions&lt; spacedim &gt;::get_rotation()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00257">Inclusions&lt; spacedim &gt;::get_JxW()</a>, and <a class="el" href="inclusions_8h_source.html#l00363">Inclusions&lt; spacedim &gt;::get_rotation()</a>.</p>
 
 </div>
 </div>
@@ -532,9 +540,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00125">125</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00158">158</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a15728437b942dab0b0042eb06a407d2c">d()</a>, <a class="el" href="inclusions_8h_source.html#l00068">Inclusions&lt; spacedim &gt;::n_dofs_per_inclusion()</a>, and <a class="el" href="inclusions_8h_source.html#l00387">Inclusions&lt; spacedim &gt;::n_q_points</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a15728437b942dab0b0042eb06a407d2c">d()</a>, <a class="el" href="inclusions_8h_source.html#l00070">Inclusions&lt; spacedim &gt;::n_dofs_per_inclusion()</a>, and <a class="el" href="inclusions_8h_source.html#l00427">Inclusions&lt; spacedim &gt;::n_q_points</a>.</p>
 
 </div>
 </div>
@@ -572,9 +580,9 @@ template&lt;int spacedim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>const std::vector&lt;double&gt;&amp; </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00231">231</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00273">273</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#gaafbb69cc2a791ae55880fd8d57d0c1b0">AssertIndexRange</a>, <a class="el" href="inclusions_8h_source.html#l00401">Inclusions&lt; spacedim &gt;::current_fe_values</a>, <a class="el" href="inclusions_8h_source.html#l00297">Inclusions&lt; spacedim &gt;::get_direction()</a>, <a class="el" href="inclusions_8h_source.html#l00278">Inclusions&lt; spacedim &gt;::get_radius()</a>, <a class="el" href="inclusions_8h_source.html#l00386">Inclusions&lt; spacedim &gt;::inclusions</a>, <a class="el" href="inclusions_8h_source.html#l00388">Inclusions&lt; spacedim &gt;::n_coefficients</a>, <a class="el" href="inclusions_8h_source.html#l00387">Inclusions&lt; spacedim &gt;::n_q_points</a>, <a class="el" href="inclusions_8h_source.html#l00393">Inclusions&lt; spacedim &gt;::n_vector_components</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html#afd0934b4edd71063f66a9c67540e79fc">Tensor&lt; 1, spacedim &gt;::norm()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacenumbers.html#a3e24f194a9cb9b6ff4442b8a7a877d4a">numbers::PI</a>, and <a class="el" href="inclusions_8h_source.html#l00396">Inclusions&lt; spacedim &gt;::theta</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#gaafbb69cc2a791ae55880fd8d57d0c1b0">AssertIndexRange</a>, <a class="el" href="inclusions_8h_source.html#l00445">Inclusions&lt; spacedim &gt;::current_fe_values</a>, <a class="el" href="inclusions_8h_source.html#l00318">Inclusions&lt; spacedim &gt;::get_radius()</a>, <a class="el" href="inclusions_8h_source.html#l00426">Inclusions&lt; spacedim &gt;::inclusions</a>, <a class="el" href="inclusions_8h_source.html#l00428">Inclusions&lt; spacedim &gt;::n_coefficients</a>, <a class="el" href="inclusions_8h_source.html#l00427">Inclusions&lt; spacedim &gt;::n_q_points</a>, <a class="el" href="inclusions_8h_source.html#l00437">Inclusions&lt; spacedim &gt;::n_vector_components</a>, <a class="el" href="inclusions_8h_source.html#l00429">Inclusions&lt; spacedim &gt;::offset_coefficients</a>, and <a class="el" href="inclusions_8h_source.html#l00440">Inclusions&lt; spacedim &gt;::theta</a>.</p>
 
 </div>
 </div>
@@ -612,11 +620,43 @@ template&lt;int spacedim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#a3543786f7dc7c57385fc923a6afd5917">types::global_dof_index</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00186">186</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00219">219</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00387">Inclusions&lt; spacedim &gt;::n_q_points</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00427">Inclusions&lt; spacedim &gt;::n_q_points</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00210">Inclusions&lt; spacedim &gt;::get_normal()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00243">Inclusions&lt; spacedim &gt;::get_normal()</a>.</p>
+
+</div>
+</div>
+<a id="a1fcaf5e0d364a10e0fcccad3deafdd29" name="a1fcaf5e0d364a10e0fcccad3deafdd29"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1fcaf5e0d364a10e0fcccad3deafdd29">&#9670;&#160;</a></span>get_JxW()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int spacedim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="class_inclusions.html">Inclusions</a>&lt; spacedim &gt;::get_JxW </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#a3543786f7dc7c57385fc923a6afd5917">types::global_dof_index</a> &amp;&#160;</td>
+          <td class="paramname"><em>particle_id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00257">257</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#gaafbb69cc2a791ae55880fd8d57d0c1b0">AssertIndexRange</a>, <a class="el" href="inclusions_8h_source.html#l00337">Inclusions&lt; spacedim &gt;::get_direction()</a>, <a class="el" href="inclusions_8h_source.html#l00318">Inclusions&lt; spacedim &gt;::get_radius()</a>, <a class="el" href="inclusions_8h_source.html#l00426">Inclusions&lt; spacedim &gt;::inclusions</a>, <a class="el" href="inclusions_8h_source.html#l00427">Inclusions&lt; spacedim &gt;::n_q_points</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html#afd0934b4edd71063f66a9c67540e79fc">Tensor&lt; 1, spacedim &gt;::norm()</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacenumbers.html#a3e24f194a9cb9b6ff4442b8a7a877d4a">numbers::PI</a>.</p>
 
 </div>
 </div>
@@ -655,9 +695,9 @@ template&lt;int spacedim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html">Tensor&lt;1, spacedim&gt;</a>&amp; </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00210">210</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00243">243</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00186">Inclusions&lt; spacedim &gt;::get_inclusion_id()</a>, <a class="el" href="inclusions_8h_source.html#l00323">Inclusions&lt; spacedim &gt;::get_rotation()</a>, <a class="el" href="inclusions_8h_source.html#l00387">Inclusions&lt; spacedim &gt;::n_q_points</a>, and <a class="el" href="inclusions_8h_source.html#l00399">Inclusions&lt; spacedim &gt;::normals</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00219">Inclusions&lt; spacedim &gt;::get_inclusion_id()</a>, <a class="el" href="inclusions_8h_source.html#l00363">Inclusions&lt; spacedim &gt;::get_rotation()</a>, <a class="el" href="inclusions_8h_source.html#l00427">Inclusions&lt; spacedim &gt;::n_q_points</a>, and <a class="el" href="inclusions_8h_source.html#l00443">Inclusions&lt; spacedim &gt;::normals</a>.</p>
 
 </div>
 </div>
@@ -687,11 +727,11 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00278">278</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00318">318</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga9442b63275c9ef3fab29bc222831c49c">AssertDimension</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#gaafbb69cc2a791ae55880fd8d57d0c1b0">AssertIndexRange</a>, and <a class="el" href="inclusions_8h_source.html#l00386">Inclusions&lt; spacedim &gt;::inclusions</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga9442b63275c9ef3fab29bc222831c49c">AssertDimension</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#gaafbb69cc2a791ae55880fd8d57d0c1b0">AssertIndexRange</a>, and <a class="el" href="inclusions_8h_source.html#l00426">Inclusions&lt; spacedim &gt;::inclusions</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00362">Inclusions&lt; spacedim &gt;::get_current_support_points()</a>, and <a class="el" href="inclusions_8h_source.html#l00231">Inclusions&lt; spacedim &gt;::get_fe_values()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00402">Inclusions&lt; spacedim &gt;::get_current_support_points()</a>, <a class="el" href="inclusions_8h_source.html#l00273">Inclusions&lt; spacedim &gt;::get_fe_values()</a>, and <a class="el" href="inclusions_8h_source.html#l00257">Inclusions&lt; spacedim &gt;::get_JxW()</a>.</p>
 
 </div>
 </div>
@@ -721,11 +761,11 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00323">323</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00363">363</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a9587d5229555daa5b1fa1ba2f8a40adb">e()</a>, and <a class="el" href="inclusions_8h_source.html#l00297">Inclusions&lt; spacedim &gt;::get_direction()</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a9587d5229555daa5b1fa1ba2f8a40adb">e()</a>, and <a class="el" href="inclusions_8h_source.html#l00337">Inclusions&lt; spacedim &gt;::get_direction()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00362">Inclusions&lt; spacedim &gt;::get_current_support_points()</a>, and <a class="el" href="inclusions_8h_source.html#l00210">Inclusions&lt; spacedim &gt;::get_normal()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00402">Inclusions&lt; spacedim &gt;::get_current_support_points()</a>, and <a class="el" href="inclusions_8h_source.html#l00243">Inclusions&lt; spacedim &gt;::get_normal()</a>.</p>
 
 </div>
 </div>
@@ -755,11 +795,11 @@ template&lt;int spacedim&gt; </div>
 </div><div class="memdoc">
 <p >Reinit all reference points and normals, and read inclusions file. </p>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00077">77</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00079">79</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#gafc0ca7ad85b3ebd64e8e51689ac85caf">AssertThrow</a>, <a class="el" href="inclusions_8h_source.html#l00401">Inclusions&lt; spacedim &gt;::current_fe_values</a>, <a class="el" href="inclusions_8h_source.html#l00400">Inclusions&lt; spacedim &gt;::current_support_points</a>, <a class="el" href="inclusions_8h_source.html#l00386">Inclusions&lt; spacedim &gt;::inclusions</a>, <a class="el" href="inclusions_8h_source.html#l00403">Inclusions&lt; spacedim &gt;::inclusions_file</a>, <a class="el" href="inclusions_8h_source.html#l00388">Inclusions&lt; spacedim &gt;::n_coefficients</a>, <a class="el" href="inclusions_8h_source.html#l00068">Inclusions&lt; spacedim &gt;::n_dofs_per_inclusion()</a>, <a class="el" href="inclusions_8h_source.html#l00387">Inclusions&lt; spacedim &gt;::n_q_points</a>, <a class="el" href="inclusions_8h_source.html#l00399">Inclusions&lt; spacedim &gt;::normals</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacenumbers.html#a3e24f194a9cb9b6ff4442b8a7a877d4a">numbers::PI</a>, <a class="el" href="inclusions_8h_source.html#l00395">Inclusions&lt; spacedim &gt;::support_points</a>, and <a class="el" href="inclusions_8h_source.html#l00396">Inclusions&lt; spacedim &gt;::theta</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#gafc0ca7ad85b3ebd64e8e51689ac85caf">AssertThrow</a>, <a class="el" href="inclusions_8h_source.html#l00445">Inclusions&lt; spacedim &gt;::current_fe_values</a>, <a class="el" href="inclusions_8h_source.html#l00444">Inclusions&lt; spacedim &gt;::current_support_points</a>, <a class="el" href="inclusions_8h_source.html#l00433">Inclusions&lt; spacedim &gt;::data_file</a>, <a class="el" href="inclusions_8h_source.html#l00426">Inclusions&lt; spacedim &gt;::inclusions</a>, <a class="el" href="inclusions_8h_source.html#l00434">Inclusions&lt; spacedim &gt;::inclusions_data</a>, <a class="el" href="inclusions_8h_source.html#l00447">Inclusions&lt; spacedim &gt;::inclusions_file</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#adb1b44ad6f1741fbbbecc43f95d26baf">l()</a>, <a class="el" href="inclusions_8h_source.html#l00428">Inclusions&lt; spacedim &gt;::n_coefficients</a>, <a class="el" href="inclusions_8h_source.html#l00070">Inclusions&lt; spacedim &gt;::n_dofs_per_inclusion()</a>, <a class="el" href="inclusions_8h_source.html#l00059">Inclusions&lt; spacedim &gt;::n_inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l00427">Inclusions&lt; spacedim &gt;::n_q_points</a>, <a class="el" href="inclusions_8h_source.html#l00443">Inclusions&lt; spacedim &gt;::normals</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacenumbers.html#a3e24f194a9cb9b6ff4442b8a7a877d4a">numbers::PI</a>, <a class="el" href="inclusions_8h_source.html#l00439">Inclusions&lt; spacedim &gt;::support_points</a>, and <a class="el" href="inclusions_8h_source.html#l00440">Inclusions&lt; spacedim &gt;::theta</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00135">Inclusions&lt; spacedim &gt;::setup_inclusions_particles()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00168">Inclusions&lt; spacedim &gt;::setup_inclusions_particles()</a>.</p>
 
 </div>
 </div>
@@ -788,11 +828,11 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00043">43</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00045">45</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00386">Inclusions&lt; spacedim &gt;::inclusions</a>, and <a class="el" href="inclusions_8h_source.html#l00068">Inclusions&lt; spacedim &gt;::n_dofs_per_inclusion()</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00426">Inclusions&lt; spacedim &gt;::inclusions</a>, and <a class="el" href="inclusions_8h_source.html#l00070">Inclusions&lt; spacedim &gt;::n_dofs_per_inclusion()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00135">Inclusions&lt; spacedim &gt;::setup_inclusions_particles()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00168">Inclusions&lt; spacedim &gt;::setup_inclusions_particles()</a>.</p>
 
 </div>
 </div>
@@ -824,11 +864,11 @@ template&lt;int spacedim&gt; </div>
 <p>Number of degrees of freedom associated to each inclusion. </p>
 <dl class="section return"><dt>Returns</dt><dd>unsigned int </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00068">68</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00070">70</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00388">Inclusions&lt; spacedim &gt;::n_coefficients</a>, and <a class="el" href="inclusions_8h_source.html#l00393">Inclusions&lt; spacedim &gt;::n_vector_components</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00428">Inclusions&lt; spacedim &gt;::n_coefficients</a>, and <a class="el" href="inclusions_8h_source.html#l00437">Inclusions&lt; spacedim &gt;::n_vector_components</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00125">Inclusions&lt; spacedim &gt;::get_dof_indices()</a>, <a class="el" href="inclusions_8h_source.html#l00077">Inclusions&lt; spacedim &gt;::initialize()</a>, and <a class="el" href="inclusions_8h_source.html#l00043">Inclusions&lt; spacedim &gt;::n_dofs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00158">Inclusions&lt; spacedim &gt;::get_dof_indices()</a>, <a class="el" href="inclusions_8h_source.html#l00079">Inclusions&lt; spacedim &gt;::initialize()</a>, and <a class="el" href="inclusions_8h_source.html#l00045">Inclusions&lt; spacedim &gt;::n_dofs()</a>.</p>
 
 </div>
 </div>
@@ -857,11 +897,11 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00057">57</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00059">59</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00386">Inclusions&lt; spacedim &gt;::inclusions</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00426">Inclusions&lt; spacedim &gt;::inclusions</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00135">Inclusions&lt; spacedim &gt;::setup_inclusions_particles()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00079">Inclusions&lt; spacedim &gt;::initialize()</a>, and <a class="el" href="inclusions_8h_source.html#l00168">Inclusions&lt; spacedim &gt;::setup_inclusions_particles()</a>.</p>
 
 </div>
 </div>
@@ -890,11 +930,11 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00050">50</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00052">52</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00386">Inclusions&lt; spacedim &gt;::inclusions</a>, and <a class="el" href="inclusions_8h_source.html#l00387">Inclusions&lt; spacedim &gt;::n_q_points</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00426">Inclusions&lt; spacedim &gt;::inclusions</a>, and <a class="el" href="inclusions_8h_source.html#l00427">Inclusions&lt; spacedim &gt;::n_q_points</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00135">Inclusions&lt; spacedim &gt;::setup_inclusions_particles()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00168">Inclusions&lt; spacedim &gt;::setup_inclusions_particles()</a>.</p>
 
 </div>
 </div>
@@ -924,9 +964,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00377">377</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00417">417</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParticles_1_1DataOut.html#adf095165dc286310226584b2b9972701">Particles::DataOut&lt; dim, spacedim &gt;::build_patches()</a>, <a class="el" href="inclusions_8h_source.html#l00390">Inclusions&lt; spacedim &gt;::inclusions_as_particles</a>, <a class="el" href="inclusions_8h_source.html#l00394">Inclusions&lt; spacedim &gt;::mpi_communicator</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDataOutInterface.html#a5df488dad82b811ceb08cb1adf9eafcd">Particles::DataOut&lt; dim, spacedim &gt;::write_vtu_in_parallel()</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParticles_1_1DataOut.html#adf095165dc286310226584b2b9972701">Particles::DataOut&lt; dim, spacedim &gt;::build_patches()</a>, <a class="el" href="inclusions_8h_source.html#l00431">Inclusions&lt; spacedim &gt;::inclusions_as_particles</a>, <a class="el" href="inclusions_8h_source.html#l00438">Inclusions&lt; spacedim &gt;::mpi_communicator</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDataOutInterface.html#a5df488dad82b811ceb08cb1adf9eafcd">Particles::DataOut&lt; dim, spacedim &gt;::write_vtu_in_parallel()</a>.</p>
 
 </div>
 </div>
@@ -956,9 +996,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00135">135</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00168">168</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__CPP11.html#ga23e860c5192f6501650dda8bb3e2b497">Triangulation&lt; dim, spacedim &gt;::active_cell_iterators()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#ac5a7433f594a19070add2afa0f769efb">Utilities::MPI::all_gather()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/rtree_8h.html#a3591e6e032b1a56920f897a2bc387d43">extract_rtree_level()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTriangulation.html#a1005ad6002b51c5bc4592da7246b6a49">Triangulation&lt; dim, spacedim &gt;::get_communicator()</a>, <a class="el" href="inclusions_8h_source.html#l00362">Inclusions&lt; spacedim &gt;::get_current_support_points()</a>, <a class="el" href="inclusions_8h_source.html#l00390">Inclusions&lt; spacedim &gt;::inclusions_as_particles</a>, <a class="el" href="inclusions_8h_source.html#l00077">Inclusions&lt; spacedim &gt;::initialize()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParticles_1_1ParticleHandler.html#a80faedd016dc8f8ea444385bad5ba3ec">Particles::ParticleHandler&lt; dim, spacedim &gt;::initialize()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParticles_1_1ParticleHandler.html#ac4bae8e82e7a021bd4c269f0df3f8bea">Particles::ParticleHandler&lt; dim, spacedim &gt;::insert_global_particles()</a>, <a class="el" href="inclusions_8h_source.html#l00394">Inclusions&lt; spacedim &gt;::mpi_communicator</a>, <a class="el" href="inclusions_8h_source.html#l00043">Inclusions&lt; spacedim &gt;::n_dofs()</a>, <a class="el" href="inclusions_8h_source.html#l00057">Inclusions&lt; spacedim &gt;::n_inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l00050">Inclusions&lt; spacedim &gt;::n_particles()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/rtree_8h.html#a66a9d76ea405b07e60e74aa6159ac7ad">pack_rtree()</a>, <a class="el" href="inclusions_8h_source.html#l00404">Inclusions&lt; spacedim &gt;::rtree_extraction_level</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/tria__description_8cc.html#ab695339a227bd369fcea767631247cff">tria</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__CPP11.html#ga23e860c5192f6501650dda8bb3e2b497">Triangulation&lt; dim, spacedim &gt;::active_cell_iterators()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#ac5a7433f594a19070add2afa0f769efb">Utilities::MPI::all_gather()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/rtree_8h.html#a3591e6e032b1a56920f897a2bc387d43">extract_rtree_level()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTriangulation.html#a1005ad6002b51c5bc4592da7246b6a49">Triangulation&lt; dim, spacedim &gt;::get_communicator()</a>, <a class="el" href="inclusions_8h_source.html#l00402">Inclusions&lt; spacedim &gt;::get_current_support_points()</a>, <a class="el" href="inclusions_8h_source.html#l00431">Inclusions&lt; spacedim &gt;::inclusions_as_particles</a>, <a class="el" href="inclusions_8h_source.html#l00079">Inclusions&lt; spacedim &gt;::initialize()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParticles_1_1ParticleHandler.html#a80faedd016dc8f8ea444385bad5ba3ec">Particles::ParticleHandler&lt; dim, spacedim &gt;::initialize()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParticles_1_1ParticleHandler.html#ac4bae8e82e7a021bd4c269f0df3f8bea">Particles::ParticleHandler&lt; dim, spacedim &gt;::insert_global_particles()</a>, <a class="el" href="inclusions_8h_source.html#l00438">Inclusions&lt; spacedim &gt;::mpi_communicator</a>, <a class="el" href="inclusions_8h_source.html#l00045">Inclusions&lt; spacedim &gt;::n_dofs()</a>, <a class="el" href="inclusions_8h_source.html#l00059">Inclusions&lt; spacedim &gt;::n_inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l00052">Inclusions&lt; spacedim &gt;::n_particles()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/rtree_8h.html#a66a9d76ea405b07e60e74aa6159ac7ad">pack_rtree()</a>, <a class="el" href="inclusions_8h_source.html#l00448">Inclusions&lt; spacedim &gt;::rtree_extraction_level</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/tria__description_8cc.html#ab695339a227bd369fcea767631247cff">tria</a>.</p>
 
 </div>
 </div>
@@ -985,9 +1025,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00401">401</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00445">445</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00231">Inclusions&lt; spacedim &gt;::get_fe_values()</a>, and <a class="el" href="inclusions_8h_source.html#l00077">Inclusions&lt; spacedim &gt;::initialize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00273">Inclusions&lt; spacedim &gt;::get_fe_values()</a>, and <a class="el" href="inclusions_8h_source.html#l00079">Inclusions&lt; spacedim &gt;::initialize()</a>.</p>
 
 </div>
 </div>
@@ -1013,9 +1053,29 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00400">400</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00444">444</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00362">Inclusions&lt; spacedim &gt;::get_current_support_points()</a>, and <a class="el" href="inclusions_8h_source.html#l00077">Inclusions&lt; spacedim &gt;::initialize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00402">Inclusions&lt; spacedim &gt;::get_current_support_points()</a>, and <a class="el" href="inclusions_8h_source.html#l00079">Inclusions&lt; spacedim &gt;::initialize()</a>.</p>
+
+</div>
+</div>
+<a id="a28d9ef857f35a00d3efe46f89f177a06" name="a28d9ef857f35a00d3efe46f89f177a06"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28d9ef857f35a00d3efe46f89f177a06">&#9670;&#160;</a></span>data_file</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int spacedim&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="class_inclusions.html">Inclusions</a>&lt; spacedim &gt;::data_file = &quot;&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00433">433</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00027">Inclusions&lt; spacedim &gt;::Inclusions()</a>, and <a class="el" href="inclusions_8h_source.html#l00079">Inclusions&lt; spacedim &gt;::initialize()</a>.</p>
 
 </div>
 </div>
@@ -1033,9 +1093,9 @@ template&lt;int spacedim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00386">386</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00426">426</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00264">Inclusions&lt; spacedim &gt;::get_center()</a>, <a class="el" href="inclusions_8h_source.html#l00297">Inclusions&lt; spacedim &gt;::get_direction()</a>, <a class="el" href="inclusions_8h_source.html#l00231">Inclusions&lt; spacedim &gt;::get_fe_values()</a>, <a class="el" href="inclusions_8h_source.html#l00278">Inclusions&lt; spacedim &gt;::get_radius()</a>, <a class="el" href="inclusions_8h_source.html#l00027">Inclusions&lt; spacedim &gt;::Inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l00077">Inclusions&lt; spacedim &gt;::initialize()</a>, <a class="el" href="inclusions_8h_source.html#l00043">Inclusions&lt; spacedim &gt;::n_dofs()</a>, <a class="el" href="inclusions_8h_source.html#l00057">Inclusions&lt; spacedim &gt;::n_inclusions()</a>, and <a class="el" href="inclusions_8h_source.html#l00050">Inclusions&lt; spacedim &gt;::n_particles()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00304">Inclusions&lt; spacedim &gt;::get_center()</a>, <a class="el" href="inclusions_8h_source.html#l00337">Inclusions&lt; spacedim &gt;::get_direction()</a>, <a class="el" href="inclusions_8h_source.html#l00273">Inclusions&lt; spacedim &gt;::get_fe_values()</a>, <a class="el" href="inclusions_8h_source.html#l00257">Inclusions&lt; spacedim &gt;::get_JxW()</a>, <a class="el" href="inclusions_8h_source.html#l00318">Inclusions&lt; spacedim &gt;::get_radius()</a>, <a class="el" href="inclusions_8h_source.html#l00027">Inclusions&lt; spacedim &gt;::Inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l00079">Inclusions&lt; spacedim &gt;::initialize()</a>, <a class="el" href="inclusions_8h_source.html#l00045">Inclusions&lt; spacedim &gt;::n_dofs()</a>, <a class="el" href="inclusions_8h_source.html#l00059">Inclusions&lt; spacedim &gt;::n_inclusions()</a>, and <a class="el" href="inclusions_8h_source.html#l00052">Inclusions&lt; spacedim &gt;::n_particles()</a>.</p>
 
 </div>
 </div>
@@ -1053,9 +1113,29 @@ template&lt;int spacedim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00390">390</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00431">431</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00377">Inclusions&lt; spacedim &gt;::output_particles()</a>, and <a class="el" href="inclusions_8h_source.html#l00135">Inclusions&lt; spacedim &gt;::setup_inclusions_particles()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00417">Inclusions&lt; spacedim &gt;::output_particles()</a>, and <a class="el" href="inclusions_8h_source.html#l00168">Inclusions&lt; spacedim &gt;::setup_inclusions_particles()</a>.</p>
+
+</div>
+</div>
+<a id="aa9b900fa508ef76a40148980f0c5f3e4" name="aa9b900fa508ef76a40148980f0c5f3e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9b900fa508ef76a40148980f0c5f3e4">&#9670;&#160;</a></span>inclusions_data</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int spacedim&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::vector&lt;double&gt; &gt; <a class="el" href="class_inclusions.html">Inclusions</a>&lt; spacedim &gt;::inclusions_data</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00434">434</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00079">Inclusions&lt; spacedim &gt;::initialize()</a>.</p>
 
 </div>
 </div>
@@ -1081,9 +1161,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00403">403</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00447">447</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00027">Inclusions&lt; spacedim &gt;::Inclusions()</a>, and <a class="el" href="inclusions_8h_source.html#l00077">Inclusions&lt; spacedim &gt;::initialize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00027">Inclusions&lt; spacedim &gt;::Inclusions()</a>, and <a class="el" href="inclusions_8h_source.html#l00079">Inclusions&lt; spacedim &gt;::initialize()</a>.</p>
 
 </div>
 </div>
@@ -1101,7 +1181,7 @@ template&lt;int spacedim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00384">384</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00424">424</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
 </div>
 </div>
@@ -1127,9 +1207,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00394">394</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00438">438</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00377">Inclusions&lt; spacedim &gt;::output_particles()</a>, and <a class="el" href="inclusions_8h_source.html#l00135">Inclusions&lt; spacedim &gt;::setup_inclusions_particles()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00417">Inclusions&lt; spacedim &gt;::output_particles()</a>, and <a class="el" href="inclusions_8h_source.html#l00168">Inclusions&lt; spacedim &gt;::setup_inclusions_particles()</a>.</p>
 
 </div>
 </div>
@@ -1147,9 +1227,9 @@ template&lt;int spacedim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00388">388</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00428">428</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00231">Inclusions&lt; spacedim &gt;::get_fe_values()</a>, <a class="el" href="inclusions_8h_source.html#l00027">Inclusions&lt; spacedim &gt;::Inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l00077">Inclusions&lt; spacedim &gt;::initialize()</a>, and <a class="el" href="inclusions_8h_source.html#l00068">Inclusions&lt; spacedim &gt;::n_dofs_per_inclusion()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00273">Inclusions&lt; spacedim &gt;::get_fe_values()</a>, <a class="el" href="inclusions_8h_source.html#l00027">Inclusions&lt; spacedim &gt;::Inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l00079">Inclusions&lt; spacedim &gt;::initialize()</a>, and <a class="el" href="inclusions_8h_source.html#l00070">Inclusions&lt; spacedim &gt;::n_dofs_per_inclusion()</a>.</p>
 
 </div>
 </div>
@@ -1167,9 +1247,9 @@ template&lt;int spacedim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00387">387</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00427">427</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00362">Inclusions&lt; spacedim &gt;::get_current_support_points()</a>, <a class="el" href="inclusions_8h_source.html#l00125">Inclusions&lt; spacedim &gt;::get_dof_indices()</a>, <a class="el" href="inclusions_8h_source.html#l00231">Inclusions&lt; spacedim &gt;::get_fe_values()</a>, <a class="el" href="inclusions_8h_source.html#l00186">Inclusions&lt; spacedim &gt;::get_inclusion_id()</a>, <a class="el" href="inclusions_8h_source.html#l00210">Inclusions&lt; spacedim &gt;::get_normal()</a>, <a class="el" href="inclusions_8h_source.html#l00027">Inclusions&lt; spacedim &gt;::Inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l00077">Inclusions&lt; spacedim &gt;::initialize()</a>, and <a class="el" href="inclusions_8h_source.html#l00050">Inclusions&lt; spacedim &gt;::n_particles()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00402">Inclusions&lt; spacedim &gt;::get_current_support_points()</a>, <a class="el" href="inclusions_8h_source.html#l00158">Inclusions&lt; spacedim &gt;::get_dof_indices()</a>, <a class="el" href="inclusions_8h_source.html#l00273">Inclusions&lt; spacedim &gt;::get_fe_values()</a>, <a class="el" href="inclusions_8h_source.html#l00219">Inclusions&lt; spacedim &gt;::get_inclusion_id()</a>, <a class="el" href="inclusions_8h_source.html#l00257">Inclusions&lt; spacedim &gt;::get_JxW()</a>, <a class="el" href="inclusions_8h_source.html#l00243">Inclusions&lt; spacedim &gt;::get_normal()</a>, <a class="el" href="inclusions_8h_source.html#l00027">Inclusions&lt; spacedim &gt;::Inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l00079">Inclusions&lt; spacedim &gt;::initialize()</a>, and <a class="el" href="inclusions_8h_source.html#l00052">Inclusions&lt; spacedim &gt;::n_particles()</a>.</p>
 
 </div>
 </div>
@@ -1195,9 +1275,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00393">393</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00437">437</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00198">Inclusions&lt; spacedim &gt;::get_component()</a>, <a class="el" href="inclusions_8h_source.html#l00231">Inclusions&lt; spacedim &gt;::get_fe_values()</a>, and <a class="el" href="inclusions_8h_source.html#l00068">Inclusions&lt; spacedim &gt;::n_dofs_per_inclusion()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00231">Inclusions&lt; spacedim &gt;::get_component()</a>, <a class="el" href="inclusions_8h_source.html#l00273">Inclusions&lt; spacedim &gt;::get_fe_values()</a>, and <a class="el" href="inclusions_8h_source.html#l00070">Inclusions&lt; spacedim &gt;::n_dofs_per_inclusion()</a>.</p>
 
 </div>
 </div>
@@ -1223,9 +1303,29 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00399">399</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00443">443</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00210">Inclusions&lt; spacedim &gt;::get_normal()</a>, and <a class="el" href="inclusions_8h_source.html#l00077">Inclusions&lt; spacedim &gt;::initialize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00243">Inclusions&lt; spacedim &gt;::get_normal()</a>, and <a class="el" href="inclusions_8h_source.html#l00079">Inclusions&lt; spacedim &gt;::initialize()</a>.</p>
+
+</div>
+</div>
+<a id="aacbcacdfd82ca2e9fea6654d59773786" name="aacbcacdfd82ca2e9fea6654d59773786"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacbcacdfd82ca2e9fea6654d59773786">&#9670;&#160;</a></span>offset_coefficients</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int spacedim&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int <a class="el" href="class_inclusions.html">Inclusions</a>&lt; spacedim &gt;::offset_coefficients = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00429">429</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00273">Inclusions&lt; spacedim &gt;::get_fe_values()</a>, and <a class="el" href="inclusions_8h_source.html#l00027">Inclusions&lt; spacedim &gt;::Inclusions()</a>.</p>
 
 </div>
 </div>
@@ -1251,9 +1351,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00404">404</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00448">448</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00027">Inclusions&lt; spacedim &gt;::Inclusions()</a>, and <a class="el" href="inclusions_8h_source.html#l00135">Inclusions&lt; spacedim &gt;::setup_inclusions_particles()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00027">Inclusions&lt; spacedim &gt;::Inclusions()</a>, and <a class="el" href="inclusions_8h_source.html#l00168">Inclusions&lt; spacedim &gt;::setup_inclusions_particles()</a>.</p>
 
 </div>
 </div>
@@ -1279,9 +1379,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00395">395</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00439">439</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00362">Inclusions&lt; spacedim &gt;::get_current_support_points()</a>, and <a class="el" href="inclusions_8h_source.html#l00077">Inclusions&lt; spacedim &gt;::initialize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00402">Inclusions&lt; spacedim &gt;::get_current_support_points()</a>, and <a class="el" href="inclusions_8h_source.html#l00079">Inclusions&lt; spacedim &gt;::initialize()</a>.</p>
 
 </div>
 </div>
@@ -1307,9 +1407,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00396">396</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00440">440</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00231">Inclusions&lt; spacedim &gt;::get_fe_values()</a>, and <a class="el" href="inclusions_8h_source.html#l00077">Inclusions&lt; spacedim &gt;::initialize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00273">Inclusions&lt; spacedim &gt;::get_fe_values()</a>, and <a class="el" href="inclusions_8h_source.html#l00079">Inclusions&lt; spacedim &gt;::initialize()</a>.</p>
 
 </div>
 </div>
@@ -1322,7 +1422,7 @@ template&lt;int spacedim&gt; </div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="class_inclusions.html">Inclusions</a></li>
-    <li class="footer">Generated on Tue Oct 25 2022 14:17:20 for Template Deal.II Application by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5 </li>
+    <li class="footer">Generated on Tue Oct 25 2022 18:33:03 for Template Deal.II Application by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.5 </li>
   </ul>
 </div>
 </body>
