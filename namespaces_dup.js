@@ -1475,8 +1475,8 @@ var namespaces_dup =
         [ "void_t", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1SupportsOperation.html#a30b21aec6811b24e4a344a9d34a2d524", null ]
       ] ],
       [ "SymmetricTensorAccessors", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1SymmetricTensorAccessors.html", [
-        [ "merge", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1SymmetricTensorAccessors.html#a3080af8704b3a9882a6fab3eecc63568", null ],
-        [ "merge", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1SymmetricTensorAccessors.html#a8c7ee862e5e6f5757190ab3f64aff2b0", null ]
+        [ "merge", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1SymmetricTensorAccessors.html#a7d686a19f1003bbaa2a1b4c447292d03", null ],
+        [ "merge", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1SymmetricTensorAccessors.html#adda626dbf0295a70b3479d0db61f058d", null ]
       ] ],
       [ "SymmetricTensorImplementation", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1SymmetricTensorImplementation.html", [
         [ "hybrid", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1SymmetricTensorImplementation.html#ab19906847b7ca1fa629cb5883511293f", null ],
