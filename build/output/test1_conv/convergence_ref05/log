@@ -1,0 +1,129 @@
+Running ElasticityProblem<2> using Trilinos.
+Read 4 coefficients per inclusion
+   Number of degrees of freedom: 674 + 4 (locally owned: 674 + 4)
+   f norm: 0, g norm: 0.0177715
+   Solved for lambda in 1 iterations.
+   u norm: 0.825717, lambda norm: 16.9468
+   Solved for u in 1 iterations.
+   Number of degrees of freedom: 1666 + 4 (locally owned: 1666 + 4)
+cells dofs  u_L2_norm  u_Linfty_norm  u_H1_norm  
+  320  674 7.135e-03 - 1.538e-02   - 1.125e-01 - 
+   Number of degrees of freedom: 1666 + 4 (locally owned: 1666 + 4)
+   f norm: 0, g norm: 0.0177715
+   Solved for lambda in 1 iterations.
+   u norm: 1.47469, lambda norm: 15.6641
+   Solved for u in 1 iterations.
+   Number of degrees of freedom: 4226 + 4 (locally owned: 4226 + 4)
+cells dofs   u_L2_norm    u_Linfty_norm    u_H1_norm    
+  320  674 7.135e-03    - 1.538e-02    - 1.125e-01    - 
+  788 1666 2.958e-03 1.95 6.464e-03 1.92 6.205e-02 1.31 
+   Number of degrees of freedom: 4226 + 4 (locally owned: 4226 + 4)
+   f norm: 0, g norm: 0.0177715
+   Solved for lambda in 1 iterations.
+   u norm: 2.59387, lambda norm: 15.1404
+   Solved for u in 12 iterations.
+   Number of degrees of freedom: 10518 + 4 (locally owned: 10518 + 4)
+cells dofs   u_L2_norm    u_Linfty_norm    u_H1_norm    
+  320  674 7.135e-03    - 1.538e-02    - 1.125e-01    - 
+  788 1666 2.958e-03 1.95 6.464e-03 1.92 6.205e-02 1.31 
+ 2012 4226 1.251e-03 1.85 3.079e-03 1.59 4.847e-02 0.53 
+   Number of degrees of freedom: 10518 + 4 (locally owned: 10518 + 4)
+   f norm: 0, g norm: 0.0177715
+   Solved for lambda in 1 iterations.
+   u norm: 4.43112, lambda norm: 14.9425
+   Solved for u in 21 iterations.
+   Number of degrees of freedom: 26116 + 4 (locally owned: 26116 + 4)
+cells dofs    u_L2_norm    u_Linfty_norm    u_H1_norm    
+  320   674 7.135e-03    - 1.538e-02    - 1.125e-01    - 
+  788  1666 2.958e-03 1.95 6.464e-03 1.92 6.205e-02 1.31 
+ 2012  4226 1.251e-03 1.85 3.079e-03 1.59 4.847e-02 0.53 
+ 5054 10518 6.645e-04 1.39 1.581e-03 1.46 3.362e-02 0.80 
+   Number of degrees of freedom: 26116 + 4 (locally owned: 26116 + 4)
+   f norm: 0, g norm: 0.0177715
+   Solved for lambda in 1 iterations.
+   u norm: 7.15797, lambda norm: 14.8409
+   Solved for u in 33 iterations.
+   Number of degrees of freedom: 65422 + 4 (locally owned: 65422 + 4)
+cells dofs    u_L2_norm    u_Linfty_norm    u_H1_norm    
+  320   674 7.135e-03    - 1.538e-02    - 1.125e-01    - 
+  788  1666 2.958e-03 1.95 6.464e-03 1.92 6.205e-02 1.31 
+ 2012  4226 1.251e-03 1.85 3.079e-03 1.59 4.847e-02 0.53 
+ 5054 10518 6.645e-04 1.39 1.581e-03 1.46 3.362e-02 0.80 
+12653 26116 3.810e-04 1.22 1.056e-03 0.89 2.309e-02 0.83 
+   Number of degrees of freedom: 65422 + 4 (locally owned: 65422 + 4)
+   f norm: 0, g norm: 0.0177715
+   Solved for lambda in 1 iterations.
+   u norm: 11.3085, lambda norm: 14.7812
+   Solved for u in 54 iterations.
+   Number of degrees of freedom: 163184 + 4 (locally owned: 163184 + 4)
+cells dofs    u_L2_norm    u_Linfty_norm    u_H1_norm    
+  320   674 7.135e-03    - 1.538e-02    - 1.125e-01    - 
+  788  1666 2.958e-03 1.95 6.464e-03 1.92 6.205e-02 1.31 
+ 2012  4226 1.251e-03 1.85 3.079e-03 1.59 4.847e-02 0.53 
+ 5054 10518 6.645e-04 1.39 1.581e-03 1.46 3.362e-02 0.80 
+12653 26116 3.810e-04 1.22 1.056e-03 0.89 2.309e-02 0.83 
+31853 65422 1.920e-04 1.49 6.837e-04 0.95 1.637e-02 0.75 
+   Number of degrees of freedom: 163184 + 4 (locally owned: 163184 + 4)
+   f norm: 0, g norm: 0.0177715
+---------------------------------------------------------
+TimerOutput objects finalize timed values printed to the
+screen by communicating over MPI in their destructors.
+Since an exception is currently uncaught, this
+synchronization (and subsequent output) will be skipped
+to avoid a possible deadlock.
+---------------------------------------------------------
+
+
+----------------------------------------------------
+Exception on processing: 
+
+--------------------------------------------------------
+An error occurred in line <1279> of file </usr/local/include/deal.II/lac/solver_cg.h> in function
+    void dealii::SolverCG<VectorType>::solve(const MatrixType&, VectorType&, const VectorType&, const PreconditionerType&) [with MatrixType = dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload>; PreconditionerType = dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload>; VectorType = dealii::TrilinosWrappers::MPI::Vector]
+The violated condition was: 
+    solver_state == SolverControl::success
+Additional information: 
+    Iterative method reported convergence failure in step 100. The
+    residual in the last step was 0.000296846.
+    
+    This error message can indicate that you have simply not allowed a
+    sufficiently large number of iterations for your iterative solver to
+    converge. This often happens when you increase the size of your
+    problem. In such cases, the last residual will likely still be very
+    small, and you can make the error go away by increasing the allowed
+    number of iterations when setting up the SolverControl object that
+    determines the maximal number of iterations you allow.
+    
+    The other situation where this error may occur is when your matrix is
+    not invertible (e.g., your matrix has a null-space), or if you try to
+    apply the wrong solver to a matrix (e.g., using CG for a matrix that
+    is not symmetric or not positive definite). In these cases, the
+    residual in the last iteration is likely going to be large.
+
+Stacktrace:
+-----------
+#0  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: void dealii::SolverCG<dealii::TrilinosWrappers::MPI::Vector>::solve<dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload>, dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> >(dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&, dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&, dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&)
+#1  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: dealii::inverse_operator<dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload, dealii::SolverCG<dealii::TrilinosWrappers::MPI::Vector>, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector>(dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&, dealii::SolverCG<dealii::TrilinosWrappers::MPI::Vector>&, dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&)::{lambda(dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&)#1}::operator()(dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&) const
+#2  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: std::_Function_handler<void (dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&), dealii::inverse_operator<dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload, dealii::SolverCG<dealii::TrilinosWrappers::MPI::Vector>, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector>(dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&, dealii::SolverCG<dealii::TrilinosWrappers::MPI::Vector>&, dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&)::{lambda(dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&)#1}>::_M_invoke(std::_Any_data const&, dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&)
+#3  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: std::function<void (dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&)>::operator()(dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&) const
+#4  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: dealii::operator*<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload>(dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&, dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&)::{lambda(dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&)#1}::operator()(dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&) const
+#5  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: std::_Function_handler<void (dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&), dealii::operator*<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload>(dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&, dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&)::{lambda(dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&)#1}>::_M_invoke(std::_Any_data const&, dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&)
+#6  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: std::function<void (dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&)>::operator()(dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&) const
+#7  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: dealii::operator*<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload>(dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&, dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&)::{lambda(dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&)#1}::operator()(dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&) const
+#8  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: std::_Function_handler<void (dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&), dealii::operator*<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload>(dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&, dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&)::{lambda(dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&)#1}>::_M_invoke(std::_Any_data const&, dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&)
+#9  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: std::function<void (dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&)>::operator()(dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&) const
+#10  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: void dealii::SolverFGMRES<dealii::TrilinosWrappers::MPI::Vector>::solve<dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload>, dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> >(dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&, dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&, dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&)
+#11  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: dealii::inverse_operator<dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload, dealii::SolverFGMRES<dealii::TrilinosWrappers::MPI::Vector>, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector>(dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&, dealii::SolverFGMRES<dealii::TrilinosWrappers::MPI::Vector>&, dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&)::{lambda(dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&)#1}::operator()(dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&) const
+#12  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: std::_Function_handler<void (dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&), dealii::inverse_operator<dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload, dealii::SolverFGMRES<dealii::TrilinosWrappers::MPI::Vector>, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector>(dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&, dealii::SolverFGMRES<dealii::TrilinosWrappers::MPI::Vector>&, dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&)::{lambda(dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&)#1}>::_M_invoke(std::_Any_data const&, dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&)
+#13  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: std::function<void (dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&)>::operator()(dealii::TrilinosWrappers::MPI::Vector&, dealii::TrilinosWrappers::MPI::Vector const&) const
+#14  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: dealii::operator*<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload>(dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&, dealii::PackagedOperation<dealii::TrilinosWrappers::MPI::Vector> const&)::{lambda(dealii::TrilinosWrappers::MPI::Vector&)#1}::operator()(dealii::TrilinosWrappers::MPI::Vector&) const
+#15  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: std::_Function_handler<void (dealii::TrilinosWrappers::MPI::Vector&), dealii::operator*<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload>(dealii::LinearOperator<dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> const&, dealii::PackagedOperation<dealii::TrilinosWrappers::MPI::Vector> const&)::{lambda(dealii::TrilinosWrappers::MPI::Vector&)#1}>::_M_invoke(std::_Any_data const&, dealii::TrilinosWrappers::MPI::Vector&)
+#16  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: std::function<void (dealii::TrilinosWrappers::MPI::Vector&)>::operator()(dealii::TrilinosWrappers::MPI::Vector&) const
+#17  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: dealii::PackagedOperation<dealii::TrilinosWrappers::MPI::Vector>::operator dealii::TrilinosWrappers::MPI::Vector() const
+#18  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: ElasticityProblem<2, 2>::solve()
+#19  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: ElasticityProblem<2, 2>::run()
+#20  ./elasticity_debug: main
+--------------------------------------------------------
+
+Aborting!
+----------------------------------------------------

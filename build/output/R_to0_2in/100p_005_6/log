@@ -1,0 +1,88 @@
+Running ElasticityProblem<2> using Trilinos.
+all boundary : 0, 
+Dir boundary : 0, 
+Neu boundary : 
+flux boundary : 
+Read 4 coefficients per inclusion
+   Number of degrees of freedom: 578 + 24 (locally owned: 578 + 24)
+   f norm: 0, g norm: 0.0015708
+   Solved for lambda in 1 iterations.
+   u norm: 0.639568, lambda norm: 1155.16
+   lambda: -5.776e+02 -1.168e-01 -1.036e-01 -5.777e+02 6.302e-18 -1.951e-17 1.069e-02 1.076e-02 2.557e-19 -1.529e-18 5.949e-19 1.017e-18 -5.767e+02 1.712e-01 1.536e-01 -5.783e+02 1.169e-02 -4.775e-03 6.645e-03 -2.038e-02 2.922e-04 -1.193e-04 -5.605e-05 3.893e-04 
+   Solved for u in 1 iterations.
+perimeter: 0, Boundary stress: 0 0
+area: 4, Mean internal stress: -3.27e-17 -6.13e-18 -6.13e-18 -1.8e-17
+   Number of degrees of freedom: 1470 + 24 (locally owned: 1470 + 24)
+cells dofs  u_L2_norm  u_Linfty_norm  u_H1_norm  
+  256  578 6.470e-02 - 2.076e-01   - 8.349e-01 - 
+   Number of degrees of freedom: 1470 + 24 (locally owned: 1470 + 24)
+   f norm: 0, g norm: 0.00157
+   Solved for lambda in 1 iterations.
+   u norm: 0.691, lambda norm: 710
+   lambda: -3.549e+02 1.947e-02 2.571e-02 -3.549e+02 1.720e-02 -1.725e-02 -6.206e-03 -6.157e-03 -5.238e-04 -7.137e-05 7.097e-05 5.235e-04 -3.550e+02 2.361e-02 1.704e-02 -3.549e+02 9.197e-03 -1.626e-02 -5.422e-03 -3.551e-03 9.107e-05 -4.192e-05 3.560e-05 1.239e-04 
+   Solved for u in 1 iterations.
+perimeter: 0, Boundary stress: 0 0
+area: 4, Mean internal stress: -9.69e-17 -1.55e-18 -1.55e-18 -7.74e-17
+   Number of degrees of freedom: 3608 + 24 (locally owned: 3608 + 24)
+cells dofs   u_L2_norm    u_Linfty_norm    u_H1_norm    
+  256  578 6.470e-02    - 2.076e-01    - 8.349e-01    - 
+  676 1470 4.075e-02 0.99 1.489e-01 0.71 6.328e-01 0.59 
+   Number of degrees of freedom: 3608 + 24 (locally owned: 3608 + 24)
+   f norm: 0, g norm: 0.00157
+   Solved for lambda in 1 iterations.
+   u norm: 1.03, lambda norm: 563
+   lambda: -2.813e+02 2.389e-03 6.972e-03 -2.813e+02 8.940e-04 -9.391e-04 -8.615e-04 -8.244e-04 -2.194e-04 -8.952e-06 8.930e-06 2.194e-04 -2.811e+02 -3.432e-03 -7.491e-03 -2.814e+02 2.975e-04 -1.090e-03 -1.284e-03 8.549e-04 9.533e-05 1.850e-05 -3.971e-06 2.298e-04 
+   Solved for u in 9 iterations.
+perimeter: 0, Boundary stress: 0 0
+area: 4, Mean internal stress: -1.56e-16 1.45e-17 1.45e-17 -1.02e-16
+   Number of degrees of freedom: 8998 + 24 (locally owned: 8998 + 24)
+cells dofs   u_L2_norm    u_Linfty_norm    u_H1_norm    
+  256  578 6.470e-02    - 2.076e-01    - 8.349e-01    - 
+  676 1470 4.075e-02 0.99 1.489e-01 0.71 6.328e-01 0.59 
+ 1699 3608 3.325e-02 0.45 1.195e-01 0.49 5.498e-01 0.31 
+   Number of degrees of freedom: 8998 + 24 (locally owned: 8998 + 24)
+   f norm: 0, g norm: 0.00157
+   Solved for lambda in 1 iterations.
+   u norm: 1.83, lambda norm: 526
+   lambda: -2.631e+02 -7.185e-03 -2.902e-03 -2.631e+02 1.384e-03 -1.428e-03 -4.365e-04 -4.017e-04 1.001e-05 7.098e-06 -7.107e-06 -9.999e-06 -2.630e+02 2.081e-03 -2.339e-03 -2.631e+02 4.024e-04 -1.420e-03 -6.764e-04 -2.907e-04 1.199e-04 4.514e-06 -6.243e-06 -4.642e-06 
+   Solved for u in 9 iterations.
+perimeter: 0, Boundary stress: 0 0
+area: 4, Mean internal stress: 4.66e-17 -1.25e-17 -1.25e-17 -2.68e-16
+   Number of degrees of freedom: 22284 + 24 (locally owned: 22284 + 24)
+cells dofs   u_L2_norm    u_Linfty_norm    u_H1_norm    
+  256  578 6.470e-02    - 2.076e-01    - 8.349e-01    - 
+  676 1470 4.075e-02 0.99 1.489e-01 0.71 6.328e-01 0.59 
+ 1699 3608 3.325e-02 0.45 1.195e-01 0.49 5.498e-01 0.31 
+ 4306 8998 3.132e-02 0.13 1.121e-01 0.14 5.291e-01 0.08 
+   Number of degrees of freedom: 22284 + 24 (locally owned: 22284 + 24)
+   f norm: 0, g norm: 0.00157
+   Solved for lambda in 1 iterations.
+   u norm: 3.31, lambda norm: 503
+   lambda: -2.515e+02 -3.178e-03 9.122e-04 -2.515e+02 5.704e-04 -6.119e-04 6.093e-05 9.409e-05 2.732e-05 -1.258e-06 1.254e-06 -2.731e-05 -2.515e+02 3.330e-03 -7.982e-04 -2.515e+02 -6.346e-04 -6.112e-04 -8.813e-06 -3.539e-05 3.323e-05 1.894e-06 -2.436e-06 -2.985e-05 
+   Solved for u in 12 iterations.
+perimeter: 0, Boundary stress: 0 0
+area: 4, Mean internal stress: 3.61e-17 -1.1e-17 -1.1e-17 -3.6e-16
+cells dofs    u_L2_norm    u_Linfty_norm    u_H1_norm    
+  256   578 6.470e-02    - 2.076e-01    - 8.349e-01    - 
+  676  1470 4.075e-02 0.99 1.489e-01 0.71 6.328e-01 0.59 
+ 1699  3608 3.325e-02 0.45 1.195e-01 0.49 5.498e-01 0.31 
+ 4306  8998 3.132e-02 0.13 1.121e-01 0.14 5.291e-01 0.08 
+10807 22284 3.003e-02 0.09 1.085e-01 0.07 5.157e-01 0.06 
+
+
++------------------------------------------------+------------+------------+
+| Total wallclock time elapsed since start       |      20.6s |            |
+|                                                |            |            |
+| Section                            | no. calls |  wall time | % of total |
++------------------------------------+-----------+------------+------------+
+| Assemble Coupling matrix           |         5 |    0.0882s |      0.43% |
+| Assemble Coupling sparsity         |         9 |    0.0201s |         0% |
+| Assemble Stiffness and Neumann rhs |         5 |      1.87s |       9.1% |
+| Initial setup                      |         1 |   0.00243s |         0% |
+| Output results                     |         5 |      3.17s |        15% |
+| Refine                             |         4 |      4.67s |        23% |
+| Setup dofs                         |         9 |      2.13s |        10% |
+| Solve                              |         5 |     0.864s |       4.2% |
+| computing stresses                 |         5 |     0.729s |       3.5% |
++------------------------------------+-----------+------------+------------+
+
