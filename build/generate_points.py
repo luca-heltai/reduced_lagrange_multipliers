@@ -14,7 +14,7 @@ from random import uniform
 seed(1)
 # generate some random numbers
 
-f = open('points.txt','w')
+f = open('inclusion_points.txt','w')
 k = 0
 radius = 0.05
 while k < 50:

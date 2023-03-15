@@ -1,0 +1,41 @@
+Running ElasticityProblem<2> using Trilinos.
+all boundary : 0, 
+Dir boundary : 0, 
+Neu boundary : 
+flux boundary : 
+   Number of degrees of freedom: 33282 + 0 (locally owned: 33282 + 0)
+   Solved for u in 11 iterations.
+
+--------------------------------------------------------
+An error occurred in line <2985> of file <../source/fe/fe_values.cc> in function
+    void dealii::internal::do_function_values(const typename VectorType::value_type*, const dealii::Table<2, double>&, const dealii::FiniteElement<dim, spacedim>&, const std::vector<unsigned int>&, dealii::ArrayView<Number>, bool, unsigned int) [with int dim = 2; int spacedim = 2; VectorType = dealii::Vector<double>; typename VectorType::value_type = double]
+The violated condition was: 
+    ::dealii::deal_II_exceptions::internals::compare_for_equality(values[i].size(), result_components)
+Additional information: 
+    Dimension 0 not equal to 2.
+
+Stacktrace:
+-----------
+#0  /usr/local/lib/libdeal_II.g.so.9.5.0-pre: void dealii::internal::do_function_values<2, 2, dealii::Vector<double> >(dealii::Vector<double>::value_type const*, dealii::Table<2, double> const&, dealii::FiniteElement<2, 2> const&, std::vector<unsigned int, std::allocator<unsigned int> > const&, dealii::ArrayView<dealii::Vector<double>, dealii::MemorySpace::Host>, bool, unsigned int)
+#1  /usr/local/lib/libdeal_II.g.so.9.5.0-pre: void dealii::FEValuesBase<2, 2>::get_function_values<dealii::TrilinosWrappers::MPI::BlockVector>(dealii::TrilinosWrappers::MPI::BlockVector const&, std::vector<dealii::Vector<dealii::TrilinosWrappers::MPI::BlockVector::value_type>, std::allocator<dealii::Vector<dealii::TrilinosWrappers::MPI::BlockVector::value_type> > >&) const
+#2  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: ElasticityProblem<2, 2>::compute_boundary_stress() const
+#3  /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so: ElasticityProblem<2, 2>::run()
+#4  ./elasticity_debug: main
+--------------------------------------------------------
+
+[1de23ce08b60:56703] *** Process received signal ***
+[1de23ce08b60:56703] Signal: Aborted (6)
+[1de23ce08b60:56703] Signal code:  (-6)
+[1de23ce08b60:56703] [ 0] /lib/x86_64-linux-gnu/libpthread.so.0(+0x14420)[0x7fe61836b420]
+[1de23ce08b60:56703] [ 1] /lib/x86_64-linux-gnu/libc.so.6(gsignal+0xcb)[0x7fe5f0b5d00b]
+[1de23ce08b60:56703] [ 2] /lib/x86_64-linux-gnu/libc.so.6(abort+0x12b)[0x7fe5f0b3c859]
+[1de23ce08b60:56703] [ 3] /usr/local/lib/libdeal_II.g.so.9.5.0-pre(_ZN6dealii18deal_II_exceptions9internals22do_issue_error_nothrowERKNS_13ExceptionBaseE+0x0)[0x7fe609ee5bad]
+[1de23ce08b60:56703] [ 4] ./elasticity_debug(_ZN6dealii18deal_II_exceptions9internals20issue_error_noreturnINS_18StandardExceptions20ExcDimensionMismatchEEEvNS1_17ExceptionHandlingEPKciS7_S7_S7_T_+0x8c)[0x56442d09febc]
+[1de23ce08b60:56703] [ 5] /usr/local/lib/libdeal_II.g.so.9.5.0-pre(_ZN6dealii8internal18do_function_valuesILi2ELi2ENS_6VectorIdEEEEvPKNT1_10value_typeERKNS_5TableILi2EdEERKNS_13FiniteElementIXT_EXT0_EEERKSt6vectorIjSaIjEENS_9ArrayViewIS4_NS_11MemorySpace4HostEEEbj+0x51d)[0x7fe605e68027]
+[1de23ce08b60:56703] [ 6] /usr/local/lib/libdeal_II.g.so.9.5.0-pre(_ZNK6dealii12FEValuesBaseILi2ELi2EE19get_function_valuesINS_16TrilinosWrappers3MPI11BlockVectorEEEvRKT_RSt6vectorINS_6VectorINS6_10value_typeEEESaISC_EE+0x345)[0x7fe605bec0d1]
+[1de23ce08b60:56703] [ 7] /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so(_ZNK17ElasticityProblemILi2ELi2EE23compute_boundary_stressEv+0x29b5)[0x7fe61809d9eb]
+[1de23ce08b60:56703] [ 8] /workspaces/CODICE_lagrangian/build/libreduced_lagrange_lib_debug.so(_ZN17ElasticityProblemILi2ELi2EE3runEv+0x2c4)[0x7fe6180974be]
+[1de23ce08b60:56703] [ 9] ./elasticity_debug(main+0x378)[0x56442d0937f9]
+[1de23ce08b60:56703] [10] /lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0xf3)[0x7fe5f0b3e083]
+[1de23ce08b60:56703] [11] ./elasticity_debug(_start+0x2e)[0x56442d09339e]
+[1de23ce08b60:56703] *** End of error message ***

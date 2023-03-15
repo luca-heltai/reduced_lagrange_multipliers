@@ -14,19 +14,19 @@ subsection Immersed Problem
   set Initial refinement                 = 5
   set Neumann boundary ids               = 
   set Normal flux boundary ids           = 
-  set Output directory                   = prova_3d/
+  set Output directory                   = prova_random_incl/
   set Output name                        = prova
   set Output results also before solving = false
   subsection Dirichlet boundary conditions
     set Function constants  = 
-    set Function expression = 0;0;0
-    set Variable names      = x,y,z,t
+    set Function expression = 0;0
+    set Variable names      = x,y,t
   end
   subsection Exact solution
     set Function constants  = 
-    set Function expression = 0;0;0
-    set Variable names      = x,y,z,t
-    set Weight expression   = 
+    set Function expression = 0;0
+    set Variable names      = x,y,t
+    set Weight expression   = if((x^2+y^2) > 0.04, 1., 0.)
   end
   subsection Grid generation
     set Domain type              = generate
@@ -35,22 +35,22 @@ subsection Immersed Problem
   end
   subsection Immersed inclusions
     set Bounding boxes extraction level     = 1
-    set Data file                           = inclusion_data_3d.txt
-    set Inclusions                          = -0.5,0,0, 1,0,0,0.1; 0.5,0,0, 1,0,0,0.1
-    set Inclusions file                     = 
+    set Data file                           = inclusion_data_50.txt
+    set Inclusions                          = 
+    set Inclusions file                     = inclusion_points.txt
     set Inclusions refinement               = 50
     set Number of fourier coefficients      = 2
     set Start index of Fourier coefficients = 1
     subsection Boundary data
       set Function constants  = 
-      set Function expression = 0;0;0
-      set Variable names      = x,y,z,t
+      set Function expression = 0;0
+      set Variable names      = x,y,t
     end
   end
   subsection Neumann boundary conditions
     set Function constants  = p = 0.13
-    set Function expression = 0;0;0
-    set Variable names      = x,y,z,t
+    set Function expression = 0;0
+    set Variable names      = x,y,t
   end
   subsection Physical constants
     set Lame lambda = 1
@@ -59,14 +59,14 @@ subsection Immersed Problem
   subsection Refinement and remeshing
     set Coarsening fraction         = 0
     set Maximum number of cells     = 2000000
-    set Number of refinement cycles = 1
+    set Number of refinement cycles = 3
     set Refinement fraction         = 0.5
     set Strategy                    = fixed_number
   end
   subsection Right hand side
     set Function constants  = 
-    set Function expression = 0;0;0
-    set Variable names      = x,y,z,t
+    set Function expression = 0;0
+    set Variable names      = x,y,t
   end
   subsection Solver
     subsection Inner control
@@ -85,5 +85,10 @@ subsection Immersed Problem
       set Reduction     = 1.e-6
       set Tolerance     = 1.e-10
     end
+  end
+  subsection Time dependency
+    set Final time   = 0
+    set Initial time = 0
+    set Time step    = 1
   end
 end
