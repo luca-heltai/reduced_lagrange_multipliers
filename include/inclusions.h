@@ -151,13 +151,15 @@ public:
               }
             // if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
             // {
-            //   std::cout << "rank " << Utilities::MPI::this_mpi_process(mpi_communicator)
-            //           << ": Read " << N << " coefficients per " << inclusions.size() 
+            //   std::cout << "rank " <<
+            //   Utilities::MPI::this_mpi_process(mpi_communicator)
+            //           << ": Read " << N << " coefficients per " <<
+            //           inclusions.size()
             //           << " inclusion" << std::endl;
             // }
             // MPI_Barrier(MPI_COMM_WORLD);
           }
-      compute_rotated_inclusion_data();
+        compute_rotated_inclusion_data();
       }
     check_vessels();
   }
@@ -494,39 +496,39 @@ public:
           }
       }
   }
-  
+
   void
   update_inclusions_data(std::vector<double> new_data)
   {
-  if constexpr (spacedim == 2)
-        return;
-        
-  	if (new_data.size() == n_vessels)
-  	{
-  	std::map<unsigned int, IndexSet>::iterator it = map_vessel_inclusions.begin();
-  	while(it != map_vessel_inclusions.end())
-  	{
-  	//inclusions_data[it->second] = {new_data[it->first], 0,0,0,new_data[it->first]};
-  	for (auto i : it->second)
-  	{
-  	inclusions_data[i] = {new_data[it->first], 0,0,0,new_data[it->first],0,0,0,0};
-  	}
-  	
-  	++it;
-  	}
-  	}
-  	else if (new_data.size() == inclusions_data.size())
+    if constexpr (spacedim == 2)
+      return;
 
-  	for (auto id = 0; id < new_data.size();++id)
-  		inclusions_data[id] = {new_data[id], 0,0,0,new_data[id],0,0,0,0};
-else
-AssertThrow(
-        inclusions_data.size() == 0,
-        ExcMessage(
-          "cannot update inclusions_data"));
-          
-            compute_rotated_inclusion_data();
-  	}
+    if (new_data.size() == n_vessels)
+      {
+        std::map<unsigned int, IndexSet>::iterator it =
+          map_vessel_inclusions.begin();
+        while (it != map_vessel_inclusions.end())
+          {
+            // inclusions_data[it->second] = {new_data[it->first],
+            // 0,0,0,new_data[it->first]};
+            for (auto i : it->second)
+              {
+                inclusions_data[i] = {new_data[it->first],0,0,0,new_data[it->first],0,0,0,0};
+              }
+
+            ++it;
+          }
+      }
+    else if (new_data.size() == inclusions_data.size())
+
+      for (auto id = 0; id < new_data.size(); ++id)
+        inclusions_data[id] = {new_data[id], 0, 0, 0, new_data[id], 0, 0, 0, 0};
+    else
+      AssertThrow(inclusions_data.size() == 0,
+                  ExcMessage("cannot update inclusions_data"));
+
+    compute_rotated_inclusion_data();
+  }
 
   int
   get_vesselID(const types::global_dof_index &inclusion_id) const
@@ -550,7 +552,7 @@ AssertThrow(
     return h3D1D;
   }
 
-  unsigned int 
+  unsigned int
   get_n_vessels() const
   {
     return n_vessels;
@@ -562,27 +564,40 @@ AssertThrow(
     if constexpr (spacedim == 2)
       rotated_inclusion_data = inclusions_data;
     else
-    {
-      rotated_inclusion_data.clear();
-      //const unsigned number_phi_data = (unsigned int)floor(inclusions_data[0].size() / spacedim);
-      for (long unsigned int inclusion_id = 0; inclusion_id < inclusions_data.size(); ++inclusion_id)
       {
-        auto tensorR = get_rotation(inclusion_id);
-        std::vector<double> rotated_phi(inclusions_data[0].size()+spacedim);
-        //for (long unsigned int phi_i = 0; phi_i < number_phi_data; ++phi_i)
-        long unsigned int phi_i = 0;
-        while (phi_i*spacedim+2 < inclusions_data[inclusion_id].size())
-        {
-          std::vector<double> coef_phii(&inclusions_data[inclusion_id][phi_i*spacedim], &inclusions_data[inclusion_id][(phi_i+1)*spacedim-1]);
-          rotated_phi[phi_i*spacedim] = coef_phii[0]*tensorR[0][0]+coef_phii[1]*tensorR[1][0]+coef_phii[2]*tensorR[2][0];
-          rotated_phi[phi_i*spacedim+1] = coef_phii[0]*tensorR[0][1]+coef_phii[1]*tensorR[1][1]+coef_phii[2]*tensorR[2][1];
-          rotated_phi[phi_i*spacedim+2] = coef_phii[0]*tensorR[0][2]+coef_phii[1]*tensorR[1][2]+coef_phii[2]*tensorR[2][2];
-          ++phi_i;
-        }
-        rotated_inclusion_data.push_back(rotated_phi);
+        rotated_inclusion_data.clear();
+        // const unsigned number_phi_data = (unsigned
+        // int)floor(inclusions_data[0].size() / spacedim);
+        for (long unsigned int inclusion_id = 0;
+             inclusion_id < inclusions_data.size();
+             ++inclusion_id)
+          {
+            auto                tensorR = get_rotation(inclusion_id);
+            std::vector<double> rotated_phi(inclusions_data[0].size() +
+                                            spacedim);
+            // for (long unsigned int phi_i = 0; phi_i < number_phi_data;
+            // ++phi_i)
+            long unsigned int phi_i = 0;
+            while (phi_i * spacedim + 2 < inclusions_data[inclusion_id].size())
+              {
+                std::vector<double> coef_phii(
+                  &inclusions_data[inclusion_id][phi_i * spacedim],
+                  &inclusions_data[inclusion_id][(phi_i + 1) * spacedim - 1]);
+                rotated_phi[phi_i * spacedim] = coef_phii[0] * tensorR[0][0] +
+                                                coef_phii[1] * tensorR[1][0] +
+                                                coef_phii[2] * tensorR[2][0];
+                rotated_phi[phi_i * spacedim + 1] =
+                  coef_phii[0] * tensorR[0][1] + coef_phii[1] * tensorR[1][1] +
+                  coef_phii[2] * tensorR[2][1];
+                rotated_phi[phi_i * spacedim + 2] =
+                  coef_phii[0] * tensorR[0][2] + coef_phii[1] * tensorR[1][2] +
+                  coef_phii[2] * tensorR[2][2];
+                ++phi_i;
+              }
+            rotated_inclusion_data.push_back(rotated_phi);
+          }
       }
-    }
-  } 
+  }
 
 
   std::vector<double>
@@ -591,9 +606,9 @@ AssertThrow(
     AssertIndexRange(inclusion_id, inclusions.size());
     if constexpr (spacedim == 2)
       return inclusions_data[inclusion_id];
-    
+
     if constexpr (spacedim == 3)
-      return rotated_inclusion_data[inclusion_id];  
+      return rotated_inclusion_data[inclusion_id];
   }
 
 
@@ -611,7 +626,7 @@ AssertThrow(
   mutable std::unique_ptr<HDF5::File> data_file_h;
   std::vector<std::vector<double>>    inclusions_data;
   std::vector<std::vector<double>>    rotated_inclusion_data;
-  
+
   std::map<unsigned int, IndexSet> map_vessel_inclusions;
 
 private:
@@ -625,7 +640,7 @@ private:
   mutable std::vector<Point<spacedim>>     current_support_points;
   mutable std::vector<double>              current_fe_values;
 
-  unsigned int                     n_vessels      = 1;
+  unsigned int n_vessels = 1;
 
   std::string  inclusions_file        = "";
   unsigned int rtree_extraction_level = 1;
@@ -643,17 +658,16 @@ private:
       return;
 
     if constexpr (spacedim == 2)
-    {
+      {
         return;
-    }
+      }
 
-    //if (Utilities::MPI::n_mpi_processes(mpi_communicator) == 1)
-      std::set<double> vessel_id_is_present;
-      for (types::global_dof_index inc_number = 0; inc_number < inclusions.size();
-           ++inc_number)
+    // if (Utilities::MPI::n_mpi_processes(mpi_communicator) == 1)
+    std::set<double> vessel_id_is_present;
+    for (types::global_dof_index inc_number = 0; inc_number < inclusions.size();
+         ++inc_number)
       {
         vessel_id_is_present.insert(get_vesselID(inc_number));
-        
       }
 
     types::global_dof_index id_check = 0;
@@ -662,12 +676,11 @@ private:
       ++id_check;
 
     AssertThrow(
-        id_check+1 != vessel_id_is_present.size(),
-        ExcMessage(
-          "Vessel Ids from data file should be sequential, missing vessels ID(s)"));
-      n_vessels = vessel_id_is_present.size();
-    }
-
+      id_check + 1 != vessel_id_is_present.size(),
+      ExcMessage(
+        "Vessel Ids from data file should be sequential, missing vessels ID(s)"));
+    n_vessels = vessel_id_is_present.size();
+  }
 };
 
 #endif

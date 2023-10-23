@@ -264,13 +264,14 @@ public:
   compute_boundary_stress(bool openfilefirsttime) const; // make const
 
   void
-  output_pressure(bool openfilefirsttime) const; // if i want to open the same file again it can not be const
-  
-std::map<unsigned int, IndexSet>
-get_map_vessels_inclusions() const;
+  output_pressure(bool openfilefirsttime)
+    const; // if i want to open the same file again it can not be const
 
-void
-update_inclusions_data(std::vector<double> new_data);
+  std::map<unsigned int, IndexSet>
+  get_map_vessels_inclusions() const;
+
+  void
+  update_inclusions_data(std::vector<double> new_data);
 
 private:
   const ElasticityProblemParameters<dim, spacedim> &par;
