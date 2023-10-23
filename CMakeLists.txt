@@ -40,6 +40,7 @@ SET(_main_target reduced_lagrange)
 file(GLOB _files source/*cc include/*.h)
 file(GLOB _main_files apps/*cc)
 
+#INCLUDE_DIRECTORIES(include .devcontainer/1dsolver)
 INCLUDE_DIRECTORIES(include)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
@@ -63,13 +64,19 @@ OPTION(ENABLE_GOOGLE_TESTING
 SET(_d2_build_types "Release;Debug")
 SET(Release_postfix "")
 SET(Debug_postfix "_debug")
+SET(CMAKE_C_FLAGS -fopenmp)
+SET(CMAKE_CXX_FLAGS -fopenmp)
+
 
 FOREACH(_build_type ${_d2_build_types})
   # Postfix to use everywhere
   SET(_p "${${_build_type}_postfix}")
+  MESSAGE(${_build_type})
   # Only build this type, if deal.II was compiled with it.
   IF(CMAKE_BUILD_TYPE MATCHES "${_build_type}" AND
       DEAL_II_BUILD_TYPE MATCHES "${_build_type}")
+      
+    MESSAGE(${_build_type})
 
     MESSAGE("-- Found ${_build_type} version of deal.II.")
 
@@ -81,6 +88,7 @@ FOREACH(_build_type ${_d2_build_types})
 
     ADD_LIBRARY(${_lib} SHARED ${_files})
     DEAL_II_SETUP_TARGET(${_lib} ${_BUILD_TYPE})
+    
     SET(TEST_LIBRARIES_${_BUILD_TYPE} ${_lib})
     
     FOREACH(_main ${_main_files})
@@ -90,7 +98,14 @@ FOREACH(_build_type ${_d2_build_types})
       SET(_exe "${_main_we}${${_build_type}_postfix}")
       MESSAGE("-- Configuring executable ${_exe}")
       ADD_EXECUTABLE(${_exe} ${_main})
+      #TARGET_LINK_LIBRARIES(${_exe} ${_lib} 1dsolver)
       TARGET_LINK_LIBRARIES(${_exe} ${_lib})      
+      
+    TARGET_INCLUDE_DIRECTORIES(${_exe} PUBLIC /homes/wiss/camilla/Desktop/CODICE_1D/fvm)
+    TARGET_LINK_LIBRARIES(${_exe} /homes/wiss/camilla/Desktop/CODICE_1D/fvm/lib1dsolver.a)
+      MESSAGE(${_exe})
+     
+      
       DEAL_II_SETUP_TARGET(${_exe} ${_BUILD_TYPE})
     ENDFOREACH()
   ENDIF()
