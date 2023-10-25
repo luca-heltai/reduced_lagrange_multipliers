@@ -101,8 +101,8 @@ FOREACH(_build_type ${_d2_build_types})
       #TARGET_LINK_LIBRARIES(${_exe} ${_lib} 1dsolver)
       TARGET_LINK_LIBRARIES(${_exe} ${_lib})      
       
-    TARGET_INCLUDE_DIRECTORIES(${_exe} PUBLIC /homes/wiss/camilla/Desktop/CODICE_1D/fvm)
-    TARGET_LINK_LIBRARIES(${_exe} /homes/wiss/camilla/Desktop/CODICE_1D/fvm/lib1dsolver.a)
+    TARGET_INCLUDE_DIRECTORIES(${_exe} PUBLIC /home/camilla/Desktop/CODICE_1D/fvmCoupling)
+    TARGET_LINK_LIBRARIES(${_exe} /home/camilla/Desktop/CODICE_1D/fvmCoupling/lib1dsolver.a)
       MESSAGE(${_exe})
      
       

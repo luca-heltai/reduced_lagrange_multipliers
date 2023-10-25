@@ -1004,7 +1004,7 @@ ElasticityProblem<dim, spacedim>::compute_boundary_stress(
 
 template <int dim, int spacedim>
 void
-ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
+ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime)
 {
   TimerOutput::Scope t(computing_timer, "Output Pressure");
   if (inclusions.n_inclusions() > 0 && inclusions.offset_coefficients == 1 &&
@@ -1141,6 +1141,7 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
               << "implementation of hdf5 for time dependent simulation is missing "
               << std::endl;
           }
+          coupling_pressure = pressure;
     }
   else
     {
@@ -1230,24 +1231,37 @@ ElasticityProblem<dim, spacedim>::run_timestep0()
   setup_fe();
   check_boundary_ids();
   inclusions.setup_inclusions_particles(tria);
+  cycle = 0;
+  setup_dofs();
+  // assemble_elasticity_system();
+
 }
 
 template <int dim, int spacedim>
 void
 ElasticityProblem<dim, spacedim>::run_timestep()
 {
-  // how to reset the refinement at the following timestep?
-  //      for (cycle = 0; cycle < par.n_refinement_cycles; ++cycle)
+  if (cycle == 0) // at first timestep we refine
+    for (unsigned int ref_cycle = 0; ref_cycle < par.n_refinement_cycles; ++ref_cycle)
+    {
+      assemble_elasticity_system();
+      assemble_coupling();
+      solve();
+      if (ref_cycle != par.n_refinement_cycles - 1)
+        refine_and_transfer();
+      setup_dofs();
+      // assemble_elasticity_system();
+    }
+  else
   {
-    setup_dofs();
     assemble_elasticity_system();
-
     assemble_coupling();
     solve();
-    output_results();
   }
+  output_results();
   output_pressure(true);
-  compute_boundary_stress(true);
+  // compute_boundary_stress(true);
+  ++cycle;
 }
 
 template <int dim, int spacedim>
@@ -1258,12 +1272,12 @@ ElasticityProblem<dim, spacedim>::update_inclusions_data(
   inclusions.update_inclusions_data(new_data);
 }
 
-template <int dim, int spacedim>
-std::map<unsigned int, IndexSet>
-ElasticityProblem<dim, spacedim>::get_map_vessels_inclusions() const
-{
-  return inclusions.map_vessel_inclusions;
-}
+// template <int dim, int spacedim>
+// std::map<unsigned int, IndexSet>
+// ElasticityProblem<dim, spacedim>::get_map_vessels_inclusions() const
+// {
+//   return inclusions.map_vessel_inclusions;
+// }
 
 
 // Template instantiations

@@ -264,14 +264,15 @@ public:
   compute_boundary_stress(bool openfilefirsttime) const; // make const
 
   void
-  output_pressure(bool openfilefirsttime)
-    const; // if i want to open the same file again it can not be const
+  output_pressure(bool openfilefirsttime);
 
   std::map<unsigned int, IndexSet>
   get_map_vessels_inclusions() const;
 
   void
   update_inclusions_data(std::vector<double> new_data);
+
+    TrilinosWrappers::MPI::Vector                coupling_pressure;
 
 private:
   const ElasticityProblemParameters<dim, spacedim> &par;

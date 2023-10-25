@@ -46,97 +46,60 @@ main(int argc, char *argv[])
         }
       else if (prm_file.find("3d") != std::string::npos)
         {
-          Model1d pb;
-          pb.init(input_file_name);
+          Model1d pb1D;
+          pb1D.init(input_file_name);
 
           ElasticityProblemParameters<3> par;
-          ElasticityProblem<3>           problem(par);
+          ElasticityProblem<3>           problem3D(par);
           ParameterAcceptor::initialize(prm_file);
-          problem.run_timestep0();
+          problem3D.run_timestep0();
 
           {
             int id = 0, p = 1;
             // define process ID and number of processes
-            pb.partitionID = id;
-            pb.nproc       = p;
+            pb1D.partitionID = id;
+            pb1D.nproc       = p;
 
             // initialize model
-            pb.verbose = 0;
-
-            pb.init(input_file_name);
+            pb1D.verbose = 0;
+            pb1D.init(input_file_name);
 
             // enter time loop
-            pb.iT = 0;
-            // double peConst = 0.;
-
-            // pressure read from file
-            // pb.ReadPressure();
-
-
-            double oneDimArea[pb.NV];
-            double threeDimPressure[pb.NV];
-
-            for (int iter = 0; iter < 10000000000000; iter++)
+            pb1D.iT = 0; // not simple iteration counter !
+            int iter = 0;
+            double timestep = 0.0;
+            while(timestep < pb1D.tEnd)
+            // for (int iter = 0; iter < 1000; iter++)
               {
                 // solve time step
-                pb.solveTimeStep(pb.dtMaxLTSLIMIT);
-                // get pressure and diameter along vessel
-                if (pb.sampleSpace == 1)
-                  {
-                    double qSample[10];
-                    for (int i = 0; i < pb.NV; i++)
-                      {
-                        for (int j = 0; j < pb.vess[i].solutionSpaceX.size();
-                             j++)
-                          {
-                            pb.sampleMid(i,
-                                         qSample,
-                                         pb.vess[i].solutionSpaceX[j]);
-                            pb.vess[i].solutionSpaceP[j] = qSample[3];
-                            pb.vess[i].solutionSpaceD[j] =
-                              2. * sqrt(qSample[0] / M_PI);
-                          }
-                      }
-                  }
+                pb1D.solveTimeStep(pb1D.dtMaxLTSLIMIT);
 
-                // pass 1D state to 3D solid model
-                for (int i = 0; i < pb.NV; i++)
-                  {
-                    double qSample[10];
-                    pb.sampleMid(i, qSample, pb.vess[i].L / 2.);
-                    oneDimArea[i] = qSample[0];
-                  }
-                // solve 3D solid model
-                // pass external pressure
-                std::vector<double> new_data(3, 0.0);
-                problem.update_inclusions_data(new_data);
-                problem.run_timestep();
+                if ((iter == 0) || (iter % 50 == 0))
+                {
+                  // non fare il 3d a tutti tutti i timestep
+                  pb1D.compute_new_displacement_for_coupling();
+                  problem3D.update_inclusions_data(pb1D.new_displacement);
 
-                // loop over vessels
+                  for (auto print_index = 0; print_index < pb1D.new_displacement.size(); ++print_index )
+                    std::cout << print_index << ": " << pb1D.new_displacement[print_index] << ", " << std::endl;
 
-                //	for(int i = 0; i< pb.NV; i++){
+                  problem3D.run_timestep();
 
-                //		threeDimPressure[i] = pb.ExternalPressure[i]; // TO BE
-                //REPLACED
-                //	}
-                // set external pressure for 1D model
-                if (pb.setExternalPressure)
-                  {
-                    for (int i = 0; i < pb.NV; i++)
-                      {
-                        for (int j = 0; j < pb.vess[i].NCELLS; j++)
-                          {
-                            pb.vess[i].setpeconst(j, threeDimPressure[i]);
-                          }
-                      }
-                  }
+                  for (auto print_index = 0; print_index < problem3D.coupling_pressure.size(); ++print_index )
+                    std::cout << print_index << ": " << problem3D.coupling_pressure[print_index] << ", " << std::endl;
+                }
 
-                pb.iT += 1;
-                if (pb.endOfSimulation == 1)
-                  break;
+                AssertDimension(problem3D.coupling_pressure.size(), pb1D.NV);
+                for (int i = 0; i < pb1D.NV; i++)
+                  for (int j = 0; j < pb1D.vess[i].NCELLS; j++)
+                    pb1D.vess[i].setpeconst(j, problem3D.coupling_pressure[i]);
+
+                iter++;
+                pb1D.iT += 1;
+                timestep += pb1D.dtMaxLTSLIMIT;
               }
+            pb1D.end();
           }
-          pb.end();
         }
       else
         {

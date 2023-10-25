@@ -505,7 +505,7 @@ public:
 
     if (new_data.size() == n_vessels)
       {
-        std::map<unsigned int, IndexSet>::iterator it =
+        std::map<unsigned int, std::vector<types::global_dof_index>>::iterator it =
           map_vessel_inclusions.begin();
         while (it != map_vessel_inclusions.end())
           {
@@ -513,16 +513,19 @@ public:
             // 0,0,0,new_data[it->first]};
             for (auto i : it->second)
               {
-                inclusions_data[i] = {new_data[it->first],0,0,0,new_data[it->first],0,0,0,0};
+                inclusions_data[i] = {std::abs(new_data[it->first]),0,0,0,std::abs(new_data[it->first]),0,0,0,0};
               }
 
             ++it;
           }
+          std::cout << "data update successful" << std::endl;
       }
     else if (new_data.size() == inclusions_data.size())
-
-      for (auto id = 0; id < new_data.size(); ++id)
+    {
+      for (long unsigned int id = 0; id < new_data.size(); ++id)
         inclusions_data[id] = {new_data[id], 0, 0, 0, new_data[id], 0, 0, 0, 0};
+      std::cout << "data update successful" << std::endl;
+    }
     else
       AssertThrow(inclusions_data.size() == 0,
                   ExcMessage("cannot update inclusions_data"));
@@ -627,7 +630,7 @@ public:
   std::vector<std::vector<double>>    inclusions_data;
   std::vector<std::vector<double>>    rotated_inclusion_data;
 
-  std::map<unsigned int, IndexSet> map_vessel_inclusions;
+  std::map<unsigned int, std::vector<types::global_dof_index>> map_vessel_inclusions;
 
 private:
   const unsigned int           n_vector_components;
@@ -649,7 +652,7 @@ private:
    * @brief Check that all vesselsID are present
    and create the map vessel_inclusions
    */
-  void
+  /*void
   check_vessels()
   {
     // TODO:
@@ -681,6 +684,52 @@ private:
         "Vessel Ids from data file should be sequential, missing vessels ID(s)"));
     n_vessels = vessel_id_is_present.size();
   }
+  */
+void
+  check_vessels()
+  {
+    // TODO:
+    // vessel sanity check: that vessel with same label have the same direction
+    if (inclusions.size() == 0)
+      return;
+
+    if constexpr (spacedim == 2)
+        return;
+
+    //if (Utilities::MPI::n_mpi_processes(mpi_communicator) == 1)
+      // std::set<double> vessel_id_is_present;
+      for (types::global_dof_index inc_number = 0; inc_number < inclusions.size();
+           ++inc_number)
+        //vessel_id_is_present.insert(get_vesselID(inc_number));
+        // map_vessel_inclusions[get_vesselID(inc_number)].add_index(inc_number);
+        map_vessel_inclusions[get_vesselID(inc_number)].push_back(inc_number);
+
+    types::global_dof_index id_check = 0;
+    /*
+    while (id_check < vessel_id_is_present.size() &&
+           vessel_id_is_present.find(id_check) != vessel_id_is_present.end())
+      ++id_check;
+        AssertThrow(
+        id_check+1 != vessel_id_is_present.size(),
+        ExcMessage(
+          "Vessel Ids from data file should be sequential, missing vessels ID(s)"));
+      n_vessels = vessel_id_is_present.size();
+      */
+    std::map<unsigned int, std::vector<types::global_dof_index>>::iterator it = map_vessel_inclusions.begin();
+    //for (it = map_vessel_inclusions.begin(); it != symbolTable.end(); it++)
+    while(it != map_vessel_inclusions.end() && id_check == it->first)
+    {
+        ++id_check;
+        ++it;
+    }
+    AssertThrow(
+        it == map_vessel_inclusions.end(),
+        ExcMessage(
+          "Vessel Ids from data file should be sequential, missing vessels ID(s)"));
+
+    n_vessels = map_vessel_inclusions.size();
+    }
+
 };
 
 #endif
