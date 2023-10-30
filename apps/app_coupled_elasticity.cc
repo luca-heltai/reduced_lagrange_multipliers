@@ -29,6 +29,8 @@ main(int argc, char *argv[])
       Utilities::MPI::MPI_InitFinalize mpi_initialization(argc, argv, 1);
       std::string                      prm_file;
       std::string                      input_file_name;
+      unsigned int                     iterSampling = 100;
+      unsigned int                     iterStart = 10;
       if (argc > 2)
         {
           prm_file        = argv[1];
@@ -46,20 +48,17 @@ main(int argc, char *argv[])
         }
       else if (prm_file.find("3d") != std::string::npos)
         {
-          Model1d pb1D;
-          pb1D.init(input_file_name);
-
           ElasticityProblemParameters<3> par;
           ElasticityProblem<3>           problem3D(par);
           ParameterAcceptor::initialize(prm_file);
           problem3D.run_timestep0();
 
           {
+            Model1d pb1D;
             int id = 0, p = 1;
             // define process ID and number of processes
             pb1D.partitionID = id;
             pb1D.nproc       = p;
-
             // initialize model
             pb1D.verbose = 0;
             pb1D.init(input_file_name);
@@ -68,32 +67,46 @@ main(int argc, char *argv[])
             pb1D.iT = 0; // not simple iteration counter !
             int iter = 0;
             double timestep = 0.0;
+
             while(timestep < pb1D.tEnd)
             // for (int iter = 0; iter < 1000; iter++)
               {
+                // write files for Sarah
+		            pb1D.writePressure();
+            		pb1D.writeEXTPressure();
                 // solve time step
                 pb1D.solveTimeStep(pb1D.dtMaxLTSLIMIT);
 
-                if ((iter == 0) || (iter % 50 == 0))
+                // if ((iter == iterStart) || (iter > 0 && iter % iterSampling == 0))
+                if (iter > 0 && iter % iterSampling == 0)
                 {
                   // non fare il 3d a tutti tutti i timestep
                   pb1D.compute_new_displacement_for_coupling();
                   problem3D.update_inclusions_data(pb1D.new_displacement);
-
+                  
+                  std::cout << "new displacement data: ";
                   for (auto print_index = 0; print_index < pb1D.new_displacement.size(); ++print_index )
-                    std::cout << print_index << ": " << pb1D.new_displacement[print_index] << ", " << std::endl;
+                    std::cout << print_index << ": " << pb1D.new_displacement[print_index] << ", ";
+                  std::cout << std::endl;
 
                   problem3D.run_timestep();
 
+                  std::cout << "new pressure data";
                   for (auto print_index = 0; print_index < problem3D.coupling_pressure.size(); ++print_index )
-                    std::cout << print_index << ": " << problem3D.coupling_pressure[print_index] << ", " << std::endl;
+                    std::cout << print_index << ": " << problem3D.coupling_pressure[print_index] << ", ";
+                  std::cout << std::endl;
+
+                  AssertDimension(problem3D.coupling_pressure.size(), pb1D.NV);
+
+                  for (int i = 0; i < pb1D.NV; i++)
+                    for (int j = 0; j < pb1D.vess[i].NCELLS; j++)
+                      pb1D.vess[i].setpeconst(j, -problem3D.coupling_pressure[i]);
                 }
-
-                AssertDimension(problem3D.coupling_pressure.size(), pb1D.NV);
-                for (int i = 0; i < pb1D.NV; i++)
-                  for (int j = 0; j < pb1D.vess[i].NCELLS; j++)
-                    pb1D.vess[i].setpeconst(j, problem3D.coupling_pressure[i]);
-
+                
+                // write files for Sarah
+            		pb1D.writeArea();
+            		pb1D.writeFlow();
+            
                 iter++;
                 pb1D.iT += 1;
                 timestep += pb1D.dtMaxLTSLIMIT;

@@ -71,12 +71,12 @@ SET(CMAKE_CXX_FLAGS -fopenmp)
 FOREACH(_build_type ${_d2_build_types})
   # Postfix to use everywhere
   SET(_p "${${_build_type}_postfix}")
-  MESSAGE(${_build_type})
+  #MESSAGE(${_build_type})
   # Only build this type, if deal.II was compiled with it.
   IF(CMAKE_BUILD_TYPE MATCHES "${_build_type}" AND
       DEAL_II_BUILD_TYPE MATCHES "${_build_type}")
       
-    MESSAGE(${_build_type})
+   # MESSAGE(${_build_type})
 
     MESSAGE("-- Found ${_build_type} version of deal.II.")
 
@@ -103,7 +103,7 @@ FOREACH(_build_type ${_d2_build_types})
       
     TARGET_INCLUDE_DIRECTORIES(${_exe} PUBLIC /home/camilla/Desktop/CODICE_1D/fvmCoupling)
     TARGET_LINK_LIBRARIES(${_exe} /home/camilla/Desktop/CODICE_1D/fvmCoupling/lib1dsolver.a)
-      MESSAGE(${_exe})
+    MESSAGE(${_exe})
      
       
       DEAL_II_SETUP_TARGET(${_exe} ${_BUILD_TYPE})

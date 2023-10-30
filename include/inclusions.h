@@ -513,7 +513,7 @@ public:
             // 0,0,0,new_data[it->first]};
             for (auto i : it->second)
               {
-                inclusions_data[i] = {std::abs(new_data[it->first]),0,0,0,std::abs(new_data[it->first]),0,0,0,0};
+                inclusions_data[i] = {new_data[it->first],0,0,0,new_data[it->first],0,0,0,0};
               }
 
             ++it;

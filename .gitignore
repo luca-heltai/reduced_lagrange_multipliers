@@ -31,4 +31,7 @@
 CMakeFiles
 CMakeCache.txt
 
+#directories
+build/
+
 compile_commands.json
