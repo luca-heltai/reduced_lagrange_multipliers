@@ -1010,13 +1010,6 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime)
   if (inclusions.n_inclusions() > 0 && inclusions.offset_coefficients == 1 &&
       inclusions.n_coefficients >= 2)
     {
-      const std::string FILE_NAME(par.output_directory + "/externalPressure_" +
-                                  std::to_string(cycle) + ".h5");
-      HDF5::File        file_h5(FILE_NAME,
-                         HDF5::File::FileAccessMode::create,
-                         mpi_communicator);
-      const std::string DATASET_NAME("externalPressure");
-
       const auto locally_owned_vessels =
         Utilities::MPI::create_evenly_distributed_partitioning(
           mpi_communicator, inclusions.get_n_vessels());
@@ -1102,6 +1095,13 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime)
         // print .h5
         if (par.initial_time == par.final_time)
           {
+            const std::string FILE_NAME(par.output_directory + "/externalPressure_" +
+                                  std::to_string(cycle) + ".h5");
+            HDF5::File        file_h5(FILE_NAME,
+                         HDF5::File::FileAccessMode::create,
+                         mpi_communicator);
+            const std::string DATASET_NAME("externalPressure");
+
             HDF5::DataSet dataset =
               file_h5.create_dataset<double>(DATASET_NAME,
                                              {inclusions.get_n_vessels()});
@@ -1249,7 +1249,7 @@ ElasticityProblem<dim, spacedim>::run_timestep()
       solve();
       if (ref_cycle != par.n_refinement_cycles - 1)
         refine_and_transfer();
-      setup_dofs();
+      // setup_dofs();
       // assemble_elasticity_system();
     }
   else

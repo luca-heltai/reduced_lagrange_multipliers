@@ -43,13 +43,29 @@ roundVal = 1e+20
 dtMaxLTSLIMIT = 0.001
 adaptiveCFLLTS = 0
 tIni = 0
-tEnd = 10
+tEnd = 1
 kalmanMode = 0
 
 [output]
 testcase = case0
-outDir = ./output/bifurcation/1D/
+outDir = ./output/temp/1D/
+outFile = ./output/temp/1D/
+fullStateFile = ./res/state/stateVess
+readExternalPressureFromFile=0
+readExternalPressureFromFileType=0
+
+
+[1D-3Dcoupling]
+writeAreaAtMidPoint=0
+areaAtMidPointFile=./res/state/areaAtMidPoint.txt
 coupling=1
+radiusMidFile=/home/sarah/Documents/TestFileshdf5/radiusAtMidPointOLD.txt
+displacementHdf5=/home/sarah/Documents/TestFileshdf5/diffRaggiOLD.h5
+pressure3DFile = /home/sarah/Documents/TestFileshdf5/pressure3D.txt
+pressure3DFile_hdf5 = /home/sarah/Documents/TestFileshdf5/pressure3DTest1.h5
+dataset_hdf5 = dataset
+k=0
+omega=1 
 
 [parti]
 meshDir = data/bifurcation/

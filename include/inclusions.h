@@ -496,7 +496,12 @@ public:
           }
       }
   }
-
+/**
+   * @brief Update the displacement data after the initialization
+   * reading from a vector of lenght n_vessels (constant displacement along the vessel)
+   * or of lenght inclusions.size()
+   *
+   */
   void
   update_inclusions_data(std::vector<double> new_data)
   {
@@ -511,23 +516,30 @@ public:
           {
             // inclusions_data[it->second] = {new_data[it->first],
             // 0,0,0,new_data[it->first]};
-            for (auto i : it->second)
+            for (auto inclusion_id : it->second)
               {
-                inclusions_data[i] = {new_data[it->first],0,0,0,new_data[it->first],0,0,0,0};
+                AssertIndexRange(inclusion_id, inclusions_data.size());
+                inclusions_data[inclusion_id] = {new_data[it->first],0,0,0,new_data[it->first],0,0,0,0};
+                // if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
+                // {
+                //   std::cout << "new data for inclusion " << inclusion_id << ": ";
+                //   for (auto i : inclusions_data[inclusion_id])
+                //     std::cout << i << " ";
+                //   std::cout << std::endl;
+                // }
               }
-
             ++it;
           }
           std::cout << "data update successful" << std::endl;
       }
-    else if (new_data.size() == inclusions_data.size())
+    else if (new_data.size() == inclusions.size())
     {
       for (long unsigned int id = 0; id < new_data.size(); ++id)
         inclusions_data[id] = {new_data[id], 0, 0, 0, new_data[id], 0, 0, 0, 0};
       std::cout << "data update successful" << std::endl;
     }
     else
-      AssertThrow(inclusions_data.size() == 0,
+      AssertThrow(inclusions.size() == 0,
                   ExcMessage("cannot update inclusions_data"));
 
     compute_rotated_inclusion_data();

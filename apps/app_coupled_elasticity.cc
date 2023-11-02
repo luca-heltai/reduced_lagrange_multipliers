@@ -30,12 +30,14 @@ main(int argc, char *argv[])
       std::string                      prm_file;
       std::string                      input_file_name;
       unsigned int                     iterSampling = 100;
-      unsigned int                     iterStart = 10;
+      // unsigned int                     Pa_to_dyn_conversion = 10;
       if (argc > 2)
         {
           prm_file        = argv[1];
           input_file_name = argv[2];
         }
+      if (argc > 3)
+        iterSampling = std::strtol(argv[3], NULL, 10);
       else
         prm_file = "parameters.prm";
 
@@ -69,7 +71,6 @@ main(int argc, char *argv[])
             double timestep = 0.0;
 
             while(timestep < pb1D.tEnd)
-            // for (int iter = 0; iter < 1000; iter++)
               {
                 // write files for Sarah
 		            pb1D.writePressure();
@@ -77,7 +78,6 @@ main(int argc, char *argv[])
                 // solve time step
                 pb1D.solveTimeStep(pb1D.dtMaxLTSLIMIT);
 
-                // if ((iter == iterStart) || (iter > 0 && iter % iterSampling == 0))
                 if (iter > 0 && iter % iterSampling == 0)
                 {
                   // non fare il 3d a tutti tutti i timestep
@@ -86,21 +86,23 @@ main(int argc, char *argv[])
                   
                   std::cout << "new displacement data: ";
                   for (auto print_index = 0; print_index < pb1D.new_displacement.size(); ++print_index )
-                    std::cout << print_index << ": " << pb1D.new_displacement[print_index] << ", ";
+                    // std::cout << print_index << ": " << pb1D.new_displacement[print_index] << ", ";
+                    std::cout << print_index << ": " << scientific << setprecision(4) << pb1D.new_displacement[print_index] << ", ";
                   std::cout << std::endl;
 
                   problem3D.run_timestep();
 
                   std::cout << "new pressure data";
                   for (auto print_index = 0; print_index < problem3D.coupling_pressure.size(); ++print_index )
-                    std::cout << print_index << ": " << problem3D.coupling_pressure[print_index] << ", ";
+                    // std::cout << print_index << ": " << problem3D.coupling_pressure[print_index] << ", ";
+                    std::cout << print_index << ": " << scientific << setprecision(4) << problem3D.coupling_pressure[print_index] << ", ";
                   std::cout << std::endl;
 
                   AssertDimension(problem3D.coupling_pressure.size(), pb1D.NV);
 
                   for (int i = 0; i < pb1D.NV; i++)
                     for (int j = 0; j < pb1D.vess[i].NCELLS; j++)
-                      pb1D.vess[i].setpeconst(j, -problem3D.coupling_pressure[i]);
+                      pb1D.vess[i].setpeconst(j, (-problem3D.coupling_pressure[i]));
                 }
                 
                 // write files for Sarah
