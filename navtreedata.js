@@ -209,7 +209,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "CodeGallery.html",
-"code_gallery_coupled_laplace_problem.html"
+"code_gallery_Quasi_static_Finite_strain_Compressible_Elasticity.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

@@ -1,5 +1,10 @@
 var NAVTREEINDEX1 =
 {
+"code_gallery_Quasi_static_Finite_strain_Compressible_Elasticity.html":[145],
+"code_gallery_Quasi_static_Finite_strain_Quasi_incompressible_ViscoElasticity.html":[146],
+"code_gallery_Swift_Hohenberg-Solver.html":[147],
+"code_gallery_advection_reaction_estimator.html":[148],
+"code_gallery_cdr.html":[149],
 "code_gallery_coupled_laplace_problem.html":[150],
 "code_gallery_goal_oriented_elastoplasticity.html":[151],
 "code_gallery_information_based_mesh_refinement.html":[152],
