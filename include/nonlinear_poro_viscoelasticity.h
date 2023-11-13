@@ -36,6 +36,8 @@
 // We start by including all the necessary deal.II header files and some C++
 // related ones. They have been discussed in detail in previous tutorial
 // programs, so you need only refer to past tutorials for details.
+#ifndef nonlinear_poro_viscoelasticity_h
+#define nonlinear_poro_viscoelasticity_h
 
 #include <deal.II/base/function.h>
 #include <deal.II/base/mpi.h>
@@ -2081,7 +2083,8 @@ namespace NonLinearPoroViscoElasticity
             "|hydro_nano_graz_compression_relax"
             "|hydro_nano_graz_compression_exp_relax"
             "|hydro_nano_graz_compression_relax_sphere"
-            "|odeometer_graz"),
+            "|odeometer_graz"
+            "|Yashu_vasculature"),
           "Type of geometry used. "
           "For Ehlers verification examples see Ehlers and Eipper (1999). "
           "For Franceschini brain consolidation see Franceschini et al. (2006)"
@@ -2739,7 +2742,18 @@ namespace NonLinearPoroViscoElasticity
     {
       ParameterHandler prm;
       declare_parameters(prm);
-      prm.parse_input(input_file);
+      try
+        {
+          prm.parse_input(input_file);
+        }
+      catch (...)
+        {
+          std::cerr << "Could not read input file " << input_file << std::endl
+                    << "Generating it for you with default parameters."
+                    << std::endl;
+          prm.print_parameters(input_file, ParameterHandler::Text);
+          throw;
+        }
       parse_parameters(prm);
     }
 
@@ -14627,3 +14641,5 @@ namespace NonLinearPoroViscoElasticity
   };
 
 } // namespace NonLinearPoroViscoElasticity
+
+#endif
