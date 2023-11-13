@@ -5222,8 +5222,7 @@ namespace NonLinearPoroViscoElasticity
     if (apply_dirichlet_bc)
       {
         //////////////////////// TEST /////////////////////////
-        const UpdateFlags uf_cell(update_quadrature_points |
-                                  update_normal_vectors | update_values |
+        const UpdateFlags uf_cell(update_quadrature_points | update_values |
                                   update_JxW_values);
         FEValues<dim>     fe_values_ref(mapping, fe, qf_cell, uf_cell);
         //////////////////////// TEST /////////////////////////
