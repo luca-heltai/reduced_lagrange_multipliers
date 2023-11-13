@@ -6428,7 +6428,7 @@ namespace NonLinearPoroViscoElasticity
   {
   public:
     PressGradPostproc(const unsigned int p_fluid_component)
-      : DataPostprocessorVector<dim>("pressure gradient", update_gradients)
+      : DataPostprocessorVector<dim>("pressure_gradient", update_gradients)
       , p_fluid_component(p_fluid_component)
     {}
 
@@ -6558,26 +6558,26 @@ namespace NonLinearPoroViscoElasticity
     get_names() const override
     {
       std::vector<std::string> solution_names;
-      solution_names.emplace_back("total cauchy stress xx");
-      solution_names.emplace_back("total cauchy stress yy");
-      solution_names.emplace_back("total cauchy stress zz");
-      solution_names.emplace_back("total cauchy stress xy");
-      solution_names.emplace_back("total cauchy stress xz");
-      solution_names.emplace_back("total cauchy stress yz");
+      solution_names.emplace_back("total_cauchy_stress_xx");
+      solution_names.emplace_back("total_cauchy_stress_yy");
+      solution_names.emplace_back("total_cauchy_stress_zz");
+      solution_names.emplace_back("total_cauchy_stress_xy");
+      solution_names.emplace_back("total_cauchy_stress_xz");
+      solution_names.emplace_back("total_cauchy_stress_yz");
 
-      solution_names.emplace_back("extra cauchy stress xx");
-      solution_names.emplace_back("extra cauchy stress yy");
-      solution_names.emplace_back("extra cauchy stress zz");
-      solution_names.emplace_back("extra cauchy stress xy");
-      solution_names.emplace_back("extra cauchy stress xz");
-      solution_names.emplace_back("extra cauchy stress yz");
+      solution_names.emplace_back("extra_cauchy_stress_xx");
+      solution_names.emplace_back("extra_cauchy_stress_yy");
+      solution_names.emplace_back("extra_cauchy_stress_zz");
+      solution_names.emplace_back("extra_cauchy_stress_xy");
+      solution_names.emplace_back("extra_cauchy_stress_xz");
+      solution_names.emplace_back("extra_cauchy_stress_yz");
 
-      solution_names.emplace_back("volumetric cauchy stress xx");
-      solution_names.emplace_back("volumetric cauchy stress yy");
-      solution_names.emplace_back("volumetric cauchy stress zz");
-      solution_names.emplace_back("volumetric cauchy stress xy");
-      solution_names.emplace_back("volumetric cauchy stress xz");
-      solution_names.emplace_back("volumetric cauchy stress yz");
+      solution_names.emplace_back("volumetric_cauchy_stress_xx");
+      solution_names.emplace_back("volumetric_cauchy_stress_yy");
+      solution_names.emplace_back("volumetric_cauchy_stress_zz");
+      solution_names.emplace_back("volumetric_cauchy_stress_xy");
+      solution_names.emplace_back("volumetric_cauchy_stress_xz");
+      solution_names.emplace_back("volumetric_cauchy_stress_yz");
       return solution_names;
     }
 
@@ -6609,7 +6609,7 @@ namespace NonLinearPoroViscoElasticity
   public:
     SeepageVelPostproc(const Parameters::AllParameters &parameters,
                        const unsigned int               p_fluid_component)
-      : DataPostprocessorVector<dim>("seepage velocity", update_gradients)
+      : DataPostprocessorVector<dim>("seepage_velocity", update_gradients)
       , parameters(parameters)
       , p_fluid_component(p_fluid_component)
     {}
@@ -6700,7 +6700,7 @@ namespace NonLinearPoroViscoElasticity
   {
   public:
     SolidVolFracPostproc(double n_0s)
-      : DataPostprocessorScalar<dim>("solid volume fraction", update_gradients)
+      : DataPostprocessorScalar<dim>("solid_volume_fraction", update_gradients)
       , n_0s(n_0s)
     {}
 
@@ -6858,8 +6858,8 @@ namespace NonLinearPoroViscoElasticity
     get_names() const override
     {
       std::vector<std::string> solution_names;
-      solution_names.emplace_back("porous dissipation");
-      solution_names.emplace_back("viscous dissipation");
+      solution_names.emplace_back("porous_dissipation");
+      solution_names.emplace_back("viscous_dissipation");
       return solution_names;
     }
 
@@ -6927,7 +6927,7 @@ namespace NonLinearPoroViscoElasticity
     GridTools::get_subdomain_association(triangulation, partition_int);
 
     std::vector<std::string> solution_name(dim, "displacement");
-    solution_name.push_back("pore pressure");
+    solution_name.push_back("pore_pressure");
 
     data_out.attach_dof_handler(dof_handler_ref);
     data_out.add_data_vector(solution_total,
@@ -6939,7 +6939,7 @@ namespace NonLinearPoroViscoElasticity
                                       partition_int.end());
 
     data_out.add_data_vector(partitioning, "partitioning");
-    data_out.add_data_vector(material_id, "material id");
+    data_out.add_data_vector(material_id, "material_id");
 
     PressGradPostproc<dim> pres_grad(p_fluid_component);
     data_out.add_data_vector(solution_total, pres_grad);
