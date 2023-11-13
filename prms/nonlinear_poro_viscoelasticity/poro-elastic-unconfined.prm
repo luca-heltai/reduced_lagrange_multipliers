@@ -40,7 +40,7 @@
 #subsection simulation
 subsection global
   # input directory path
-  set input directory = 
+  set input directory = ../data/nonlinear_poro_viscoelasticity/
 end  
 
 subsection Finite element system
@@ -66,7 +66,7 @@ subsection geometry@[type=hydro_graz]
   #                  | brain_rheometer_cyclic_trapezoidal_tension_compression_quarter
   #                  | brain_rheometer_relaxation_tension_compression_quarter
   #                  | hydro_nano_graz_compression_relax
-  set Geometry type       = brain_rheometer_relaxation_tension_compression_quarter
+  set Geometry type       = Ehlers_tube_step_load
 
   # Global refinement level (higher value means finer mesh)
   # Introduce 0 for no refinement (only in case of externally defined mesh)
@@ -282,7 +282,7 @@ end
 
 subsection Output parameters
   
-  set output directory = /calculate/alexander/DACH/compression-relaxation/Ogden-full/40mumps/lambda_1e2/mu-44_alpha-12/K0e-6 #{simulation_output_directory}
+  set output directory = ./output_nonlinear
   
   # Paraview output files to generate: none | bcs | solution | all
   set Output files               = all
