@@ -641,14 +641,14 @@ ElasticityProblem<dim, spacedim>::solve()
   auto &u      = solution.block(0);
   auto &lambda = solution.block(1);
 
-  const auto &f = system_rhs.block(0);
-  auto       &g = system_rhs.block(1);
+  auto &f = system_rhs.block(0);
+  auto &g = system_rhs.block(1);
 
   if (inclusions.n_dofs() == 0)
     {
       u = invA * f;
     }
-  else
+  else if (par.pressure_coupling == false) // Solve a saddle point problem
     {
       const auto Bt = linear_operator<LA::MPI::Vector>(coupling_matrix);
       const auto B  = transpose_operator(Bt);
@@ -691,9 +691,41 @@ ElasticityProblem<dim, spacedim>::solve()
       pcout << "   u norm: " << u.l2_norm()
             << ", lambda norm: " << lambda.l2_norm() << std::endl;
     }
+  else
+    {
+      // Solve the problem with input data coming from the file.
+      const auto Bt = linear_operator<LA::MPI::Vector>(coupling_matrix);
+      const auto B  = transpose_operator(Bt);
+      const auto M  = linear_operator<LA::MPI::Vector>(inclusion_matrix);
 
-  pcout << "   Solved for u in " << par.inner_control.last_step()
-        << " iterations." << std::endl;
+      // Solver for M
+      auto                      invM = M;
+      SolverCG<LA::MPI::Vector> cg_M(par.inner_control);
+      invM = inverse_operator(M, cg_M);
+
+      // Compute the rhs, given the data file as if it was a pressure condition
+      // on the vessels.
+      lambda = invM * g;
+
+      pcout << "   Solved for lambda " << par.inner_control.last_step()
+            << " iterations." << std::endl;
+
+      f = Bt * lambda;
+
+      SolverCG<LA::MPI::Vector> cg_elasticity(par.outer_control);
+      invA = inverse_operator(A, cg_elasticity, amgA);
+
+      u = invA * f;
+
+      // pcout << "   g: ";
+      // g.print(std::cout);
+
+      pcout << "   Solved for u " << par.outer_control.last_step()
+            << " iterations." << std::endl;
+
+      std::cout << "   lambda: ";
+      lambda.print(std::cout);
+    }
   constraints.distribute(u);
   inclusion_constraints.distribute(lambda);
   locally_relevant_solution = solution;

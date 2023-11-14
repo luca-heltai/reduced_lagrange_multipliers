@@ -1,0 +1,99 @@
+subsection Error
+  set Enable computation of the errors = true
+  set Error file name                  = 
+  set Error precision                  = 3
+  set Exponent for p-norms             = 2
+  set Extra columns                    = cells, dofs
+  set List of error norms to compute   = L2_norm, Linfty_norm, H1_norm
+  set Rate key                         = dofs
+  set Rate mode                        = reduction_rate_log2
+end
+subsection Immersed Problem
+  set Dirichlet boundary ids             = 0,1,2,3
+  set FE degree                          = 1
+  set Initial refinement                 = 5
+  set Neumann boundary ids               = 4,5
+  set Normal flux boundary ids           = 
+  set Output directory                   = .
+  set Output name                        = solution_pressure_3d
+  set Output pressure                    = false
+  set Output results also before solving = false
+  set Pressure coupling                  = true
+  subsection Dirichlet boundary conditions
+    set Function constants  = 
+    set Function expression = y; -x; 0
+    set Function expression = 0; 0; 0 
+    set Variable names      = x,y,z,t
+  end
+  subsection Exact solution
+    set Function constants  = 
+    set Function expression = 0; 0; 0
+    set Variable names      = x,y,z,t
+    set Weight expression   = 1.
+  end
+  subsection Grid generation
+    set Domain type              = generate
+    set Grid generator           = hyper_cube
+    set Grid generator arguments = -8: 8: true
+  end
+  subsection Immersed inclusions
+    set 3D 1D discretization                = 0.01
+    set Bounding boxes extraction level     = 1
+    set Data file                           = ../data/elasticity/one_cylinder_3d.txt
+    set Inclusions                          = 
+    set Inclusions file                     = ../data/elasticity/one_cylinder_3d.gpl
+    set Inclusions refinement               = 100
+    set Number of fourier coefficients      = 5
+    set Start index of Fourier coefficients = 0
+    set Selection of Fourier coefficients   = 3,7
+    subsection Boundary data
+      set Function constants  = 
+      set Function expression = 0; 0; 0
+      set Variable names      = x,y,z,t
+    end
+  end
+  subsection Neumann boundary conditions
+    set Function constants  = 
+    set Function expression = 0; 0; 0
+    set Variable names      = x,y,z,t
+  end
+  subsection Physical constants
+    set Lame lambda = 0
+    set Lame mu     = 2
+  end
+  subsection Refinement and remeshing
+    set Coarsening fraction         = 0
+    set Maximum number of cells     = 20000
+    set Number of refinement cycles = 5
+    set Refinement fraction         = 0.3
+    set Strategy                    = fixed_fraction
+  end
+  subsection Right hand side
+    set Function constants  = 
+    set Function expression = 0; 0; 0
+    set Variable names      = x,y,z,t
+  end
+  subsection Solver
+    subsection Inner control
+      set Log frequency = 1
+      set Log history   = false
+      set Log result    = true
+      set Max steps     = 100
+      set Reduction     = 1.e-2
+      set Tolerance     = 1.e-10
+    end
+    subsection Outer control
+      set Log frequency = 1
+      set Log history   = false
+      set Log result    = true
+      set Max steps     = 100
+      set Reduction     = 1.e-2
+      set Tolerance     = 1.e-10
+    end
+  end
+  subsection Time dependency
+    set Final time   = 0
+    set Initial time = 0
+    set Time step    = 0.005
+  end
+end

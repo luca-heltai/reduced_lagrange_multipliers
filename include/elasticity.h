@@ -203,6 +203,7 @@ public:
   unsigned int                  n_refinement_cycles = 1;
   unsigned int                  max_cells           = 20000;
   bool                          output_pressure     = false;
+  bool                          pressure_coupling   = false;
 
   double Lame_mu     = 1;
   double Lame_lambda = 1;
@@ -252,6 +253,12 @@ ElasticityProblemParameters<dim, spacedim>::ElasticityProblemParameters()
   add_parameter("Neumann boundary ids", neumann_ids);
   add_parameter("Normal flux boundary ids", normal_flux_ids);
   add_parameter("Output pressure", output_pressure);
+  add_parameter(
+    "Pressure coupling",
+    pressure_coupling,
+    "If this is true, then we do NOT solve a saddle point problem, but we use the "
+    "input data as a pressure field on the vasculature network, and we solve for "
+    "the displacement field directly.");
   enter_subsection("Grid generation");
   {
     add_parameter("Domain type",
