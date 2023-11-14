@@ -43,8 +43,9 @@ get_default_test_parameters(ElasticityProblemParameters<dim> &par)
   par.n_refinement_cycles = 1;
   par.max_cells           = 20000;
 
-  par.Lame_mu     = 1;
-  par.Lame_lambda = 1;
+  par.Lame_mu           = 1;
+  par.Lame_lambda       = 1;
+  par.linear_elasticity = true;
 
   par.inner_control.set_reduction(1e-12);
   par.inner_control.set_tolerance(1e-12);
@@ -255,7 +256,7 @@ TEST(ElasticityTest, DISABLED_CheckInclusionMatrix)
   auto                      invM = inverse_operator(M, cg_M);
 
 
-  inclusions = B * displacement;
+  inclusions = invM * B * displacement;
 
   inclusions.print(std::cout);
 }
