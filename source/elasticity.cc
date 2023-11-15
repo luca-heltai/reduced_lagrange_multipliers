@@ -512,8 +512,9 @@ ElasticityProblem<dim, spacedim>::assemble_coupling()
                       if (comp_i == inclusions.get_component(j))
                         {
                           local_coupling_matrix(i, j) +=
-                            (fev.shape_value(i, q)) * inclusion_fe_values[j] /
-                            inclusions.get_section_measure(inclusion_id) * ds;
+                            (fev.shape_value(i, q)) * inclusion_fe_values[j] *
+                            ds; // /
+                          // inclusions.get_section_measure(inclusion_id);
                         }
                     }
                   if (inclusions.data_file != "")
@@ -522,8 +523,8 @@ ElasticityProblem<dim, spacedim>::assemble_coupling()
                           inclusions.get_fourier_component(j))
                         {
                           auto temp =
-                            inclusion_fe_values[j] * ds /
-                            inclusions.get_section_measure(inclusion_id) *
+                            inclusion_fe_values[j] * ds * // /
+                            // inclusions.get_section_measure(inclusion_id) *
                             // phi_i ds
                             // now we need to build g from the data.
                             // this is sum E^i g_i where g_i are coefficients of
@@ -540,15 +541,16 @@ ElasticityProblem<dim, spacedim>::assemble_coupling()
                   else
                     {
                       local_rhs(j) +=
-                        inclusion_fe_values[j] /
-                        inclusions.get_section_measure(inclusion_id) *
+                        inclusion_fe_values[j] * // /
+                        // inclusions.get_section_measure(inclusion_id) *
                         inclusions.inclusions_rhs.value(
                           real_q, inclusions.get_component(j)) // /
                         // inclusions.get_radius(inclusion_id)
                         * ds;
                     }
                   local_inclusion_matrix(j, j) +=
-                    (inclusion_fe_values[j] * inclusion_fe_values[j] * ds);
+                    (inclusion_fe_values[j] * inclusion_fe_values[j] * ds); // /
+                  //  inclusions.get_section_measure(inclusion_id));
                 }
               ++p;
             }
@@ -683,10 +685,13 @@ ElasticityProblem<dim, spacedim>::solve()
       // on the vessels.
       lambda = invM * g;
 
+      g.print(std::cout);
+
       pcout << "   Solved for lambda " << par.inner_control.last_step()
             << " iterations." << std::endl;
 
       f = Bt * lambda;
+      // f = Bt * g;
 
       SolverCG<LA::MPI::Vector> cg_elasticity(par.outer_control);
       invA = inverse_operator(A, cg_elasticity, amgA);
