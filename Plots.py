@@ -10,11 +10,11 @@ import os
 
 
 mmHg=1333.22
-directory=os.getcwd()+"/output/bifurcation_short/"
+directory=os.getcwd()+"/output/temp/"
 dataDirectory=directory+"1D/"
 
 # fixed parameters
-dt = "0.001"
+dt = "0.01"
 fig, axs = plt.subplots(2, 2, layout='constrained')
 
 numVess=["1", "2", "3"]
@@ -51,7 +51,7 @@ for j in range(len(numVess)):
     axs[1,1].set_xlabel("time [s]")
     axs[1,1].set_ylabel("flow [ml/s]")
     
-    axs[0,0].plot.xlim(9,10)
+    #axs[0,0].plot.xlim(9,10)
     
     fig.legend(loc='lower center')
     
@@ -66,5 +66,5 @@ for j in range(len(numVess)):
     # plt.show()
     # print(j)
 
-plt.savefig(directory+"graphs_lastcycle.pdf")
+plt.savefig(directory+"graphs.pdf")
 

@@ -94,9 +94,10 @@ namespace LA
 
 #include <cmath>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
 #include <memory>
-#include <iomanip>
+
 
 
 template <int dim, int spacedim = dim>
@@ -139,8 +140,6 @@ public:
   bool output_results_before_solving = false;
 
   mutable ParsedConvergenceTable convergence_table;
-
-  bool treat_as_hypersingular = false; //
 
   // Time dependency.
   double initial_time = 0.0;
@@ -264,8 +263,8 @@ public:
   void
   compute_boundary_stress(bool openfilefirsttime) const; // make const
 
-  void
-  output_pressure(bool openfilefirsttime);
+  TrilinosWrappers::MPI::Vector
+  output_pressure(bool openfilefirsttime) const;
 
   std::map<unsigned int, IndexSet>
   get_map_vessels_inclusions() const;
@@ -273,7 +272,7 @@ public:
   void
   update_inclusions_data(std::vector<double> new_data);
 
-    TrilinosWrappers::MPI::Vector                coupling_pressure;
+  TrilinosWrappers::MPI::Vector coupling_pressure;
 
 private:
   const ElasticityProblemParameters<dim, spacedim> &par;

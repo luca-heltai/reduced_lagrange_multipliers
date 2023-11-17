@@ -1,7 +1,7 @@
 #!/bin/bash
 
 outputDir="./output/bifurcation"
-dt_list=(0.5)
+dt_list=(0.5 0.1)
 input1D=prova_1d
 input3D=prova_3d
 

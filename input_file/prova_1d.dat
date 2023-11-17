@@ -40,7 +40,7 @@ tolAFP = 1e-08
 tolADER = 1e-08
 tolLTS = 1e-10
 roundVal = 1e+20
-dtMaxLTSLIMIT = 0.001
+dtMaxLTSLIMIT = 0.01
 adaptiveCFLLTS = 0
 tIni = 0
 tEnd = 1
@@ -48,8 +48,8 @@ kalmanMode = 0
 
 [output]
 testcase = case0
-outDir = ./output/temp/1D/
-outFile = ./output/temp/1D/
+outDir = ./output/temp_alles/1D/
+outFile = ./output/temp_alles/1D/
 fullStateFile = ./res/state/stateVess
 readExternalPressureFromFile=0
 readExternalPressureFromFileType=0

@@ -11,10 +11,10 @@ end
 subsection Immersed Problem
   set Dirichlet boundary ids             = 0
   set FE degree                          = 1
-  set Initial refinement                 = 4
+  set Initial refinement                 = 3
   set Neumann boundary ids               = 
   set Normal flux boundary ids           = 
-  set Output directory                   = output/bifurcation/3D
+  set Output directory                   = output/temp
   set Output name                        = prova
   set Output results also before solving = false
   subsection Dirichlet boundary conditions
