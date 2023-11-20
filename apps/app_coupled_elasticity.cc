@@ -17,9 +17,10 @@
  * Modified by: Luca Heltai, 2020
  */
 
+#include <iomanip>
+
 #include "elasticity.h"
 #include "model1d.h"
-#include <iomanip>
 int
 main(int argc, char *argv[])
 {
@@ -30,8 +31,9 @@ main(int argc, char *argv[])
       Utilities::MPI::MPI_InitFinalize mpi_initialization(argc, argv, 1);
       std::string                      prm_file;
       std::string                      input_file_name;
-      unsigned int                     iterSampling = 100;
-      // unsigned int                     Pa_to_dyn_conversion = 10;
+      unsigned int                     couplingSampling         = 1;
+      unsigned int                     Pa_to_dyn_conversion = 10;
+      unsigned int                     couplingStart = 9;
       if (argc > 2)
         {
           prm_file        = argv[1];
@@ -40,29 +42,154 @@ main(int argc, char *argv[])
       else
         prm_file = "parameters.prm";
       if (argc > 3)
-        iterSampling = std::strtol(argv[3], NULL, 10);
+        couplingSampling = std::strtol(argv[3], NULL, 10);
+      if (argc > 4)
+        couplingStart = std::strtol(argv[4], NULL, 10);
 
-      if (prm_file.find("23d") != std::string::npos)
-        {
-          ElasticityProblemParameters<2, 3> par;
-          ElasticityProblem<2, 3>           problem(par);
-          ParameterAcceptor::initialize(prm_file);
-          problem.run();
-        }
-      else if (prm_file.find("3d") != std::string::npos)
+      if (prm_file.find("3d") != std::string::npos)
         {
           ElasticityProblemParameters<3> par;
           ElasticityProblem<3>           problem3D(par);
           ParameterAcceptor::initialize(prm_file);
           problem3D.run_timestep0();
-          problem3D.run_timestep();
-        }
-      else
-        {
-          ElasticityProblemParameters<2> par;
-          ElasticityProblem<2>           problem(par);
-          ParameterAcceptor::initialize(prm_file);
-          problem.run();
+
+          {
+            Model1d pb1D;
+            int     id = 0, p = 1;
+            // define process ID and number of processes
+            pb1D.partitionID = id;
+            pb1D.nproc       = p;
+            // initialize model
+            pb1D.verbose = 0;
+
+            if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
+              pb1D.init(input_file_name);
+
+            // enter time loop
+            pb1D.iT         = 0; // not simple iteration counter !
+            int    iter     = 0;
+            double timestep = 0.0;
+            double tEnd = Utilities::MPI::broadcast(MPI_COMM_WORLD, pb1D.tEnd);
+            double dt =
+              Utilities::MPI::broadcast(MPI_COMM_WORLD, pb1D.dtMaxLTSLIMIT);
+
+            while (timestep < tEnd)
+              {
+                // write files for Sarah
+                pb1D.writePressure();
+                pb1D.writeEXTPressure();
+
+                // solve time step
+                if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
+                  {
+                    pb1D.solveTimeStep(pb1D.dtMaxLTSLIMIT);
+                  }
+                MPI_Barrier(MPI_COMM_WORLD);
+
+                // every iterSampling we aso perform the 3D
+                if (timestep > couplingStart && iter % couplingSampling == 0)
+                  {
+                    if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
+                      pb1D.compute_new_displacement_for_coupling();
+                    MPI_Barrier(MPI_COMM_WORLD);
+
+                    std::vector<double> new_displacement_data =
+                      Utilities::MPI::broadcast(
+                        MPI_COMM_WORLD,
+                        pb1D.new_displacement); // canbe omitted if all
+                                                // processors execute the 1D
+
+                    // to delete cout
+                    if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
+                      {
+                        std::cout << "new displacement data: ";
+                        for (long unsigned int print_index = 0;
+                             print_index < pb1D.new_displacement.size();
+                             ++print_index)
+                          std::cout << print_index << ": " << scientific
+                                    << setprecision(4)
+                                    << pb1D.new_displacement[print_index]
+                                    << ", ";
+                        std::cout << std::endl;
+                      }
+                    // end cout
+
+                    // new_displacement_data = std::vector<double> (3, 0.005);
+                    problem3D.update_inclusions_data(new_displacement_data);
+                    problem3D.run_timestep();
+
+                    // to delete cout
+                    //                   if
+                    //                   (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD)
+                    //                   == 0)
+                    //                     std::cout << "new pressure data";
+                    //                   problem3D.coupling_pressure.print(std::cout);
+                    // if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) ==
+                    // 0)
+                    // {
+                    //   std::cout << "new pressure data";
+                    //   for (auto print_index = 0;
+                    //       print_index < problem3D.coupling_pressure.size();
+                    //       ++print_index)
+                    //    std::cout << print_index << ": " <<
+                    //                 problem3D.coupling_pressure[print_index]
+                    //                 << ", ";
+                    //   std::cout << std::endl;
+                    // }
+                    // end cout
+                    Vector<double> coupling_pressure(
+                      problem3D.coupling_pressure);
+
+                    if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
+                      {
+                        AssertDimension(problem3D.coupling_pressure.size(),
+                                        pb1D.NV);
+                        // to delete cout
+                        std::cout << "check on applied pressure ";
+                        for (auto print_index = 0;
+                             print_index < coupling_pressure.size();
+                             ++print_index)
+                          std::cout << print_index << ": "
+                                    << coupling_pressure[print_index] << ", ";
+                        std::cout << std::endl;
+                        // end cout
+                        for (int i = 0; i < pb1D.NV; i++)
+                          for (int j = 0; j < pb1D.vess[i].NCELLS; j++)
+                            pb1D.vess[i].setpeconst(j,
+                                                    Pa_to_dyn_conversion *
+                                                      coupling_pressure[i]);
+                      }
+
+                    for (int i = 0; i < pb1D.NV; i++)
+                      {
+                        if (pb1D.vess[i].bcType[0] > 1)
+                          {
+                            const auto iJunc      = pb1D.vess[i].iJuncL;
+                            const auto iJuncOrder = pb1D.vess[i].iJuncLorder;
+                            pb1D.junctionsData[iJunc].peJ[iJuncOrder] =
+                              pb1D.vess[i].getpe(0, 0);
+                          }
+                        if (pb1D.vess[i].bcType[1] > 1)
+                          {
+                            const auto iJunc      = pb1D.vess[i].iJuncR;
+                            const auto iJuncOrder = pb1D.vess[i].iJuncRorder;
+                            pb1D.junctionsData[iJunc].peJ[iJuncOrder] =
+                              pb1D.vess[i].getpe(pb1D.vess[i].NCELLS - 1,
+                                                 pb1D.vess[i].nDOFs - 1);
+                          }
+                      }
+                  }
+
+                // write files for Sarah
+                pb1D.writeArea();
+                pb1D.writeFlow();
+
+                iter++;
+                pb1D.iT += 1;
+                timestep += dt;
+              }
+            pb1D.end();
+          }
         }
     }
   catch (std::exception &exc)

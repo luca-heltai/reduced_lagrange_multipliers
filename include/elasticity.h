@@ -231,6 +231,8 @@ public:
   void
   assemble_coupling();
   void
+  reassemble_coupling_rhs();
+  void
   run();
   void
   run_timestep0();

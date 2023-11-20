@@ -10,7 +10,7 @@ import os
 
 
 mmHg=1333.22
-directory=os.getcwd()+"/output/temp/"
+directory=os.getcwd()+"/output/mpi_prova/"
 dataDirectory=directory+"1D/"
 
 # fixed parameters
@@ -66,5 +66,5 @@ for j in range(len(numVess)):
     # plt.show()
     # print(j)
 
-plt.savefig(directory+"graphs.pdf")
+plt.savefig(directory+"graphs_b.pdf")
 

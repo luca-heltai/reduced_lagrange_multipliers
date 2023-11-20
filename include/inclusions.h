@@ -178,8 +178,8 @@ public:
   setup_inclusions_particles(
     const parallel::distributed::Triangulation<spacedim> &tria)
   {
-    initialize();
     mpi_communicator = tria.get_communicator();
+    initialize();
     compute_rotated_inclusion_data();
 
     inclusions_as_particles.initialize(tria,
@@ -547,7 +547,6 @@ public:
               }
             ++it;
           }
-        
       }
     else if (new_data.size() == inclusions.size())
       {
@@ -562,7 +561,7 @@ public:
           "dimensions of new data for the update does not match the inclusions"));
 
     if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
-          std::cout << "data update successful" << std::endl;
+      std::cout << "data update successful" << std::endl;
     compute_rotated_inclusion_data();
   }
 
@@ -598,6 +597,7 @@ public:
   compute_rotated_inclusion_data()
   {
     rotated_inclusion_data.resize(inclusions_data.size());
+    std::cout << "processor " << Utilities::MPI::this_mpi_process(mpi_communicator) << " has " << inclusions.size() << " inclusions" << std::endl;
     if constexpr (spacedim == 3)
       {
         // const auto locally_owned_inclusions =
@@ -610,12 +610,12 @@ public:
              ++inclusion_id)
 
           {
-            auto                tensorR = get_rotation(inclusion_id);
-//             std::cout << "tensor: " << tensorR << ", norm :" << tensorR.norm() << std::endl;
-//             std::cout << "inclusions data: ";
-//             for (auto i : inclusions_data[inclusion_id])
-//               std::cout << i << " ";
-//             std::cout << std::endl;
+            auto tensorR = get_rotation(inclusion_id);
+            //             std::cout << "tensor: " << tensorR << ", norm :" <<
+            //             tensorR.norm() << std::endl; std::cout << "inclusions
+            //             data: "; for (auto i : inclusions_data[inclusion_id])
+            //               std::cout << i << " ";
+            //             std::cout << std::endl;
             std::vector<double> rotated_phi(
               inclusions_data[inclusion_id].size());
             for (long unsigned int phi_i = 0;
@@ -628,20 +628,21 @@ public:
                   coef_phii[d] =
                     inclusions_data[inclusion_id][phi_i * spacedim + d];
                 auto rotated_phi_i = tensorR * coef_phii;
-//                 std::cout << "rotated phi_i: " << rotated_phi_i << std::endl;
+                //                 std::cout << "rotated phi_i: " <<
+                //                 rotated_phi_i << std::endl;
                 rotated_phi_i.unroll(&rotated_phi[phi_i * spacedim],
                                      &rotated_phi[phi_i * spacedim + 3]);
-//                 std::cout << "rotated_phi: ";
-//                 for (auto i : rotated_phi)
-//                   std::cout << i << " ";
-//                 std::cout << std::endl;
+                //                 std::cout << "rotated_phi: ";
+                //                 for (auto i : rotated_phi)
+                //                   std::cout << i << " ";
+                //                 std::cout << std::endl;
               }
             AssertIndexRange(inclusion_id, rotated_inclusion_data.size());
             rotated_inclusion_data[inclusion_id] = rotated_phi;
-//             std::cout << "rotated inclusions data: ";
-//             for (auto i : rotated_inclusion_data[inclusion_id])
-//               std::cout << i << " ";
-//             std::cout << std::endl;
+            //             std::cout << "rotated inclusions data: ";
+            //             for (auto i : rotated_inclusion_data[inclusion_id])
+            //               std::cout << i << " ";
+            //             std::cout << std::endl;
           }
       }
   }

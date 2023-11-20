@@ -15,3 +15,12 @@ Licence
 =======
 
 See the file ./LICENSE for details
+
+
+
+
+
+run in parallel as
+mpirun -np 2 ./build/coupled_elasticity_debug <path_to_input_3d> <path_to_input_1d> <couplingSampling> <couplingStart>
+
+20.11.23 it only works with 2 processors -> to be fixed

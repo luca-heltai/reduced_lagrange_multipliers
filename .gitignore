@@ -34,4 +34,5 @@ CMakeCache.txt
 #directories
 build/
 output/
+input_file/
 compile_commands.json
