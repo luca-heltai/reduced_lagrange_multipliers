@@ -11,9 +11,9 @@ TEST(TestInclusionsBasis2, CheckIntegrals) // NOLINT
 {
   // cx, cy, r
   Inclusions<2> ref;
-  ref.n_q_points          = 100;
-  ref.n_coefficients      = 3;
-  ref.offset_coefficients = 0;
+  ref.set_n_q_points(100);
+  ref.set_n_coefficients(3);
+  // ref.set_offset_coefficients(0);
   ref.inclusions.push_back({{0, 0, 1.0}});
   ref.initialize();
   double integral[4] = {0, 0, 0, 0};

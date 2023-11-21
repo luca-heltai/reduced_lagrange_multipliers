@@ -10,11 +10,11 @@ import os
 
 
 mmHg=1333.22
-directory=os.getcwd()+"/output/mpi_prova/"
+directory=os.getcwd()+"/output/prova_lambda_mu/"
 dataDirectory=directory+"1D/"
 
 # fixed parameters
-dt = "0.01"
+dt = "0.001"
 fig, axs = plt.subplots(2, 2, layout='constrained')
 
 numVess=["1", "2", "3"]

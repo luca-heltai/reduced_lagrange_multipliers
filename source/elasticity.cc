@@ -1106,12 +1106,13 @@ TrilinosWrappers::MPI::Vector
 ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
 {
   TimerOutput::Scope t(computing_timer, "Postprocessing: Output Pressure");
-  if (inclusions.n_inclusions() > 0 && inclusions.offset_coefficients == 1 &&
-      inclusions.n_coefficients >= 2)
+  if (inclusions.n_inclusions() > 0 && inclusions.get_offset_coefficients() == 1 &&
+      inclusions.get_n_coefficients() >= 2)
     {
       const auto locally_owned_vessels =
         Utilities::MPI::create_evenly_distributed_partitioning(
           mpi_communicator, inclusions.get_n_vessels());
+        //  mpi_communicator, std::min(Utilities::MPI::this_n_processes(mpi_communicator), inclusions.get_n_vessels()), inclusions.get_n_vessels());
       const auto locally_owned_inclusions =
         Utilities::MPI::create_evenly_distributed_partitioning(
           mpi_communicator, inclusions.n_inclusions());
@@ -1124,40 +1125,39 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
                                                     mpi_communicator);
       pressure_at_inc                = 0;
       const auto &lambda_to_pressure = locally_relevant_solution.block(1);
-      // std::vector<double> pressure_to_write;
-      // std::vector<double> vesselID_and_pressure(inclusions.get_n_vessels(),
-      // 0.0);
+
       // TODO: set the weight in a smarter way
-      // std::vector<double> weights(inclusions.n_inclusions(),
-      //                             inclusions.get_h3D1D());
+      std::vector<double> weights(inclusions.n_inclusions(),
+                                  inclusions.get_h3D1D());
+      const auto used_number_modes = inclusions.get_n_coefficients();
 
       const auto local_lambda = lambda_to_pressure.locally_owned_elements();
       if constexpr (spacedim == 3)
         {
+          unsigned int previous_inclusion_number;
+          auto tensorR = inclusions.get_rotation(0);
           for (const auto &ll : local_lambda)
             {
               const unsigned inclusion_number = (unsigned int)floor(
-                ll / (inclusions.n_coefficients * spacedim));
+                 ll / (inclusions.get_n_coefficients() * spacedim));
               // ll / (inclusions.inclusions_data[0].size()));
-              /*auto lii = ll - inclusion_number * inclusions.n_coefficients;
-              // auto lii =  ll - inclusion_number *
-              (inclusions.inclusions_data[0].size()); if (lii == 0 || lii == 4)
+              auto lii = ll - inclusion_number * inclusions.get_n_coefficients()*spacedim;
+              const unsigned mode_number = (unsigned int) floor(lii / spacedim) ;
+              const unsigned coor_number = lii % spacedim;
+              
+              if (previous_inclusion_number != inclusion_number)
+                tensorR = inclusions.get_rotation(inclusion_number);
+
+              // if (lii == 0 || lii == 4) // only works without rotation
+              if (mode_number == 0 || mode_number == 1)
                 {
-                  std::cout << "for ll = " << ll << " adding: " <<
-              lambda_to_pressure[ll] << std::endl;
                   AssertIndexRange(inclusion_number, inclusions.n_inclusions());
                   pressure[inclusions.get_vesselID(inclusion_number)] +=
-                    std::abs(lambda_to_pressure[ll]) / 2 *
-              weights[inclusion_number]; pressure_at_inc[inclusion_number] +=
-                    lambda_to_pressure[ll] / 2 * weights[inclusion_number];
+                    lambda_to_pressure[ll]*tensorR[coor_number][mode_number] / used_number_modes * weights[inclusion_number]; 
+                  pressure_at_inc[inclusion_number] +=
+                    lambda_to_pressure[ll] / used_number_modes * weights[inclusion_number];
                 }
-                */
-              pressure[inclusions.get_vesselID(inclusion_number)] +=
-                std::abs(lambda_to_pressure[ll]) /
-                (inclusions.n_coefficients * spacedim) * inclusions.get_h3D1D();
-              pressure_at_inc[inclusion_number] +=
-                std::abs(lambda_to_pressure[ll]) /
-                (inclusions.n_coefficients * spacedim) * inclusions.get_h3D1D();
+            previous_inclusion_number = inclusion_number;
             }
         }
       else // spacedim = 2
@@ -1165,10 +1165,10 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
           for (auto ll : local_lambda)
             {
               const unsigned inclusion_number = (unsigned int)floor(
-                ll / (inclusions.n_coefficients * spacedim));
+                ll / (inclusions.get_n_coefficients() * spacedim));
               /*
               auto lii =
-                ll - inclusion_number * (inclusions.n_coefficients * spacedim);
+                ll - inclusion_number * (inclusions.get_n_coefficients() * spacedim);
               if (lii == 0 || lii == 3)
                 {
                   AssertIndexRange(inclusion_number, inclusions.n_inclusions());
@@ -1179,8 +1179,8 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
                 }
               */
               pressure[inclusions.get_vesselID(inclusion_number)] +=
-                std::abs(lambda_to_pressure[ll]) /
-                (inclusions.n_coefficients * spacedim);
+                (lambda_to_pressure[ll]) /
+                (inclusions.get_n_coefficients() * spacedim);
             }
           pressure_at_inc = pressure;
         }

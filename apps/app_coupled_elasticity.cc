@@ -114,7 +114,6 @@ main(int argc, char *argv[])
                       }
                     // end cout
 
-                    // new_displacement_data = std::vector<double> (3, 0.005);
                     problem3D.update_inclusions_data(new_displacement_data);
                     problem3D.run_timestep();
 
@@ -145,19 +144,20 @@ main(int argc, char *argv[])
                         AssertDimension(problem3D.coupling_pressure.size(),
                                         pb1D.NV);
                         // to delete cout
-                        std::cout << "check on applied pressure ";
+                        std::cout << "check on applied pressure (multplied by -" << Pa_to_dyn_conversion << ")";
                         for (auto print_index = 0;
                              print_index < coupling_pressure.size();
                              ++print_index)
                           std::cout << print_index << ": "
-                                    << coupling_pressure[print_index] << ", ";
+                                    << (-10 *
+                                                      coupling_pressure[print_index]) << ", ";
                         std::cout << std::endl;
                         // end cout
                         for (int i = 0; i < pb1D.NV; i++)
                           for (int j = 0; j < pb1D.vess[i].NCELLS; j++)
                             pb1D.vess[i].setpeconst(j,
-                                                    Pa_to_dyn_conversion *
-                                                      coupling_pressure[i]);
+                                                    (-10 *
+                                                      coupling_pressure[i]));
                       }
 
                     for (int i = 0; i < pb1D.NV; i++)

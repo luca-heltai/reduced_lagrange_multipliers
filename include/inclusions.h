@@ -593,11 +593,22 @@ public:
     return n_vessels;
   }
 
+  unsigned int
+  get_n_coefficients() const
+  {
+    return n_coefficients;
+  }
+
+  unsigned int
+  get_offset_coefficients() const
+  {
+    return offset_coefficients;
+  }
+
   void
   compute_rotated_inclusion_data()
   {
     rotated_inclusion_data.resize(inclusions_data.size());
-    std::cout << "processor " << Utilities::MPI::this_mpi_process(mpi_communicator) << " has " << inclusions.size() << " inclusions" << std::endl;
     if constexpr (spacedim == 3)
       {
         // const auto locally_owned_inclusions =
@@ -659,16 +670,23 @@ public:
       return rotated_inclusion_data[inclusion_id];
   }
 
+  void
+  set_n_q_points(unsigned int n_q)
+  {
+    n_q_points = n_q;
+  }
+
+
+  void
+  set_n_coefficients(unsigned int n_q)
+  {
+    n_coefficients = n_q;
+  }
+
 
   ParameterAcceptorProxy<Functions::ParsedFunction<spacedim>> inclusions_rhs;
-
-  std::vector<std::vector<double>> inclusions;
-  unsigned int                     n_q_points          = 100;
-  unsigned int                     n_coefficients      = 1;
-  unsigned int                     offset_coefficients = 0;
-  double                           h3D1D               = 0.01;
-
   Particles::ParticleHandler<spacedim> inclusions_as_particles;
+  std::vector<std::vector<double>> inclusions;
 
   std::string                         data_file = "";
   mutable std::unique_ptr<HDF5::File> data_file_h;
@@ -679,6 +697,12 @@ public:
     map_vessel_inclusions;
 
 private:
+
+  unsigned int                     n_q_points          = 100;
+  unsigned int                     n_coefficients      = 1;
+  unsigned int                     offset_coefficients = 0;
+  double                           h3D1D               = 0.01;
+
   const unsigned int           n_vector_components;
   MPI_Comm                     mpi_communicator;
   std::vector<Point<spacedim>> support_points;

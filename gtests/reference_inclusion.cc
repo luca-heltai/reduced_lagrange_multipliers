@@ -11,8 +11,8 @@ TEST(TestInclusion2, CheckPoints) // NOLINT
 {
   // cx, cy, r
   Inclusions<2> ref;
-  ref.n_q_points     = 4;
-  ref.n_coefficients = 1;
+  ref.set_n_q_points(4);
+  ref.set_n_coefficients(1);
   ref.inclusions.push_back({{0, 0, 1.0}});
   ref.initialize();
   const auto &p = ref.get_current_support_points(0);
@@ -28,8 +28,8 @@ TEST(TestInclusion3, CheckPoints) // NOLINT
   // cx, cy, cz, dx, dy, dz, r
   std::vector<double> inc({{0, 0, 0, 0, 0, 1.0, 1.0}});
   Inclusions<3>       ref;
-  ref.n_q_points     = 4;
-  ref.n_coefficients = 1;
+  ref.set_n_q_points(4);
+  ref.set_n_coefficients(1);
   ref.inclusions.push_back(inc);
   ref.initialize();
   const auto &p = ref.get_current_support_points(0);
@@ -45,8 +45,8 @@ TEST(TestInclusion3, CheckPointsRotated) // NOLINT
   // cx, cy, cz, dx, dy, dz, r
   std::vector<double> inc({{0, 0, 0, 1.0, 0, 0, 1.0}});
   Inclusions<3>       ref;
-  ref.n_q_points     = 4;
-  ref.n_coefficients = 1;
+  ref.set_n_q_points(4);
+  ref.set_n_coefficients(1);
   ref.inclusions.push_back(inc);
   ref.initialize();
   const auto &p = ref.get_current_support_points(0);
@@ -68,8 +68,8 @@ TEST(TestInclusion3, CheckNegativeZDirection) // NOLINT
   // cx, cy, cz, dx, dy, dz, r
   std::vector<double> inc({{0, 0, 0, 0, 0, -1, 1.0}});
   Inclusions<3>       ref;
-  ref.n_q_points     = 4;
-  ref.n_coefficients = 1;
+  ref.set_n_q_points(4);
+  ref.set_n_coefficients(1);
   ref.inclusions.push_back(inc);
   ref.initialize();
   const auto r = ref.get_rotation(0);
@@ -87,8 +87,8 @@ TEST(TestInclusion3, CheckAlmostNegativeZDirection) // NOLINT
   // cx, cy, cz, dx, dy, dz, r
   std::vector<double> inc({{0, 0, 0, 0, 0.5, -1, 1.0}});
   Inclusions<3>       ref;
-  ref.n_q_points     = 4;
-  ref.n_coefficients = 1;
+  ref.set_n_q_points(4);
+  ref.set_n_coefficients(1);
   ref.inclusions.push_back(inc);
   ref.initialize();
   const auto r = ref.get_rotation(0);
