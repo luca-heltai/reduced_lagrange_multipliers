@@ -768,7 +768,7 @@ ElasticityProblem<dim, spacedim>::solve()
       SolverCG<LA::MPI::Vector> cg_elasticity(par.outer_control);
       invA = inverse_operator(A, cg_elasticity, amgA);
       invC = inverse_operator(C, cg_elasticity, amgC);
-      
+      pcout << "   g norm: " << g.l2_norm() << std::endl;
 
      // Solve for the solution
      
@@ -780,11 +780,11 @@ ElasticityProblem<dim, spacedim>::solve()
       }
       else 
       { 
-        const double beta=0;
-        const double gamma = 0.5;
+        const double beta=par.beta;
+        const double gamma = par.gamma;
         if (current_time ==0.0)
         {
-          u=0.0;
+          u=0.00001;
           v=0.0;
           a=invC*(f-A*u);
           
@@ -793,7 +793,7 @@ ElasticityProblem<dim, spacedim>::solve()
         pcout << "   f norm: " << f.l2_norm() << std::endl;
         pcout << "   u : " << u.max() << std::endl;
         pcout << "  v: " << v.max() << std::endl;
-        pcout << "   a: " << a.max() << std::endl;
+        pcout << "   a before update: " << a.max() << std::endl;
 
         //predictor step
         u_pred =  u +  par.dt*v +  (par.dt*par.dt/2)*(1-2*beta)*a;
@@ -804,12 +804,13 @@ ElasticityProblem<dim, spacedim>::solve()
         // pcout << "   v_pred: " << v_pred.max() << std::endl;
         
 
-        // const auto amgAn = linear_operator(C, prec_C);
-        // SolverGMRES<LA::MPI::Vector> cg_stiffness(par.inner_control);
-        // auto                      invAn = C;
-        // invAn= inverse_operator((M+A*par.dt*par.dt*beta),cg_elasticity,amgC);
+        //const auto amgAn = linear_operator((C+A*par.dt*par.dt*beta), prec_C);
+        SolverGMRES<LA::MPI::Vector> cg_stiffness(par.inner_control);
+        auto                      invAn = (C+A*par.dt*par.dt*beta);
+        invAn= inverse_operator(invAn,cg_stiffness,prec_C);
 
-        a= invC* (f - A*u_pred);
+        a= invAn* (f - A*u_pred);
+        pcout << "   a after update: " << a.max() << std::endl;
 
         //corrector step
 
