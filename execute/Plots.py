@@ -10,21 +10,23 @@ import os
 
 
 mmHg=1333.22
-directory=os.getcwd()+"/output/prova_lambda_mu/"
-dataDirectory=directory+"1D/"
+directory=os.getcwd()+"/output/bifurcation/"
+testcase="liver_elastic"
+dataDirectory=directory+testcase+"/1D/"
 
 # fixed parameters
 dt = "0.001"
+kmref = "1"
 fig, axs = plt.subplots(2, 2, layout='constrained')
 
 numVess=["1", "2", "3"]
 
 for j in range(len(numVess)):
 
-    PExt_file=np.loadtxt(dataDirectory+"PresEXTVess3D_"+numVess[j]+"Cell0_k_0dt"+dt+"_omega_1DXmax1kmRef1.txt")
-    Pres_file=np.loadtxt(dataDirectory+"PresVess3D_"+numVess[j]+"Cell0_k_0dt"+dt+"_omega_1DXmax1kmRef1.txt")
-    Area_file=np.loadtxt(dataDirectory+"areaVess3D_"+numVess[j]+"Cell0_k_0dt"+dt+"_omega_1DXmax1kmRef1.txt")
-    Flux_file=np.loadtxt(dataDirectory+"qVess3D_"+numVess[j]+"Cell0_k_0dt"+dt+"_omega_1DXmax1kmRef1.txt")
+    PExt_file=np.loadtxt(dataDirectory+"PresEXTVess3D_"+numVess[j]+"Cell0_k_0dt"+dt+"_omega_1DXmax1kmRef"+kmref+".txt", skiprows=8000)
+    Pres_file=np.loadtxt(dataDirectory+"PresVess3D_"+numVess[j]+"Cell0_k_0dt"+dt+"_omega_1DXmax1kmRef"+kmref+".txt", skiprows=8000)
+    Area_file=np.loadtxt(dataDirectory+"areaVess3D_"+numVess[j]+"Cell0_k_0dt"+dt+"_omega_1DXmax1kmRef"+kmref+".txt", skiprows=8000)
+    Flux_file=np.loadtxt(dataDirectory+"qVess3D_"+numVess[j]+"Cell0_k_0dt"+dt+"_omega_1DXmax1kmRef"+kmref+".txt", skiprows=8000)
 
                             
     axs[0,0].plot(PExt_file[:,0], PExt_file[:,1]/mmHg)
@@ -51,20 +53,10 @@ for j in range(len(numVess)):
     axs[1,1].set_xlabel("time [s]")
     axs[1,1].set_ylabel("flow [ml/s]")
     
-    #axs[0,0].plot.xlim(9,10)
+#    axs[0,0].plot.xlim([9,10])
     
     fig.legend(loc='lower center')
-    
+    fig.suptitle(testcase)
 
-
-
-    # axs.plot(x,y, label="vessel"+numVess[j])
-    # axs.set_title('External Pressure pe')
-    # axs.set_xlabel("time [s]")
-    # axs.set_ylabel(r"External Pressure [mmHg]")
-    # fig.legend()
-    # plt.show()
-    # print(j)
-
-plt.savefig(directory+"graphs_b.pdf")
+plt.savefig(directory+testcase+"graphs.pdf")
 

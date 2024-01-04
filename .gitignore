@@ -35,4 +35,6 @@ CMakeCache.txt
 build/
 output/
 input_file/
+data/data_sensitivity/
+data/old/
 compile_commands.json

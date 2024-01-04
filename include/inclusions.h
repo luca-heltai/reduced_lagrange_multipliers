@@ -503,6 +503,7 @@ public:
     // coordinates
     compute_rotated_inclusion_data();
   }
+
   /**
    * @brief Update the displacement data after the initialization
    * reading from a vector of lenght n_vessels (constant displacement along the
@@ -526,39 +527,63 @@ public:
             // inclusions_data[it->second] = {new_data[it->first],
             // 0,0,0,new_data[it->first]};
             for (auto inclusion_id : it->second)
-              {
-                AssertIndexRange(inclusion_id, inclusions_data.size());
-                inclusions_data[inclusion_id] = {new_data[it->first],
-                                                 0,
-                                                 0,
-                                                 0,
-                                                 new_data[it->first],
-                                                 0,
-                                                 0,
-                                                 0,
-                                                 0};
-                // if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
-                // {
-                //   std::cout << "new data for inclusion " << inclusion_id <<
-                //   ": "; for (auto i : inclusions_data[inclusion_id])
-                //     std::cout << i << " ";
-                //   std::cout << std::endl;
-                // }
-              }
+              update_single_inclusion_data_along_normal(inclusion_id, new_data[it->first]);
             ++it;
           }
       }
     else if (new_data.size() == inclusions.size())
       {
         for (long unsigned int id = 0; id < new_data.size(); ++id)
-          inclusions_data[id] = {
-            new_data[id], 0, 0, 0, new_data[id], 0, 0, 0, 0};
+          update_single_inclusion_data_along_normal(id, new_data[id]);
       }
     else
       AssertThrow(
         new_data.size() == 0,
         ExcMessage(
           "dimensions of new data for the update does not match the inclusions"));
+
+    if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
+      std::cout << "data update successful" << std::endl;
+    compute_rotated_inclusion_data();
+  }
+
+  void
+  update_inclusions_data(std::vector<std::vector<double>> new_data)
+  {
+    if constexpr (spacedim == 2)
+      return;
+    
+    AssertThrow(
+        new_data.size() == n_vessels,
+        ExcMessage(
+          "dimensions of new data for the update does not match the inclusions"));
+
+    for (unsigned int current_vessel = 0; current_vessel < n_vessels; ++current_vessel)
+    {
+      AssertIndexRange(current_vessel, new_data.size());
+      auto & current_new_data = new_data[current_vessel];
+      auto & current_inclusions = map_vessel_inclusions[current_vessel];
+
+      auto N1 = current_inclusions.size(); // inclusions in vessel
+      auto N2 = current_new_data.size(); // points in new_data 
+
+      AssertThrow(N2 > 1, ExcMessage("dimensions of new data for the update does not match the inclusions"));
+
+      // compute nv
+      std::vector<double> current_vessel_new_data;
+      current_vessel_new_data.push_back(current_new_data[0]);
+      for (auto i = 1; i < N1-1; ++i)
+      {
+        auto X = i/N1/N2;
+        auto j = floor(X);
+        current_vessel_new_data.push_back((X-j)*current_new_data[j]+(1-X+j)*current_new_data[j+1]);
+      }
+      current_vessel_new_data.push_back(current_new_data[N2-1]);
+
+      // assign nv
+      for (auto inclusion_id : current_inclusions)
+        update_single_inclusion_data_along_normal(inclusion_id, current_vessel_new_data[inclusion_id]);
+    }
 
     if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
       std::cout << "data update successful" << std::endl;
@@ -579,6 +604,20 @@ public:
         AssertDimension(inclusion.size(), 2 * spacedim + 2);
         return int(inclusion[2 * spacedim + 1]);
       }
+  }
+
+  void
+  update_single_inclusion_data_along_normal(const types::global_dof_index &inclusion_id, const double nd)
+  {
+
+    AssertIndexRange(inclusion_id, inclusions_data.size());
+    inclusions_data[inclusion_id] = {nd, 0, 0, 0, nd, 0, 0, 0, 0};
+  }
+
+  void 
+  update_single_vessel_data(const types::global_dof_index &vessel_id, const std::vector<double> nd)
+  {
+
   }
 
   double

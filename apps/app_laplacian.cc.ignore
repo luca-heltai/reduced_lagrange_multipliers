@@ -17,7 +17,7 @@
  * Modified by: Luca Heltai, 2020
  */
 
-#include "elasticity.h"
+#include "laplacian.h"
 int
 main(int argc, char *argv[])
 {
@@ -27,46 +27,28 @@ main(int argc, char *argv[])
     {
       Utilities::MPI::MPI_InitFinalize mpi_initialization(argc, argv, 1);
       std::string                      prm_file;
-      unsigned int                     Pa_to_dyn_conversion = 10;
-
       if (argc > 1)
         prm_file = argv[1];
       else
         prm_file = "parameters.prm";
       if (prm_file.find("23d") != std::string::npos)
         {
-          ElasticityProblemParameters<2, 3> par;
-          ElasticityProblem<2, 3>           problem(par);
+          ProblemParameters<2, 3> par;
+          PoissonProblem<2, 3>    problem(par);
           ParameterAcceptor::initialize(prm_file);
           problem.run();
         }
       else if (prm_file.find("3d") != std::string::npos)
         {
-          ElasticityProblemParameters<3> par;
-          ElasticityProblem<3>           problem3D(par);
+          ProblemParameters<3> par;
+          PoissonProblem<3>    problem(par);
           ParameterAcceptor::initialize(prm_file);
-          problem3D.run_timestep0();
-          problem3D.run_timestep();
-          Vector<double> coupling_pressure(
-                      problem3D.coupling_pressure);
-          coupling_pressure *= Pa_to_dyn_conversion;
-
-          if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
-            {
-              // to delete cout
-              std::cout << "check on applied pressure (then multplied by -" << Pa_to_dyn_conversion << ")";
-              for (auto print_index = 0;
-                   print_index < coupling_pressure.size();
-                   ++print_index)
-                std::cout << print_index << ": "
-                          << (coupling_pressure[print_index]) << ", ";
-              std::cout << std::endl;
-            }
+          problem.run();
         }
       else
         {
-          ElasticityProblemParameters<2> par;
-          ElasticityProblem<2>           problem(par);
+          ProblemParameters<2> par;
+          PoissonProblem<2>    problem(par);
           ParameterAcceptor::initialize(prm_file);
           problem.run();
         }

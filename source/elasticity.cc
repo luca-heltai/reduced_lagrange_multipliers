@@ -1134,7 +1134,7 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
       const auto local_lambda = lambda_to_pressure.locally_owned_elements();
       if constexpr (spacedim == 3)
         {
-          unsigned int previous_inclusion_number;
+          unsigned int previous_inclusion_number = 10000;
           auto tensorR = inclusions.get_rotation(0);
           for (const auto &ll : local_lambda)
             {
@@ -1155,7 +1155,7 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
                   pressure[inclusions.get_vesselID(inclusion_number)] +=
                     lambda_to_pressure[ll]*tensorR[coor_number][mode_number] / used_number_modes * weights[inclusion_number]; 
                   pressure_at_inc[inclusion_number] +=
-                    lambda_to_pressure[ll] / used_number_modes * weights[inclusion_number];
+                    lambda_to_pressure[ll]*tensorR[coor_number][mode_number] / used_number_modes;
                 }
             previous_inclusion_number = inclusion_number;
             }
@@ -1186,6 +1186,8 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
         }
       pressure.compress(VectorOperation::add);
       pressure_at_inc.compress(VectorOperation::add);
+
+//      Vector<double> vector_pressure(pressure);
 
       // print .txt only sequential
       if (Utilities::MPI::n_mpi_processes(mpi_communicator) == 1)

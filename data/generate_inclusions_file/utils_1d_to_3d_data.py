@@ -25,8 +25,8 @@ class vessel1d:
         self.L = 1
         self.mid_points = []
         self.directions = []
-        self.areas0 = []
-        self.AAAREA = 0.
+        self.referenceArea = []
+        self.radius = 0.
         self.IDs = []
         self.ID = 0
         
@@ -57,10 +57,13 @@ class vessel1d:
                 if verbose>2:
                     print("new point:", pLast)
                 self.pts.append(pLast)
-              #  self.areas0.append(self.areas0)
+                
                 pNew = pLast + h*direction
                 length = np.linalg.norm(pNew - self.x0)
                 pLast = pNew
+                
+            if (pLast[0] != self.x1[0] or pLast[1] != self.x1[1] or pLast[2] != self.x1[2]): 
+                self.pts.append(self.x1)
         
         self.set_midpoints()
        
@@ -71,12 +74,15 @@ class vessel1d:
         for i in range(0,len(self.pts)-1):
             
            mNew = (self.pts[i]+self.pts[i+1])/2
-           dirNew = np.round(self.pts[i+1]-self.pts[i],3)
-           areaNew = self.AAAREA
+           dirNew = (self.x1 - self.x0)/self.L
+#           dirNew = np.round(self.pts[i+1]-self.pts[i],3)
+#           areaNew = self.AAAREA
            self.mid_points.append(mNew)
            self.directions.append(dirNew)
-           self.areas0.append(areaNew)
+           self.referenceArea.append(self.radius**2*np.pi)
            self.IDs.append(self.ID)
+           
+#           print(self.referenceArea)
             
         
 
@@ -125,7 +131,7 @@ class mesh1d:
         for i in range(0,self.nV):
             # generate vessels
             newVessel = vessel1d()
-            print(int(V[i,0]))
+ #           print(V[i,2])
             newVessel.x0 = np.asarray([self.N[ int(V[i,0])][0],
                                        self.N[ int(V[i,0])][1],
                                        self.N[ int(V[i,0])][2]])
@@ -135,11 +141,13 @@ class mesh1d:
                                        self.N[ int(V[i,1])][2]])
             
             newVessel.L = np.linalg.norm(newVessel.x1 - newVessel.x0)
-            # newVessel.areas0 = V[i,3]
-            newVessel.AAAREA = V[i,3]
+            # newVessel.referenceArea = V[i,3]
+            newVessel.radius = (V[i,3]+V[i,4])/2
             newVessel.ID = V[i,19]
+            newVessel.L = np.linalg.norm(newVessel.x0 - newVessel.x1)
             
             self.v.append(newVessel)
+ #           print(newVessel.radius)
      
         
     def discretize(self,h3D):
@@ -237,7 +245,7 @@ class mesh1d:
     def get_areas_reference(self):
         #P = np.hstack( [np.vstack(
         #        [np.array(v.area0[t]) for v in self.v for p in v.mid_points ]) for t in range(0,len(self.times))])
-        P = np.hstack([np.array(v.areas0) for v in self.v])
+        P = np.hstack([np.array(v.referenceArea) for v in self.v])
         return P
     
     def get_vessel_ID(self):
