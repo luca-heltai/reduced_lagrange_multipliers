@@ -32,7 +32,7 @@ main(int argc, char *argv[])
       std::string                      prm_file;
       std::string                      input_file_name;
       unsigned int                     couplingSampling         = 1;
-      unsigned int                     kPa_to_dyn_conversion = 10;
+      unsigned int                     kPa_to_dyn_conversion = 10000;
       unsigned int                     couplingStart = 9;
       if (argc > 2)
         {
@@ -157,12 +157,12 @@ main(int argc, char *argv[])
                              print_index < coupling_pressure.size();
                              ++print_index)
                           std::cout << print_index << ": "
-                                    << (-coupling_pressure[print_index] * kPa_to_dyn_conversion) << ", ";
+                                    << (-coupling_pressure[print_index]) << ", ";
                         std::cout << std::endl;
                         // end cout
                         for (int i = 0; i < pb1D.NV; i++)
                           for (int j = 0; j < pb1D.vess[i].NCELLS; j++)
-                            pb1D.vess[i].setpeconst(j, (-coupling_pressure[i] * kPa_to_dyn_conversion));
+                            pb1D.vess[i].setpeconst(j, (-coupling_pressure[i]));
                       }
 
                     for (int i = 0; i < pb1D.NV; i++)

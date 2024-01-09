@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
+SAVE = False
+
 os.chdir('/home/camilla/Desktop/COUPLING/')
 
 directory = 'output/sensitivity_inclusions/'
@@ -27,15 +29,15 @@ selection = 'h'
 for c_h in hList:
     x=np.asarray(df[df[selection] == c_h][abscissa])
                             
-    axs[0,0].semilogy(x, -np.asarray(df[df[selection] == c_h]['p0']), marker = 'o')#, linestyle='None')
+    axs[0,0].semilogx(-np.asarray(df[df[selection] == c_h]['p0']), x, marker = 'o')#, linestyle='None')
     axs[0,0].set_title('Vessel 0')
     axs[0,0].set_xlabel("transversal refinement")
     
-    axs[0,1].semilogy(x, -np.asarray(df[df[selection] == c_h]['p1']), marker = 'o')#, linestyle='None')
+    axs[0,1].semilogx(-np.asarray(df[df[selection] == c_h]['p1']), x, marker = 'o')#, linestyle='None')
     axs[0,1].set_title('Vessel 1')
     axs[0,1].set_xlabel("transversal refinement")
     
-    axs[1,0].semilogy(x, -np.asarray(df[df[selection] == c_h]['p2']), marker = 'o')#, linestyle='None')
+    axs[1,0].semilogx(-np.asarray(df[df[selection] == c_h]['p2']), x, marker = 'o')#, linestyle='None')
     axs[1,0].set_title('Vessel 2')
     axs[1,0].set_xlabel("transversal refinement")
 
@@ -43,9 +45,12 @@ for c_h in hList:
     fig.legend(loc='lower center')
     fig.suptitle('- External Pressure')
     
-#plt.show()
 
-plt.savefig(directory+"transv.pdf")
+if SAVE:
+    plt.savefig(directory+"transv.pdf")
+else:
+    plt.show()
+        
 
 fig2, axs2 = plt.subplots(2, 2, layout='constrained')
 
@@ -71,9 +76,11 @@ for c_h in refList:
     fig2.legend(loc='lower center')
     fig2.suptitle('-External Pressure')
     
-#plt.show()
 
-plt.savefig(directory+"longit.pdf")
+if SAVE:
+    plt.savefig(directory+"longit.pdf")
+else:
+    plt.show()
 
 fig2, axs2 = plt.subplots(2, 2, layout='constrained')
 
@@ -96,9 +103,11 @@ for c_h in refList:
     fig2.legend(loc='lower center')
     fig2.suptitle('-External Pressure')
     
-#plt.show()
 
-plt.savefig(directory+"longit_2.pdf")
+if SAVE:
+    plt.savefig(directory+"longit_2.pdf")
+else:
+    plt.show()
 
 
 

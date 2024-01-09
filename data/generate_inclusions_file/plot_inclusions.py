@@ -16,7 +16,7 @@ fig = plt.figure()
 ax = fig.add_subplot(projection='3d')
 # ax = fig.gca(projection='3d')
 
-data = np.genfromtxt('test_0.01.txt')
+data = np.genfromtxt('../old/inclusions_points_bifurcation.txt')
 #zero coupon maturity dates
 y = data[:,0]
 #tenor
@@ -27,8 +27,8 @@ z = data[:,2]
 for i in range(0,len(x)-1):
     ax.scatter(float(x[i]), float(y[i]), float(z[i]))
     
-plotmin=0.9
-plotmax=1.1
+plotmin=0
+plotmax=2
     
 ax.axes.set_xlim(plotmin,plotmax)
 ax.axes.set_ylim(plotmin,plotmax)
@@ -39,9 +39,9 @@ ax.set_xlabel('x')
 ax.set_ylabel('y')
 ax.set_zlabel('z')
 ax.set_proj_type('ortho')
-#ax.view_init(elev=0, azim=0) # yz
+ax.view_init(elev=0, azim=0) # yz
 #ax.view_init(elev=0, azim=90) # xz
-ax.view_init(elev=90, azim=90) # xy
+#ax.view_init(elev=90, azim=90) # xy
 #ax.view_init(elev=0, azim=180) # zy
 ax.set_box_aspect(None, zoom=1.25)
 
