@@ -22,6 +22,8 @@ USE
 
 
 run in parallel as
-mpirun -np 2 ./build/coupled_elasticity_debug <path_to_input_3d> <path_to_input_1d> <couplingSampling> <couplingStart>
 
-20.11.23 it only works with 2 processors -> to be fixed
+export OMP_NUM_THREADS=1 
+
+mpirun -np n ./build/coupled_elasticity_debug <path_to_input_3d> <path_to_input_1d> <couplingSampling> <couplingStart>
+

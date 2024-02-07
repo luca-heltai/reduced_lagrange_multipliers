@@ -1127,8 +1127,11 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
       const auto &lambda_to_pressure = locally_relevant_solution.block(1);
 
       // TODO: set the weight in a smarter way
-      std::vector<double> weights(inclusions.n_inclusions(),
-                                  inclusions.get_h3D1D());
+      // std::vector<double> weights(inclusions.n_inclusions(),
+      //                             inclusions.get_h3D1D());
+      TrilinosWrappers::MPI::Vector inclusions_to_divide_by(locally_owned_vessels, mpi_communicator);
+      inclusions_to_divide_by = 0;
+
       const auto used_number_modes = inclusions.get_n_coefficients();
 
       const auto local_lambda = lambda_to_pressure.locally_owned_elements();
@@ -1153,7 +1156,9 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
                 {
                   AssertIndexRange(inclusion_number, inclusions.n_inclusions());
                   pressure[inclusions.get_vesselID(inclusion_number)] +=
-                    lambda_to_pressure[ll]*tensorR[coor_number][mode_number] / used_number_modes * weights[inclusion_number]; 
+                    lambda_to_pressure[ll]*tensorR[coor_number][mode_number] / used_number_modes ;
+                    // * weights[inclusion_number]; 
+                    inclusions_to_divide_by[inclusions.get_vesselID(inclusion_number)] += 1;
                   pressure_at_inc[inclusion_number] +=
                     lambda_to_pressure[ll]*tensorR[coor_number][mode_number] / used_number_modes;
                 }
@@ -1186,6 +1191,19 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
         }
       pressure.compress(VectorOperation::add);
       pressure_at_inc.compress(VectorOperation::add);
+      inclusions_to_divide_by.compress(VectorOperation::add);
+      for (auto ix = 0; ix < pressure.size(); ++ix)
+        pressure[ix] /= inclusions_to_divide_by[ix];
+      if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
+      {
+        std::cout << "inclusions per vessel";
+        inclusions_to_divide_by.print(std::cout);
+        for (auto tempel = 0; tempel < inclusions.get_n_vessels(); tempel ++)
+        {
+          std::cout << tempel << ": " << inclusions.map_vessel_inclusions.at(tempel).size();
+        }
+        std::cout << std::endl;
+      }
 
 //      Vector<double> vector_pressure(pressure);
 

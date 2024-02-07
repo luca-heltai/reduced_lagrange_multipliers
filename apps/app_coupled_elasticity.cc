@@ -52,7 +52,6 @@ main(int argc, char *argv[])
           ElasticityProblem<3>           problem3D(par);
           ParameterAcceptor::initialize(prm_file);
           problem3D.run_timestep0();
-//          std::cout << "proc num " << Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) << std::endl;
 
 
           {
@@ -80,17 +79,13 @@ main(int argc, char *argv[])
                 // write files for Sarah
                 pb1D.writePressure();
                 pb1D.writeEXTPressure();
-//                std::cout << "proc num before if" << Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) << std::endl;
 
                 // solve time step
                 if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
                   {
                     pb1D.solveTimeStep(pb1D.dtMaxLTSLIMIT);
-//                    std::cout << "proc num in if" << Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) << std::endl;
                   }
-//                  std::cout << "proc num after timestep" << Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) << std::endl;
                 MPI_Barrier(MPI_COMM_WORLD);
-//                std::cout << "proc num after bareri" << Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) << std::endl;
 
                 // every iterSampling we aso perform the 3D
                 if (timestep > couplingStart && iter % couplingSampling == 0)
@@ -102,7 +97,7 @@ main(int argc, char *argv[])
                     std::vector<double> new_displacement_data =
                       Utilities::MPI::broadcast(
                         MPI_COMM_WORLD,
-                        pb1D.new_displacement); // canbe omitted if all
+                        pb1D.new_displacement); // can be omitted if all
                                                 // processors execute the 1D
 
                     // to delete cout
@@ -145,6 +140,7 @@ main(int argc, char *argv[])
                     Vector<double> coupling_pressure(
                       problem3D.coupling_pressure);
                     coupling_pressure *= kPa_to_dyn_conversion;
+                    coupling_pressure *= -1;
 
 
                     if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
@@ -157,12 +153,13 @@ main(int argc, char *argv[])
                              print_index < coupling_pressure.size();
                              ++print_index)
                           std::cout << print_index << ": "
-                                    << (-coupling_pressure[print_index]) << ", ";
+                                    << (coupling_pressure[print_index]) << ", ";
                         std::cout << std::endl;
                         // end cout
+
                         for (int i = 0; i < pb1D.NV; i++)
                           for (int j = 0; j < pb1D.vess[i].NCELLS; j++)
-                            pb1D.vess[i].setpeconst(j, (-coupling_pressure[i]));
+                            pb1D.vess[i].setpeconst(j, (coupling_pressure[i]));
                       }
 
                     for (int i = 0; i < pb1D.NV; i++)
