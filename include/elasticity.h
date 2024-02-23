@@ -72,6 +72,7 @@ namespace LA
 #include <deal.II/lac/trilinos_sparse_matrix.h>
 #include <deal.II/lac/trilinos_vector.h>
 #include <deal.II/lac/trilinos_solver.h>
+
 //#include <deal.II/trilinos/parameter_acceptor.h>
 #include <deal.II/lac/vector.h>
 
@@ -84,6 +85,7 @@ namespace LA
 #include <deal.II/numerics/data_out.h>
 #include <deal.II/numerics/error_estimator.h>
 #include <deal.II/numerics/vector_tools.h>
+//#include <deal.II/numerics/matrix_tools.h>
 
 #include <deal.II/opencascade/manifold_lib.h>
 #include <deal.II/opencascade/utilities.h>
@@ -139,6 +141,9 @@ public:
   double lambda_BG =1; double mu_BG=1;
   double lambda_Amygdala =1; double mu_Amygdala=1;
   double rho=1;
+  double neta=1;
+  double elasticity_modulus=1;
+  double relaxation_time=1;
 
   mutable ParameterAcceptorProxy<Functions::ParsedFunction<spacedim>> rhs;
   mutable ParameterAcceptorProxy<Functions::ParsedFunction<spacedim>>
@@ -160,6 +165,9 @@ public:
   double initial_time = 0.0;
   double final_time   = 0.0;
   double dt           = 5e-3;
+  double beta= 0.25;
+  double gamma=0.5;
+  double alpha=0.5;
 };
 
 
@@ -229,6 +237,9 @@ ElasticityProblemParameters<dim, spacedim>::ElasticityProblemParameters()
     add_parameter("BG lambda", lambda_BG); add_parameter("BG mu", mu_BG);    //add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
     add_parameter("Amygdala lambda", lambda_Amygdala); add_parameter("Amygdala mu", mu_Amygdala);   // add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
     add_parameter("density", rho);
+    add_parameter("viscocity", neta);
+    add_parameter("elasticity modulus", elasticity_modulus);
+    add_parameter("relaxation time", relaxation_time);
   }
   leave_subsection();
   enter_subsection("Exact solution");
@@ -241,6 +252,9 @@ ElasticityProblemParameters<dim, spacedim>::ElasticityProblemParameters()
     add_parameter("Initial time", initial_time);
     add_parameter("Final time", final_time);
     add_parameter("Time step", dt);
+    add_parameter("beta", beta);
+    add_parameter("gamma", gamma);
+    add_parameter("alpha", alpha);
   }
   leave_subsection();
 
@@ -327,6 +341,8 @@ public:
   LA::MPI::SparseMatrix                           stiffness_matrix;
   LA::MPI::SparseMatrix                           mass_matrix;
   LA::MPI::SparseMatrix                           coupling_matrix;
+  LA::MPI::SparseMatrix                           damping_term;
+
   LA::MPI::SparseMatrix                           inclusion_matrix;
   LA::MPI::BlockVector                            solution;
   LA::MPI::BlockVector                            velocity;
