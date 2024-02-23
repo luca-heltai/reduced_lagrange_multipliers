@@ -368,11 +368,11 @@ ElasticityProblem<dim, spacedim>::assemble_elasticity_system()
                        scalar_product(grad_phi_u[i], grad_phi_u[j]) +
                        Lame_lambda * div_phi_u[i] * div_phi_u[j]) *
                      fe_values.JxW(q);
-                    //cell_matrix(i,j) += 0;
+                    cell_matrix(i,j) += scalar_product(grad_phi_u[i], grad_phi_u[j])*fe_values.JxW(q);
                     cell_mass_matrix(i,j) += par.rho*phi_u[i]*phi_u[j]*fe_values.JxW(q);
                     //cell_damping_term(i,j)+= 0.0148*cell_matrix(i, j) + par.alpha*cell_mass_matrix(i,j);
-                    cell_damping_term(i,j)+= par.neta*scalar_product(grad_phi_u[i], grad_phi_u[j])*fe_values.JxW(q);
-                    
+                    //cell_damping_term(i,j)+= par.neta*scalar_product(grad_phi_u[i], grad_phi_u[j])*fe_values.JxW(q);
+                    cell_damping_term(i,j) += 0;
                     //cell_damping_term(i,j)+= (par.relaxation_time*par.elasticity_modulus*(1-std::exp(-par.dt/par.relaxation_time)))*scalar_product(grad_phi_u[i], grad_phi_u[j])*fe_values.JxW(q);
                     
     
@@ -701,7 +701,6 @@ ElasticityProblem<dim, spacedim>::solve()
   const auto amgA = linear_operator(A, prec_A);
 
   const auto D    = linear_operator<LA::MPI::Vector>(damping_term);
-
   
   //auto prev_D= D;
   const auto C    = linear_operator<LA::MPI::Vector>(mass_matrix);
@@ -836,7 +835,10 @@ ElasticityProblem<dim, spacedim>::solve()
         }
 
       //   //pcout << "   f norm: " << f.l2_norm() << std::endl;
-      //   //pcout << "   u : " << u.max() << std::endl;
+      //pcout << "   u before update: " << u.max() << std::endl;
+        double a_maxwell= std::exp(-par.dt/par.relaxation_time);
+        double b_maxwell= (par.elasticity_modulus*par.relaxation_time/par.dt)*(1-a_maxwell);
+        f = f-(a_maxwell*b_maxwell-b_maxwell)*A*u;
       //   //pcout << "  v: " << v.max() << std::endl;
       //   //pcout << "   a before update: " << a.max() << std::endl;
         //if (current_time==0) {auto prev_D=0*D;}
@@ -857,12 +859,12 @@ ElasticityProblem<dim, spacedim>::solve()
       //   //const auto amgAn = linear_operator((C+A*par.dt*par.dt*beta), prec_C);
       //   //SolverGMRES<LA::MPI::Vector> cg_stiffness(par.inner_control);
       //   SolverCG<LA::MPI::Vector> cg_stiffness(par.inner_control);
-        //auto D_new=D+prev_d;
-        auto                      invAn = (C+A*par.dt*par.dt*beta+(D)*par.dt*gamma);
+        
+        auto                      invAn = (C+A*b_maxwell*par.dt*par.dt*beta+D*par.dt*gamma);
         //auto                      invAn = (C+A*par.dt*par.dt*beta);
         invAn= inverse_operator(invAn,cg_stiffness,prec_C);
 
-        a= invAn* (f - (D)*v_pred- A*u_pred);
+        a= invAn* (f - D*v_pred- A*b_maxwell*u_pred);
         //a= invAn* (f - A*u_pred);
       //  // pcout << "   a after update: " << a.max() << std::endl;
 
@@ -874,7 +876,7 @@ ElasticityProblem<dim, spacedim>::solve()
       //   //std::cout<<"reached here 7"<<std::endl;
       //pcout << "   prev D : " <<  prev_D.vmult()<< std::endl;
       //   // pcout << "  v: " << v.max() << std::endl;
-      //   // pcout << "   u: " << u.max() << std::endl;
+      //pcout << "   u after update: " << u.max() << std::endl;
       }
 
 
@@ -892,6 +894,7 @@ ElasticityProblem<dim, spacedim>::solve()
       // {
       //   std::cout << "u is zero in block 0." << std::endl;
       // }
+      
 
     }
   constraints.distribute(u);
@@ -1617,8 +1620,8 @@ ElasticityProblem<dim, spacedim>::run()
         output_lambda();
     }
   else // Time dependent simulation
-   {
-      // TODO: add refinement as the first cycle,
+    {
+          // TODO: add refinement as the first cycle,
       pcout << "time dependent simulation, refinement not implemented"
             << std::endl;
       print_parameters();
@@ -1632,10 +1635,10 @@ ElasticityProblem<dim, spacedim>::run()
       }
       setup_dofs();
       assemble_elasticity_system();
+      const dealii::LinearOperator<dealii::LinearAlgebraTrilinos::MPI::Vector, dealii::LinearAlgebraTrilinos::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> prev_D;
 
-      LinearOperator<LA::MPI::Vector> d;
       for (current_time = par.initial_time; current_time < par.final_time;
-           current_time += par.dt, ++cycle)
+            current_time += par.dt, ++cycle)
         {
           pcout << "Time: " << current_time << std::endl;
           
@@ -1647,8 +1650,10 @@ ElasticityProblem<dim, spacedim>::run()
           //const auto D    = linear_operator<LA::MPI::Vector>(damping_term);
           //if (current_time==0) {auto prev_D=0*D;} 
           
+
+          
           solve();
-          //auto prev_D= D;
+          
 
           output_results();
           output_pressure(cycle == 0 ? true : false);
