@@ -432,6 +432,7 @@ public:
 
   LA::MPI::SparseMatrix                           stiffness_matrix;
   LA::MPI::SparseMatrix                           mass_matrix;
+  LA::MPI::SparseMatrix                           force_matrix;
   LA::MPI::SparseMatrix                           coupling_matrix;
   LA::MPI::SparseMatrix                           damping_term;
 
@@ -443,6 +444,8 @@ public:
   LA::MPI::BlockVector                            corrector;
   LA::MPI::BlockVector                            locally_relevant_solution;
   LA::MPI::BlockVector                            system_rhs;
+  LA::MPI::BlockVector                            system_lhs;
+  LA::MPI::BlockVector                            system_rhs_f;
   std::vector<std::vector<BoundingBox<spacedim>>> global_bounding_boxes;
   unsigned int                                    cycle = 0;
 
