@@ -32,7 +32,7 @@ main(int argc, char *argv[])
       std::string                      prm_file;
       std::string                      input_file_name;
       unsigned int                     couplingSampling         = 1;
-      unsigned int                     kPa_to_dyn_conversion = 10000;
+      unsigned int                     kPa_to_dyn_conversion = 10;
       unsigned int                     couplingStart = 9;
       if (argc > 2)
         {
@@ -97,8 +97,7 @@ main(int argc, char *argv[])
                     std::vector<double> new_displacement_data =
                       Utilities::MPI::broadcast(
                         MPI_COMM_WORLD,
-                        pb1D.new_displacement); // can be omitted if all
-                                                // processors execute the 1D
+                        pb1D.new_displacement); 
 
                     // to delete cout
                     if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
@@ -118,25 +117,6 @@ main(int argc, char *argv[])
                     problem3D.update_inclusions_data(new_displacement_data);
                     problem3D.run_timestep();
 
-                    // to delete cout
-                    //                   if
-                    //                   (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD)
-                    //                   == 0)
-                    //                     std::cout << "new pressure data";
-                    //                   problem3D.coupling_pressure.print(std::cout);
-                    // if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) ==
-                    // 0)
-                    // {
-                    //   std::cout << "new pressure data";
-                    //   for (auto print_index = 0;
-                    //       print_index < problem3D.coupling_pressure.size();
-                    //       ++print_index)
-                    //    std::cout << print_index << ": " <<
-                    //                 problem3D.coupling_pressure[print_index]
-                    //                 << ", ";
-                    //   std::cout << std::endl;
-                    // }
-                    // end cout
                     Vector<double> coupling_pressure(
                       problem3D.coupling_pressure);
                     coupling_pressure *= kPa_to_dyn_conversion;
@@ -148,7 +128,7 @@ main(int argc, char *argv[])
                         AssertDimension(problem3D.coupling_pressure.size(),
                                         pb1D.NV);
                         // to delete cout
-                        std::cout << "check on applied pressure (multiplied by -" << kPa_to_dyn_conversion << ")";
+                        std::cout << "check on applied pressure (multiplied by - " << kPa_to_dyn_conversion << ")";
                         for (auto print_index = 0;
                              print_index < coupling_pressure.size();
                              ++print_index)

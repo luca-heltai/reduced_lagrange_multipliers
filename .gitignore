@@ -33,8 +33,7 @@ CMakeCache.txt
 
 #directories
 build/
-output/
-input_file/
-data/data_sensitivity/
-data/old/
+output/*
+input_file/*
+data/*
 compile_commands.json

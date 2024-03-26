@@ -597,7 +597,7 @@ public:
     const auto &inclusion = inclusions[inclusion_id];
     if constexpr (spacedim == 2)
       {
-        return 0.0;
+        return inclusion_id;
       }
     else
       {
@@ -761,39 +761,6 @@ private:
    * @brief Check that all vesselsID are present
    and create the map vessel_inclusions
    */
-  /*void
-  check_vessels()
-  {
-    // TODO:
-    // vessel sanity check: that vessel with same label have the same direction
-    if (inclusions.size() == 0)
-      return;
-
-    if constexpr (spacedim == 2)
-      {
-        return;
-      }
-
-    // if (Utilities::MPI::n_mpi_processes(mpi_communicator) == 1)
-    std::set<double> vessel_id_is_present;
-    for (types::global_dof_index inc_number = 0; inc_number < inclusions.size();
-         ++inc_number)
-      {
-        vessel_id_is_present.insert(get_vesselID(inc_number));
-      }
-
-    types::global_dof_index id_check = 0;
-    while (id_check < vessel_id_is_present.size() &&
-           vessel_id_is_present.find(id_check) != vessel_id_is_present.end())
-      ++id_check;
-
-    AssertThrow(
-      id_check + 1 != vessel_id_is_present.size(),
-      ExcMessage(
-        "Vessel Ids from data file should be sequential, missing vessels
-  ID(s)")); n_vessels = vessel_id_is_present.size();
-  }
-  */
   void
   check_vessels()
   {
@@ -803,29 +770,17 @@ private:
       return;
 
     if constexpr (spacedim == 2)
-      return;
-
-    // std::set<double> vessel_id_is_present;
+      n_vessels = inclusions.size();
+    {
     for (types::global_dof_index inc_number = 0; inc_number < inclusions.size();
          ++inc_number)
-      // vessel_id_is_present.insert(get_vesselID(inc_number));
-      // map_vessel_inclusions[get_vesselID(inc_number)].add_index(inc_number);
       map_vessel_inclusions[get_vesselID(inc_number)].push_back(inc_number);
 
     types::global_dof_index id_check = 0;
-    /*
-    while (id_check < vessel_id_is_present.size() &&
-           vessel_id_is_present.find(id_check) != vessel_id_is_present.end())
-      ++id_check;
-        AssertThrow(
-        id_check+1 != vessel_id_is_present.size(),
-        ExcMessage(
-          "Vessel Ids from data file should be sequential, missing vessels
-    ID(s)")); n_vessels = vessel_id_is_present.size();
-      */
+
     std::map<unsigned int, std::vector<types::global_dof_index>>::iterator it =
       map_vessel_inclusions.begin();
-    // for (it = map_vessel_inclusions.begin(); it != symbolTable.end(); it++)
+
     while (it != map_vessel_inclusions.end() && id_check == it->first)
       {
         ++id_check;
@@ -837,6 +792,27 @@ private:
         "Vessel Ids from data file should be sequential, missing vessels ID(s)"));
 
     n_vessels = map_vessel_inclusions.size();
+    }
+    /*
+    {
+    std::set<double> vessel_id_is_present;
+    for (types::global_dof_index inc_number = 0; inc_number < inclusions.size();
+         ++inc_number)
+        vessel_id_is_present.insert(get_vesselID(inc_number));
+
+    types::global_dof_index id_check = 0;
+    while (id_check < vessel_id_is_present.size() &&
+           vessel_id_is_present.find(id_check) != vessel_id_is_present.end())
+      ++id_check;
+
+    AssertThrow(
+      id_check + 1 != vessel_id_is_present.size(),
+      ExcMessage(
+        "Vessel Ids from data file should be sequential, missing vessels
+        ID(s)"));
+    n_vessels = vessel_id_is_present.size();
+    }
+    */
   }
 };
 

@@ -14,20 +14,20 @@ import numpy as np
 from utils_1d_to_3d_data import mesh1d
 
 
-m = mesh1d(vessels='../beam/vess.dat',
-           nodes='../beam/nodes.dat')
+m = mesh1d(vessels='../bifurcation/vess.dat',
+           nodes='../bifurcation/nodes.dat')
 #h3DList = [0.1, 0.01, 0.001, 0.5, 0.05, 0.005]
 #h3DList = [0.0001, 0.0005]
-h3DList = [0.01]
-area_test_value = 0.05
+h3DList = [0.05]
+area_test_value = 0.0001
 
 x1 = 1.8
 sin_alpha = np.abs(x1-1)/np.sqrt((x1-1)**2+1)
 cos_alpha = 1/np.sqrt((x1-1)**2+1)
 
 for h3D in h3DList:
-    m = mesh1d(vessels='../beam/vess.dat',
-               nodes='../beam/nodes.dat')
+    m = mesh1d(vessels='../bifurcation/vess.dat',
+               nodes='../bifurcation/nodes.dat')
     m.discretize(h3D)
     
     all_points = m.get_points()
@@ -37,8 +37,8 @@ for h3D in h3DList:
     
     
     if ((len(all_points) == len(all_dir)) & (len(all_points) == len(all_areas))):
-        f = open('../inclusions_points_beam_'+str(h3D)+'.txt','w')
-        g = open('../inclusions_data_beam_'+str(h3D)+'.txt','w')
+        f = open('../inclusions_points_bif_2503_'+str(h3D)+'.txt','w')
+        g = open('../inclusions_data_bif_2503_'+str(h3D)+'.txt','w')
         for k in range(0,len(all_points)):
             # if ((all_points[k][1] <= 1) or (all_points[k][0] > 1 and all_points[k][0] - np.sqrt(area_test_value/np.pi)*cos_alpha > 1) 
             #     or (all_points[k][0] < 1 and all_points[k][0] + np.sqrt(area_test_value/np.pi)*cos_alpha < 1)):
@@ -71,7 +71,7 @@ for h3D in h3DList:
                     str(np.sqrt(area_test_value/np.pi)) + " " + 
                     str(all_vessID[k]) + "\n"  )
     
-            g.write(str(area_test_value) + " 0 0 0 " + str(area_test_value) + " 0 0 0 0 \n") 
+            g.write("0.01 0 0 0 0.01 0 0 0 0 \n") 
                
         f.close()
         g.close()

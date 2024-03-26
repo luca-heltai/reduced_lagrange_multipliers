@@ -768,7 +768,54 @@ ElasticityProblem<dim, spacedim>::solve()
   locally_relevant_solution = solution;
 }
 
+template <int dim, int spacedim>
+void
+ElasticityProblem<dim, spacedim>::refine_and_transfer_around_inclusions()
+{
+//   TimerOutput::Scope t(computing_timer, "Refine");
+//   Vector<float>      error_per_cell(tria.n_active_cells());
+//   KellyErrorEstimator<spacedim>::estimate(dh,
+//                                           QGauss<spacedim - 1>(par.fe_degree +
+//                                                                1),
+//                                           {},
+//                                           locally_relevant_solution.block(0),
+//                                           error_per_cell);
+  
+//   auto particle = inclusions.inclusions_as_particles.begin();
+//   while (particle != inclusions.inclusions_as_particles.end())
+//     {
+//       const auto &cell = particle->get_surrounding_cell();
+//       const auto pic =
+//       inclusions.inclusions_as_particles.particles_in_cell(cell);
+//       Assert(pic.begin() == particle, ExcInternalError());
+//       cell->set_refine_flag();
+//       // for (auto f : cell->face_indices())
+//       for (unsigned int face_no = 0; face_no <GeometryInfo<spacedim>::faces_per_cell; ++face_no)
+//         {
+//           for (auto neigh_i = cell->neighbor(face_no)->begin_face(); neigh_i < cell->neighbor(face_no)->end_face(); ++neigh_i)
+//             {
+//               neigh_i->set_refine_flag();
+//               for (auto neigh_j = cell->neighbor(neigh_i)->begin_face(); neigh_j < cell->neighbor(neigh_i)->end_face(); ++neigh_j)
+//                 neigh_j->set_refine_flag();
+//             }
+//          }
+//       particle = pic.end();
+//     }
 
+
+//   parallel::distributed::SolutionTransfer<spacedim, LA::MPI::Vector> transfer(
+//     dh);
+//   tria.prepare_coarsening_and_refinement();
+//   inclusions.inclusions_as_particles.prepare_for_coarsening_and_refinement();
+//   transfer.prepare_for_coarsening_and_refinement(
+//     locally_relevant_solution.block(0));
+//   tria.execute_coarsening_and_refinement();
+//   inclusions.inclusions_as_particles.unpack_after_coarsening_and_refinement();
+//   setup_dofs();
+//   transfer.interpolate(solution.block(0));
+//   constraints.distribute(solution.block(0));
+//   locally_relevant_solution.block(0) = solution.block(0);
+}
 
 template <int dim, int spacedim>
 void
@@ -1137,13 +1184,13 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
       const auto local_lambda = lambda_to_pressure.locally_owned_elements();
       if constexpr (spacedim == 3)
         {
-          unsigned int previous_inclusion_number = 10000;
+          int previous_inclusion_number = -1;
           auto tensorR = inclusions.get_rotation(0);
           for (const auto &ll : local_lambda)
             {
               const unsigned inclusion_number = (unsigned int)floor(
                  ll / (inclusions.get_n_coefficients() * spacedim));
-              // ll / (inclusions.inclusions_data[0].size()));
+
               auto lii = ll - inclusion_number * inclusions.get_n_coefficients()*spacedim;
               const unsigned mode_number = (unsigned int) floor(lii / spacedim) ;
               const unsigned coor_number = lii % spacedim;
@@ -1151,19 +1198,20 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
               if (previous_inclusion_number != inclusion_number)
                 tensorR = inclusions.get_rotation(inclusion_number);
 
-              // if (lii == 0 || lii == 4) // only works without rotation
               if (mode_number == 0 || mode_number == 1)
                 {
                   AssertIndexRange(inclusion_number, inclusions.n_inclusions());
                   pressure[inclusions.get_vesselID(inclusion_number)] +=
                     lambda_to_pressure[ll]*tensorR[coor_number][mode_number] / used_number_modes ;
                     // * weights[inclusion_number]; 
-                    inclusions_to_divide_by[inclusions.get_vesselID(inclusion_number)] += 1;
+//                    inclusions_to_divide_by[inclusions.get_vesselID(inclusion_number)] += 1;
                   pressure_at_inc[inclusion_number] +=
                     lambda_to_pressure[ll]*tensorR[coor_number][mode_number] / used_number_modes;
                 }
             previous_inclusion_number = inclusion_number;
             }
+          pressure.compress(VectorOperation::add);
+          pressure_at_inc.compress(VectorOperation::add);
         }
       else // spacedim = 2
         {
@@ -1171,27 +1219,23 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
             {
               const unsigned inclusion_number = (unsigned int)floor(
                 ll / (inclusions.get_n_coefficients() * spacedim));
-              /*
+              
               auto lii =
                 ll - inclusion_number * (inclusions.get_n_coefficients() * spacedim);
               if (lii == 0 || lii == 3)
                 {
                   AssertIndexRange(inclusion_number, inclusions.n_inclusions());
-                  pressure[inclusion_number] +=
-                    lambda_to_pressure[ll] / 2 * weights[inclusion_number];
-                  pressure_at_inc[inclusion_number] +=
-                    lambda_to_pressure[ll] / 2 * weights[inclusion_number];
+                  pressure[inclusions.get_vesselID(inclusion_number)] +=
+                    lambda_to_pressure[ll] / used_number_modes;
                 }
-              */
-              pressure[inclusions.get_vesselID(inclusion_number)] +=
-                (lambda_to_pressure[ll]) /
-                (inclusions.get_n_coefficients() * spacedim);
             }
           pressure_at_inc = pressure;
+          pressure.print(std::cout);
+          local_lambda.print(std::cout);
         }
-      pressure.compress(VectorOperation::add);
-      pressure_at_inc.compress(VectorOperation::add);
-      inclusions_to_divide_by.compress(VectorOperation::add);
+//      pressure.compress(VectorOperation::add);
+//      pressure_at_inc.compress(VectorOperation::add);
+/*      inclusions_to_divide_by.compress(VectorOperation::add);
       for (auto ix = 0; ix < pressure.size(); ++ix)
         pressure[ix] /= inclusions_to_divide_by[ix];
       if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
@@ -1204,7 +1248,7 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
         }
         std::cout << std::endl;
       }
-
+*/
 //      Vector<double> vector_pressure(pressure);
 
       // print .txt only sequential
@@ -1315,22 +1359,29 @@ ElasticityProblem<dim, spacedim>::run()
           assemble_coupling();
           solve();
           output_results();
-          if (spacedim == 2)
-            {
-              FunctionParser<spacedim> weight(par.weight_expression);
+
+          {
+            if constexpr (spacedim == 2)
+              {
+                FunctionParser<spacedim> weight(par.weight_expression);
+                par.convergence_table.error_from_exact(
+                  dh,
+                  locally_relevant_solution.block(0),
+                  par.exact_solution,
+                  &weight);
+              }
+            else
               par.convergence_table.error_from_exact(
-                dh,
-                locally_relevant_solution.block(0),
-                par.exact_solution,
-                &weight);
-            }
-          else
-            par.convergence_table.error_from_exact(
-              dh, locally_relevant_solution.block(0), par.bc);
+                dh, locally_relevant_solution.block(0), par.bc);
+            par.convergence_table.output_table(pcout.get_stream());
+          }
+          if constexpr (spacedim == 2)
+            output_pressure(cycle == 0 ? true : false);
+
           if (cycle != par.n_refinement_cycles - 1)
             refine_and_transfer();
         }
-      output_pressure(true);
+        output_pressure(true);
 
       if (par.domain_type == "generate")
         compute_boundary_stress(true);
@@ -1391,32 +1442,33 @@ void
 ElasticityProblem<dim, spacedim>::run_timestep()
 {
   if (cycle == 0) // at first timestep we refine
+  {
     for (unsigned int ref_cycle = 0; ref_cycle < par.n_refinement_cycles;
          ++ref_cycle)
-      {
-        // setup_dofs();
-        assemble_elasticity_system(); // questo mi serve perche sto raffinando
-        assemble_coupling();
-        solve();
-        if (ref_cycle != par.n_refinement_cycles - 1)
-          refine_and_transfer();
-      }
+        // refine_and_transfer_around_inclusions();
+    {
+
+    // setup_dofs();
+    assemble_elasticity_system(); // questo mi serve perche sto raffinando
+    assemble_coupling();
+    solve();
+    if (ref_cycle != par.n_refinement_cycles - 1)
+            refine_and_transfer();
+    }
+  }
   else
     {
-      // if (cycle == 1)
-      // assemble_elasticity_system(); // questo in teoria non mi serve ma devo
-      // fare reinit del block blabla
-      // assemble_coupling();
       reassemble_coupling_rhs();
       solve();
     }
-  output_results();
+
+//   output_results();
   coupling_pressure.clear();
   coupling_pressure = output_pressure(cycle == 0 ? true : false);
   // coupling_pressure.update_ghost_values();
 
   // compute_boundary_stress(true);
-  ++cycle;
+  cycle++;
 }
 
 template <int dim, int spacedim>
@@ -1433,132 +1485,7 @@ ElasticityProblem<dim, spacedim>::update_inclusions_data(
 // {
 //   return inclusions.map_vessel_inclusions;
 // }
-/*
-template <int dim, int spacedim>
-void ElasticityProblem, dim,
-  spacedim > ::run_coupled_simulation(std::string input_file_name_1D, unsigned
-int iterSampling)
-{
-  // TODO:
-  // get number of processors and assign some exclusively to the 1D
 
-  Model1d pb1D;
-  int     id = 0, p = 1;
-  // define process ID and number of processes
-  pb1D.partitionID = id;
-  pb1D.nproc       = p;
-  // initialize model
-  pb1D.verbose = 0;
-
-  if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
-    pb1D.init(input_file_name);
-  MPI_Barrier(mpi_communicator);
-
-  // enter time loop
-  pb1D.iT         = 0; // not simple iteration counter !
-  int    iter     = 0;
-  double timestep = 0.0;
-  double tEnd     = Utilities::MPI::broadcast(mpi_communicator, pb1D.tEnd, 0);
-  double dt = Utilities::MPI::broadcast(mpi_communicator, pb1D.dtMaxLTSLIMIT,
-0);
-
-  while (timestep < tEnd)
-    {
-      std::cout << "proc " << Utilities::MPI::this_mpi_process(mpi_communicator)
-                << " in loop" << std::endl;
-      // write files for Sarah
-      // pb1D.writePressure();
-      // pb1D.writeEXTPressure();
-      // solve time step
-      if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
-        {
-          std::cout << " proc 0 solving pb" << std::endl;
-          pb1D.solveTimeStep(pb1D.dtMaxLTSLIMIT);
-        }
-      MPI_Barrier(mpi_communicator);
-
-      std::cout << "proc " << Utilities::MPI::this_mpi_process(mpi_communicator)
-                << " after 1d dt" << std::endl;
-
-      // every iterSampling we aso perform the 3D
-      if (iter > 0 && iter % iterSampling == 0)
-        {
-          std::cout << "proc "
-                    << Utilities::MPI::this_mpi_process(mpi_communicator)
-                    << " in if" << std::endl;
-
-          if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
-            pb1D.compute_new_displacement_for_coupling();
-
-          // problem3D.update_inclusions_data(pb1D.new_displacement);
-          MPI_Barrier(mpi_communicator);
-
-          std::vector<double> new_displacement_data = pb1D.new_displacement;
-          MPI_Barrier(mpi_communicator);
-          Utilities::MPI::broadcast(
-            mpi_communicator,
-            new_displacement_data); // canbe omitted if all processors execute
-                                    // the 1D
-          std::cout << "proc "
-                    << Utilities::MPI::this_mpi_process(mpi_communicator)
-                    << " has ew daata of size " << new_displacement_data.size()
-                    << std::endl;
-
-          if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
-            {
-              std::cout << "new displacement data: ";
-              for (long unsigned int print_index = 0;
-                   print_index < pb1D.new_displacement.size();
-                   ++print_index)
-                std::cout << print_index << ": "
-                          << pb1D.new_displacement[print_index] << ", ";
-              std::cout << std::endl;
-            }
-          MPI_Barrier(mpi_communicator);
-          std::cout << "proc "
-                    << Utilities::MPI::this_mpi_process(mpi_communicator)
-                    << " has ew daata of size " << new_displacement_data.size()
-                    << std::endl;
-
-          problem3D.update_inclusions_data(new_displacement_data);
-          problem3D.run_timestep();
-
-          // if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
-          //   std::cout << "new pressure data";
-
-          // for (auto print_index = 0;
-          //      print_index < problem3D.coupling_pressure.size();
-          //      ++print_index)
-          //   std::cout << print_index << ": " <<
-          //                problem3D.coupling_pressure[print_index] << ", ";
-          //   if (problem3D.coupling_pressure.locally_owned_elements()
-          //         .is_element(print_index))
-          //     std::cout
-          //       << print_index << ": " << scientific << setprecision(4)
-          //       << problem3D.coupling_pressure[print_index] << ", ";
-          // if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
-          //   std::cout << std::endl;
-
-          // AssertDimension(problem3D.coupling_pressure.size(), pb1D.NV);
-          // if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
-          // {
-          //    for (int i = 0; i < pb1D.NV; i++)
-          //      for (int j = 0; j < pb1D.vess[i].NCELLS; j++)
-          //        pb1D.vess[i].setpeconst(j, -problem3D.coupling_pressure[i]);
-          // }
-        }
-
-      // write files for Sarah
-      // pb1D.writeArea();
-      // pb1D.writeFlow();
-
-      iter++;
-      pb1D.iT += 1;
-      timestep += dt;
-    }
-  pb1D.end();
-}
-*/
 // Template instantiations
 template class ElasticityProblem<2>;
 template class ElasticityProblem<2, 3>; // dim != spacedim

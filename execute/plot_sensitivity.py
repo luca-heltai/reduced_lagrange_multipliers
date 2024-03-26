@@ -11,39 +11,41 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-SAVE = False
+SAVE = True
 
 os.chdir('/home/camilla/Desktop/COUPLING/')
 
-directory = 'output/sensitivity_inclusions/'
+directory = 'output/sensitivity_inclusions_2/'
 df = pd.read_csv(directory+'result_execute_sensitivity.csv')
 df.head()
 
 fig, axs = plt.subplots(2, 2, layout='constrained')
-hList = [0.5, 0.1, 0.05, 0.01, 0.005, 0.001]
+#hList = [0.5, 0.1, 0.05, 0.01, 0.005, 0.001]
 refList = [5, 10, 20, 50, 100]
+hList = [0.5, 0.05, 0.01, 0.005, 0.001]
 
 abscissa = 'ref'
 selection = 'h'
-
+print(str(hList[0]))
 for c_h in hList:
     x=np.asarray(df[df[selection] == c_h][abscissa])
                             
-    axs[0,0].semilogx(-np.asarray(df[df[selection] == c_h]['p0']), x, marker = 'o')#, linestyle='None')
+    axs[0,0].loglog(x, -np.asarray(df[df[selection] == c_h]['p0']), marker = 'o', linestyle='None')
     axs[0,0].set_title('Vessel 0')
     axs[0,0].set_xlabel("transversal refinement")
     
-    axs[0,1].semilogx(-np.asarray(df[df[selection] == c_h]['p1']), x, marker = 'o')#, linestyle='None')
+    axs[0,1].loglog(x,-np.asarray(df[df[selection] == c_h]['p1']), marker = 'o', linestyle='None')
     axs[0,1].set_title('Vessel 1')
     axs[0,1].set_xlabel("transversal refinement")
     
-    axs[1,0].semilogx(-np.asarray(df[df[selection] == c_h]['p2']), x, marker = 'o')#, linestyle='None')
+    axs[1,0].loglog(x,-np.asarray(df[df[selection] == c_h]['p2']), marker = 'o', linestyle='None')
     axs[1,0].set_title('Vessel 2')
     axs[1,0].set_xlabel("transversal refinement")
 
-    
-    fig.legend(loc='lower center')
-    fig.suptitle('- External Pressure')
+   # axs[0,0].legend(str(c_h), loc='upper right')
+    print(str(c_h))
+fig.legend(loc='lower center')
+fig.suptitle('- External Pressure')
     
 
 if SAVE:
@@ -60,15 +62,15 @@ selection = 'ref'
 for c_h in refList:
     x=np.asarray(df[df[selection] == c_h][abscissa])
                             
-    axs2[0,0].semilogy(x, -np.asarray(df[df[selection] == c_h]['p0']), marker = 'o')
+    axs2[0,0].loglog(x, -np.asarray(df[df[selection] == c_h]['p0']), marker = 'o')
     axs2[0,0].set_title('Vessel 0')
     axs2[0,0].set_xlabel("longitudinal refinement")
     
-    axs2[0,1].semilogy(x, -np.asarray(df[df[selection] == c_h]['p1']), marker = 'o')
+    axs2[0,1].loglog(x, -np.asarray(df[df[selection] == c_h]['p1']), marker = 'o')
     axs2[0,1].set_title('Vessel 1')
     axs2[0,1].set_xlabel("longitudinal refinement")
     
-    axs2[1,0].semilogy(x, -np.asarray(df[df[selection] == c_h]['p2']), marker = 'o')
+    axs2[1,0].loglog(x, -np.asarray(df[df[selection] == c_h]['p2']), marker = 'o')
     axs2[1,0].set_title('Vessel 2')
     axs2[1,0].set_xlabel("longitudinal refinement")
 
@@ -82,32 +84,32 @@ if SAVE:
 else:
     plt.show()
 
-fig2, axs2 = plt.subplots(2, 2, layout='constrained')
+# fig2, axs2 = plt.subplots(2, 2, layout='constrained')
 
-for c_h in refList:
-    x=np.asarray(df[df[selection] == c_h][abscissa])
+# for c_h in refList:
+#     x=np.asarray(df[df[selection] == c_h][abscissa])
                             
-    axs2[0,0].semilogx(-np.asarray(df[df[selection] == c_h]['p0']), x, marker = 'o')
-    axs2[0,0].set_title('Vessel 0')
-    axs2[0,0].set_ylabel(r"longitudinal refinement")
+#     axs2[0,0].loglog(-np.asarray(df[df[selection] == c_h]['p0']), x, marker = 'o')
+#     axs2[0,0].set_title('Vessel 0')
+#     axs2[0,0].set_ylabel(r"longitudinal refinement")
     
-    axs2[0,1].semilogx(-np.asarray(df[df[selection] == c_h]['p1']), x, marker = 'o')
-    axs2[0,1].set_title('Vessel 1')
-    axs2[0,1].set_ylabel(r"longitudinal refinement")
+#     axs2[0,1].loglog(-np.asarray(df[df[selection] == c_h]['p1']), x, marker = 'o')
+#     axs2[0,1].set_title('Vessel 1')
+#     axs2[0,1].set_ylabel(r"longitudinal refinement")
     
-    axs2[1,0].semilogx(-np.asarray(df[df[selection] == c_h]['p2']), x, marker = 'o')
-    axs2[1,0].set_title('Vessel 2')
-    axs2[1,0].set_ylabel(r"longitudinal refinement")
+#     axs2[1,0].loglog(-np.asarray(df[df[selection] == c_h]['p2']), x, marker = 'o')
+#     axs2[1,0].set_title('Vessel 2')
+#     axs2[1,0].set_ylabel(r"longitudinal refinement")
 
     
-    fig2.legend(loc='lower center')
-    fig2.suptitle('-External Pressure')
+#     fig2.legend(loc='lower center')
+#     fig2.suptitle('-External Pressure')
     
 
-if SAVE:
-    plt.savefig(directory+"longit_2.pdf")
-else:
-    plt.show()
+# if SAVE:
+#     plt.savefig(directory+"longit_2.pdf")
+# else:
+#     plt.show()
 
 
 

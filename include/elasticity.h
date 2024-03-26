@@ -253,6 +253,9 @@ public:
   void
   refine_and_transfer();
 
+  void
+  refine_and_transfer_around_inclusions();
+
   std::string
   output_solution() const;
 
