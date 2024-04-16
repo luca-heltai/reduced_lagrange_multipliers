@@ -350,11 +350,9 @@ ElasticityProblem<dim, spacedim>::assemble_elasticity_system()
 {
   stiffness_matrix = 0;
   damping_term=0;
-  //previous_damping_term=0;
   mass_matrix=0;
   coupling_matrix  = 0;
   system_rhs       = 0;
-  //system_lhs=0;
   system_rhs_f     = 0;
   TimerOutput::Scope     t(computing_timer, "Assemble Stiffness, mass and rhs");
   FEValues<spacedim>     fe_values(*fe,
@@ -369,6 +367,7 @@ ElasticityProblem<dim, spacedim>::assemble_elasticity_system()
 
   const unsigned int          dofs_per_cell = fe->n_dofs_per_cell();
   const unsigned int          n_q_points    = quadrature->size();
+  const double                gridlength= GridTools::minimal_cell_diameter(tria);
   FullMatrix<double>          cell_matrix(dofs_per_cell, dofs_per_cell);
   FullMatrix<double>          cell_force_matrix(dofs_per_cell, dofs_per_cell);
   FullMatrix<double>          cell_mass_matrix(dofs_per_cell, dofs_per_cell);
@@ -376,7 +375,6 @@ ElasticityProblem<dim, spacedim>::assemble_elasticity_system()
   FullMatrix<double>          previous_cell_damping_term(dofs_per_cell, dofs_per_cell);
   
   Vector<double>              cell_rhs(dofs_per_cell);
-  //Vector<double>              cell_lhs(dofs_per_cell);
   std::vector<Vector<double>> rhs_values(n_q_points, Vector<double>(spacedim));
   std::vector<Tensor<2, spacedim>>     grad_phi_u(dofs_per_cell);
   std::vector<double>                  div_phi_u(dofs_per_cell);
@@ -385,8 +383,6 @@ ElasticityProblem<dim, spacedim>::assemble_elasticity_system()
 
   for (const auto &cell : dh.active_cell_iterators())
   {
-    //cell->material_id(); 
-    //std::cout<<"printing material id" << cell->material_id() << std::endl;
     if (cell->is_locally_owned())
       {
         cell_matrix = 0;
@@ -394,7 +390,6 @@ ElasticityProblem<dim, spacedim>::assemble_elasticity_system()
         cell_mass_matrix=0;
         cell_damping_term=0;
         cell_rhs    = 0;
-        //cell_lhs=0;
         fe_values.reinit(cell);
         par.rhs.vector_value_list(fe_values.get_quadrature_points(),
                                   rhs_values);
@@ -412,74 +407,52 @@ ElasticityProblem<dim, spacedim>::assemble_elasticity_system()
               {
                 phi_u[k] = fe_values[displacement].value(k, q);
               }
-           // const bool inside_circle = inclusions.is_inside_circle(fe_values.quadrature_point(q),inclusions.get_inclusion_id(q));
             for (unsigned int i = 0; i < dofs_per_cell; ++i)
               {
                 for (unsigned int j = 0; j < dofs_per_cell; ++j)
                   {
-                    //if (inside_circle)
-                    //{
-                    //   cell_matrix(i, j) +=
-                    //     (2 * 10 //par.Lame_mu *
-                    //       * scalar_product(grad_phi_u[i], grad_phi_u[j]) +
-                    //     par.Lame_lambda * div_phi_u[i] * div_phi_u[j]) *
-                    //     fe_values.JxW(q);
-                    // }
-                    //else
-                    //{
-                    double Lame_lambda=par.Lame_lambda; double Lame_mu=par.Lame_mu;
 
-                    if (cell->material_id() == 24) {Lame_lambda=par.lambda_CSF; Lame_mu=par.mu_CSF;}
-                    if (cell->material_id() == 10) {Lame_lambda=par.lambda_Thalamus; Lame_mu=par.mu_Thalamus;}
-                    if (cell->material_id() == 17) {Lame_lambda=par.lambda_HPC; Lame_mu=par.mu_HPC;}
-                    if (cell->material_id() == 2) {Lame_lambda=par.lambda_WM; Lame_mu=par.mu_WM;}
-                    if (cell->material_id() == 251) {Lame_lambda=par.lambda_CC; Lame_mu=par.mu_CC;}
-                    if (cell->material_id() == 7) {Lame_lambda=par.lambda_Cerebellum; Lame_mu=par.mu_Cerebellum;}
-                    if (cell->material_id() == 3) {Lame_lambda=par.lambda_Cortex; Lame_mu=par.mu_Cortex;}
-                    if (cell->material_id() == 16) {Lame_lambda=par.lambda_BS; Lame_mu=par.mu_BS;}
-                    if (cell->material_id() == 26) {Lame_lambda=par.lambda_BG; Lame_mu=par.mu_BG;}
-                    if (cell->material_id() == 18) {Lame_lambda=par.lambda_Amygdala; Lame_mu=par.mu_Amygdala;}  
-                    // cell_matrix(i, j) +=
-                    //  (2 * Lame_mu *
-                    //    scalar_product(grad_phi_u[i], grad_phi_u[j]) +
-                    //    Lame_lambda * div_phi_u[i] * div_phi_u[j]) *
-                    //  fe_values.JxW(q);
-                    cell_matrix(i,j) += 1000*scalar_product(grad_phi_u[i], grad_phi_u[j])*fe_values.JxW(q);
-                    //const auto &dof = dh.get_dof_index(i, j);
+                    if (par.linear_elasticity == true)
+                    {
+                      double Lame_lambda=par.Lame_lambda; double Lame_mu=par.Lame_mu;
+                      if (cell->material_id() == 24) {Lame_lambda=par.lambda_CSF; Lame_mu=par.mu_CSF;}
+                      if (cell->material_id() == 10) {Lame_lambda=par.lambda_Thalamus; Lame_mu=par.mu_Thalamus;}
+                      if (cell->material_id() == 17) {Lame_lambda=par.lambda_HPC; Lame_mu=par.mu_HPC;}
+                      if (cell->material_id() == 2) {Lame_lambda=par.lambda_WM; Lame_mu=par.mu_WM;}
+                      if (cell->material_id() == 251) {Lame_lambda=par.lambda_CC; Lame_mu=par.mu_CC;}
+                      if (cell->material_id() == 7) {Lame_lambda=par.lambda_Cerebellum; Lame_mu=par.mu_Cerebellum;}
+                      if (cell->material_id() == 3) {Lame_lambda=par.lambda_Cortex; Lame_mu=par.mu_Cortex;}
+                      if (cell->material_id() == 16) {Lame_lambda=par.lambda_BS; Lame_mu=par.mu_BS;}
+                      if (cell->material_id() == 26) {Lame_lambda=par.lambda_BG; Lame_mu=par.mu_BG;}
+                      if (cell->material_id() == 18) {Lame_lambda=par.lambda_Amygdala; Lame_mu=par.mu_Amygdala;}  
+                      
+                      cell_matrix(i, j) +=
+                      (2 * Lame_mu*scalar_product(grad_phi_u[i], grad_phi_u[j]) +
+                        Lame_lambda* div_phi_u[i] * div_phi_u[j]) *fe_values.JxW(q);
+                    }
 
-                    // for (const auto &face : cell->face_iterators() )
-                    // {
-                    //   if (face->at_boundary())
-                    //   {
-                    //     //pcout<< "entered loop"<< face->boundary_id() << std::endl;
-                    //     cell_matrix(i,j) += 1.0e13*phi_u[i]*phi_u[j]*fe_values.JxW(q);
-                    //     break;
-                    //     //pcout<< "entered loop"<< cell_matrix(i,j) << std::endl;
-                    //   }
-                    // }
+                    if(par.rayleigh_damping == true)
+                    {
+                      cell_damping_term(i,j)+= par.beta_ray*cell_matrix(i, j) + par.alpha_ray*cell_mass_matrix(i,j);
+                    }
 
+                    if (par.kelvin_voigt == true)
+                    {
+                      cell_matrix(i,j) += par.elasticity_modulus*scalar_product(grad_phi_u[i], grad_phi_u[j])*fe_values.JxW(q);
+                      cell_damping_term(i,j)+= par.neta*scalar_product(grad_phi_u[i], grad_phi_u[j])*fe_values.JxW(q);
+                    }
+
+                    if (par.maxwell==true)
+                    {
+                     cell_matrix(i,j) += scalar_product(grad_phi_u[i], grad_phi_u[j])*fe_values.JxW(q); 
+                    }
+                    
                     cell_mass_matrix(i,j) += par.rho*phi_u[i]*phi_u[j]*fe_values.JxW(q);
-                    //cell_damping_term(i,j)+= 0.0148*cell_matrix(i, j) + par.alpha*cell_mass_matrix(i,j);
-                    //cell_damping_term(i,j)+= par.neta*scalar_product(grad_phi_u[i], grad_phi_u[j])*fe_values.JxW(q);
-                    //cell_damping_term(i,j) += 0;
-                    //cell_damping_term(i,j)+= (par.relaxation_time*par.elasticity_modulus*(1-std::exp(-par.dt/par.relaxation_time)))*scalar_product(grad_phi_u[i], grad_phi_u[j])*fe_values.JxW(q);
                     
                   }
                 const auto comp_i = fe->system_to_component_index(i).first;
                 cell_rhs(i) += fe_values.shape_value(i, q) *
-                              rhs_values[q][comp_i] * fe_values.JxW(q);
-
-                // for (const auto &face : cell->face_iterators())
-                // {
-                //   if (face->at_boundary())
-                //   {
-                    
-                //     cell_rhs(i) += 1.0e1*0.001*fe_values.shape_value(i, q) * fe_values.JxW(q);
-                //     break;
-                //     //pcout<< "entered loop"<< cell_rhs(i) << std::endl;
-                //   }
-                // }
-   
+                              rhs_values[q][comp_i] * fe_values.JxW(q);   
 
               }
             for (const auto &face : cell->face_iterators() )
@@ -488,62 +461,21 @@ ElasticityProblem<dim, spacedim>::assemble_elasticity_system()
                 for (unsigned int k = 0; k < dofs_per_cell; ++k)
                 {
                   phi_u[k] = fe_values[displacement].value(k, q);
-                  //pcout << "time: "<< current_time <<std::endl;
+                  
                 }
                 for (unsigned int i = 0; i < dofs_per_cell; ++i)
                 {
-                  //auto hh=0;
                   for (unsigned int j = 0; j < dofs_per_cell; ++j)
                   {
-                    //if (face->at_boundary() && face->boundary_id() == 0){
-                    //cell_matrix(i,j)+= 1.0e5*fe_values.shape_value(i, q)*fe_values.shape_value(j, q)*fe_values.JxW(q);
-
-                    //cell_matrix(i,i)-= 1.0e10*fe_values.shape_value(i, q)*fe_values.shape_value(i, q)*fe_values.JxW(q);
-                    cell_matrix(i,j) += 1.0e10*phi_u[i]*phi_u[j] * fe_values.JxW(q);
-                    //hh += cell_matrix(i,j);
-                    //cell_force_matrix(i,i)+= 1.0e5*fe_values.shape_value(i, q)*fe_values.JxW(q);
+                    cell_matrix(i,j) += par.penalty_term*(1.0/gridlength)*phi_u[i]*phi_u[j] * fe_values.JxW(q);
                   }
-                  //if (face->at_boundary() && face->boundary_id() == 0){
-                  //cell_matrix(i,i) += 1.0e15*fe_values.shape_value(i, q)*fe_values.shape_value(i, q)*fe_values.JxW(q);
-                  //cell_matrix(i,i) += 1.0e5*phi_u[i]*phi_u[i] * fe_values.JxW(q);
-                  //cell_force_matrix(i,i)+=  9.0e8*fe_values.shape_value(i, q)*fe_values.JxW(q);
-                  cell_rhs(i) += 1.0e10*0.0001*fe_values.shape_value(i, q)*fe_values.JxW(q);
+                  cell_rhs(i) += par.penalty_term*(1.0/gridlength)*par.wave_ampltiude*fe_values.shape_value(i, q)*fe_values.JxW(q);
                 }
 
               }
       
             }
           }
-          // for (const auto &face : cell->face_iterators() )
-          // {
-          //   if (face->at_boundary() && face->boundary_id() == 0)
-          //   {
-          //     //fe_face_values.reinit(cell, face);
-              
-          //     for (unsigned int q = 0; q < n_q_points; ++q)
-          //     {
-
-          //       for (unsigned int k = 0; k < dofs_per_cell; ++k)
-          //       {
-          //         phi_u[k] = fe_values[displacement].value(k, q);
-          //       }
-          //       for (unsigned int i = 0; i < dofs_per_cell; ++i)
-          //       {
-          //         auto hh=0;
-          //         for (unsigned int j = 0; j < dofs_per_cell; ++j)
-          //         {
-          //           cell_matrix(i,j) += 1.0e10*phi_u[i]*phi_u[j]*fe_values.JxW(q);
-          //           hh -= cell_matrix(i,j);
-          //         }
-          //         cell_rhs(i) =0.1*hh;
-                  
-                  
-          //       }
-          //     }
-
-          //   }
-      
-          // }
           
       
         
@@ -800,17 +732,17 @@ ElasticityProblem<dim, spacedim>::assemble_coupling()
   system_rhs.compress(VectorOperation::add);
 }
 
-bool hasNonZeroValues(const auto &vector)
-{
-  for (const auto &value : vector)
-  {
-      if (std::abs(value) > 1e-12) // Adjust the tolerance as needed
-      {
-          return true; // Found a non-zero value
-      }
-  }
-  return false; // All values are zero
-}
+// bool hasNonZeroValues(const auto &vector)
+// {
+//   for (const auto &value : vector)
+//   {
+//       if (std::abs(value) > 1e-12) // Adjust the tolerance as needed
+//       {
+//           return true; // Found a non-zero value
+//       }
+//   }
+//   return false; // All values are zero
+// }
 
 template <int dim, int spacedim>
 void
@@ -851,10 +783,9 @@ ElasticityProblem<dim, spacedim>::solve()
   const auto amgA = linear_operator(A, prec_A);
 
   const auto D    = linear_operator<LA::MPI::Vector>(damping_term);
-  
-  //auto prev_D= D;
+
   const auto C    = linear_operator<LA::MPI::Vector>(mass_matrix);
-  //const auto Fu    = linear_operator<LA::MPI::Vector>(force_matrix);
+ 
   auto       invC = C;
   const auto amgC = linear_operator(C, prec_C);
 
@@ -874,7 +805,6 @@ ElasticityProblem<dim, spacedim>::solve()
   auto &a= acceleration.block(0);
   auto &u_pred= corrector.block(0);
 
-  //auto &l_f=system_lhs.block(0);
   auto &f = system_rhs.block(0);
   auto &f_f= system_rhs_f.block(0);
   auto &g = system_rhs.block(1);
@@ -951,93 +881,65 @@ ElasticityProblem<dim, spacedim>::solve()
       // Compute the rhs, given the data file as if it was a pressure condition
       // on the vessels.
       lambda = invM * g;
-      //lambda=g;
-      //g.print(std::cout);
 
       pcout << "   Solved for lambda " << par.inner_control.last_step()
             << " iterations." << std::endl;
 
-      //f_f= f+ Bt * lambda;
-      //f_f = f - Bt * lambda;
-      //pcout << "   g norm: " << f_f.l2_norm() << std::endl;
-      //f = Bt * g;
+      
       f_f = Bt * lambda;
 
       SolverCG<LA::MPI::Vector> cg_elasticity(par.outer_control);
       invA = inverse_operator(A, cg_elasticity, amgA);
-      invC = inverse_operator(C, cg_elasticity, amgC);
-      //pcout << "   g norm: " << g.l2_norm() << std::endl;
+      
 
      // Solve for the solution
-     
-      
-      //TrilinosWrappers::SparseMatrix trilinos_matrix(sparse_matrix);
+
       if (par.initial_time == par.final_time)
       {
         u = invA *f;
       }
       else 
       { 
-        //u = invA *f;
         const double beta=par.beta;
         const double gamma = par.gamma;
-        //auto stiffness_matrix_damped  = linear_operator<LA::MPI::Vector>(stiffness_matrix);
-        //tiffness_matrix_damped= stiffness_matrix + D;
         if (current_time ==0.0)
         {
           u=0.0000;
           v=0.0000;
           a=0.0000;
-          //a=invC*(f-A*u);
-          //a=invC*(f-D*v-A*u);
-          //v *= 0.01;
-          //f_f=f*0;
-          //f_f = Bt * lambda;
-          
-          
         }
 
-      //   //pcout << "   f norm: " << f.l2_norm() << std::endl;
-      //pcout << "   u before update: " << u.max() << std::endl;
-        double a_maxwell= std::exp(-par.dt/par.relaxation_time);
-        double b_maxwell= (par.elasticity_modulus*par.relaxation_time/par.dt)*(1-a_maxwell);
-        //f = f-(a_maxwell*b_maxwell-b_maxwell)*A*u;
-      //   //pcout << "  v: " << v.max() << std::endl;
-      //   //pcout << "   a before update: " << a.max() << std::endl;
-        //if (current_time==0) {auto prev_D=0*D;}
-        //auto prev_D=D;
         //predictor step
         u_pred =  u +  par.dt*v +  (par.dt*par.dt/2)*(1-2*beta)*a;
-      //   // pcout << "   u_pred: " << u_pred.max() << std::endl;
-        
-        
         v_pred=   v +  par.dt*(1-gamma)*a;
-      //   // pcout << "   v_pred: " << v_pred.max() << std::endl;
-      //   f = Bt * lambda;
-        // inclusions.inclusions_rhs.set_time(current_time);
-        // par.Neumann_bc.set_time(current_time);
-        //f-=D*v_pred;
-        //assemble_coupling();
-
-      //   //const auto amgAn = linear_operator((C+A*par.dt*par.dt*beta), prec_C);
-      //   //SolverGMRES<LA::MPI::Vector> cg_stiffness(par.inner_control);
-      //   SolverCG<LA::MPI::Vector> cg_stiffness(par.inner_control);
         
-        //auto                      invAn = (C+A*par.dt*par.dt*beta+D*par.dt*gamma);
-        //auto                      invAn = (C+A*b_maxwell*par.dt*par.dt*beta);
-        auto                      invAn = (C+(A)*par.dt*par.dt*beta);
-        invAn= inverse_operator(invAn,cg_stiffness,prec_C);
 
-        //a= invAn* (f - D*v_pred- A*u_pred);
-        //a= invAn* (f - A*b_maxwell*u_pred);
-        a= invAn* (f_f + f*sin(current_time) - (A)*u_pred);
-      //  // pcout << "   a after update: " << a.max() << std::endl;
+        if (par.linear_elasticity==true)
+        {
+          auto                      invAn = (C+(A)*par.dt*par.dt*beta);
+          invAn= inverse_operator(invAn,cg_stiffness,prec_C);
+          a= invAn* (f_f*sin(current_time) + f*sin(current_time) - (A)*u_pred);
+        }
+        if (par.rayleigh_damping==true || par.kelvin_voigt==true)
+        {
+          auto                      invAn = (C+A*par.dt*par.dt*beta+D*par.dt*gamma);
+          invAn= inverse_operator(invAn,cg_stiffness,prec_C);
+          a= invAn* (f_f*sin(current_time) + f*sin(current_time) - D*v_pred- A*u_pred);
+        }
+        if (par.maxwell==true)
+        {
+          double a_maxwell= std::exp(-par.dt/par.relaxation_time);
+          double b_maxwell= (par.elasticity_modulus*par.relaxation_time/par.dt)*(1-a_maxwell);
+          f_f =  Bt * lambda*sin(current_time) + f*sin(current_time) -(a_maxwell*b_maxwell-b_maxwell)*A*u;;
+          auto                      invAn = (C+A*b_maxwell*par.dt*par.dt*beta);
+          invAn= inverse_operator(invAn,cg_stiffness,prec_C);
+          a= invAn* (f_f - A*b_maxwell*u_pred);
+        }
 
         //corrector step
 
         u= u_pred + par.dt*par.dt*beta*a;
         v= v_pred + par.dt*gamma*a;
-        //f_f=Bt*lambda;
  
       }
 
@@ -1045,44 +947,11 @@ ElasticityProblem<dim, spacedim>::solve()
             << " iterations." << std::endl;
       
       pcout << "   u max: " << u.max() << std::endl;
-      //f_f.clear();
-      //pcout << "   v max: " << v.max() << std::endl;
-      // const auto &block = u; // Replace 0 with the appropriate block index
-      // if (hasNonZeroValues(block))
-      // {
-      //   std::cout << "u has non-zero values in block 0." << std::endl;
-      // }
-      // else
-      // {
-      //   std::cout << "u is zero in block 0." << std::endl;
-      // }
-      
 
     }
   constraints.distribute(u);
   inclusion_constraints.distribute(lambda);
   locally_relevant_solution = solution;
-  pcout<<locally_relevant_solution(8000)<<std::endl;
-  pcout<<f_f(4000)<<std::endl;
-  //pcout<<u(0)<<std::endl;
-  pcout<<v(4000)<<std::endl;
-  pcout<<a(4000)<<std::endl;
-  pcout<< f(4000) <<std::endl;
-  //cell->point_inside(point);
-
-
-
-
-  
-  // const auto &block = locally_relevant_solution.block(0); // Replace 0 with the appropriate block index
-  // if (hasNonZeroValues(block))
-  // {
-  //   std::cout << "locally_relevant_solution has non-zero values in block 0." << std::endl;
-  // }
-  // else
-  // {
-  //   std::cout << "locally_relevant_solution is zero in block 0." << std::endl;
-  // }
       
 }
 
@@ -1663,8 +1532,7 @@ ElasticityProblem<dim, spacedim>::run()
       }
       setup_dofs();
       assemble_elasticity_system();
-
-      //const dealii::LinearOperator<dealii::LinearAlgebraTrilinos::MPI::Vector, dealii::LinearAlgebraTrilinos::MPI::Vector, dealii::TrilinosWrappers::internal::LinearOperatorImplementation::TrilinosPayload> prev_D;
+      assemble_coupling();
 
       for (current_time = par.initial_time; current_time < par.final_time;
             current_time += par.dt, ++cycle)
@@ -1676,22 +1544,8 @@ ElasticityProblem<dim, spacedim>::run()
           par.bc.set_time(current_time);
           
           par.Neumann_bc.set_time(current_time);
-          assemble_coupling();
-          //const auto D    = linear_operator<LA::MPI::Vector>(damping_term);
-          //if (current_time==0) {auto prev_D=0*D;} 
-          
-
-          
+          //assemble_coupling();
           solve();
-          
-          // par.bc.set_time(current_time);
-          // for (const auto id : par.dirichlet_ids)
-          //   {
-          //     VectorTools::interpolate_boundary_values(dh, id, par.bc, constraints);
-          //   }
-          // constraints.close();
-          //par.bc.clear();
-
           output_results();
           output_pressure(cycle == 0 ? true : false);
 
