@@ -128,6 +128,8 @@ public:
   unsigned int                  max_cells           = 20000;
   bool                          output_pressure     = false;
   bool                          pressure_coupling   = false;
+  double penalty_term =1.0e4;
+  double wave_ampltiude=0.01;
 
   double Lame_mu = 1; double Lame_lambda = 1;
   double lambda_CSF =1; double mu_CSF=1;
@@ -144,6 +146,12 @@ public:
   double neta=1;
   double elasticity_modulus=1;
   double relaxation_time=1;
+  bool linear_elasticity = false;
+  bool rayleigh_damping =false;
+  double alpha_ray=0.1;
+  double beta_ray=0.01;
+  bool kelvin_voigt = false;
+  bool maxwell=false;
 
   mutable ParameterAcceptorProxy<Functions::ParsedFunction<spacedim>> rhs;
   mutable ParameterAcceptorProxy<Functions::ParsedFunction<spacedim>>
@@ -167,7 +175,7 @@ public:
   double dt           = 5e-3;
   double beta= 0.25;
   double gamma=0.5;
-  double alpha=0.5;
+  
 };
 
 
@@ -225,21 +233,45 @@ ElasticityProblemParameters<dim, spacedim>::ElasticityProblemParameters()
   leave_subsection();
   enter_subsection("Physical constants");
   {
-    add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
-    add_parameter("CSF lambda", lambda_CSF); add_parameter("CSF mu", mu_CSF);
-    add_parameter("Thalamus lambda", lambda_Thalamus); add_parameter("Thalamus mu", mu_Thalamus);
-    add_parameter("HPC lambda", lambda_HPC); add_parameter("HPC mu", mu_HPC);   //add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
-    add_parameter("WM lambda", lambda_WM); add_parameter("WM mu", mu_WM);    //add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
-    add_parameter("CC lambda", lambda_CC); add_parameter("CC mu", mu_CC);    //add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
-    add_parameter("Cerebellum lambda", lambda_Cerebellum); add_parameter("Cerebellum mu", mu_Cerebellum);    //add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
-    add_parameter("Cortex lambda", lambda_Cortex); add_parameter("Cortex mu", mu_Cortex);    //add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
-    add_parameter("BS lambda", lambda_BS); add_parameter("BS mu", mu_BS);   // add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
-    add_parameter("BG lambda", lambda_BG); add_parameter("BG mu", mu_BG);    //add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
-    add_parameter("Amygdala lambda", lambda_Amygdala); add_parameter("Amygdala mu", mu_Amygdala);   // add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
     add_parameter("density", rho);
-    add_parameter("viscocity", neta);
-    add_parameter("elasticity modulus", elasticity_modulus);
-    add_parameter("relaxation time", relaxation_time);
+    enter_subsection("Weak Boundary");{
+      add_parameter("Penalty term", penalty_term);
+      add_parameter("Wave amplitude", wave_ampltiude);
+    }
+    leave_subsection();
+    enter_subsection("Linear elasticity");{
+      add_parameter("linear elasticity", linear_elasticity);
+      add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
+      add_parameter("CSF lambda", lambda_CSF); add_parameter("CSF mu", mu_CSF);
+      add_parameter("Thalamus lambda", lambda_Thalamus); add_parameter("Thalamus mu", mu_Thalamus);
+      add_parameter("HPC lambda", lambda_HPC); add_parameter("HPC mu", mu_HPC);   
+      add_parameter("WM lambda", lambda_WM); add_parameter("WM mu", mu_WM);   
+      add_parameter("CC lambda", lambda_CC); add_parameter("CC mu", mu_CC);   
+      add_parameter("Cerebellum lambda", lambda_Cerebellum); add_parameter("Cerebellum mu", mu_Cerebellum);    
+      add_parameter("Cortex lambda", lambda_Cortex); add_parameter("Cortex mu", mu_Cortex);   
+      add_parameter("BS lambda", lambda_BS); add_parameter("BS mu", mu_BS);   
+      add_parameter("BG lambda", lambda_BG); add_parameter("BG mu", mu_BG);    
+      add_parameter("Amygdala lambda", lambda_Amygdala); add_parameter("Amygdala mu", mu_Amygdala);  
+    }
+    leave_subsection();
+    enter_subsection("Rayleigh damping");{
+      add_parameter("rayleigh damping", rayleigh_damping);
+      add_parameter("alpha", alpha_ray);
+      add_parameter("beta", beta_ray);
+    }
+    leave_subsection();
+    enter_subsection("Kelvin Voigt");{
+      add_parameter("kelvin voigt", kelvin_voigt);
+      add_parameter("viscocity", neta);
+      add_parameter("elasticity modulus", elasticity_modulus);
+    }
+    leave_subsection();
+    enter_subsection("Maxwell");{
+      add_parameter("maxwell", maxwell);
+      add_parameter("relaxation time", relaxation_time);
+      add_parameter("elasticity modulus", elasticity_modulus);
+    }
+    leave_subsection();
   }
   leave_subsection();
   enter_subsection("Exact solution");
@@ -254,7 +286,6 @@ ElasticityProblemParameters<dim, spacedim>::ElasticityProblemParameters()
     add_parameter("Time step", dt);
     add_parameter("beta", beta);
     add_parameter("gamma", gamma);
-    add_parameter("alpha", alpha);
   }
   leave_subsection();
 
