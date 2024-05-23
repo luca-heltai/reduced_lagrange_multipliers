@@ -27,7 +27,7 @@ main(int argc, char *argv[])
     {
       Utilities::MPI::MPI_InitFinalize mpi_initialization(argc, argv, 1);
       std::string                      prm_file;
-      int                     kPa_to_dyn_conversion = 10;
+      int                              kPa_to_dyn_conversion = 10;
 
       if (argc > 1)
         prm_file = argv[1];
@@ -47,8 +47,7 @@ main(int argc, char *argv[])
           ParameterAcceptor::initialize(prm_file);
           problem3D.run_timestep0();
           problem3D.run_timestep();
-          Vector<double> coupling_pressure(
-                      problem3D.coupling_pressure);
+          Vector<double> coupling_pressure(problem3D.coupling_pressure);
           coupling_pressure *= kPa_to_dyn_conversion;
           coupling_pressure *= -1;
 
@@ -56,9 +55,9 @@ main(int argc, char *argv[])
           if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
             {
               // to delete cout
-              std::cout << "check on applied pressure (multiplied by -" << kPa_to_dyn_conversion << ")";
-              for (auto print_index = 0;
-                   print_index < coupling_pressure.size();
+              std::cout << "check on applied pressure (multiplied by -"
+                        << kPa_to_dyn_conversion << ")";
+              for (auto print_index = 0; print_index < coupling_pressure.size();
                    ++print_index)
                 std::cout << print_index << ": "
                           << (coupling_pressure[print_index]) << ", ";

@@ -527,7 +527,8 @@ public:
             // inclusions_data[it->second] = {new_data[it->first],
             // 0,0,0,new_data[it->first]};
             for (auto inclusion_id : it->second)
-              update_single_inclusion_data_along_normal(inclusion_id, new_data[it->first]);
+              update_single_inclusion_data_along_normal(inclusion_id,
+                                                        new_data[it->first]);
             ++it;
           }
       }
@@ -552,38 +553,60 @@ public:
   {
     if constexpr (spacedim == 2)
       return;
-    
+
     AssertThrow(
-        new_data.size() == n_vessels,
-        ExcMessage(
-          "dimensions of new data for the update does not match the inclusions"));
+      new_data.size() == n_vessels,
+      ExcMessage(
+        "dimensions of new data for the update does not match the inclusions"));
 
-    for (unsigned int current_vessel = 0; current_vessel < n_vessels; ++current_vessel)
-    {
-      AssertIndexRange(current_vessel, new_data.size());
-      auto & current_new_data = new_data[current_vessel];
-      auto & current_inclusions = map_vessel_inclusions[current_vessel];
-
-      auto N1 = current_inclusions.size(); // inclusions in vessel
-      auto N2 = current_new_data.size(); // points in new_data 
-
-      AssertThrow(N2 > 1, ExcMessage("dimensions of new data for the update does not match the inclusions"));
-
-      // compute nv
-      std::vector<double> current_vessel_new_data;
-      current_vessel_new_data.push_back(current_new_data[0]);
-      for (auto i = 1; i < N1-1; ++i)
+    for (unsigned int current_vessel = 0; current_vessel < n_vessels;
+         ++current_vessel)
       {
-        auto X = i/N1/N2;
-        auto j = floor(X);
-        current_vessel_new_data.push_back((X-j)*current_new_data[j]+(1-X+j)*current_new_data[j+1]);
-      }
-      current_vessel_new_data.push_back(current_new_data[N2-1]);
+        AssertIndexRange(current_vessel, new_data.size());
+        auto &current_new_data   = new_data[current_vessel];
+        auto &current_inclusions = map_vessel_inclusions[current_vessel];
 
-      // assign nv
-      for (auto inclusion_id : current_inclusions)
-        update_single_inclusion_data_along_normal(inclusion_id, current_vessel_new_data[inclusion_id]);
-    }
+        auto N1 = current_inclusions.size(); // inclusions in vessel
+        auto N2 = current_new_data.size();   // points in new_data
+
+        AssertThrow(
+          N2 > 1,
+          ExcMessage(
+            "dimensions of new data for the update does not match the inclusions"));
+        AssertThrow(
+          N1 > 1,
+          ExcMessage(
+            "insufficient number of inclusion int the vessel for the update"));
+
+
+        // compute nv
+        // std::vector<double>
+        double current_vessel_new_data;
+        update_single_inclusion_data_along_normal(0, current_new_data[0]);
+        // current_vessel_new_data.push_back(current_new_data[0]);
+        for (auto i = 1; i < N1 - 1; ++i)
+          {
+            auto X = i / (N1 - 1) * (N2 - 1);
+            auto j = floor(X);
+            Assert(j < N2, ExcInternalError());
+            auto w = X - j;
+            current_vessel_new_data =
+              (1 - w) * current_new_data[j] + (w)*current_new_data[j + 1];
+            update_single_inclusion_data_along_normal(i,
+                                                      current_vessel_new_data);
+            // current_vessel_new_data.push_back((1-w)*current_new_data[j]+(w)*current_new_data[j+1]);
+          }
+        update_single_inclusion_data_along_normal(N1 - 1,
+                                                  current_new_data[N2 - 1]);
+        // current_vessel_new_data.push_back(current_new_data[N2-1]);
+
+        // for (auto inclusion_id : current_inclusions)
+        // {
+        //   // assign nv
+        //   update_single_inclusion_data_along_normal(inclusion_id,
+        //   current_vessel_new_data[inclusion_id]);
+        // }
+      }
 
     if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
       std::cout << "data update successful" << std::endl;
@@ -607,18 +630,32 @@ public:
   }
 
   void
-  update_single_inclusion_data_along_normal(const types::global_dof_index &inclusion_id, const double nd)
+  update_single_inclusion_data_along_normal(
+    const types::global_dof_index &inclusion_id,
+    const double                   nd)
   {
-
     AssertIndexRange(inclusion_id, inclusions_data.size());
+    // AssertIndexRange(inclusion_id, inclusions.size());
+    // // update old radius with new value
+    // if constexpr (spacedim == 2)
+    //   {
+    //     AssertDimension(inclusions[inclusion_id].size(), spacedim + 1);
+    //     inclusions[inclusion_id][spacedim] +=
+    //     inclusions_data[inclusion_id][0];
+    //   }
+    // else
+    //   {
+    //     AssertDimension(inclusions[inclusion_id].size(), 2 * spacedim + 2);
+    //     inclusions[inclusion_id][2 * spacedim] +=
+    //     inclusions_data[inclusion_id][0];
+    //   }
     inclusions_data[inclusion_id] = {nd, 0, 0, 0, nd, 0, 0, 0, 0};
   }
 
-  void 
-  update_single_vessel_data(const types::global_dof_index &vessel_id, const std::vector<double> nd)
-  {
-
-  }
+  void
+  update_single_vessel_data(const types::global_dof_index &vessel_id,
+                            const std::vector<double>      nd)
+  {}
 
   double
   get_h3D1D() const
@@ -642,6 +679,14 @@ public:
   get_offset_coefficients() const
   {
     return offset_coefficients;
+  }
+
+  unsigned int
+  get_inclusions_in_vessel(unsigned int vessel_id) const
+  {
+    AssertIndexRange(vessel_id, n_vessels);
+    unsigned int s = map_vessel_inclusions.at(vessel_id).size();
+    return s;
   }
 
   void
@@ -725,7 +770,7 @@ public:
 
   ParameterAcceptorProxy<Functions::ParsedFunction<spacedim>> inclusions_rhs;
   Particles::ParticleHandler<spacedim> inclusions_as_particles;
-  std::vector<std::vector<double>> inclusions;
+  std::vector<std::vector<double>>     inclusions;
 
   std::string                         data_file = "";
   mutable std::unique_ptr<HDF5::File> data_file_h;
@@ -736,11 +781,10 @@ public:
     map_vessel_inclusions;
 
 private:
-
-  unsigned int                     n_q_points          = 100;
-  unsigned int                     n_coefficients      = 1;
-  unsigned int                     offset_coefficients = 0;
-  double                           h3D1D               = 0.01;
+  unsigned int n_q_points          = 100;
+  unsigned int n_coefficients      = 1;
+  unsigned int offset_coefficients = 0;
+  double       h3D1D               = 0.01;
 
   const unsigned int           n_vector_components;
   MPI_Comm                     mpi_communicator;
@@ -772,26 +816,27 @@ private:
     if constexpr (spacedim == 2)
       n_vessels = inclusions.size();
     {
-    for (types::global_dof_index inc_number = 0; inc_number < inclusions.size();
-         ++inc_number)
-      map_vessel_inclusions[get_vesselID(inc_number)].push_back(inc_number);
+      for (types::global_dof_index inc_number = 0;
+           inc_number < inclusions.size();
+           ++inc_number)
+        map_vessel_inclusions[get_vesselID(inc_number)].push_back(inc_number);
 
-    types::global_dof_index id_check = 0;
+      types::global_dof_index id_check = 0;
 
-    std::map<unsigned int, std::vector<types::global_dof_index>>::iterator it =
-      map_vessel_inclusions.begin();
+      std::map<unsigned int, std::vector<types::global_dof_index>>::iterator
+        it = map_vessel_inclusions.begin();
 
-    while (it != map_vessel_inclusions.end() && id_check == it->first)
-      {
-        ++id_check;
-        ++it;
-      }
-    AssertThrow(
-      it == map_vessel_inclusions.end(),
-      ExcMessage(
-        "Vessel Ids from data file should be sequential, missing vessels ID(s)"));
+      while (it != map_vessel_inclusions.end() && id_check == it->first)
+        {
+          ++id_check;
+          ++it;
+        }
+      AssertThrow(
+        it == map_vessel_inclusions.end(),
+        ExcMessage(
+          "Vessel Ids from data file should be sequential, missing vessels ID(s)"));
 
-    n_vessels = map_vessel_inclusions.size();
+      n_vessels = map_vessel_inclusions.size();
     }
     /*
     {

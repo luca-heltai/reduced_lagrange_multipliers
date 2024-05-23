@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-SAVE = True
+SAVE = False
 
 os.chdir('/home/camilla/Desktop/COUPLING/')
 
@@ -42,7 +42,7 @@ for c_h in hList:
     axs[1,0].set_title('Vessel 2')
     axs[1,0].set_xlabel("transversal refinement")
 
-   # axs[0,0].legend(str(c_h), loc='upper right')
+    axs[0,0].legend(str(c_h), loc='upper right')
     print(str(c_h))
 fig.legend(loc='lower center')
 fig.suptitle('- External Pressure')

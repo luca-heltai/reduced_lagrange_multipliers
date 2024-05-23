@@ -772,49 +772,70 @@ template <int dim, int spacedim>
 void
 ElasticityProblem<dim, spacedim>::refine_and_transfer_around_inclusions()
 {
-//   TimerOutput::Scope t(computing_timer, "Refine");
-//   Vector<float>      error_per_cell(tria.n_active_cells());
-//   KellyErrorEstimator<spacedim>::estimate(dh,
-//                                           QGauss<spacedim - 1>(par.fe_degree +
-//                                                                1),
-//                                           {},
-//                                           locally_relevant_solution.block(0),
-//                                           error_per_cell);
-  
-//   auto particle = inclusions.inclusions_as_particles.begin();
-//   while (particle != inclusions.inclusions_as_particles.end())
-//     {
-//       const auto &cell = particle->get_surrounding_cell();
-//       const auto pic =
-//       inclusions.inclusions_as_particles.particles_in_cell(cell);
-//       Assert(pic.begin() == particle, ExcInternalError());
-//       cell->set_refine_flag();
-//       // for (auto f : cell->face_indices())
-//       for (unsigned int face_no = 0; face_no <GeometryInfo<spacedim>::faces_per_cell; ++face_no)
-//         {
-//           for (auto neigh_i = cell->neighbor(face_no)->begin_face(); neigh_i < cell->neighbor(face_no)->end_face(); ++neigh_i)
-//             {
-//               neigh_i->set_refine_flag();
-//               for (auto neigh_j = cell->neighbor(neigh_i)->begin_face(); neigh_j < cell->neighbor(neigh_i)->end_face(); ++neigh_j)
-//                 neigh_j->set_refine_flag();
-//             }
-//          }
-//       particle = pic.end();
-//     }
+  TimerOutput::Scope t(computing_timer, "Refine");
+  Vector<float>      error_per_cell(tria.n_active_cells());
+  KellyErrorEstimator<spacedim>::estimate(dh,
+                                          QGauss<spacedim - 1>(par.fe_degree +
+                                                               1),
+                                          {},
+                                          locally_relevant_solution.block(0),
+                                          error_per_cell);
 
+  const int material_id = 1;
 
-//   parallel::distributed::SolutionTransfer<spacedim, LA::MPI::Vector> transfer(
-//     dh);
-//   tria.prepare_coarsening_and_refinement();
-//   inclusions.inclusions_as_particles.prepare_for_coarsening_and_refinement();
-//   transfer.prepare_for_coarsening_and_refinement(
-//     locally_relevant_solution.block(0));
-//   tria.execute_coarsening_and_refinement();
-//   inclusions.inclusions_as_particles.unpack_after_coarsening_and_refinement();
-//   setup_dofs();
-//   transfer.interpolate(solution.block(0));
-//   constraints.distribute(solution.block(0));
-//   locally_relevant_solution.block(0) = solution.block(0);
+  auto particle = inclusions.inclusions_as_particles.begin();
+  while (particle != inclusions.inclusions_as_particles.end())
+    {
+      const auto &cell = particle->get_surrounding_cell();
+      const auto  pic =
+        inclusions.inclusions_as_particles.particles_in_cell(cell);
+      Assert(pic.begin() == particle, ExcInternalError());
+
+      cell->set_refine_flag();
+      cell->set_material_id(material_id);
+
+      // for (auto f : cell->face_indices())
+      // for (unsigned int face_no = 0; face_no
+      // <GeometryInfo<spacedim>::faces_per_cell; ++face_no)
+      for (auto vertex : cell->vertex_indices())
+        {
+          for (const auto &neigh_i :
+               GridTools::find_cells_adjacent_to_vertex(dh, vertex))
+            // for (auto neigh_i = cell->neighbor(face_no)->begin_face();
+            // neigh_i < cell->neighbor(face_no)->end_face(); ++neigh_i)
+            {
+              if (!neigh_i->refine_flag_set())
+                {
+                  neigh_i->set_refine_flag();
+                  neigh_i->set_material_id(material_id);
+                  for (auto vertey : neigh_i->vertex_indices())
+                    for (const auto &neigh_j :
+                         GridTools::find_cells_adjacent_to_vertex(dh, vertey))
+                      // for (auto neigh_j =
+                      // cell->neighbor(neigh_i)->begin_face(); neigh_j <
+                      // cell->neighbor(neigh_i)->end_face(); ++neigh_j)
+                      {
+                        neigh_j->set_refine_flag();
+                        neigh_j->set_material_id(material_id);
+                      }
+                }
+            }
+        }
+
+      particle = pic.end();
+    }
+  execute_actual_refine_and_transfer();
+
+  for (unsigned int ref_cycle = 0; ref_cycle < par.n_refinement_cycles - 1;
+       ++ref_cycle)
+    {
+      for (const auto &cell : tria.active_cell_iterators())
+        {
+          if (cell->material_id() == material_id)
+            cell->set_refine_flag();
+        }
+      execute_actual_refine_and_transfer();
+    }
 }
 
 template <int dim, int spacedim>
@@ -847,6 +868,12 @@ ElasticityProblem<dim, spacedim>::refine_and_transfer()
     for (const auto &cell : tria.active_cell_iterators())
       cell->set_refine_flag();
 
+  execute_actual_refine_and_transfer();
+}
+template <int dim, int spacedim>
+void
+ElasticityProblem<dim, spacedim>::execute_actual_refine_and_transfer()
+{
   parallel::distributed::SolutionTransfer<spacedim, LA::MPI::Vector> transfer(
     dh);
   tria.prepare_coarsening_and_refinement();
@@ -1149,34 +1176,43 @@ ElasticityProblem<dim, spacedim>::compute_boundary_stress(
 }
 
 template <int dim, int spacedim>
-TrilinosWrappers::MPI::Vector
-ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
+// TrilinosWrappers::MPI::Vector
+void
+ElasticityProblem<dim, spacedim>::compute_coupling_pressure() /*const*/
 {
-  TimerOutput::Scope t(computing_timer, "Postprocessing: Output Pressure");
-  if (inclusions.n_inclusions() > 0 && inclusions.get_offset_coefficients() == 1 &&
+  TimerOutput::Scope t(computing_timer, "Postprocessing: Computing Pressure");
+  if (inclusions.n_inclusions() > 0 &&
+      inclusions.get_offset_coefficients() == 1 &&
       inclusions.get_n_coefficients() >= 2)
     {
       const auto locally_owned_vessels =
         Utilities::MPI::create_evenly_distributed_partitioning(
           mpi_communicator, inclusions.get_n_vessels());
-        //  mpi_communicator, std::min(Utilities::MPI::this_n_processes(mpi_communicator), inclusions.get_n_vessels()), inclusions.get_n_vessels());
+      //  mpi_communicator,
+      //  std::min(Utilities::MPI::this_n_processes(mpi_communicator),
+      //  inclusions.get_n_vessels()), inclusions.get_n_vessels());
       const auto locally_owned_inclusions =
         Utilities::MPI::create_evenly_distributed_partitioning(
           mpi_communicator, inclusions.n_inclusions());
 
-      TrilinosWrappers::MPI::Vector pressure(locally_owned_vessels,
-                                             mpi_communicator);
-
-      pressure = 0;
+      // TrilinosWrappers::MPI::Vector pressure(locally_owned_vessels,
+      //                                        mpi_communicator);
+      coupling_pressure.reinit(locally_owned_vessels, mpi_communicator);
+      auto &pressure = coupling_pressure;
+      pressure       = 0;
       TrilinosWrappers::MPI::Vector pressure_at_inc(locally_owned_inclusions,
                                                     mpi_communicator);
-      pressure_at_inc                = 0;
+      // coupling_pressure_at_inclusions.reinit(locally_owned_inclusions,mpi_communicator);
+      // auto & pressure_at_inc = coupling_pressure_at_inclusions;
+      pressure_at_inc = 0;
+
       const auto &lambda_to_pressure = locally_relevant_solution.block(1);
 
       // TODO: set the weight in a smarter way
       // std::vector<double> weights(inclusions.n_inclusions(),
       //                             inclusions.get_h3D1D());
-      TrilinosWrappers::MPI::Vector inclusions_to_divide_by(locally_owned_vessels, mpi_communicator);
+      TrilinosWrappers::MPI::Vector inclusions_to_divide_by(
+        locally_owned_vessels, mpi_communicator);
       inclusions_to_divide_by = 0;
 
       const auto used_number_modes = inclusions.get_n_coefficients();
@@ -1184,17 +1220,18 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
       const auto local_lambda = lambda_to_pressure.locally_owned_elements();
       if constexpr (spacedim == 3)
         {
-          int previous_inclusion_number = -1;
-          auto tensorR = inclusions.get_rotation(0);
+          int  previous_inclusion_number = -1;
+          auto tensorR                   = inclusions.get_rotation(0);
           for (const auto &ll : local_lambda)
             {
               const unsigned inclusion_number = (unsigned int)floor(
-                 ll / (inclusions.get_n_coefficients() * spacedim));
+                ll / (inclusions.get_n_coefficients() * spacedim));
 
-              auto lii = ll - inclusion_number * inclusions.get_n_coefficients()*spacedim;
-              const unsigned mode_number = (unsigned int) floor(lii / spacedim) ;
+              auto lii = ll - inclusion_number *
+                                inclusions.get_n_coefficients() * spacedim;
+              const unsigned mode_number = (unsigned int)floor(lii / spacedim);
               const unsigned coor_number = lii % spacedim;
-              
+
               if (previous_inclusion_number != inclusion_number)
                 tensorR = inclusions.get_rotation(inclusion_number);
 
@@ -1202,13 +1239,16 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
                 {
                   AssertIndexRange(inclusion_number, inclusions.n_inclusions());
                   pressure[inclusions.get_vesselID(inclusion_number)] +=
-                    lambda_to_pressure[ll]*tensorR[coor_number][mode_number] / used_number_modes ;
-                    // * weights[inclusion_number]; 
-//                    inclusions_to_divide_by[inclusions.get_vesselID(inclusion_number)] += 1;
+                    lambda_to_pressure[ll] * tensorR[coor_number][mode_number] /
+                    used_number_modes;
+                  // * weights[inclusion_number];
+                  //                    inclusions_to_divide_by[inclusions.get_vesselID(inclusion_number)]
+                  //                    += 1;
                   pressure_at_inc[inclusion_number] +=
-                    lambda_to_pressure[ll]*tensorR[coor_number][mode_number] / used_number_modes;
+                    lambda_to_pressure[ll] * tensorR[coor_number][mode_number] /
+                    used_number_modes;
                 }
-            previous_inclusion_number = inclusion_number;
+              previous_inclusion_number = inclusion_number;
             }
           pressure.compress(VectorOperation::add);
           pressure_at_inc.compress(VectorOperation::add);
@@ -1219,9 +1259,9 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
             {
               const unsigned inclusion_number = (unsigned int)floor(
                 ll / (inclusions.get_n_coefficients() * spacedim));
-              
-              auto lii =
-                ll - inclusion_number * (inclusions.get_n_coefficients() * spacedim);
+
+              auto lii = ll - inclusion_number *
+                                (inclusions.get_n_coefficients() * spacedim);
               if (lii == 0 || lii == 3)
                 {
                   AssertIndexRange(inclusion_number, inclusions.n_inclusions());
@@ -1233,24 +1273,25 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
           pressure.print(std::cout);
           local_lambda.print(std::cout);
         }
-//      pressure.compress(VectorOperation::add);
-//      pressure_at_inc.compress(VectorOperation::add);
-/*      inclusions_to_divide_by.compress(VectorOperation::add);
-      for (auto ix = 0; ix < pressure.size(); ++ix)
-        pressure[ix] /= inclusions_to_divide_by[ix];
-      if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
-      {
-        std::cout << "inclusions per vessel";
-        inclusions_to_divide_by.print(std::cout);
-        for (auto tempel = 0; tempel < inclusions.get_n_vessels(); tempel ++)
-        {
-          std::cout << tempel << ": " << inclusions.map_vessel_inclusions.at(tempel).size();
-        }
-        std::cout << std::endl;
-      }
-*/
-//      Vector<double> vector_pressure(pressure);
+      Utilities::MPI::gather(mpi_communicator, pressure_at_inc, 0);
+      coupling_pressure_at_inclusions = pressure_at_inc;
 
+      output_coupling_pressure(cycle == 1 ? true : false);
+    }
+}
+
+template <int dim, int spacedim>
+// TrilinosWrappers::MPI::Vector
+void
+ElasticityProblem<dim, spacedim>::output_coupling_pressure(
+  bool openfilefirsttime) const
+{
+  TimerOutput::Scope t(computing_timer, "Postprocessing: output Pressure");
+  if (inclusions.n_inclusions() > 0 &&
+      inclusions.get_offset_coefficients() == 1 &&
+      inclusions.get_n_coefficients() >= 2)
+    {
+      const auto &pressure = coupling_pressure;
       // print .txt only sequential
       if (Utilities::MPI::n_mpi_processes(mpi_communicator) == 1)
         {
@@ -1290,6 +1331,10 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
           // std::vector<hsize_t> coordinates;
           data_to_write.reserve(pressure.locally_owned_size());
           // coordinates.reserve(pressure.locally_owned_size());
+          const auto locally_owned_vessels =
+            Utilities::MPI::create_evenly_distributed_partitioning(
+              mpi_communicator, inclusions.get_n_vessels());
+
           for (const auto &el : locally_owned_vessels)
             {
               // coordinates.emplace_back(el);
@@ -1321,18 +1366,65 @@ ElasticityProblem<dim, spacedim>::output_pressure(bool openfilefirsttime) const
             << "output_pressure file for time dependent simulation not implemented"
             << std::endl;
         }
-      // coupling_pressure = pressure;
-      return pressure;
+      //       // coupling_pressure = pressure;
+      //       return pressure;
     }
-  else
-    {
-      pcout
-        << "inclusions parameters ('Start index of Fourier coefficients' or 'Number of fourier coefficients') not compatible with the computation of the pressure as intended, pressure.hdf5 not generated"
-        << std::endl;
-    }
-  TrilinosWrappers::MPI::Vector temp;
-  return temp;
+  // else
+  //   {
+  //     pcout
+  //       << "inclusions parameters ('Start index of Fourier coefficients' or
+  //       'Number of fourier coefficients') not compatible with the computation
+  //       of the pressure as intended, pressure.hdf5 not generated"
+  //       << std::endl;
+  //   }
+  // TrilinosWrappers::MPI::Vector temp;
+  // return temp;
 }
+
+template <int dim, int spacedim>
+std::vector<std::vector<double>>
+ElasticityProblem<dim, spacedim>::split_pressure_over_inclusions(
+  std::vector<int> number_of_cells_per_vessel) const
+{
+  Assert(number_of_cells_per_vessel.size() == inclusions.get_n_vessels(),
+         ExcInternalError());
+
+  std::vector<std::vector<double>> split_pressure;
+  unsigned                         starting_inclusion = 0;
+
+  for (unsigned int vessel = 0; vessel < number_of_cells_per_vessel.size();
+       ++vessel)
+    {
+      auto N2 = number_of_cells_per_vessel[vessel];
+      auto N1 = inclusions.get_inclusions_in_vessel(vessel);
+
+      std::vector<double> new_vector;
+
+      // const std::vector<double> pressure_of_inc_in_vessel(pressure);//
+      // (*pressure[starting_inclusion], *pressure[starting_inclusion+N1]);
+      const auto pressure_of_inc_in_vessel(coupling_pressure_at_inclusions);
+
+      new_vector.push_back(pressure_of_inc_in_vessel[starting_inclusion]);
+
+      for (auto cell = 1; cell < N2 - 1; ++cell)
+        {
+          auto X = cell / (N2 - 1) * (N1 - 1);
+          auto j = floor(X);
+          auto w = X - j;
+
+          new_vector.push_back(
+            (1 - w) * pressure_of_inc_in_vessel[starting_inclusion + j] +
+            (w)*pressure_of_inc_in_vessel[starting_inclusion + j + 1]);
+        }
+      new_vector.push_back(
+        pressure_of_inc_in_vessel[starting_inclusion + N1 - 1]);
+      starting_inclusion += N1;
+      split_pressure.push_back(new_vector);
+    }
+
+  return split_pressure;
+}
+
 
 template <int dim, int spacedim>
 void
@@ -1352,13 +1444,13 @@ ElasticityProblem<dim, spacedim>::run()
       for (cycle = 0; cycle < par.n_refinement_cycles; ++cycle)
         {
           setup_dofs();
-          if (par.output_results_before_solving)
-            output_results();
+
           assemble_elasticity_system();
 
           assemble_coupling();
           solve();
-          output_results();
+          if (par.output_results)
+            output_results();
 
           {
             if constexpr (spacedim == 2)
@@ -1376,12 +1468,18 @@ ElasticityProblem<dim, spacedim>::run()
             par.convergence_table.output_table(pcout.get_stream());
           }
           if constexpr (spacedim == 2)
-            output_pressure(cycle == 0 ? true : false);
+            {
+              // output_pressure(cycle == 0 ? true : false);
+              compute_coupling_pressure();
+              output_coupling_pressure(cycle == 0 ? true : false);
+            }
 
           if (cycle != par.n_refinement_cycles - 1)
             refine_and_transfer();
         }
-        output_pressure(true);
+      // output_pressure(true);
+      compute_coupling_pressure();
+      output_coupling_pressure(true);
 
       if (par.domain_type == "generate")
         compute_boundary_stress(true);
@@ -1411,8 +1509,12 @@ ElasticityProblem<dim, spacedim>::run()
           par.Neumann_bc.set_time(current_time);
           assemble_coupling();
           solve();
-          output_results();
-          output_pressure(cycle == 0 ? true : false);
+
+          if (par.output_results)
+            output_results();
+          // output_pressure(cycle == 0 ? true : false);
+          compute_coupling_pressure();
+          output_coupling_pressure(cycle == 0 ? true : false);
 
           if (par.domain_type == "generate")
             compute_boundary_stress(cycle == 0 ? true : false);
@@ -1442,30 +1544,44 @@ void
 ElasticityProblem<dim, spacedim>::run_timestep()
 {
   if (cycle == 0) // at first timestep we refine
-  {
-    for (unsigned int ref_cycle = 0; ref_cycle < par.n_refinement_cycles;
-         ++ref_cycle)
-        // refine_and_transfer_around_inclusions();
     {
+      if (par.refinement_strategy == "inclusions")
+        {
+          refine_and_transfer_around_inclusions();
+          std::cout << "refining around inclusions" << std::endl;
 
-    // setup_dofs();
-    assemble_elasticity_system(); // questo mi serve perche sto raffinando
-    assemble_coupling();
-    solve();
-    if (ref_cycle != par.n_refinement_cycles - 1)
-            refine_and_transfer();
+          assemble_elasticity_system(); // questo mi serve perche sto raffinando
+          assemble_coupling();
+          solve();
+        }
+      else
+        {
+          for (unsigned int ref_cycle = 0; ref_cycle < par.n_refinement_cycles;
+               ++ref_cycle)
+            {
+              assemble_elasticity_system(); // questo mi serve perche sto
+                                            // raffinando
+              assemble_coupling();
+              solve();
+              if (ref_cycle != par.n_refinement_cycles - 1)
+                refine_and_transfer();
+            }
+        }
     }
-  }
   else
     {
       reassemble_coupling_rhs();
       solve();
     }
 
-//   output_results();
+
+  if (par.output_results)
+    output_results();
+
   coupling_pressure.clear();
-  coupling_pressure = output_pressure(cycle == 0 ? true : false);
-  // coupling_pressure.update_ghost_values();
+  // coupling_pressure = output_pressure(cycle == 0 ? true : false);
+  //   compute_coupling_pressure();
+  //   output_coupling_pressure(cycle == 0 ? true : false);
 
   // compute_boundary_stress(true);
   cycle++;
@@ -1477,6 +1593,29 @@ ElasticityProblem<dim, spacedim>::update_inclusions_data(
   std::vector<double> new_data)
 {
   inclusions.update_inclusions_data(new_data);
+}
+
+template <int dim, int spacedim>
+void
+ElasticityProblem<dim, spacedim>::update_inclusions_data(
+  std::vector<double> new_data,
+  std::vector<int>    cells_per_vessel)
+{
+  Assert(cells_per_vessel.size() == inclusions.get_n_vessels(),
+         ExcInternalError());
+  std::vector<std::vector<double>> full_vector;
+  unsigned int                     starting_point = 0;
+  for (auto &N1 : cells_per_vessel)
+    {
+      std::vector<double> vessel_vector;
+      for (auto j = 0; j < N1; ++j)
+        vessel_vector.push_back(new_data[starting_point + j]);
+
+      starting_point += N1;
+
+      full_vector.push_back(vessel_vector);
+    }
+  inclusions.update_inclusions_data(full_vector);
 }
 
 // template <int dim, int spacedim>

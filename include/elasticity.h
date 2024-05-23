@@ -137,7 +137,7 @@ public:
   mutable ParameterAcceptorProxy<ReductionControl> inner_control;
   mutable ParameterAcceptorProxy<ReductionControl> outer_control;
 
-  bool output_results_before_solving = false;
+  bool output_results = false;
 
   mutable ParsedConvergenceTable convergence_table;
 
@@ -163,8 +163,7 @@ ElasticityProblemParameters<dim, spacedim>::ElasticityProblemParameters()
   add_parameter("FE degree", fe_degree, "", this->prm, Patterns::Integer(1));
   add_parameter("Output directory", output_directory);
   add_parameter("Output name", output_name);
-  add_parameter("Output results also before solving",
-                output_results_before_solving);
+  add_parameter("Output results", output_results);
   add_parameter("Initial refinement", initial_refinement);
   add_parameter("Dirichlet boundary ids", dirichlet_ids);
   add_parameter("Neumann boundary ids", neumann_ids);
@@ -256,6 +255,9 @@ public:
   void
   refine_and_transfer_around_inclusions();
 
+  void
+  execute_actual_refine_and_transfer();
+
   std::string
   output_solution() const;
 
@@ -268,16 +270,28 @@ public:
   void
   compute_boundary_stress(bool openfilefirsttime) const; // make const
 
-  TrilinosWrappers::MPI::Vector
-  output_pressure(bool openfilefirsttime) const;
+  // TrilinosWrappers::MPI::Vector
+  // output_pressure(bool openfilefirsttime) /*const*/;
+  void
+  compute_coupling_pressure();
+  void
+  output_coupling_pressure(bool) const;
 
-  std::map<unsigned int, IndexSet>
-  get_map_vessels_inclusions() const;
+  // std::vector<types::global_dof_index>
+  // get_inclusions_of_vessel() const;
 
   void
   update_inclusions_data(std::vector<double> new_data);
+  void
+  update_inclusions_data(std::vector<double> new_data,
+                         std::vector<int>    cells_per_vessel);
+
+  std::vector<std::vector<double>>
+    split_pressure_over_inclusions(std::vector<int>) const;
 
   TrilinosWrappers::MPI::Vector coupling_pressure;
+  // TrilinosWrappers::MPI::Vector
+  Vector<double> coupling_pressure_at_inclusions;
 
 private:
   const ElasticityProblemParameters<dim, spacedim> &par;
