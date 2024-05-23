@@ -7,27 +7,27 @@ path_to_input_file_3d="input_file/input_3d.prm"
 path_to_data_file="data/inclusions_data_bif_2503_0.05.txt"
 path_to_inclusions_file="data/inclusions_points_bif_2503_0.05.txt"
 
-# ###################################################################################################################################################
-# # UNCOUPLED ELASTIC
-# ###################################################################################################################################################
-# outputFolder=${outputDir}/uncoupled_elastic
-# #remove outpur dir if it exists already
-# if [ -d "$outputFolder" ]; then rm -r $outputFolder; fi
-# # create output directory
-# mkdir ${outputFolder}
-# mkdir ${outputFolder}/3D
-# mkdir ${outputFolder}/1D
+###################################################################################################################################################
+# UNCOUPLED ELASTIC
+###################################################################################################################################################
+outputFolder=${outputDir}/uncoupled_elastic
+#remove outpur dir if it exists already
+if [ -d "$outputFolder" ]; then rm -r $outputFolder; fi
+# create output directory
+mkdir ${outputFolder}
+mkdir ${outputFolder}/3D
+mkdir ${outputFolder}/1D
 
-# # modify the output directory and dt in the new input files
-# sed -i 's|\(outDir\).*|outDir = '${outputFolder}'/1D/|' $path_to_input_file_1d
-# sed -i 's|\(outFile\).*|outFile = '${outputFolder}'/1D/|' $path_to_input_file_1d
+# modify the output directory and dt in the new input files
+sed -i 's|\(outDir\).*|outDir = '${outputFolder}'/1D/|' $path_to_input_file_1d
+sed -i 's|\(outFile\).*|outFile = '${outputFolder}'/1D/|' $path_to_input_file_1d
 
-# sed -i 's|\(set Output directory\).*|set Output directory                   = '${outputFolder}'/3D/|' $path_to_input_file_3d
-# #execute command
-# mpirun -np 12 ./build/coupled_elasticity_debug $path_to_input_file_3d $path_to_input_file_1d 3 11 >& ${outputFolder}/log
-# process_id=$!
-# wait $process_id
-# echo "completed " $outputFolder
+sed -i 's|\(set Output directory\).*|set Output directory                   = '${outputFolder}'/3D/|' $path_to_input_file_3d
+#execute command
+mpirun -np 12 ./build/coupled_elasticity_debug $path_to_input_file_3d $path_to_input_file_1d 3 11 >& ${outputFolder}/log
+process_id=$!
+wait $process_id
+echo "completed " $outputFolder
 
 
 # ###################################################################################################################################################

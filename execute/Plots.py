@@ -72,7 +72,7 @@ plt.show()
 
 ###############################################################################
 os.chdir('/home/camilla/Desktop/COUPLING/')
-directory=os.getcwd()+"/output/bifurcation_200521_b/"
+directory=os.getcwd()+"/output/bifurcation_200521/"
 
 
 # fixed parameters
@@ -81,18 +81,21 @@ fig, axs = plt.subplots(2, 2, layout='constrained')
 
 numVess=["1", "2", "3"]
 #cases=["control_elastic", "uncoupled_elastic", "brain_elastic"]
-cases=[#"control_elastic", 
-       "liver_elastic", "brain_elastic"]
-j = 2
+cases=["uncoupled_elastic", 
+       "liver_elastic"#, 
+       #"brain_elastic"
+       ]
+j = 1
+cellnr="0"
 
 for testcase in cases:
     
     dataDirectory=directory+testcase+"/1D/"
 
-    PExt_file=np.loadtxt(dataDirectory+"PresEXTVess3D_"+numVess[j]+"Cell0.txt", skiprows=8000)
-    Pres_file=np.loadtxt(dataDirectory+"PresVess3D_"+numVess[j]+"Cell0.txt", skiprows=8000)
-    Area_file=np.loadtxt(dataDirectory+"areaVess3D_"+numVess[j]+"Cell0.txt", skiprows=8000)
-    Flux_file=np.loadtxt(dataDirectory+"qVess3D_"+numVess[j]+"Cell0.txt", skiprows=8000)
+    PExt_file=np.loadtxt(dataDirectory+"PresEXTVess3D_"+numVess[j]+"Cell"+cellnr+".txt", skiprows=8000)
+    Pres_file=np.loadtxt(dataDirectory+"PresVess3D_"+numVess[j]+"Cell"+cellnr+".txt", skiprows=8000)
+    Area_file=np.loadtxt(dataDirectory+"areaVess3D_"+numVess[j]+"Cell"+cellnr+".txt", skiprows=8000)
+    Flux_file=np.loadtxt(dataDirectory+"qVess3D_"+numVess[j]+"Cell"+cellnr+".txt", skiprows=8000)
 
                             
     axs[0,0].plot(PExt_file[:,0], PExt_file[:,1]/mmHg)
@@ -123,7 +126,7 @@ for testcase in cases:
     fig.legend(loc='lower center')
     fig.suptitle(testcase)
 
-#plt.savefig(directory+testcase+"graphs.pdf")
+plt.savefig(directory+testcase+"graphs.pdf")
 
 plt.show()
 #tikzplotlib.save("test.tex")

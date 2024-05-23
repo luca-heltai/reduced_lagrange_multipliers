@@ -219,6 +219,36 @@ class ElasticityProblem : public Subscriptor
 {
 public:
   ElasticityProblem(const ElasticityProblemParameters<dim, spacedim> &par);
+
+  void
+  run();
+  void
+  run_timestep0();
+  void
+  run_timestep();
+  void
+  compute_coupling_pressure();
+
+  void
+  update_inclusions_data(std::vector<double> new_data);
+  void
+  update_inclusions_data(std::vector<double> new_data,
+                         std::vector<int>    cells_per_vessel);
+
+  std::vector<std::vector<double>>
+    split_pressure_over_inclusions(std::vector<int>) const;
+
+  unsigned int
+  n_vessels() const
+  {
+    return inclusions.get_n_vessels();
+  };
+
+  TrilinosWrappers::MPI::Vector coupling_pressure;
+  // TrilinosWrappers::MPI::Vector
+  Vector<double> coupling_pressure_at_inclusions;
+
+private:
   void
   make_grid();
   void
@@ -231,12 +261,7 @@ public:
   assemble_coupling();
   void
   reassemble_coupling_rhs();
-  void
-  run();
-  void
-  run_timestep0();
-  void
-  run_timestep();
+
   void
   check_boundary_ids();
 
@@ -273,27 +298,11 @@ public:
   // TrilinosWrappers::MPI::Vector
   // output_pressure(bool openfilefirsttime) /*const*/;
   void
-  compute_coupling_pressure();
-  void
   output_coupling_pressure(bool) const;
 
   // std::vector<types::global_dof_index>
   // get_inclusions_of_vessel() const;
 
-  void
-  update_inclusions_data(std::vector<double> new_data);
-  void
-  update_inclusions_data(std::vector<double> new_data,
-                         std::vector<int>    cells_per_vessel);
-
-  std::vector<std::vector<double>>
-    split_pressure_over_inclusions(std::vector<int>) const;
-
-  TrilinosWrappers::MPI::Vector coupling_pressure;
-  // TrilinosWrappers::MPI::Vector
-  Vector<double> coupling_pressure_at_inclusions;
-
-private:
   const ElasticityProblemParameters<dim, spacedim> &par;
   MPI_Comm                                          mpi_communicator;
   ConditionalOStream                                pcout;

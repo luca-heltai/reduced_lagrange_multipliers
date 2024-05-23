@@ -546,6 +546,7 @@ public:
     if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
       std::cout << "data update successful" << std::endl;
     compute_rotated_inclusion_data();
+    std::cout << "update data version1" << std::endl;
   }
 
   void
@@ -570,47 +571,55 @@ public:
         auto N2 = current_new_data.size();   // points in new_data
 
         AssertThrow(
-          N2 > 1,
+          N2 > 0,
           ExcMessage(
             "dimensions of new data for the update does not match the inclusions"));
         AssertThrow(
           N1 > 1,
           ExcMessage(
             "insufficient number of inclusion int the vessel for the update"));
-
-
-        // compute nv
-        // std::vector<double>
-        double current_vessel_new_data;
-        update_single_inclusion_data_along_normal(0, current_new_data[0]);
-        // current_vessel_new_data.push_back(current_new_data[0]);
-        for (auto i = 1; i < N1 - 1; ++i)
+        if (N2 == 1)
           {
-            auto X = i / (N1 - 1) * (N2 - 1);
-            auto j = floor(X);
-            Assert(j < N2, ExcInternalError());
-            auto w = X - j;
-            current_vessel_new_data =
-              (1 - w) * current_new_data[j] + (w)*current_new_data[j + 1];
-            update_single_inclusion_data_along_normal(i,
-                                                      current_vessel_new_data);
-            // current_vessel_new_data.push_back((1-w)*current_new_data[j]+(w)*current_new_data[j+1]);
+            for (auto i = 0; i < N1 - 1; ++i)
+              update_single_inclusion_data_along_normal(i, current_new_data[0]);
           }
-        update_single_inclusion_data_along_normal(N1 - 1,
-                                                  current_new_data[N2 - 1]);
-        // current_vessel_new_data.push_back(current_new_data[N2-1]);
+        else
+          {
+            // compute nv
+            // std::vector<double>
+            double current_vessel_new_data;
+            update_single_inclusion_data_along_normal(0, current_new_data[0]);
+            // current_vessel_new_data.push_back(current_new_data[0]);
+            for (auto i = 1; i < N1 - 1; ++i)
+              {
+                auto X = i / (N1 - 1) * (N2 - 1);
+                auto j = floor(X);
+                Assert(j < N2, ExcInternalError());
+                auto w = X - j;
+                current_vessel_new_data =
+                  (1 - w) * current_new_data[j] + (w)*current_new_data[j + 1];
+                update_single_inclusion_data_along_normal(
+                  i, current_vessel_new_data);
+                // current_vessel_new_data.push_back((1-w)*current_new_data[j]+(w)*current_new_data[j+1]);
+              }
+            update_single_inclusion_data_along_normal(N1 - 1,
+                                                      current_new_data[N2 - 1]);
+            // current_vessel_new_data.push_back(current_new_data[N2-1]);
 
-        // for (auto inclusion_id : current_inclusions)
-        // {
-        //   // assign nv
-        //   update_single_inclusion_data_along_normal(inclusion_id,
-        //   current_vessel_new_data[inclusion_id]);
-        // }
+            // for (auto inclusion_id : current_inclusions)
+            // {
+            //   // assign nv
+            //   update_single_inclusion_data_along_normal(inclusion_id,
+            //   current_vessel_new_data[inclusion_id]);
+            // }
+          }
       }
 
     if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
       std::cout << "data update successful" << std::endl;
     compute_rotated_inclusion_data();
+
+    std::cout << "update data version2" << std::endl;
   }
 
   int

@@ -22,6 +22,7 @@
 #include "coupledModel1d.h"
 #include "elasticity.h"
 
+
 int
 main(int argc, char *argv[])
 {
@@ -37,17 +38,24 @@ main(int argc, char *argv[])
       unsigned int                     couplingStart         = 9;
       unsigned int                     coupling_mode         = 0;
 
-      if (argc > 4)
-        {
-          prm_file         = argv[1];
-          input_file_name  = argv[2];
-          couplingSampling = std::strtol(argv[3], NULL, 10);
-          couplingStart    = std::strtol(argv[4], NULL, 10);
+      if (argc > 1)
+        prm_file = argv[1];
+      else
+        prm_file = "parameters.prm";
 
-          if (argc > 5)
-            coupling_mode = std::strtol(argv[5], NULL, 10);
-          // mode 0 = constant pressure over vessels
-          // mode 1 = coupling at inclusions/cells level
+      if (argc > 2)
+        {
+          std::cout << "Running coupled problem" << std::endl;
+          input_file_name = argv[2];
+          if (argc > 4)
+            {
+              couplingSampling = std::strtol(argv[3], NULL, 10);
+              couplingStart    = std::strtol(argv[4], NULL, 10);
+              if (argc > 5)
+                coupling_mode = std::strtol(argv[5], NULL, 10);
+              // mode 0 = constant pressure over vessels
+              // mode 1 = coupling at inclusions/cells level
+            }
 
           ElasticityProblemParameters<3> par;
           ElasticityProblem<3>           problem3D(par);
@@ -64,20 +72,21 @@ main(int argc, char *argv[])
             pb1D.verbose = 0;
 
             std::vector<int> number_of_cells_per_vessel;
-
-            if (coupling_mode == 1)
+            if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
               {
-                if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
-                  {
-                    pb1D.init(input_file_name);
-                    for (int i = 0; i < pb1D.NV; i++)
-                      number_of_cells_per_vessel.push_back(pb1D.vess[i].NCELLS);
-                  }
-                MPI_Barrier(MPI_COMM_WORLD);
-                // Utilities::MPI::broadcast(MPI_COMM_WORLD,
-                // number_of_cells_per_vessel);
-              }
+                pb1D.init(input_file_name);
+                AssertDimension(problem3D.n_vessels(), pb1D.NV);
 
+                for (int i = 0; i < pb1D.NV; i++)
+                  number_of_cells_per_vessel.push_back(pb1D.vess[i].NCELLS);
+              }
+            // else
+            //   number_of_cells_per_vessel.resize(problem3D.n_vessels());
+
+            MPI_Barrier(MPI_COMM_WORLD);
+            number_of_cells_per_vessel =
+              Utilities::MPI::broadcast(MPI_COMM_WORLD,
+                                        number_of_cells_per_vessel);
 
             // enter time loop
             pb1D.iT         = 0; // not simple iteration counter !
@@ -86,51 +95,50 @@ main(int argc, char *argv[])
             double tEnd = Utilities::MPI::broadcast(MPI_COMM_WORLD, pb1D.tEnd);
             double dt =
               Utilities::MPI::broadcast(MPI_COMM_WORLD, pb1D.dtMaxLTSLIMIT);
-
+            MPI_Barrier(MPI_COMM_WORLD);
             while (timestep < tEnd)
               {
-                // write files for Sarah
-                pb1D.writePressure();
-                pb1D.writeEXTPressure();
-
                 // solve time step
                 if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
                   {
+                    // write files for Sarah
+                    pb1D.writePressure();
+                    pb1D.writeEXTPressure();
                     pb1D.solveTimeStep(pb1D.dtMaxLTSLIMIT);
                   }
                 MPI_Barrier(MPI_COMM_WORLD);
-
                 // every iterSampling we aso perform the 3D
                 if (timestep > couplingStart && iter % couplingSampling == 0)
                   {
                     if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
-                      pb1D.compute_new_displacement_for_coupling(coupling_mode);
+                      {
+                        pb1D.compute_new_displacement_for_coupling(
+                          coupling_mode);
+                      }
                     MPI_Barrier(MPI_COMM_WORLD);
 
                     std::vector<double> new_displacement_data =
                       Utilities::MPI::broadcast(MPI_COMM_WORLD,
                                                 pb1D.new_displacement);
 
-                    //   // to delete cout
-                    //   if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) ==
-                    //   0)
-                    //     {
-                    //       std::cout << "new displacement data: ";
-                    //       for (long unsigned int print_index = 0;
-                    //            print_index < pb1D.new_displacement.size();
-                    //            ++print_index)
-                    //         std::cout << print_index << ": " << scientific
-                    //                   << setprecision(4)
-                    //                   << pb1D.new_displacement[print_index]
-                    //                   << ", ";
-                    //       std::cout << std::endl;
-                    //     }
-                    //   // end cout
+                    // // to delete cout
+                    // if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) ==
+                    // 0)
+                    //   {
+                    //     std::cout << "new displacement data: ";
+                    //     for (long unsigned int print_index = 0;
+                    //          print_index < pb1D.new_displacement.size();
+                    //          ++print_index)
+                    //       std::cout << print_index << ": " << scientific
+                    //                 << setprecision(4)
+                    //                 << pb1D.new_displacement[print_index]
+                    //                 << ", ";
+                    //     std::cout << std::endl;
+                    //   }
+                    // // end cout
+
                     if (coupling_mode == 0)
                       {
-                        // Assert(new_displacement_data.size() == ,
-                        // ExcInternalError());
-
                         problem3D.update_inclusions_data(new_displacement_data);
                       }
                     else // if (coupling_mode == 1)
@@ -154,25 +162,22 @@ main(int argc, char *argv[])
                           {
                             AssertDimension(problem3D.coupling_pressure.size(),
                                             pb1D.NV);
-                            //   // to delete cout
-                            //   {
-                            //   std::cout << "check on applied pressure
-                            //   (multiplied by - " << kPa_to_dyn_conversion <<
-                            //   ")"; for (auto print_index = 0;
-                            //        print_index < coupling_pressure.size();
-                            //        ++print_index)
-                            //     std::cout << print_index << ": "
-                            //               << (coupling_pressure[print_index])
-                            //               <<
-                            //               ", ";
-                            //   std::cout << std::endl;
-                            //   }
-                            //   // end cout
+                            // // to delete cout
+                            // {
+                            // std::cout << "check on applied pressure
+                            // (multiplied by - " << kPa_to_dyn_conversion
+                            // <<")";
+                            //  for (auto print_index = 0;
+                            //      print_index < coupling_pressure.size();
+                            //      ++print_index)
+                            //   std::cout << print_index << ": "
+                            //             << (coupling_pressure[print_index])
+                            //             <<
+                            //             ", ";
+                            // std::cout << std::endl;
+                            // }
+                            // // end cout
 
-                            std::vector<std::vector<double>>
-                              coupling_pressure_pointwise =
-                                problem3D.split_pressure_over_inclusions(
-                                  number_of_cells_per_vessel);
 
                             for (int i = 0; i < pb1D.NV; i++)
                               for (int j = 0; j < pb1D.vess[i].NCELLS; j++)
@@ -233,14 +238,16 @@ main(int argc, char *argv[])
                 pb1D.iT += 1;
                 timestep += dt;
               }
-
-            pb1D.closeFilesPlot();
-            pb1D.end();
+            if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
+              {
+                pb1D.closeFilesPlot();
+                pb1D.end();
+              }
           }
         }
-      else if (argc > 2)
+      else // run uncuopled problem
         {
-          prm_file = argv[1];
+          std::cout << "Running uncoupled problem" << std::endl;
           ElasticityProblemParameters<3> par;
           ElasticityProblem<3>           problem3D(par);
           ParameterAcceptor::initialize(prm_file);
