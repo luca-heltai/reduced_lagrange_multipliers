@@ -19,9 +19,8 @@
 
 #include <iomanip>
 
-#include "coupledModel1d.h"
 #include "elasticity.h"
-
+#include "coupledModel1d.h"
 
 int
 main(int argc, char *argv[])
