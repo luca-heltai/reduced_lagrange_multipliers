@@ -202,8 +202,9 @@ main(int argc, char *argv[])
                             for (int i = 0; i < pb1D.NV; i++)
                               for (int j = 0; j < pb1D.vess[i].NCELLS; j++)
                                 {
-                                  auto pe = -coupling_pressure_pointwise[i][j] *
+                                  auto pe = coupling_pressure_pointwise[i][j] *
                                             kPa_to_dyn_conversion;
+                                  pe *= -1;
                                   pb1D.vess[i].setpeconst(j, pe);
                                 }
                           }
