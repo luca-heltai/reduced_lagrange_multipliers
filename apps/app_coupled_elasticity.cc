@@ -56,7 +56,7 @@ main(int argc, char *argv[])
               // mode 1 = coupling at inclusions/cells level
             }
 
-          if (couplingSatrt < 100)
+          if (couplingStart < 100)
           {
             if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
             {

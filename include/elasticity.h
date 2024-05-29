@@ -294,7 +294,10 @@ private:
   print_parameters() const;
 
   void
-  compute_boundary_stress(bool openfilefirsttime) const; // make const
+  compute_internal_and_boundary_stress(bool openfilefirsttime) const;
+
+  void
+  compute_face_stress(bool openfilefirsttime) const;
 
   // TrilinosWrappers::MPI::Vector
   // output_pressure(bool openfilefirsttime) /*const*/;
