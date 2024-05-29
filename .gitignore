@@ -36,4 +36,5 @@ build/
 output/*
 input_file/*
 data/*
+execute/*
 compile_commands.json

@@ -543,10 +543,10 @@ public:
         ExcMessage(
           "dimensions of new data for the update does not match the inclusions"));
 
-    if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
-      std::cout << "data update successful" << std::endl;
+    // if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
+    //   std::cout << "data update successful" << std::endl;
     compute_rotated_inclusion_data();
-    std::cout << "update data version1" << std::endl;
+    // std::cout << "update data version1" << std::endl;
   }
 
   void
@@ -615,11 +615,11 @@ public:
           }
       }
 
-    if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
-      std::cout << "data update successful" << std::endl;
+    // if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
+    //   std::cout << "data update successful" << std::endl;
     compute_rotated_inclusion_data();
 
-    std::cout << "update data version2" << std::endl;
+    // std::cout << "update data version2" << std::endl;
   }
 
   int

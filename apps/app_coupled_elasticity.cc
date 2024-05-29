@@ -14,13 +14,14 @@
  * ---------------------------------------------------------------------
  *
  * Author: Wolfgang Bangerth, University of Heidelberg, 2000
- * Modified by: Luca Heltai, 2020
+ * Modified by: Luca Heltai, 2020, Camilla Belponer 2023
  */
 
 #include <iomanip>
 
 #include "elasticity.h"
 #include "coupledModel1d.h"
+
 
 int
 main(int argc, char *argv[])
@@ -44,7 +45,6 @@ main(int argc, char *argv[])
 
       if (argc > 2)
         {
-          std::cout << "Running coupled problem" << std::endl;
           input_file_name = argv[2];
           if (argc > 4)
             {
@@ -54,6 +54,14 @@ main(int argc, char *argv[])
                 coupling_mode = std::strtol(argv[5], NULL, 10);
               // mode 0 = constant pressure over vessels
               // mode 1 = coupling at inclusions/cells level
+            }
+
+          if (couplingSatrt < 100)
+          {
+            if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
+            {
+              std::cout << "Running coupled problem with parameters: Sampling = " << couplingSampling
+              << " Start = " << couplingStart << " mode (DEPRECATED) = " << coupling_mode << std::endl;
             }
 
           ElasticityProblemParameters<3> par;
@@ -101,8 +109,11 @@ main(int argc, char *argv[])
                 if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
                   {
                     // write files for Sarah
-                    pb1D.writePressure();
-                    pb1D.writeEXTPressure();
+                    if (pb1D.NV < 10)
+                      {
+                        pb1D.writePressure();
+                        pb1D.writeEXTPressure();
+                      }
                     pb1D.solveTimeStep(pb1D.dtMaxLTSLIMIT);
                   }
                 MPI_Barrier(MPI_COMM_WORLD);
@@ -188,16 +199,46 @@ main(int argc, char *argv[])
                       }
                     else // if (coupling_mode == 1)
                       {
+                        Vector<double> pressure(
+                          problem3D.coupling_pressure_at_inclusions);
+
                         if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) ==
                             0)
                           {
                             std::vector<std::vector<double>>
                               coupling_pressure_pointwise =
                                 problem3D.split_pressure_over_inclusions(
-                                  number_of_cells_per_vessel);
+                                  number_of_cells_per_vessel, pressure);
 
                             AssertDimension(coupling_pressure_pointwise.size(),
                                             pb1D.NV);
+
+                            // // to delete cout
+                            // {
+                            // std::cout << "check on applied pressure
+                            // (multiplied by - " << kPa_to_dyn_conversion<<")";
+                            //  for (auto print_index = 0;
+                            //      print_index <
+                            //      coupling_pressure_pointwise.size();
+                            //      ++print_index)
+                            //      {
+                            //       std::cout << print_index << ": ";
+                            //       for (auto print_jdex = 0; print_jdex <
+                            //       coupling_pressure_pointwise[print_index].size();
+                            //       ++print_jdex)
+                            //         {
+                            //           auto pe =
+                            //           coupling_pressure_pointwise[print_index][print_jdex]
+                            //           * kPa_to_dyn_conversion; pe *= -1;
+                            //         std::cout << pe << " ";
+                            //         }
+                            //         std::cout << ", ";
+                            //      }
+
+                            // std::cout << std::endl;
+                            // }
+                            // // end cout
+
 
                             for (int i = 0; i < pb1D.NV; i++)
                               for (int j = 0; j < pb1D.vess[i].NCELLS; j++)
@@ -231,8 +272,11 @@ main(int argc, char *argv[])
                   }
 
                 // write files for Sarah
-                pb1D.writeArea();
-                pb1D.writeFlow();
+                if (pb1D.NV < 10)
+                  {
+                    pb1D.writeArea();
+                    pb1D.writeFlow();
+                  }
 
                 iter++;
                 pb1D.iT += 1;
@@ -240,14 +284,66 @@ main(int argc, char *argv[])
               }
             if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
               {
-                pb1D.closeFilesPlot();
+                if (pb1D.NV < 10)
+                  pb1D.closeFilesPlot();
                 pb1D.end();
               }
+          }
+          }
+        else // uncoupled 1d
+          {
+            if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
+            {
+              std::cout << "Running uncoupled 1D problem" << std::endl;
+            }
+            CoupledModel1d pb1D;
+            int            id = 0, p = 1;
+            // define process ID and number of processes
+            pb1D.partitionID = id;
+            pb1D.nproc       = p;
+            // initialize model
+            pb1D.verbose = 0;
+
+            pb1D.init(input_file_name);
+
+            // enter time loop
+            pb1D.iT         = 0; // not simple iteration counter !
+            int    iter     = 0;
+            double timestep = 0.0;
+            double tEnd = pb1D.tEnd;
+            double dt = pb1D.dtMaxLTSLIMIT;
+            while (timestep < tEnd)
+              {
+                // solve time step
+                // write files for Sarah
+                if (pb1D.NV < 10)
+                  {
+                    pb1D.writePressure();
+                    pb1D.writeEXTPressure();
+                  }
+                pb1D.solveTimeStep(pb1D.dtMaxLTSLIMIT);
+
+                // write files for Sarah
+                if (pb1D.NV < 10)
+                  {
+                    pb1D.writeArea();
+                    pb1D.writeFlow();
+                  }
+
+                iter++;
+                pb1D.iT += 1;
+                timestep += dt;
+              }
+            if (pb1D.NV < 10)
+              pb1D.closeFilesPlot();
+            pb1D.end();
+
           }
         }
       else // run uncuopled problem
         {
-          std::cout << "Running uncoupled problem" << std::endl;
+          if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
+            std::cout << "Running uncoupled 3D problem" << std::endl;
           ElasticityProblemParameters<3> par;
           ElasticityProblem<3>           problem3D(par);
           ParameterAcceptor::initialize(prm_file);

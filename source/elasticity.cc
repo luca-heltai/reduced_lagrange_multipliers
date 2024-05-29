@@ -1384,7 +1384,8 @@ ElasticityProblem<dim, spacedim>::output_coupling_pressure(
 template <int dim, int spacedim>
 std::vector<std::vector<double>>
 ElasticityProblem<dim, spacedim>::split_pressure_over_inclusions(
-  std::vector<int> number_of_cells_per_vessel) const
+  std::vector<int> number_of_cells_per_vessel,
+  Vector<double>   full_press) const
 {
   Assert(number_of_cells_per_vessel.size() == inclusions.get_n_vessels(),
          ExcInternalError());
@@ -1402,7 +1403,8 @@ ElasticityProblem<dim, spacedim>::split_pressure_over_inclusions(
 
       // const std::vector<double> pressure_of_inc_in_vessel(pressure);//
       // (*pressure[starting_inclusion], *pressure[starting_inclusion+N1]);
-      const auto pressure_of_inc_in_vessel(coupling_pressure_at_inclusions);
+      const Vector<double> pressure_of_inc_in_vessel(
+        coupling_pressure_at_inclusions);
 
       new_vector.push_back(pressure_of_inc_in_vessel[starting_inclusion]);
 
@@ -1579,11 +1581,12 @@ ElasticityProblem<dim, spacedim>::run_timestep()
     output_results();
 
   coupling_pressure.clear();
+  coupling_pressure_at_inclusions.clear();
   // coupling_pressure = output_pressure(cycle == 0 ? true : false);
   //   compute_coupling_pressure();
   //   output_coupling_pressure(cycle == 0 ? true : false);
 
-  // compute_boundary_stress(true);
+  compute_boundary_stress(cycle == 0 ? true : false);
   cycle++;
 }
 
@@ -1609,8 +1612,10 @@ ElasticityProblem<dim, spacedim>::update_inclusions_data(
     {
       std::vector<double> vessel_vector;
       for (auto j = 0; j < N1; ++j)
-        vessel_vector.push_back(new_data[starting_point + j]);
-
+        {
+          AssertIndexRange(starting_point + j, new_data.size());
+          vessel_vector.push_back(new_data[starting_point + j]);
+        }
       starting_point += N1;
 
       full_vector.push_back(vessel_vector);

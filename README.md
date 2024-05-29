@@ -25,5 +25,7 @@ run in parallel as
 
 export OMP_NUM_THREADS=1 
 
-mpirun -np n ./build/coupled_elasticity_debug <path_to_input_3d> <path_to_input_1d> <couplingSampling> <couplingStart>
+mpirun -np n ./build/coupled_elasticity_debug <path_to_input_3d> <path_to_input_1d> <couplingSampling> <couplingStart> 0
+
+random error for the order of include in app_* "invalid template argument"
 

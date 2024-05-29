@@ -236,7 +236,7 @@ public:
                          std::vector<int>    cells_per_vessel);
 
   std::vector<std::vector<double>>
-    split_pressure_over_inclusions(std::vector<int>) const;
+    split_pressure_over_inclusions(std::vector<int>, Vector<double>) const;
 
   unsigned int
   n_vessels() const
@@ -245,8 +245,9 @@ public:
   };
 
   TrilinosWrappers::MPI::Vector coupling_pressure;
-  // TrilinosWrappers::MPI::Vector
-  Vector<double> coupling_pressure_at_inclusions;
+  TrilinosWrappers::MPI::Vector
+    // Vector<double>
+    coupling_pressure_at_inclusions;
 
 private:
   void
