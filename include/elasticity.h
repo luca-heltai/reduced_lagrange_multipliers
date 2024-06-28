@@ -72,6 +72,7 @@ namespace LA
 #include <deal.II/lac/trilinos_sparse_matrix.h>
 #include <deal.II/lac/trilinos_vector.h>
 #include <deal.II/lac/trilinos_solver.h>
+
 //#include <deal.II/trilinos/parameter_acceptor.h>
 #include <deal.II/lac/vector.h>
 
@@ -84,6 +85,7 @@ namespace LA
 #include <deal.II/numerics/data_out.h>
 #include <deal.II/numerics/error_estimator.h>
 #include <deal.II/numerics/vector_tools.h>
+//#include <deal.II/numerics/matrix_tools.h>
 
 #include <deal.II/opencascade/manifold_lib.h>
 #include <deal.II/opencascade/utilities.h>
@@ -126,19 +128,13 @@ public:
   unsigned int                  max_cells           = 20000;
   bool                          output_pressure     = false;
   bool                          pressure_coupling   = false;
+  bool                          inertia_term        = true;
+  double penalty_term =1.0e4;
+  double wave_ampltiude=0.01;
 
   double Lame_mu = 1; double Lame_lambda = 1;
-  double lambda_CSF =1; double mu_CSF=1;
-  double lambda_Thalamus =1; double mu_Thalamus=1;
-  double lambda_HPC =1; double mu_HPC=1;
-  double lambda_WM =1; double mu_WM=1;
-  double lambda_CC =1; double mu_CC=1;
-  double lambda_Cerebellum =1; double mu_Cerebellum=1;
-  double lambda_Cortex =1; double mu_Cortex=1;
-  double lambda_BS =1; double mu_BS=1;
-  double lambda_BG =1; double mu_BG=1;
-  double lambda_Amygdala =1; double mu_Amygdala=1;
   double rho=1;
+  
 
   mutable ParameterAcceptorProxy<Functions::ParsedFunction<spacedim>> rhs;
   mutable ParameterAcceptorProxy<Functions::ParsedFunction<spacedim>>
@@ -160,6 +156,9 @@ public:
   double initial_time = 0.0;
   double final_time   = 0.0;
   double dt           = 5e-3;
+  double beta= 0.25;
+  double gamma=0.5;
+  
 };
 
 
@@ -191,6 +190,9 @@ ElasticityProblemParameters<dim, spacedim>::ElasticityProblemParameters()
     "If this is true, then we do NOT solve a saddle point problem, but we use the "
     "input data as a pressure field on the vasculature network, and we solve for "
     "the displacement field directly.");
+  add_parameter("Inertia term",inertia_term,"If this is true then the Inertia term/"
+    "mass matrix is taken into consideration and the time stepping becomes in "
+    "in accordance to Newmark Scheme.");
   enter_subsection("Grid generation");
   {
     add_parameter("Domain type",
@@ -217,18 +219,8 @@ ElasticityProblemParameters<dim, spacedim>::ElasticityProblemParameters()
   leave_subsection();
   enter_subsection("Physical constants");
   {
-    add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
-    add_parameter("CSF lambda", lambda_CSF); add_parameter("CSF mu", mu_CSF);
-    add_parameter("Thalamus lambda", lambda_Thalamus); add_parameter("Thalamus mu", mu_Thalamus);
-    add_parameter("HPC lambda", lambda_HPC); add_parameter("HPC mu", mu_HPC);   //add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
-    add_parameter("WM lambda", lambda_WM); add_parameter("WM mu", mu_WM);    //add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
-    add_parameter("CC lambda", lambda_CC); add_parameter("CC mu", mu_CC);    //add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
-    add_parameter("Cerebellum lambda", lambda_Cerebellum); add_parameter("Cerebellum mu", mu_Cerebellum);    //add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
-    add_parameter("Cortex lambda", lambda_Cortex); add_parameter("Cortex mu", mu_Cortex);    //add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
-    add_parameter("BS lambda", lambda_BS); add_parameter("BS mu", mu_BS);   // add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
-    add_parameter("BG lambda", lambda_BG); add_parameter("BG mu", mu_BG);    //add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
-    add_parameter("Amygdala lambda", lambda_Amygdala); add_parameter("Amygdala mu", mu_Amygdala);   // add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
     add_parameter("density", rho);
+    add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
   }
   leave_subsection();
   enter_subsection("Exact solution");
@@ -241,6 +233,11 @@ ElasticityProblemParameters<dim, spacedim>::ElasticityProblemParameters()
     add_parameter("Initial time", initial_time);
     add_parameter("Final time", final_time);
     add_parameter("Time step", dt);
+    enter_subsection("Newmark Scheme parameters");
+    {
+      add_parameter("beta", beta);
+      add_parameter("gamma", gamma);
+    }
   }
   leave_subsection();
 
@@ -327,6 +324,7 @@ public:
   LA::MPI::SparseMatrix                           stiffness_matrix;
   LA::MPI::SparseMatrix                           mass_matrix;
   LA::MPI::SparseMatrix                           coupling_matrix;
+
   LA::MPI::SparseMatrix                           inclusion_matrix;
   LA::MPI::BlockVector                            solution;
   LA::MPI::BlockVector                            velocity;
@@ -335,6 +333,7 @@ public:
   LA::MPI::BlockVector                            corrector;
   LA::MPI::BlockVector                            locally_relevant_solution;
   LA::MPI::BlockVector                            system_rhs;
+
   std::vector<std::vector<BoundingBox<spacedim>>> global_bounding_boxes;
   unsigned int                                    cycle = 0;
 

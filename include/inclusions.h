@@ -96,6 +96,7 @@ public:
                     (spacedim == 2 ? "0; 0" : "0; 0; 0"));
     };
     inclusions_rhs.declare_parameters_call_back.connect(reset_function);
+    
   }
 
 
@@ -279,10 +280,10 @@ public:
     mpi_communicator = tria.get_communicator();
     initialize();
     compute_rotated_inclusion_data();
-
+    
     inclusions_as_particles.initialize(tria,
                                        StaticMappingQ1<spacedim>::mapping);
-
+    
     if (n_dofs() == 0)
       return;
 
@@ -290,9 +291,10 @@ public:
     auto inclusions_set =
       Utilities::MPI::create_evenly_distributed_partitioning(mpi_communicator,
                                                              n_inclusions());
-
+    
     std::vector<Point<spacedim>> particles_positions;
     particles_positions.reserve(n_particles());
+    
     for (const auto i : inclusions_set)
       {
         const auto &p = get_current_support_points(i);
@@ -300,7 +302,7 @@ public:
                                    p.begin(),
                                    p.end());
       }
-
+    
     std::vector<BoundingBox<spacedim>> all_boxes;
     all_boxes.reserve(tria.n_locally_owned_active_cells());
     for (const auto &cell : tria.active_cell_iterators())
@@ -308,22 +310,28 @@ public:
         all_boxes.emplace_back(cell->bounding_box());
     const auto tree        = pack_rtree(all_boxes);
     const auto local_boxes = extract_rtree_level(tree, rtree_extraction_level);
-
+   // std::cout << "Size of local_bounding_boxes: " << local_boxes.size() << std::endl;
+    
     auto global_bounding_boxes =
       Utilities::MPI::all_gather(mpi_communicator, local_boxes);
-
+   // std::cout << "Size of global_bounding_boxes: " <<  global_bounding_boxes[0].size() << std::endl;
     Assert(!global_bounding_boxes.empty(),
            ExcInternalError(
              "I was expecting the "
              "global_bounding_boxes to be filled at this stage. "
              "Make sure you fill this vector before trying to use it "
              "here. Bailing out."));
+    
+    //std::cout << "Size of partilce_pos: " <<  particles_positions.size() << std::endl;
+    //std::cout << "Size of global_bounding: " << global_bounding_boxes.size() << std::endl;
     inclusions_as_particles.insert_global_particles(particles_positions,
                                                     global_bounding_boxes);
-
+    
     // Sanity check.
+    //std::cout << "Size of global_bounding_boxes: " << global_bounding_boxes.size() << std::endl;
     AssertDimension(inclusions_as_particles.n_global_particles(),
-                    n_particles());
+                   n_particles());
+    
   }
 
   /**
@@ -498,6 +506,20 @@ public:
     for (unsigned int d = 0; d < spacedim; ++d)
       center[d] = inclusion[d];
     return center;
+  }
+
+  
+  bool is_inside_circle(const Point<spacedim> &point, const unsigned int inclusion_id) const
+  {
+    AssertIndexRange(inclusion_id, n_inclusions());
+    const Point<spacedim> center = get_center(inclusion_id);
+
+    // Calculate the distance from the point to the center of the circle
+    const double distance_to_center = center.distance(point);
+
+    // Check if the distance is less than or equal to the radius of the circle
+    const double radius = inclusions[inclusion_id][2];
+    return (distance_to_center <= radius);
   }
 
 
