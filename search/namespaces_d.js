@@ -62,12 +62,15 @@ var searchData=
   ['polynomials_59',['Polynomials',['http://www.dealii.org/developer/doxygen/deal.II/namespacePolynomials.html',1,'']]],
   ['polynomials_3a_3ainternal_60',['internal',['http://www.dealii.org/developer/doxygen/deal.II/namespacePolynomials_1_1internal.html',1,'Polynomials']]],
   ['polynomials_3a_3ainternal_3a_3alagrangeequidistantimplementation_61',['LagrangeEquidistantImplementation',['http://www.dealii.org/developer/doxygen/deal.II/namespacePolynomials_1_1internal_1_1LagrangeEquidistantImplementation.html',1,'Polynomials::internal']]],
-  ['preconditionblock_62',['PreconditionBlock',['http://www.dealii.org/developer/doxygen/deal.II/classPreconditionBlock_1_1AdditionalData.html',1,'']]],
-  ['preconditionblockjacobi_63',['PreconditionBlockJacobi',['http://www.dealii.org/developer/doxygen/deal.II/classPreconditionBlockJacobi_1_1const__iterator_1_1Accessor.html',1,'']]],
-  ['preconditionblockjacobi_3a_3aconst_5fiterator_64',['const_iterator',['http://www.dealii.org/developer/doxygen/deal.II/classPreconditionBlockJacobi_1_1const__iterator_1_1Accessor.html',1,'PreconditionBlockJacobi']]],
-  ['preconditionchebyshev_65',['PreconditionChebyshev',['http://www.dealii.org/developer/doxygen/deal.II/structPreconditionChebyshev_1_1AdditionalData.html',1,'']]],
-  ['preconditionidentity_66',['PreconditionIdentity',['http://www.dealii.org/developer/doxygen/deal.II/structPreconditionIdentity_1_1AdditionalData.html',1,'']]],
-  ['preconditionpsor_67',['PreconditionPSOR',['http://www.dealii.org/developer/doxygen/deal.II/classPreconditionPSOR_1_1AdditionalData.html',1,'']]],
-  ['preconditionrelaxation_68',['PreconditionRelaxation',['http://www.dealii.org/developer/doxygen/deal.II/classPreconditionRelaxation_1_1AdditionalData.html',1,'']]],
-  ['preconditionrichardson_69',['PreconditionRichardson',['http://www.dealii.org/developer/doxygen/deal.II/classPreconditionRichardson_1_1AdditionalData.html',1,'']]]
+  ['portable_62',['Portable',['http://www.dealii.org/developer/doxygen/deal.II/namespacePortable.html',1,'']]],
+  ['portable_3a_3ainternal_63',['internal',['http://www.dealii.org/developer/doxygen/deal.II/namespacePortable_1_1internal.html',1,'Portable']]],
+  ['portable_3a_3amatrixfree_64',['MatrixFree',['http://www.dealii.org/developer/doxygen/deal.II/structPortable_1_1MatrixFree_1_1AdditionalData.html',1,'Portable']]],
+  ['preconditionblock_65',['PreconditionBlock',['http://www.dealii.org/developer/doxygen/deal.II/classPreconditionBlock_1_1AdditionalData.html',1,'']]],
+  ['preconditionblockjacobi_66',['PreconditionBlockJacobi',['http://www.dealii.org/developer/doxygen/deal.II/classPreconditionBlockJacobi_1_1const__iterator_1_1Accessor.html',1,'']]],
+  ['preconditionblockjacobi_3a_3aconst_5fiterator_67',['const_iterator',['http://www.dealii.org/developer/doxygen/deal.II/classPreconditionBlockJacobi_1_1const__iterator_1_1Accessor.html',1,'PreconditionBlockJacobi']]],
+  ['preconditionchebyshev_68',['PreconditionChebyshev',['http://www.dealii.org/developer/doxygen/deal.II/structPreconditionChebyshev_1_1AdditionalData.html',1,'']]],
+  ['preconditionidentity_69',['PreconditionIdentity',['http://www.dealii.org/developer/doxygen/deal.II/structPreconditionIdentity_1_1AdditionalData.html',1,'']]],
+  ['preconditionpsor_70',['PreconditionPSOR',['http://www.dealii.org/developer/doxygen/deal.II/classPreconditionPSOR_1_1AdditionalData.html',1,'']]],
+  ['preconditionrelaxation_71',['PreconditionRelaxation',['http://www.dealii.org/developer/doxygen/deal.II/classPreconditionRelaxation_1_1AdditionalData.html',1,'']]],
+  ['preconditionrichardson_72',['PreconditionRichardson',['http://www.dealii.org/developer/doxygen/deal.II/classPreconditionRichardson_1_1AdditionalData.html',1,'']]]
 ];

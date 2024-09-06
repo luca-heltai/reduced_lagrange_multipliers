@@ -11,6 +11,5 @@ var searchData=
   ['computing_20with_20multiple_20processors_20using_20distributed_20memory_8',['Parallel computing with multiple processors using distributed memory',['http://www.dealii.org/developer/doxygen/deal.II/group__distributed.html',1,'']]],
   ['concepts_20or_20expectations_20on_20template_20parameters_9',['Concepts, or expectations on template parameters',['http://www.dealii.org/developer/doxygen/deal.II/group__Concepts.html',1,'']]],
   ['constraints_20on_20degrees_20of_20freedom_10',['Constraints on degrees of freedom',['http://www.dealii.org/developer/doxygen/deal.II/group__constraints.html',1,'']]],
-  ['containers_11',['Iterators on mesh-like containers',['http://www.dealii.org/developer/doxygen/deal.II/group__Iterators.html',1,'']]],
-  ['cuda_20wrappers_12',['CUDA Wrappers',['http://www.dealii.org/developer/doxygen/deal.II/group__CUDAWrappers.html',1,'']]]
+  ['containers_11',['Iterators on mesh-like containers',['http://www.dealii.org/developer/doxygen/deal.II/group__Iterators.html',1,'']]]
 ];

@@ -19,7 +19,7 @@ var searchData=
   ['block_5fvector_5fbase_2eh_16',['block_vector_base.h',['http://www.dealii.org/developer/doxygen/deal.II/block__vector__base_8h.html',1,'']]],
   ['boundary_5flib_2eh_17',['boundary_lib.h',['http://www.dealii.org/developer/doxygen/deal.II/boundary__lib_8h.html',1,'']]],
   ['bounding_5fbox_2ecc_18',['bounding_box.cc',['http://www.dealii.org/developer/doxygen/deal.II/bounding__box_8cc.html',1,'']]],
-  ['bounding_5fbox_2eh_19',['bounding_box.h',['http://www.dealii.org/developer/doxygen/deal.II/boost__adaptors_2bounding__box_8h.html',1,'(Global Namespace)'],['http://www.dealii.org/developer/doxygen/deal.II/base_2bounding__box_8h.html',1,'(Global Namespace)']]],
+  ['bounding_5fbox_2eh_19',['bounding_box.h',['http://www.dealii.org/developer/doxygen/deal.II/base_2bounding__box_8h.html',1,'(Global Namespace)'],['http://www.dealii.org/developer/doxygen/deal.II/boost__adaptors_2bounding__box_8h.html',1,'(Global Namespace)']]],
   ['bounding_5fbox_5fdata_5fout_2eh_20',['bounding_box_data_out.h',['http://www.dealii.org/developer/doxygen/deal.II/bounding__box__data__out_8h.html',1,'']]],
   ['bvh_2eh_21',['bvh.h',['http://www.dealii.org/developer/doxygen/deal.II/bvh_8h.html',1,'']]]
 ];

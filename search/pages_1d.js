@@ -45,7 +45,9 @@ var searchData=
   ['version_209_203_202_20and_209_203_203_42',['Changes between Version 9.3.2 and 9.3.3',['http://www.dealii.org/developer/doxygen/deal.II/changes_between_9_3_2_and_9_3_3.html',1,'']]],
   ['version_209_203_203_20and_209_204_200_43',['Changes between Version 9.3.3 and 9.4.0',['http://www.dealii.org/developer/doxygen/deal.II/changes_between_9_3_3_and_9_4_0.html',1,'']]],
   ['version_209_204_200_20and_209_205_200_44',['Changes between Version 9.4.0 and 9.5.0',['http://www.dealii.org/developer/doxygen/deal.II/changes_between_9_4_0_and_9_5_0.html',1,'']]],
-  ['visco_20elasticity_20code_20gallery_20program_45',['The &apos;Quasi-Static Finite-Strain Quasi-incompressible Visco-elasticity&apos; code gallery program',['http://www.dealii.org/developer/doxygen/deal.II/code_gallery_Quasi_static_Finite_strain_Quasi_incompressible_ViscoElasticity.html',1,'']]],
-  ['viscoelasticity_20code_20gallery_20program_46',['The &apos;Nonlinear poro-viscoelasticity&apos; code gallery program',['http://www.dealii.org/developer/doxygen/deal.II/code_gallery_Nonlinear_PoroViscoelasticity.html',1,'']]],
-  ['viscoelastoplastic_20topography_20evolution_20code_20gallery_20program_47',['The &apos;Viscoelastoplastic topography evolution&apos; code gallery program',['http://www.dealii.org/developer/doxygen/deal.II/code_gallery_CeresFE.html',1,'']]]
+  ['version_209_205_200_20and_209_205_202_45',['Changes between Version 9.5.0 and 9.5.2',['http://www.dealii.org/developer/doxygen/deal.II/changes_between_9_5_0_and_9_5_2.html',1,'']]],
+  ['version_209_205_202_20and_209_206_200_46',['Changes between Version 9.5.2 and 9.6.0',['http://www.dealii.org/developer/doxygen/deal.II/changes_between_9_5_2_and_9_6_0.html',1,'']]],
+  ['visco_20elasticity_20code_20gallery_20program_47',['The &apos;Quasi-Static Finite-Strain Quasi-incompressible Visco-elasticity&apos; code gallery program',['http://www.dealii.org/developer/doxygen/deal.II/code_gallery_Quasi_static_Finite_strain_Quasi_incompressible_ViscoElasticity.html',1,'']]],
+  ['viscoelasticity_20code_20gallery_20program_48',['The &apos;Nonlinear poro-viscoelasticity&apos; code gallery program',['http://www.dealii.org/developer/doxygen/deal.II/code_gallery_Nonlinear_PoroViscoelasticity.html',1,'']]],
+  ['viscoelastoplastic_20topography_20evolution_20code_20gallery_20program_49',['The &apos;Viscoelastoplastic topography evolution&apos; code gallery program',['http://www.dealii.org/developer/doxygen/deal.II/code_gallery_CeresFE.html',1,'']]]
 ];

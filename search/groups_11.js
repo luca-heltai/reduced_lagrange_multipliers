@@ -8,6 +8,7 @@ var searchData=
   ['the_20meshworker_20interface_5',['The MeshWorker interface',['http://www.dealii.org/developer/doxygen/deal.II/group__MeshWorker.html',1,'']]],
   ['together_6',['How Mapping, FiniteElement, and FEValues work together',['http://www.dealii.org/developer/doxygen/deal.II/group__FE__vs__Mapping__vs__FEValues.html',1,'']]],
   ['tpetrawrappers_7',['TpetraWrappers',['http://www.dealii.org/developer/doxygen/deal.II/group__TpetraWrappers.html',1,'']]],
-  ['triangulations_8',['triangulations',['http://www.dealii.org/developer/doxygen/deal.II/group__grid.html',1,'Grids and Triangulations'],['http://www.dealii.org/developer/doxygen/deal.II/group__manifold.html',1,'Manifold description for triangulations']]],
-  ['trilinoswrappers_9',['TrilinosWrappers',['http://www.dealii.org/developer/doxygen/deal.II/group__TrilinosWrappers.html',1,'']]]
+  ['triangulations_8',['Grids and Triangulations',['http://www.dealii.org/developer/doxygen/deal.II/group__grid.html',1,'']]],
+  ['triangulations_9',['Manifold description for triangulations',['http://www.dealii.org/developer/doxygen/deal.II/group__manifold.html',1,'']]],
+  ['trilinoswrappers_10',['TrilinosWrappers',['http://www.dealii.org/developer/doxygen/deal.II/group__TrilinosWrappers.html',1,'']]]
 ];
