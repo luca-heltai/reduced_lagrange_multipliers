@@ -5,6 +5,5 @@ var searchData=
   ['element_20support_2',['hp-finite element support',['http://www.dealii.org/developer/doxygen/deal.II/group__hp.html',1,'']]],
   ['elements_3',['Finite elements',['http://www.dealii.org/developer/doxygen/deal.II/group__feall.html',1,'']]],
   ['exceptions_20and_20assertions_4',['Exceptions and assertions',['http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html',1,'']]],
-  ['expectations_20on_20template_20parameters_5',['Concepts, or expectations on template parameters',['http://www.dealii.org/developer/doxygen/deal.II/group__Concepts.html',1,'']]],
-  ['experimental_6',['Simplex support (experimental)',['http://www.dealii.org/developer/doxygen/deal.II/group__simplex.html',1,'']]]
+  ['expectations_20on_20template_20parameters_5',['Concepts, or expectations on template parameters',['http://www.dealii.org/developer/doxygen/deal.II/group__Concepts.html',1,'']]]
 ];

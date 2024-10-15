@@ -1,5 +1,8 @@
 var NAVTREEINDEX6 =
 {
+"namespacePolynomials_1_1internal.html":[163,0,103,0],
+"namespacePortable.html":[163,0,104],
+"namespaceReferenceCells.html":[163,0,113],
 "namespaceReferenceCells.html#a0c212a545f1f9d88893231c66d78d552":[163,0,113,7],
 "namespaceReferenceCells.html#a14badca7aa0e6d807934973e046a2e2f":[163,0,113,6],
 "namespaceReferenceCells.html#a2a5c95240422d7dded5ef3c1c4bf07d7":[163,0,113,10],
@@ -246,8 +249,5 @@ var NAVTREEINDEX6 =
 "namespaceUtilities_1_1MPI.html#aa8e632a701db5e1ba05c4656a914e82b":[163,0,160,2,21],
 "namespaceUtilities_1_1MPI.html#ab765646d52311e79f046e43a84f2705c":[163,0,160,2,22],
 "namespaceUtilities_1_1MPI.html#abc3e9bfdca6711a9e06c64cf740fc611":[163,0,160,2,49],
-"namespaceUtilities_1_1MPI.html#ad9e62ba86d4ffacadb8374e468c11516":[163,0,160,2,17],
-"namespaceUtilities_1_1MPI.html#ae0d6a2f3f89d09651ad00c3c44f25581":[163,0,160,2,31],
-"namespaceUtilities_1_1MPI.html#ae1a6010093934733412b070e393f14b0":[163,0,160,2,35],
-"namespaceUtilities_1_1MPI.html#ae34c12b7f8c2f96e1e61618a466a36b6":[163,0,160,2,9]
+"namespaceUtilities_1_1MPI.html#ad9e62ba86d4ffacadb8374e468c11516":[163,0,160,2,17]
 };

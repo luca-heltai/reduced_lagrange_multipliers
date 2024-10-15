@@ -1,6 +1,6 @@
 var hierarchy =
 [
-    [ "Subscriptor", "http://www.dealii.org/developer/doxygen/deal.II/classSubscriptor.html", [
+    [ "EnableObserverPointer", "http://www.dealii.org/developer/doxygen/deal.II/classEnableObserverPointer.html", [
       [ "ElasticityProblem< dim, spacedim >", "class_elasticity_problem.html", null ],
       [ "ParameterAcceptor", "http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html", [
         [ "ElasticityProblemParameters< dim, dim >", "class_elasticity_problem_parameters.html", null ],

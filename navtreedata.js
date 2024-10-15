@@ -218,13 +218,13 @@ var NAVTREEINDEX =
 "class_poisson_problem.html#af19b3bb2762dec0942e1772e6ad33e5e",
 "group__threads.html#ga53b5a1555f82d36e88b889e7bb8d1517",
 "namespaceDoFTools.html#a3e30887d7a90dc1422a9bb9e90ee1a05",
-"namespaceGridRefinement.html#a1cf30058b31ce7f9b389e8310bb9fc54",
-"namespaceLinearAlgebra_1_1TpetraWrappers_1_1TpetraTypes.html#a9e19779bbd2899d9864d7b4c071593d7",
-"namespaceReferenceCells.html#a0c212a545f1f9d88893231c66d78d552",
-"namespaceUtilities_1_1MPI.html#ae6b67f340ae37780263c2ea666b7566c",
-"namespacehp_1_1Refinement.html",
-"namespaceinternal_1_1MatrixFreeFunctions.html#a6996a5a2494d6330aac07caa02f9c33e",
-"namespacetypes.html#a3488a37f8b9d4cec5bfa723dddf7256e"
+"namespaceGridRefinement.html",
+"namespaceLinearAlgebra_1_1TpetraWrappers_1_1TpetraTypes.html#a948048ee43686de403afa46220b5f0a9",
+"namespacePolynomials_1_1internal.html",
+"namespaceUtilities_1_1MPI.html#ae0d6a2f3f89d09651ad00c3c44f25581",
+"namespacedeal__II__exceptions_1_1internals.html#af497c2ab12e991e1297f9f31f826ff07",
+"namespaceinternal_1_1MatrixFreeFunctions.html#a4d00c0d5884021f25691d6be7b4d6d21",
+"namespacetypes.html#a201d9c6aae26c90eb0ac68fc712b6011"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

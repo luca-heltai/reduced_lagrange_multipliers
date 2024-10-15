@@ -1,5 +1,6 @@
 var NAVTREEINDEX4 =
 {
+"namespaceGridRefinement.html":[163,0,51],
 "namespaceGridRefinement.html#a1cf30058b31ce7f9b389e8310bb9fc54":[163,0,51,6],
 "namespaceGridRefinement.html#a48e5395381ed87155942a61a1edd134d":[163,0,51,8],
 "namespaceGridRefinement.html#a52ecb57c6fa25805a26727843c877932":[163,0,51,9],
@@ -248,6 +249,5 @@ var NAVTREEINDEX4 =
 "namespaceLinearAlgebra_1_1TpetraWrappers_1_1TpetraTypes.html#a64c29f0902cd5138869bbf942365dd50":[163,0,64,3,6,0],
 "namespaceLinearAlgebra_1_1TpetraWrappers_1_1TpetraTypes.html#a779c90302476054486100a932440b4e2":[163,0,64,3,6,10],
 "namespaceLinearAlgebra_1_1TpetraWrappers_1_1TpetraTypes.html#a7ecd266a98f76e6d275b8614c1b719c9":[163,0,64,3,6,11],
-"namespaceLinearAlgebra_1_1TpetraWrappers_1_1TpetraTypes.html#a93e059af6353132932262dc7c3afae4f":[163,0,64,3,6,6],
-"namespaceLinearAlgebra_1_1TpetraWrappers_1_1TpetraTypes.html#a948048ee43686de403afa46220b5f0a9":[163,0,64,3,6,3]
+"namespaceLinearAlgebra_1_1TpetraWrappers_1_1TpetraTypes.html#a93e059af6353132932262dc7c3afae4f":[163,0,64,3,6,6]
 };

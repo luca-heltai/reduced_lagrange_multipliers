@@ -1,5 +1,8 @@
 var NAVTREEINDEX10 =
 {
+"namespacetypes.html#a201d9c6aae26c90eb0ac68fc712b6011":[163,0,159,11],
+"namespacetypes.html#a24c02646474836ad4f37ca167e191276":[163,0,159,8],
+"namespacetypes.html#a2510b6835b1ec4a277ef342b5db6aee0":[163,0,159,7],
 "namespacetypes.html#a3488a37f8b9d4cec5bfa723dddf7256e":[163,0,159,4],
 "namespacetypes.html#a3543786f7dc7c57385fc923a6afd5917":[163,0,159,6],
 "namespacetypes.html#a36be5a74b99dd3f4ab38a2c183250adf":[163,0,159,2],
