@@ -217,7 +217,7 @@ TEST(ElasticityTest, CheckInclusionMatrix)
   auto                      invM = inverse_operator(M, cg_M);
 
 
-  inclusions = B * displacement;
+  inclusions = invM * B * displacement;
 
   inclusions.print(std::cout);
 }

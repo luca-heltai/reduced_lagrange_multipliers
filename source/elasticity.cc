@@ -21,6 +21,7 @@
 
 #include "elasticity.h"
 
+
 template <int dim, int spacedim>
 ElasticityProblem<dim, spacedim>::ElasticityProblem(
   const ElasticityProblemParameters<dim, spacedim> &par)
@@ -44,52 +45,54 @@ ElasticityProblem<dim, spacedim>::ElasticityProblem(
 template <int dim, int spacedim>
 void
 read_grid_and_cad_files(const std::string            &grid_file_name,
-                        const std::string            &ids_and_cad_file_names,
+                        //const std::string            &ids_and_cad_file_names,
                         Triangulation<dim, spacedim> &tria)
 {
+  std::ifstream istream(grid_file_name);
   GridIn<dim, spacedim> grid_in;
   grid_in.attach_triangulation(tria);
-  grid_in.read(grid_file_name);
-#ifdef DEAL_II_WITH_OPENCASCADE
-  using map_type  = std::map<types::manifold_id, std::string>;
-  using Converter = Patterns::Tools::Convert<map_type>;
-  for (const auto &pair : Converter::to_value(ids_and_cad_file_names))
-    {
-      const auto &manifold_id   = pair.first;
-      const auto &cad_file_name = pair.second;
-      const auto  extension     = boost::algorithm::to_lower_copy(
-        cad_file_name.substr(cad_file_name.find_last_of('.') + 1));
-      TopoDS_Shape shape;
-      if (extension == "iges" || extension == "igs")
-        shape = OpenCASCADE::read_IGES(cad_file_name);
-      else if (extension == "step" || extension == "stp")
-        shape = OpenCASCADE::read_STEP(cad_file_name);
-      else
-        AssertThrow(false,
-                    ExcNotImplemented("We found an extension that we "
-                                      "do not recognize as a CAD file "
-                                      "extension. Bailing out."));
-      const auto n_elements = OpenCASCADE::count_elements(shape);
-      if ((std::get<0>(n_elements) == 0))
-        tria.set_manifold(
-          manifold_id,
-          OpenCASCADE::ArclengthProjectionLineManifold<dim, spacedim>(shape));
-      else if (spacedim == 3)
-        {
-          const auto t = reinterpret_cast<Triangulation<dim, 3> *>(&tria);
-          t->set_manifold(manifold_id,
-                          OpenCASCADE::NormalToMeshProjectionManifold<dim, 3>(
-                            shape));
-        }
-      else
-        tria.set_manifold(manifold_id,
-                          OpenCASCADE::NURBSPatchManifold<dim, spacedim>(
-                            TopoDS::Face(shape)));
-    }
-#else
-  (void)ids_and_cad_file_names;
-  AssertThrow(false, ExcNotImplemented("Generation of the grid failed."));
-#endif
+  grid_in.read_ucd(istream);
+ 
+// #ifdef DEAL_II_WITH_OPENCASCADE
+//   using map_type  = std::map<types::manifold_id, std::string>;
+//   using Converter = Patterns::Tools::Convert<map_type>;
+//   for (const auto &pair : Converter::to_value(ids_and_cad_file_names))
+//     {
+//       const auto &manifold_id   = pair.first;
+//       const auto &cad_file_name = pair.second;
+//       const auto  extension     = boost::algorithm::to_lower_copy(
+//         cad_file_name.substr(cad_file_name.find_last_of('.') + 1));
+//       TopoDS_Shape shape;
+//       if (extension == "iges" || extension == "igs")
+//         shape = OpenCASCADE::read_IGES(cad_file_name);
+//       else if (extension == "step" || extension == "stp")
+//         shape = OpenCASCADE::read_STEP(cad_file_name);
+//       else
+//         AssertThrow(false,
+//                     ExcNotImplemented("We found an extension that we "
+//                                       "do not recognize as a CAD file "
+//                                       "extension. Bailing out."));
+//       const auto n_elements = OpenCASCADE::count_elements(shape);
+//       if ((std::get<0>(n_elements) == 0))
+//         tria.set_manifold(
+//           manifold_id,
+//           OpenCASCADE::ArclengthProjectionLineManifold<dim, spacedim>(shape));
+//       else if (spacedim == 3)
+//         {
+//           const auto t = reinterpret_cast<Triangulation<dim, 3> *>(&tria);
+//           t->set_manifold(manifold_id,
+//                           OpenCASCADE::NormalToMeshProjectionManifold<dim, 3>(
+//                             shape));
+//         }
+//       else
+//         tria.set_manifold(manifold_id,
+//                           OpenCASCADE::NURBSPatchManifold<dim, spacedim>(
+//                             TopoDS::Face(shape)));
+//     }
+// #else
+//   (void)ids_and_cad_file_names;
+//   AssertThrow(false, ExcNotImplemented("Generation of the grid failed."));
+// #endif
 }
 
 
@@ -110,7 +113,7 @@ ElasticityProblem<dim, spacedim>::make_grid()
           pcout << "Generating from name and argument failed." << std::endl
                 << "Trying to read from file name." << std::endl;
           read_grid_and_cad_files(par.name_of_grid,
-                                  par.arguments_for_grid,
+                                  //par.arguments_for_grid,
                                   tria);
         }
     }
@@ -163,7 +166,6 @@ ElasticityProblem<dim, spacedim>::setup_fe()
     std::make_unique<QGauss<spacedim - 1>>(par.fe_degree + 1);
 }
 
-
 template <int dim, int spacedim>
 void
 ElasticityProblem<dim, spacedim>::setup_dofs()
@@ -185,10 +187,13 @@ ElasticityProblem<dim, spacedim>::setup_dofs()
   {
     constraints.reinit(relevant_dofs[0]);
     DoFTools::make_hanging_node_constraints(dh, constraints);
+
+
     for (const auto id : par.dirichlet_ids)
       {
         VectorTools::interpolate_boundary_values(dh, id, par.bc, constraints);
       }
+
     std::map<types::boundary_id, const Function<spacedim, double> *>
       function_map;
     for (const auto id : par.normal_flux_ids)
@@ -200,30 +205,7 @@ ElasticityProblem<dim, spacedim>::setup_dofs()
     VectorTools::compute_nonzero_normal_flux_constraints(
       dh, 0, par.normal_flux_ids, function_map, constraints);
     constraints.close();
-
-    /*{
-      mean_value_constraints.clear();
-      mean_value_constraints.reinit(relevant_dofs[0]);
-
-      for (const auto id : par.normal_flux_ids)
-      {
-        const std::set<types::boundary_id > &boundary_ids={id};
-        const ComponentMask &component_mask=ComponentMask();
-        const IndexSet boundary_dofs = DoFTools::extract_boundary_dofs(dh,
-    component_mask, boundary_ids);
-
-        const types::global_dof_index first_boundary_dof =
-          boundary_dofs.nth_index_in_set(0);
-
-        mean_value_constraints.add_line(first_boundary_dof);
-        for (types::global_dof_index i : boundary_dofs)
-          if (i != first_boundary_dof)
-            mean_value_constraints.add_entry(first_boundary_dof, i, -1);
-      }
-        mean_value_constraints.close();
-
-        constraints.merge(mean_value_constraints);
-    }*/
+    
   }
   {
     DynamicSparsityPattern dsp(relevant_dofs[0]);
@@ -233,11 +215,17 @@ ElasticityProblem<dim, spacedim>::setup_dofs()
                                                mpi_communicator,
                                                relevant_dofs[0]);
     stiffness_matrix.clear();
+    mass_matrix.clear();
     stiffness_matrix.reinit(owned_dofs[0],
                             owned_dofs[0],
                             dsp,
                             mpi_communicator);
+    mass_matrix.reinit(owned_dofs[0],
+                            owned_dofs[0],
+                            dsp,
+                            mpi_communicator);
   }
+  
   inclusion_constraints.close();
 
   if (inclusions.n_dofs() > 0)
@@ -283,6 +271,10 @@ ElasticityProblem<dim, spacedim>::setup_dofs()
   locally_relevant_solution.reinit(owned_dofs, relevant_dofs, mpi_communicator);
   system_rhs.reinit(owned_dofs, mpi_communicator);
   solution.reinit(owned_dofs, mpi_communicator);
+  velocity.reinit(owned_dofs, mpi_communicator);
+  acceleration.reinit(owned_dofs, mpi_communicator);
+  predictor.reinit(owned_dofs, mpi_communicator);
+  corrector.reinit(owned_dofs, mpi_communicator);
 
   if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
     {
@@ -293,14 +285,17 @@ ElasticityProblem<dim, spacedim>::setup_dofs()
     }
 }
 
+
+
 template <int dim, int spacedim>
 void
 ElasticityProblem<dim, spacedim>::assemble_elasticity_system()
 {
   stiffness_matrix = 0;
+  mass_matrix=0;
   coupling_matrix  = 0;
   system_rhs       = 0;
-  TimerOutput::Scope     t(computing_timer, "Assemble Stiffness and rhs");
+  TimerOutput::Scope     t(computing_timer, "Assemble Stiffness, mass and rhs");
   FEValues<spacedim>     fe_values(*fe,
                                *quadrature,
                                update_values | update_gradients |
@@ -313,45 +308,59 @@ ElasticityProblem<dim, spacedim>::assemble_elasticity_system()
 
   const unsigned int          dofs_per_cell = fe->n_dofs_per_cell();
   const unsigned int          n_q_points    = quadrature->size();
+
   FullMatrix<double>          cell_matrix(dofs_per_cell, dofs_per_cell);
+  FullMatrix<double>          cell_mass_matrix(dofs_per_cell, dofs_per_cell);
+  
   Vector<double>              cell_rhs(dofs_per_cell);
+
   std::vector<Vector<double>> rhs_values(n_q_points, Vector<double>(spacedim));
   std::vector<Tensor<2, spacedim>>     grad_phi_u(dofs_per_cell);
   std::vector<double>                  div_phi_u(dofs_per_cell);
   std::vector<types::global_dof_index> local_dof_indices(dofs_per_cell);
+  std::vector<Tensor<1, spacedim>>  phi_u(dofs_per_cell);
 
   for (const auto &cell : dh.active_cell_iterators())
+  {
     if (cell->is_locally_owned())
       {
         cell_matrix = 0;
+        cell_mass_matrix=0;
         cell_rhs    = 0;
         fe_values.reinit(cell);
         par.rhs.vector_value_list(fe_values.get_quadrature_points(),
                                   rhs_values);
+        
         for (unsigned int q = 0; q < n_q_points; ++q)
           {
+            
             for (unsigned int k = 0; k < dofs_per_cell; ++k)
               {
                 grad_phi_u[k] =
                   fe_values[displacement].symmetric_gradient(k, q);
                 div_phi_u[k] = fe_values[displacement].divergence(k, q);
               }
+            for (unsigned int k = 0; k < dofs_per_cell; ++k)
+              {
+                phi_u[k] = fe_values[displacement].value(k, q);
+              }
             for (unsigned int i = 0; i < dofs_per_cell; ++i)
               {
                 for (unsigned int j = 0; j < dofs_per_cell; ++j)
                   {
                     cell_matrix(i, j) +=
-                      (2 * par.Lame_mu *
-                         scalar_product(grad_phi_u[i], grad_phi_u[j]) +
-                       par.Lame_lambda * div_phi_u[i] * div_phi_u[j]) *
-                      fe_values.JxW(q);
+                    (2 * par.Lame_mu*scalar_product(grad_phi_u[i], grad_phi_u[j]) +
+                      par.Lame_lambda* div_phi_u[i] * div_phi_u[j]) *fe_values.JxW(q);
+                  
+                    cell_mass_matrix(i,j) += par.rho*phi_u[i]*phi_u[j]*fe_values.JxW(q);
+                    
                   }
                 const auto comp_i = fe->system_to_component_index(i).first;
                 cell_rhs(i) += fe_values.shape_value(i, q) *
-                               rhs_values[q][comp_i] * fe_values.JxW(q);
+                              rhs_values[q][comp_i] * fe_values.JxW(q);   
+
               }
           }
-
 
         // Neumann boundary conditions
         // for (const auto &f : cell->face_iterators()) ////
@@ -393,8 +402,16 @@ ElasticityProblem<dim, spacedim>::assemble_elasticity_system()
                                                local_dof_indices,
                                                stiffness_matrix,
                                                system_rhs.block(0));
+        constraints.distribute_local_to_global(cell_mass_matrix,
+                                        //cell_rhs,
+                                        local_dof_indices,
+                                        mass_matrix);
+                                        //system_rhs.block(0));
       }
+
+}
   stiffness_matrix.compress(VectorOperation::add);
+  mass_matrix.compress(VectorOperation::add);
   system_rhs.compress(VectorOperation::add);
 }
 
@@ -464,7 +481,7 @@ ElasticityProblem<dim, spacedim>::assemble_coupling()
                                             inclusions.n_dofs_per_inclusion());
 
   Vector<double> local_rhs(inclusions.n_dofs_per_inclusion());
-
+  
   auto particle = inclusions.inclusions_as_particles.begin();
   while (particle != inclusions.inclusions_as_particles.end())
     {
@@ -515,8 +532,9 @@ ElasticityProblem<dim, spacedim>::assemble_coupling()
                       if (comp_i == inclusions.get_component(j))
                         {
                           local_coupling_matrix(i, j) +=
-                            (fev.shape_value(i, q)) * inclusion_fe_values[j] /
-                            inclusions.get_section_measure(inclusion_id) * ds;
+                            (fev.shape_value(i, q)) * inclusion_fe_values[j] *
+                            ds; // /
+                          // inclusions.get_section_measure(inclusion_id);
                         }
                     }
                   if (inclusions.data_file != "")
@@ -525,8 +543,8 @@ ElasticityProblem<dim, spacedim>::assemble_coupling()
                           inclusions.get_fourier_component(j))
                         {
                           auto temp =
-                            inclusion_fe_values[j] * ds /
-                            inclusions.get_section_measure(inclusion_id) *
+                            inclusion_fe_values[j] * ds * // /
+                            // inclusions.get_section_measure(inclusion_id) *
                             // phi_i ds
                             // now we need to build g from the data.
                             // this is sum E^i g_i where g_i are coefficients of
@@ -535,23 +553,28 @@ ElasticityProblem<dim, spacedim>::assemble_coupling()
                             inclusions.get_inclusion_data(inclusion_id, j);
 
                           if (par.initial_time != par.final_time)
-                            temp *= inclusions.inclusions_rhs.value(
+                            {
+                              //temp=temp;
+                    
+                              temp *= inclusions.inclusions_rhs.value(
                               real_q, inclusions.get_component(j));
+                            }
                           local_rhs(j) += temp;
                         }
                     }
                   else
                     {
                       local_rhs(j) +=
-                        inclusion_fe_values[j] /
-                        inclusions.get_section_measure(inclusion_id) *
+                        inclusion_fe_values[j] * // /
+                        // inclusions.get_section_measure(inclusion_id) *
                         inclusions.inclusions_rhs.value(
                           real_q, inclusions.get_component(j)) // /
                         // inclusions.get_radius(inclusion_id)
                         * ds;
                     }
                   local_inclusion_matrix(j, j) +=
-                    (inclusion_fe_values[j] * inclusion_fe_values[j] * ds);
+                    (inclusion_fe_values[j] * inclusion_fe_values[j] * ds); // /
+                  //  inclusions.get_section_measure(inclusion_id));
                 }
               ++p;
             }
@@ -576,14 +599,15 @@ ElasticityProblem<dim, spacedim>::assemble_coupling()
   system_rhs.compress(VectorOperation::add);
 }
 
-
-
 template <int dim, int spacedim>
 void
 ElasticityProblem<dim, spacedim>::solve()
 {
   TimerOutput::Scope       t(computing_timer, "Solve");
   LA::MPI::PreconditionAMG prec_A;
+  LA::MPI::PreconditionAMG prec_C;
+  LA::MPI::PreconditionJacobi prec_An;
+ 
   {
     // LA::MPI::PreconditionAMG::AdditionalData data;
     TrilinosWrappers::PreconditionAMG::AdditionalData data;
@@ -598,29 +622,43 @@ ElasticityProblem<dim, spacedim>::solve()
     data.constant_modes = constant_modes;
 
     prec_A.initialize(stiffness_matrix, data);
+    prec_C.initialize(mass_matrix,data);
+    
   }
 
   const auto A    = linear_operator<LA::MPI::Vector>(stiffness_matrix);
   auto       invA = A;
-
   const auto amgA = linear_operator(A, prec_A);
 
+  const auto C    = linear_operator<LA::MPI::Vector>(mass_matrix);
+  auto       invC = C;
+  const auto amgC = linear_operator(C, prec_C);
+
+
   // for small radius you might need SolverFGMRES<LA::MPI::Vector>
-  SolverCG<LA::MPI::Vector> cg_stiffness(par.inner_control);
+  SolverGMRES<LA::MPI::Vector> cg_stiffness(par.inner_control);
   invA = inverse_operator(A, cg_stiffness, amgA);
+  invC = inverse_operator(C, cg_stiffness, amgC);
+   
+
 
   // Some aliases
   auto &u      = solution.block(0);
   auto &lambda = solution.block(1);
+  auto &v= velocity.block(0);
+  auto &v_pred= predictor.block(0);
+  auto &a= acceleration.block(0);
+  auto &u_pred= corrector.block(0);
 
-  const auto &f = system_rhs.block(0);
-  auto       &g = system_rhs.block(1);
-
-  if (inclusions.n_dofs() == 0)
+  auto &f = system_rhs.block(0);
+  auto &g = system_rhs.block(1);
+  
+  
+  if (inclusions.n_dofs() == 0 && par.pressure_coupling == false)
     {
       u = invA * f;
     }
-  else
+  else if (par.pressure_coupling == false) // Solve a saddle point problem
     {
       // std::cout << "matrix B" << std::endl;
       // coupling_matrix.print(std::cout);
@@ -667,15 +705,79 @@ ElasticityProblem<dim, spacedim>::solve()
       u = invA * (f - Bt * lambda);
       pcout << "   u norm: " << u.l2_norm()
             << ", lambda norm: " << lambda.l2_norm() << std::endl;
+      
+      pcout << "   u max: " << u.max() << std::endl;
       // std::cout << "   lambda: ";
       // lambda.print(std::cout);
     }
+  else
+    {
+      // Solve the problem with input data coming from the file.
+      const auto Bt = linear_operator<LA::MPI::Vector>(coupling_matrix);
+      const auto B  = transpose_operator(Bt);
+      const auto M  = linear_operator<LA::MPI::Vector>(inclusion_matrix);
 
-  pcout << "   Solved for u in " << par.inner_control.last_step()
-        << " iterations." << std::endl;
+      // Solver for M
+      auto                      invM = M;
+      SolverCG<LA::MPI::Vector> cg_M(par.inner_control);
+      invM = inverse_operator(M, cg_M);
+
+      // Compute the rhs, given the data file as if it was a pressure condition
+      // on the vessels.
+      lambda = invM * g;
+
+      pcout << "   Solved for lambda " << par.inner_control.last_step()
+            << " iterations." << std::endl;
+
+      
+      f = Bt * lambda;
+
+      SolverCG<LA::MPI::Vector> cg_elasticity(par.outer_control);
+      invA = inverse_operator(A, cg_elasticity, amgA);
+      
+
+     // Solve for the solution
+
+      if (par.inertia_term == false)
+      {
+        u = invA *f;
+      }
+      else 
+      { 
+
+        if (current_time ==0.0)
+        {
+          u=0.0000;
+          v=0.0000;
+          a=0.0000;
+        }
+
+        //predictor step
+        u_pred =  u +  par.dt*v +  (par.dt*par.dt/2)*(1-2*par.beta)*a;
+        v_pred=   v +  par.dt*(1-par.gamma)*a;
+
+        auto                      invAn = (C+(A)*par.dt*par.dt*par.beta);
+        invAn= inverse_operator(invAn,cg_elasticity,prec_C);
+        a= invAn* (f - (A)*u_pred);
+      
+
+        //corrector step
+
+        u= u_pred + par.dt*par.dt*par.beta*a;
+        v= v_pred + par.dt*par.gamma*a;
+ 
+      }
+
+      pcout << "   Solved for u " << par.outer_control.last_step()
+            << " iterations." << std::endl;
+      
+      pcout << "   u max: " << u.max() << std::endl;
+
+    }
   constraints.distribute(u);
   inclusion_constraints.distribute(lambda);
   locally_relevant_solution = solution;
+      
 }
 
 
@@ -738,6 +840,9 @@ ElasticityProblem<dim, spacedim>::output_solution() const
   // VectorTools::interpolate(dh, par.bc, exact_vec);
   VectorTools::interpolate(dh, par.exact_solution, exact_vec);
   auto exact_vec_locally_relevant(locally_relevant_solution.block(0));
+  
+  
+  
   exact_vec_locally_relevant = exact_vec;
 
   std::vector<DataComponentInterpretation::DataComponentInterpretation>
@@ -760,6 +865,19 @@ ElasticityProblem<dim, spacedim>::output_solution() const
   for (unsigned int i = 0; i < subdomain.size(); ++i)
     subdomain(i) = tria.locally_owned_subdomain();
   data_out.add_data_vector(subdomain, "subdomain");
+
+  Vector<double> material_ids(tria.n_active_cells());
+  {
+    auto cell = tria.begin_active();
+    auto endc = tria.end();
+    for (unsigned int i = 0; cell != endc; ++cell, ++i)
+    {
+        material_ids[i] = cell->material_id();
+    }
+  }
+
+  data_out.add_data_vector(material_ids, "material_id");
+
   data_out.build_patches();
   const std::string filename =
     par.output_name + "_" + std::to_string(cycle) + ".vtu";
@@ -1169,17 +1287,22 @@ ElasticityProblem<dim, spacedim>::run()
   if (par.initial_time == par.final_time) // time stationary
     {
       print_parameters();
+      //std::cout << "parameter printed" << std::endl;
       make_grid();
+     // std::cout << "imported mesh." << std::endl;
       setup_fe();
+      //std::cout << "fesetup" << std::endl;
       check_boundary_ids();
       {
         TimerOutput::Scope t(computing_timer, "Setup inclusion");
+        //std::cout << "entered check boundary id()" << std::endl;
         inclusions.setup_inclusions_particles(tria);
       }
-      // setup_dofs(); // called inside refine_and_transfer
+      //std::cout << "exited check boundary id()" << std::endl;
+      setup_dofs(); // called inside refine_and_transfer
       for (cycle = 0; cycle < par.n_refinement_cycles; ++cycle)
         {
-          setup_dofs();
+          //setup_dofs();
           if (par.output_results_before_solving)
             output_results();
           assemble_elasticity_system();
@@ -1209,7 +1332,7 @@ ElasticityProblem<dim, spacedim>::run()
     }
   else // Time dependent simulation
     {
-      // TODO: add refinement as the first cycle,
+          // TODO: add refinement as the first cycle,
       pcout << "time dependent simulation, refinement not implemented"
             << std::endl;
       print_parameters();
@@ -1223,12 +1346,17 @@ ElasticityProblem<dim, spacedim>::run()
       }
       setup_dofs();
       assemble_elasticity_system();
+      //assemble_coupling();
+
       for (current_time = par.initial_time; current_time < par.final_time;
-           current_time += par.dt, ++cycle)
+            current_time += par.dt, ++cycle)
         {
           pcout << "Time: " << current_time << std::endl;
-          // assemble_elasticity_system();
+          
           inclusions.inclusions_rhs.set_time(current_time);
+          
+          par.bc.set_time(current_time);
+          
           par.Neumann_bc.set_time(current_time);
           assemble_coupling();
           solve();
