@@ -179,7 +179,7 @@ public:
   assemble_poisson_system();
 #else
   void
-                        assemble_rhs();
+  assemble_rhs();
 #endif
   void
   assemble_coupling();
