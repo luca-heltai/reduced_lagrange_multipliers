@@ -1,9 +1,11 @@
 var class_poisson_problem =
 [
+    [ "BlockVectorType", "class_poisson_problem.html#a14c3619bd72109e479d9b95e8f008618", null ],
+    [ "VectorType", "class_poisson_problem.html#ac5f2601c7e75983a616b2813495c14cd", null ],
     [ "PoissonProblem", "class_poisson_problem.html#a1ded5bc6029a03453340f71a4610e94a", null ],
     [ "assemble_coupling", "class_poisson_problem.html#a4940fb72b4a124deeb12f77b9fec9cdb", null ],
     [ "assemble_coupling_sparsity", "class_poisson_problem.html#af19b3bb2762dec0942e1772e6ad33e5e", null ],
-    [ "assemble_poisson_system", "class_poisson_problem.html#ae412391f992f6c44302bb4623a0bd6ef", null ],
+    [ "assemble_rhs", "class_poisson_problem.html#a7bb71af621fd8b1ddab9f7592f9ccddb", null ],
     [ "make_grid", "class_poisson_problem.html#ad71234db14a41d3ff34239105d97f35e", null ],
     [ "output_results", "class_poisson_problem.html#a356e342b575af660616550b094d6b810", null ],
     [ "output_solution", "class_poisson_problem.html#aa554316393aeaf60d9c7cfe17b388f63", null ],
@@ -23,15 +25,15 @@ var class_poisson_problem =
     [ "inclusion_constraints", "class_poisson_problem.html#a0cdfd1d072284ad1ff81dbd9142b374e", null ],
     [ "inclusion_matrix", "class_poisson_problem.html#a12bbed47bc1e16dba7cd033095262291", null ],
     [ "inclusions", "class_poisson_problem.html#a09d6e46dd864cd1d3b3308283f002ff2", null ],
-    [ "locally_relevant_solution", "class_poisson_problem.html#ae333803419a7704844964bcf36d80522", null ],
+    [ "locally_relevant_solution", "class_poisson_problem.html#a8454ca90f631efd821543ba891030271", null ],
     [ "mpi_communicator", "class_poisson_problem.html#a9f6883e75bcff4f788e96792704e4208", null ],
     [ "owned_dofs", "class_poisson_problem.html#abcb253fcf63e359b0776e3bce6200eff", null ],
     [ "par", "class_poisson_problem.html#a3421481d4ec4d3ed901f67066325f6c6", null ],
     [ "pcout", "class_poisson_problem.html#a9ad35422d0b0a390b408f2fc5e02ac58", null ],
     [ "quadrature", "class_poisson_problem.html#a3d90912e9782c67a16520c5f6745d738", null ],
     [ "relevant_dofs", "class_poisson_problem.html#ae48f8057d4405c688078dd4ff4b0d7b5", null ],
-    [ "solution", "class_poisson_problem.html#aa0c0d53bd62b765658b2ad56f2704739", null ],
-    [ "stiffness_matrix", "class_poisson_problem.html#a403246f78b5b407f16214fab95968be1", null ],
-    [ "system_rhs", "class_poisson_problem.html#a02f2797d13ebfabfff21af2c3fbbe3b6", null ],
+    [ "solution", "class_poisson_problem.html#a7e16c751145ce2f47cd48bbd0e302fa4", null ],
+    [ "stiffness_matrix", "class_poisson_problem.html#a069c532bd0aac9bc30d5dc03b0ad2f9b", null ],
+    [ "system_rhs", "class_poisson_problem.html#a23db039a52e95c67f18087631a856615", null ],
     [ "tria", "class_poisson_problem.html#a80ef0a51944345de623b6ea6a7314743", null ]
 ];

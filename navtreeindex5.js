@@ -1,5 +1,9 @@
 var NAVTREEINDEX5 =
 {
+"namespaceLinearAlgebra_1_1TpetraWrappers_1_1TpetraTypes.html#a64c29f0902cd5138869bbf942365dd50":[163,0,64,3,6,0],
+"namespaceLinearAlgebra_1_1TpetraWrappers_1_1TpetraTypes.html#a779c90302476054486100a932440b4e2":[163,0,64,3,6,10],
+"namespaceLinearAlgebra_1_1TpetraWrappers_1_1TpetraTypes.html#a7ecd266a98f76e6d275b8614c1b719c9":[163,0,64,3,6,11],
+"namespaceLinearAlgebra_1_1TpetraWrappers_1_1TpetraTypes.html#a93e059af6353132932262dc7c3afae4f":[163,0,64,3,6,6],
 "namespaceLinearAlgebra_1_1TpetraWrappers_1_1TpetraTypes.html#a948048ee43686de403afa46220b5f0a9":[163,0,64,3,6,3],
 "namespaceLinearAlgebra_1_1TpetraWrappers_1_1TpetraTypes.html#a9e19779bbd2899d9864d7b4c071593d7":[163,0,64,3,6,8],
 "namespaceLinearAlgebra_1_1TpetraWrappers_1_1TpetraTypes.html#aacbf3391d022d637a928eb90fd8212b4":[163,0,64,3,6,1],
@@ -245,9 +249,5 @@ var NAVTREEINDEX5 =
 "namespacePhysics.html":[163,0,101],
 "namespacePipeSegment.html":[163,0,102],
 "namespacePolynomials.html":[163,0,103],
-"namespacePolynomials.html#a1cb749462a4b600923ea340c55f703df":[163,0,103,5],
-"namespacePolynomials.html#a5c1b874ba6a891f806ed53234600bf0a":[163,0,103,1],
-"namespacePolynomials.html#aa0c0b5c9c7df57f5c30ec41326488906":[163,0,103,3],
-"namespacePolynomials.html#adc782b64b1a5c3d009eb24dd372be6e4":[163,0,103,4],
-"namespacePolynomials.html#ae66b65dc61a9dca786ec84a122651ab9":[163,0,103,2]
+"namespacePolynomials.html#a1cb749462a4b600923ea340c55f703df":[163,0,103,5]
 };

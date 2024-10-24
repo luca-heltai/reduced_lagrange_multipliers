@@ -1,5 +1,9 @@
 var NAVTREEINDEX6 =
 {
+"namespacePolynomials.html#a5c1b874ba6a891f806ed53234600bf0a":[163,0,103,1],
+"namespacePolynomials.html#aa0c0b5c9c7df57f5c30ec41326488906":[163,0,103,3],
+"namespacePolynomials.html#adc782b64b1a5c3d009eb24dd372be6e4":[163,0,103,4],
+"namespacePolynomials.html#ae66b65dc61a9dca786ec84a122651ab9":[163,0,103,2],
 "namespacePolynomials_1_1internal.html":[163,0,103,0],
 "namespacePortable.html":[163,0,104],
 "namespaceReferenceCells.html":[163,0,113],
@@ -245,9 +249,5 @@ var NAVTREEINDEX6 =
 "namespaceUtilities_1_1MPI.html#a911685d1b8f2de53179f4b4c90d8718a":[163,0,160,2,10],
 "namespaceUtilities_1_1MPI.html#aa3a88e7ae5f4b593cdcb303b264eb37b":[163,0,160,2,16],
 "namespaceUtilities_1_1MPI.html#aa792d7ed7ca1898c99b7081b62ecab5e":[163,0,160,2,29],
-"namespaceUtilities_1_1MPI.html#aa8308889315c51af3f5966ae8ff47c48":[163,0,160,2,38],
-"namespaceUtilities_1_1MPI.html#aa8e632a701db5e1ba05c4656a914e82b":[163,0,160,2,21],
-"namespaceUtilities_1_1MPI.html#ab765646d52311e79f046e43a84f2705c":[163,0,160,2,22],
-"namespaceUtilities_1_1MPI.html#abc3e9bfdca6711a9e06c64cf740fc611":[163,0,160,2,49],
-"namespaceUtilities_1_1MPI.html#ad9e62ba86d4ffacadb8374e468c11516":[163,0,160,2,17]
+"namespaceUtilities_1_1MPI.html#aa8308889315c51af3f5966ae8ff47c48":[163,0,160,2,38]
 };

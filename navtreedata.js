@@ -198,7 +198,8 @@ var NAVTREE =
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", null ],
         [ "Functions", "functions_func.html", null ],
-        [ "Variables", "functions_vars.html", null ]
+        [ "Variables", "functions_vars.html", null ],
+        [ "Typedefs", "functions_type.html", null ]
       ] ]
     ] ],
     [ "Files", "files.html", [
@@ -215,16 +216,16 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "CodeGallery.html",
-"class_poisson_problem.html#af19b3bb2762dec0942e1772e6ad33e5e",
-"group__threads.html#ga53b5a1555f82d36e88b889e7bb8d1517",
-"namespaceDoFTools.html#a3e30887d7a90dc1422a9bb9e90ee1a05",
-"namespaceGridRefinement.html",
-"namespaceLinearAlgebra_1_1TpetraWrappers_1_1TpetraTypes.html#a948048ee43686de403afa46220b5f0a9",
-"namespacePolynomials_1_1internal.html",
-"namespaceUtilities_1_1MPI.html#ae0d6a2f3f89d09651ad00c3c44f25581",
-"namespacedeal__II__exceptions_1_1internals.html#af497c2ab12e991e1297f9f31f826ff07",
-"namespaceinternal_1_1MatrixFreeFunctions.html#a4d00c0d5884021f25691d6be7b4d6d21",
-"namespacetypes.html#a201d9c6aae26c90eb0ac68fc712b6011"
+"class_poisson_problem.html#ae48f8057d4405c688078dd4ff4b0d7b5",
+"group__matrixfree.html#ggaee4d2d09d3fd284528a8a9c4a3e36979afeacb1163020b44f26f33b91bf468fe4",
+"namespaceDoFTools.html#a2e367cf4d8590470cc136bec082b216b",
+"namespaceGridGenerator_1_1Airfoil.html",
+"namespaceLinearAlgebra_1_1TpetraWrappers_1_1TpetraTypes.html#a64c29f0902cd5138869bbf942365dd50",
+"namespacePolynomials.html#a5c1b874ba6a891f806ed53234600bf0a",
+"namespaceUtilities_1_1MPI.html#aa8e632a701db5e1ba05c4656a914e82b",
+"namespacedeal__II__exceptions_1_1internals.html#a600f8f191a6ce368afda0074dd7ea1dc",
+"namespaceinternal_1_1MatrixFreeFunctions.html",
+"namespacestd__cxx20_1_1ranges.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

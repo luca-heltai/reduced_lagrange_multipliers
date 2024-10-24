@@ -111,6 +111,7 @@ $(function(){initNavTree('class_poisson_problem.html',''); initResizable(true); 
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-types">Private Types</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
 <a href="class_poisson_problem-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">PoissonProblem&lt; dim, spacedim &gt; Class Template Reference</div></div>
@@ -138,8 +139,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a2b60021e9bcf5b9ad57fdf1197a2de32"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aafec98ff158e986b073a93f80cb628c8" id="r_aafec98ff158e986b073a93f80cb628c8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aafec98ff158e986b073a93f80cb628c8">setup_dofs</a> ()</td></tr>
 <tr class="separator:aafec98ff158e986b073a93f80cb628c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae412391f992f6c44302bb4623a0bd6ef" id="r_ae412391f992f6c44302bb4623a0bd6ef"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae412391f992f6c44302bb4623a0bd6ef">assemble_poisson_system</a> ()</td></tr>
-<tr class="separator:ae412391f992f6c44302bb4623a0bd6ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7bb71af621fd8b1ddab9f7592f9ccddb" id="r_a7bb71af621fd8b1ddab9f7592f9ccddb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7bb71af621fd8b1ddab9f7592f9ccddb">assemble_rhs</a> ()</td></tr>
+<tr class="separator:a7bb71af621fd8b1ddab9f7592f9ccddb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4940fb72b4a124deeb12f77b9fec9cdb" id="r_a4940fb72b4a124deeb12f77b9fec9cdb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4940fb72b4a124deeb12f77b9fec9cdb">assemble_coupling</a> ()</td></tr>
 <tr class="separator:a4940fb72b4a124deeb12f77b9fec9cdb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a884238511d4ad76388deb04fd50ce7cd" id="r_a884238511d4ad76388deb04fd50ce7cd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a884238511d4ad76388deb04fd50ce7cd">run</a> ()</td></tr>
@@ -192,6 +193,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:acfe41896d49b57a50feee4dc8204a337 inherit pub_methods_classEnableObserverPointer" id="r_acfe41896d49b57a50feee4dc8204a337"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classEnableObserverPointer.html#acfe41896d49b57a50feee4dc8204a337">list_subscribers</a> () const</td></tr>
 <tr class="separator:acfe41896d49b57a50feee4dc8204a337 inherit pub_methods_classEnableObserverPointer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-types" name="pri-types"></a>
+Private Types</h2></td></tr>
+<tr class="memitem:ac5f2601c7e75983a616b2813495c14cd" id="r_ac5f2601c7e75983a616b2813495c14cd"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac5f2601c7e75983a616b2813495c14cd">VectorType</a> = <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearAlgebra_1_1distributed_1_1Vector.html">LinearAlgebra::distributed::Vector</a>&lt;double&gt;</td></tr>
+<tr class="separator:ac5f2601c7e75983a616b2813495c14cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14c3619bd72109e479d9b95e8f008618" id="r_a14c3619bd72109e479d9b95e8f008618"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a14c3619bd72109e479d9b95e8f008618">BlockVectorType</a> = <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearAlgebra_1_1distributed_1_1BlockVector.html">LinearAlgebra::distributed::BlockVector</a>&lt;double&gt;</td></tr>
+<tr class="separator:a14c3619bd72109e479d9b95e8f008618"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
 <tr class="memitem:a3421481d4ec4d3ed901f67066325f6c6" id="r_a3421481d4ec4d3ed901f67066325f6c6"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_problem_parameters.html">ProblemParameters</a>&lt; dim, spacedim &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3421481d4ec4d3ed901f67066325f6c6">par</a></td></tr>
@@ -220,18 +228,18 @@ Private Attributes</h2></td></tr>
 <tr class="separator:ab517e43fd3cbe319207174f2473b9a0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0cdfd1d072284ad1ff81dbd9142b374e" id="r_a0cdfd1d072284ad1ff81dbd9142b374e"><td class="memItemLeft" align="right" valign="top"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classAffineConstraints.html">AffineConstraints</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0cdfd1d072284ad1ff81dbd9142b374e">inclusion_constraints</a></td></tr>
 <tr class="separator:a0cdfd1d072284ad1ff81dbd9142b374e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a403246f78b5b407f16214fab95968be1" id="r_a403246f78b5b407f16214fab95968be1"><td class="memItemLeft" align="right" valign="top">LA::MPI::SparseMatrix&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a403246f78b5b407f16214fab95968be1">stiffness_matrix</a></td></tr>
-<tr class="separator:a403246f78b5b407f16214fab95968be1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a19c35089aae155e2e45099c418feb197" id="r_a19c35089aae155e2e45099c418feb197"><td class="memItemLeft" align="right" valign="top">LA::MPI::SparseMatrix&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a19c35089aae155e2e45099c418feb197">coupling_matrix</a></td></tr>
 <tr class="separator:a19c35089aae155e2e45099c418feb197"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a12bbed47bc1e16dba7cd033095262291" id="r_a12bbed47bc1e16dba7cd033095262291"><td class="memItemLeft" align="right" valign="top">LA::MPI::SparseMatrix&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a12bbed47bc1e16dba7cd033095262291">inclusion_matrix</a></td></tr>
 <tr class="separator:a12bbed47bc1e16dba7cd033095262291"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0c0d53bd62b765658b2ad56f2704739" id="r_aa0c0d53bd62b765658b2ad56f2704739"><td class="memItemLeft" align="right" valign="top">LA::MPI::BlockVector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa0c0d53bd62b765658b2ad56f2704739">solution</a></td></tr>
-<tr class="separator:aa0c0d53bd62b765658b2ad56f2704739"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae333803419a7704844964bcf36d80522" id="r_ae333803419a7704844964bcf36d80522"><td class="memItemLeft" align="right" valign="top">LA::MPI::BlockVector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae333803419a7704844964bcf36d80522">locally_relevant_solution</a></td></tr>
-<tr class="separator:ae333803419a7704844964bcf36d80522"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a02f2797d13ebfabfff21af2c3fbbe3b6" id="r_a02f2797d13ebfabfff21af2c3fbbe3b6"><td class="memItemLeft" align="right" valign="top">LA::MPI::BlockVector&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a02f2797d13ebfabfff21af2c3fbbe3b6">system_rhs</a></td></tr>
-<tr class="separator:a02f2797d13ebfabfff21af2c3fbbe3b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a069c532bd0aac9bc30d5dc03b0ad2f9b" id="r_a069c532bd0aac9bc30d5dc03b0ad2f9b"><td class="memItemLeft" align="right" valign="top"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classMatrixFreeOperators_1_1LaplaceOperator.html">MatrixFreeOperators::LaplaceOperator</a>&lt; spacedim, -1 &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a069c532bd0aac9bc30d5dc03b0ad2f9b">stiffness_matrix</a></td></tr>
+<tr class="separator:a069c532bd0aac9bc30d5dc03b0ad2f9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e16c751145ce2f47cd48bbd0e302fa4" id="r_a7e16c751145ce2f47cd48bbd0e302fa4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a14c3619bd72109e479d9b95e8f008618">BlockVectorType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7e16c751145ce2f47cd48bbd0e302fa4">solution</a></td></tr>
+<tr class="separator:a7e16c751145ce2f47cd48bbd0e302fa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8454ca90f631efd821543ba891030271" id="r_a8454ca90f631efd821543ba891030271"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a14c3619bd72109e479d9b95e8f008618">BlockVectorType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8454ca90f631efd821543ba891030271">locally_relevant_solution</a></td></tr>
+<tr class="separator:a8454ca90f631efd821543ba891030271"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23db039a52e95c67f18087631a856615" id="r_a23db039a52e95c67f18087631a856615"><td class="memItemLeft" align="right" valign="top"><a class="el" href="#a14c3619bd72109e479d9b95e8f008618">BlockVectorType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a23db039a52e95c67f18087631a856615">system_rhs</a></td></tr>
+<tr class="separator:a23db039a52e95c67f18087631a856615"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57026d41a6f017f1efeea35173805f66" id="r_a57026d41a6f017f1efeea35173805f66"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classBoundingBox.html">BoundingBox</a>&lt; spacedim &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57026d41a6f017f1efeea35173805f66">global_bounding_boxes</a></td></tr>
 <tr class="separator:a57026d41a6f017f1efeea35173805f66"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a66fc5f19bc76741082da471fb392ebc9" id="r_a66fc5f19bc76741082da471fb392ebc9"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a66fc5f19bc76741082da471fb392ebc9">cycle</a> = 0</td></tr>
@@ -248,8 +256,61 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;int dim, int spacedim = dim&gt;<br />
 class PoissonProblem&lt; dim, spacedim &gt;</div>
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00160">160</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00165">165</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="a14c3619bd72109e479d9b95e8f008618" name="a14c3619bd72109e479d9b95e8f008618"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14c3619bd72109e479d9b95e8f008618">&#9670;&#160;</a></span>BlockVectorType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int dim, int spacedim = dim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="class_poisson_problem.html">PoissonProblem</a>&lt; dim, spacedim &gt;::BlockVectorType = <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearAlgebra_1_1distributed_1_1BlockVector.html">LinearAlgebra::distributed::BlockVector</a>&lt;double&gt;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00230">230</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+
+</div>
+</div>
+<a id="ac5f2601c7e75983a616b2813495c14cd" name="ac5f2601c7e75983a616b2813495c14cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5f2601c7e75983a616b2813495c14cd">&#9670;&#160;</a></span>VectorType</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int dim, int spacedim = dim&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="class_poisson_problem.html">PoissonProblem</a>&lt; dim, spacedim &gt;::VectorType = <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearAlgebra_1_1distributed_1_1Vector.html">LinearAlgebra::distributed::Vector</a>&lt;double&gt;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00229">229</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a1ded5bc6029a03453340f71a4610e94a" name="a1ded5bc6029a03453340f71a4610e94a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1ded5bc6029a03453340f71a4610e94a">&#9670;&#160;</a></span>PoissonProblem()</h2>
 
@@ -291,7 +352,7 @@ template&lt;int dim, int spacedim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8cc_source.html#l00315">315</a> of file <a class="el" href="laplacian_8cc_source.html">laplacian.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8cc_source.html#l00342">342</a> of file <a class="el" href="laplacian_8cc_source.html">laplacian.cc</a>.</p>
 
 <p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/structVectorOperation.html#a40c50779cd14ba89bbf0bd9b4561964cae1077e8dbf4afea5d2df8c8b723c0708">VectorOperation::add</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValues.html#acc8fe9d042c6b5e5da89858400feb24f">FEValues&lt; int dim, int spacedim &gt;::reinit()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aeb39cbae775d47d3267af71434f68510">FEValues&lt; int dim, int spacedim &gt;::shape_value()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__feaccess.html#ggaa94b67d2fdcc390690c523f28019e52facbcc430975fa6af05f75ca786dc6fe20">update_gradients</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__feaccess.html#ggaa94b67d2fdcc390690c523f28019e52fa4057ca2f127aa619c65886a9d3ad4aea">update_values</a>.</p>
 
@@ -315,14 +376,14 @@ template&lt;int dim, int spacedim&gt; </div>
 </div><div class="memdoc">
 <p>Builds coupling sparsity, and returns locally relevant inclusion dofs. </p>
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8cc_source.html#l00266">266</a> of file <a class="el" href="laplacian_8cc_source.html">laplacian.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8cc_source.html#l00293">293</a> of file <a class="el" href="laplacian_8cc_source.html">laplacian.cc</a>.</p>
 
 <p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classIndexSet.html#afd3cb227b79aee79b10da86b6841399d">IndexSet::add_indices()</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a>.</p>
 
 </div>
 </div>
-<a id="ae412391f992f6c44302bb4623a0bd6ef" name="ae412391f992f6c44302bb4623a0bd6ef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae412391f992f6c44302bb4623a0bd6ef">&#9670;&#160;</a></span>assemble_poisson_system()</h2>
+<a id="a7bb71af621fd8b1ddab9f7592f9ccddb" name="a7bb71af621fd8b1ddab9f7592f9ccddb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7bb71af621fd8b1ddab9f7592f9ccddb">&#9670;&#160;</a></span>assemble_rhs()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -330,7 +391,7 @@ template&lt;int dim, int spacedim&gt; </div>
 template&lt;int dim, int spacedim&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">void <a class="el" href="class_poisson_problem.html">PoissonProblem</a>&lt; dim, spacedim &gt;::assemble_poisson_system </td>
+          <td class="memname">void <a class="el" href="class_poisson_problem.html">PoissonProblem</a>&lt; dim, spacedim &gt;::assemble_rhs </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -338,9 +399,9 @@ template&lt;int dim, int spacedim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8cc_source.html#l00211">211</a> of file <a class="el" href="laplacian_8cc_source.html">laplacian.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8cc_source.html#l00443">443</a> of file <a class="el" href="laplacian_8cc_source.html">laplacian.cc</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/structVectorOperation.html#a40c50779cd14ba89bbf0bd9b4561964cae1077e8dbf4afea5d2df8c8b723c0708">VectorOperation::add</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a351e7a77fe4323c4bda53a55dba12233">FEValues&lt; int dim, int spacedim &gt;::get_quadrature_points()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aeb33b877f81e2143752dda2c14a0029d">FEValues&lt; int dim, int spacedim &gt;::JxW()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValues.html#acc8fe9d042c6b5e5da89858400feb24f">FEValues&lt; int dim, int spacedim &gt;::reinit()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aeb39cbae775d47d3267af71434f68510">FEValues&lt; int dim, int spacedim &gt;::shape_value()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__feaccess.html#ggaa94b67d2fdcc390690c523f28019e52facbcc430975fa6af05f75ca786dc6fe20">update_gradients</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__feaccess.html#ggaa94b67d2fdcc390690c523f28019e52fa714204722e9eeb43aadbd0d5ddc48c85">update_JxW_values</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__feaccess.html#ggaa94b67d2fdcc390690c523f28019e52fad5c9ff886b9615349a5d04a6c782df4a">update_quadrature_points</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__feaccess.html#ggaa94b67d2fdcc390690c523f28019e52fa4057ca2f127aa619c65886a9d3ad4aea">update_values</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/structVectorOperation.html#a40c50779cd14ba89bbf0bd9b4561964cae1077e8dbf4afea5d2df8c8b723c0708">VectorOperation::add</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a93f65b0385560a34ec1d3c5ec5a882b8">d()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEEvaluationBase.html#a4aaf3e9004fbaf810655f4e0962a015e">FEEvaluation&lt; int dim, int fe_degree, int n_q_points_1d, int n_components_, typename Number, typename VectorizedArrayType &gt;::distribute_local_to_global()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEEvaluation.html#a710c252e9dccc0c4ce07044cac3bdd9b">FEEvaluation&lt; int dim, int fe_degree, int n_q_points_1d, int n_components_, typename Number, typename VectorizedArrayType &gt;::evaluate()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEEvaluationBase.html#a132c024aa9243845d3777b227607da6b">FEEvaluation&lt; int dim, int fe_degree, int n_q_points_1d, int n_components_, typename Number, typename VectorizedArrayType &gt;::get_gradient()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceEvaluationFlags.html#a9b7c6d689cb76386839d0d13640f59aea91b5f00e4be473005cc331b8644ab2f1">EvaluationFlags::gradients</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEEvaluation.html#ad61cbe0d7d6138be040d46ae06a268f1">FEEvaluation&lt; int dim, int fe_degree, int n_q_points_1d, int n_components_, typename Number, typename VectorizedArrayType &gt;::integrate()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEEvaluation.html#a1b8934d6ae273d7b3f91994eddcad239">FEEvaluation&lt; int dim, int fe_degree, int n_q_points_1d, int n_components_, typename Number, typename VectorizedArrayType &gt;::n_q_points</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEEvaluationData.html#acabb9aa30e6dc1087def1c4e38da640f">FEEvaluation&lt; int dim, int fe_degree, int n_q_points_1d, int n_components_, typename Number, typename VectorizedArrayType &gt;::quadrature_point()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEEvaluationBase.html#a5f7b105e45005ce2ed0dc8f265398768">FEEvaluation&lt; int dim, int fe_degree, int n_q_points_1d, int n_components_, typename Number, typename VectorizedArrayType &gt;::read_dof_values_plain()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEEvaluation.html#a5e77cd8900f05a73a91ca8edf31f4a91">FEEvaluation&lt; int dim, int fe_degree, int n_q_points_1d, int n_components_, typename Number, typename VectorizedArrayType &gt;::reinit()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEEvaluationBase.html#a2a78655d119bd1bde992619c52b2d2f8">FEEvaluation&lt; int dim, int fe_degree, int n_q_points_1d, int n_components_, typename Number, typename VectorizedArrayType &gt;::submit_gradient()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEEvaluationBase.html#a2c0efc6f70b305c0585001632063c98b">FEEvaluation&lt; int dim, int fe_degree, int n_q_points_1d, int n_components_, typename Number, typename VectorizedArrayType &gt;::submit_value()</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceEvaluationFlags.html#a9b7c6d689cb76386839d0d13640f59aeaf9825c682f693a6a200094641a0d6a58">EvaluationFlags::values</a>.</p>
 
 </div>
 </div>
@@ -384,7 +445,7 @@ template&lt;int dim, int spacedim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8cc_source.html#l00567">567</a> of file <a class="el" href="laplacian_8cc_source.html">laplacian.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8cc_source.html#l00651">651</a> of file <a class="el" href="laplacian_8cc_source.html">laplacian.cc</a>.</p>
 
 <p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceDataOutBase.html#a9bcaee76160be3f2cee5c15ca7976a26">DataOutBase::write_pvd_record()</a>.</p>
 
@@ -407,7 +468,7 @@ template&lt;int dim, int spacedim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8cc_source.html#l00530">530</a> of file <a class="el" href="laplacian_8cc_source.html">laplacian.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8cc_source.html#l00613">613</a> of file <a class="el" href="laplacian_8cc_source.html">laplacian.cc</a>.</p>
 
 <p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDataOut__DoFData.html#ac43d3b1f6e67424f36e474627fe8e401">DataOut&lt; int dim, int spacedim &gt;::add_data_vector()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDataOut__DoFData.html#a6ed7c846331069f406b8c9933c37fda4">DataOut&lt; int dim, int spacedim &gt;::attach_dof_handler()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDataOut.html#a087f63e22f0614bca326dbdca288c646">DataOut&lt; int dim, int spacedim &gt;::build_patches()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classVector.html#a5fcfee8e4ef95ce89536453f01816bd0">Vector&lt; typename Number &gt;::size()</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDataOutInterface.html#ab7eae1ac0db6ce4c76851fa6fe0f9519">DataOut&lt; int dim, int spacedim &gt;::write_vtu_in_parallel()</a>.</p>
 
@@ -430,7 +491,7 @@ template&lt;int dim, int spacedim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8cc_source.html#l00594">594</a> of file <a class="el" href="laplacian_8cc_source.html">laplacian.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8cc_source.html#l00678">678</a> of file <a class="el" href="laplacian_8cc_source.html">laplacian.cc</a>.</p>
 
 <p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities.html#a21aa22d290ce783e37587b6c879b926c">Utilities::dim_string()</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterHandler.html#a8364dda711b93753c6809eefe2a8e827a3c8ad66ea26104112458e2ce35b5028f">ParameterHandler::Short</a>.</p>
 
@@ -453,7 +514,7 @@ template&lt;int dim, int spacedim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8cc_source.html#l00484">484</a> of file <a class="el" href="laplacian_8cc_source.html">laplacian.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8cc_source.html#l00568">568</a> of file <a class="el" href="laplacian_8cc_source.html">laplacian.cc</a>.</p>
 
 <p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classKellyErrorEstimator.html#a216266ef766cfb22c92f3e289ee189e7">KellyErrorEstimator&lt; int dim, int spacedim &gt;::estimate()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceparallel_1_1distributed_1_1GridRefinement.html#a98de9824ad02293140c1c93b691c6d20">parallel::distributed::GridRefinement::refine_and_coarsen_fixed_fraction()</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceparallel_1_1distributed_1_1GridRefinement.html#abe1418c8074bc0ddc959a256343f2b27">parallel::distributed::GridRefinement::refine_and_coarsen_fixed_number()</a>.</p>
 
@@ -476,7 +537,7 @@ template&lt;int dim, int spacedim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8cc_source.html#l00611">611</a> of file <a class="el" href="laplacian_8cc_source.html">laplacian.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8cc_source.html#l00695">695</a> of file <a class="el" href="laplacian_8cc_source.html">laplacian.cc</a>.</p>
 
 </div>
 </div>
@@ -499,7 +560,7 @@ template&lt;int dim, int spacedim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="laplacian_8cc_source.html#l00128">128</a> of file <a class="el" href="laplacian_8cc_source.html">laplacian.cc</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDynamicSparsityPattern.html#ae8b1dc183fb130d188ee13a5c8ba9324">DynamicSparsityPattern::add()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/index__set_8h.html#ad28b2e725afda38ffdef1bf61d5cadd4">complete_index_set()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a850d6df5f523ab38a24229d021de3f1a">Utilities::MPI::create_evenly_distributed_partitioning()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceSparsityTools.html#a6b5444028171035f8ffb3fb5c3f8da08">SparsityTools::distribute_sparsity_pattern()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceDoFTools.html#a2c4c8d504c52cd1569b6455533c6c587">DoFTools::extract_locally_relevant_dofs()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceVectorTools.html#a41e94ecf8f78d1fbefe6678f2350530a">VectorTools::interpolate_boundary_values()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__constraints.html#ga3b4ea7dfd313e388d868c4e4aa685799">DoFTools::make_hanging_node_constraints()</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__constraints.html#ga432d35b9ef18d1802d48b576300b04fd">DoFTools::make_sparsity_pattern()</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDynamicSparsityPattern.html#ae8b1dc183fb130d188ee13a5c8ba9324">DynamicSparsityPattern::add()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/index__set_8h.html#ad28b2e725afda38ffdef1bf61d5cadd4">complete_index_set()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a850d6df5f523ab38a24229d021de3f1a">Utilities::MPI::create_evenly_distributed_partitioning()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceSparsityTools.html#a6b5444028171035f8ffb3fb5c3f8da08">SparsityTools::distribute_sparsity_pattern()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceDoFTools.html#a2c4c8d504c52cd1569b6455533c6c587">DoFTools::extract_locally_relevant_dofs()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceVectorTools.html#a41e94ecf8f78d1fbefe6678f2350530a">VectorTools::interpolate_boundary_values()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__constraints.html#ga3b4ea7dfd313e388d868c4e4aa685799">DoFTools::make_hanging_node_constraints()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__constraints.html#ga432d35b9ef18d1802d48b576300b04fd">DoFTools::make_sparsity_pattern()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/structMatrixFree_1_1AdditionalData.html#aa5d597e6c4441d273f4100b6139a2552">MatrixFree::AdditionalData::mapping_update_flags</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/structMatrixFree_1_1AdditionalData.html#a0bcce2facca91b925d3e1a5a00c7704b">MatrixFree::AdditionalData::tasks_parallel_scheme</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__feaccess.html#ggaa94b67d2fdcc390690c523f28019e52facbcc430975fa6af05f75ca786dc6fe20">update_gradients</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__feaccess.html#ggaa94b67d2fdcc390690c523f28019e52fa714204722e9eeb43aadbd0d5ddc48c85">update_JxW_values</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__feaccess.html#ggaa94b67d2fdcc390690c523f28019e52fad5c9ff886b9615349a5d04a6c782df4a">update_quadrature_points</a>.</p>
 
 </div>
 </div>
@@ -541,9 +602,9 @@ template&lt;int dim, int spacedim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8cc_source.html#l00414">414</a> of file <a class="el" href="laplacian_8cc_source.html">laplacian.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8cc_source.html#l00488">488</a> of file <a class="el" href="laplacian_8cc_source.html">laplacian.cc</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a1943fbf50cc8f2010771e80d79b0f62a">C()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__LAOperators.html#ga87e38fbde431397c069a88692bd24ae7">inverse_operator()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__LAOperators.html#ga52a70111839180da28ccfebb4c588eca">linear_operator()</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__LAOperators.html#ga6bdc65fb2db56230e6bc7d545e81295d">transpose_operator()</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a1943fbf50cc8f2010771e80d79b0f62a">C()</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__LAOperators.html#ga87e38fbde431397c069a88692bd24ae7">inverse_operator()</a>.</p>
 
 </div>
 </div>
@@ -570,7 +631,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00202">202</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00212">212</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
@@ -596,7 +657,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00211">211</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00222">222</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
@@ -622,7 +683,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00215">215</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00225">225</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
@@ -648,7 +709,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00221">221</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00241">241</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
@@ -674,7 +735,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00207">207</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00218">218</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
@@ -700,7 +761,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00204">204</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00214">214</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
@@ -726,7 +787,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00220">220</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00240">240</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
@@ -752,7 +813,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00212">212</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00223">223</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
@@ -778,7 +839,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00216">216</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00226">226</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
@@ -804,12 +865,12 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00205">205</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00215">215</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
-<a id="ae333803419a7704844964bcf36d80522" name="ae333803419a7704844964bcf36d80522"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae333803419a7704844964bcf36d80522">&#9670;&#160;</a></span>locally_relevant_solution</h2>
+<a id="a8454ca90f631efd821543ba891030271" name="a8454ca90f631efd821543ba891030271"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8454ca90f631efd821543ba891030271">&#9670;&#160;</a></span>locally_relevant_solution</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -820,7 +881,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">LA::MPI::BlockVector <a class="el" href="class_poisson_problem.html">PoissonProblem</a>&lt; dim, spacedim &gt;::locally_relevant_solution</td>
+          <td class="memname"><a class="el" href="#a14c3619bd72109e479d9b95e8f008618">BlockVectorType</a> <a class="el" href="class_poisson_problem.html">PoissonProblem</a>&lt; dim, spacedim &gt;::locally_relevant_solution</td>
         </tr>
       </table>
   </td>
@@ -830,7 +891,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00218">218</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00238">238</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
@@ -856,7 +917,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00200">200</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00210">210</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
@@ -882,7 +943,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00208">208</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00219">219</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
@@ -908,7 +969,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00199">199</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00209">209</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
@@ -934,7 +995,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00201">201</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00211">211</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
@@ -960,7 +1021,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00206">206</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00216">216</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
@@ -986,12 +1047,12 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00209">209</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00220">220</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
-<a id="aa0c0d53bd62b765658b2ad56f2704739" name="aa0c0d53bd62b765658b2ad56f2704739"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa0c0d53bd62b765658b2ad56f2704739">&#9670;&#160;</a></span>solution</h2>
+<a id="a7e16c751145ce2f47cd48bbd0e302fa4" name="a7e16c751145ce2f47cd48bbd0e302fa4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e16c751145ce2f47cd48bbd0e302fa4">&#9670;&#160;</a></span>solution</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1002,7 +1063,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">LA::MPI::BlockVector <a class="el" href="class_poisson_problem.html">PoissonProblem</a>&lt; dim, spacedim &gt;::solution</td>
+          <td class="memname"><a class="el" href="#a14c3619bd72109e479d9b95e8f008618">BlockVectorType</a> <a class="el" href="class_poisson_problem.html">PoissonProblem</a>&lt; dim, spacedim &gt;::solution</td>
         </tr>
       </table>
   </td>
@@ -1012,12 +1073,12 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00217">217</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00237">237</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
-<a id="a403246f78b5b407f16214fab95968be1" name="a403246f78b5b407f16214fab95968be1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a403246f78b5b407f16214fab95968be1">&#9670;&#160;</a></span>stiffness_matrix</h2>
+<a id="a069c532bd0aac9bc30d5dc03b0ad2f9b" name="a069c532bd0aac9bc30d5dc03b0ad2f9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a069c532bd0aac9bc30d5dc03b0ad2f9b">&#9670;&#160;</a></span>stiffness_matrix</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1028,7 +1089,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">LA::MPI::SparseMatrix <a class="el" href="class_poisson_problem.html">PoissonProblem</a>&lt; dim, spacedim &gt;::stiffness_matrix</td>
+          <td class="memname"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classMatrixFreeOperators_1_1LaplaceOperator.html">MatrixFreeOperators::LaplaceOperator</a>&lt;spacedim, -1&gt; <a class="el" href="class_poisson_problem.html">PoissonProblem</a>&lt; dim, spacedim &gt;::stiffness_matrix</td>
         </tr>
       </table>
   </td>
@@ -1038,12 +1099,12 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00214">214</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00228">228</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
-<a id="a02f2797d13ebfabfff21af2c3fbbe3b6" name="a02f2797d13ebfabfff21af2c3fbbe3b6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a02f2797d13ebfabfff21af2c3fbbe3b6">&#9670;&#160;</a></span>system_rhs</h2>
+<a id="a23db039a52e95c67f18087631a856615" name="a23db039a52e95c67f18087631a856615"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23db039a52e95c67f18087631a856615">&#9670;&#160;</a></span>system_rhs</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1054,7 +1115,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">LA::MPI::BlockVector <a class="el" href="class_poisson_problem.html">PoissonProblem</a>&lt; dim, spacedim &gt;::system_rhs</td>
+          <td class="memname"><a class="el" href="#a14c3619bd72109e479d9b95e8f008618">BlockVectorType</a> <a class="el" href="class_poisson_problem.html">PoissonProblem</a>&lt; dim, spacedim &gt;::system_rhs</td>
         </tr>
       </table>
   </td>
@@ -1064,7 +1125,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00219">219</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00239">239</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
@@ -1090,7 +1151,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00203">203</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00213">213</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
@@ -1104,7 +1165,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="class_poisson_problem.html">PoissonProblem</a></li>
-    <li class="footer">Generated on Tue Oct 15 2024 09:51:32 for Template Deal.II Application by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
+    <li class="footer">Generated on Thu Oct 24 2024 09:13:08 for Template Deal.II Application by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>
 </body>

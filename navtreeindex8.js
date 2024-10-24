@@ -1,5 +1,9 @@
 var NAVTREEINDEX8 =
 {
+"namespacedeal__II__exceptions_1_1internals.html#a600f8f191a6ce368afda0074dd7ea1dc":[163,0,19,0,1],
+"namespacedeal__II__exceptions_1_1internals.html#a80f29b6a6438f7e2c6531a7789091ea9":[163,0,19,0,5],
+"namespacedeal__II__exceptions_1_1internals.html#ab2c8e6dcb61cc485415d3e4dc6b601bf":[163,0,19,0,4],
+"namespacedeal__II__exceptions_1_1internals.html#acca0bc9b6db3845f927c12203f124717":[163,0,19,0,8],
 "namespacedeal__II__exceptions_1_1internals.html#af497c2ab12e991e1297f9f31f826ff07":[163,0,19,0,7],
 "namespacedealii.html":[163,0,20],
 "namespacehp.html":[163,0,54],
@@ -245,9 +249,5 @@ var NAVTREEINDEX8 =
 "namespaceinternal_1_1MappingQImplementation.html#ad648bea4099bb2a7d109bfee232d8278":[163,0,56,32,0],
 "namespaceinternal_1_1MappingQImplementation.html#ae9bbe59a39a0f8a72ef8b5003b266175":[163,0,56,32,7],
 "namespaceinternal_1_1MappingQImplementation.html#aec23c03ae9866f2d366141af25e9cc0b":[163,0,56,32,10],
-"namespaceinternal_1_1MappingQImplementation.html#aef729dbaea1b5d2ca5d41468f5f53f5b":[163,0,56,32,11],
-"namespaceinternal_1_1MatrixFreeFunctions.html":[163,0,56,33],
-"namespaceinternal_1_1MatrixFreeFunctions.html#a1ed4d2659c5a60ccb9b2030ad4dde8c1":[163,0,56,33,21],
-"namespaceinternal_1_1MatrixFreeFunctions.html#a2295bd876d887af244aa07832fee8ce0":[163,0,56,33,11],
-"namespaceinternal_1_1MatrixFreeFunctions.html#a3327f271325e5e1ec60e0799daa1c0a8":[163,0,56,33,17]
+"namespaceinternal_1_1MappingQImplementation.html#aef729dbaea1b5d2ca5d41468f5f53f5b":[163,0,56,32,11]
 };

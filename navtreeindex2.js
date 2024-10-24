@@ -1,5 +1,8 @@
 var NAVTREEINDEX2 =
 {
+"group__matrixfree.html#ggaee4d2d09d3fd284528a8a9c4a3e36979afeacb1163020b44f26f33b91bf468fe4":[163,0,56,33,32],
+"group__reordering.html#ga461e238631f1225aa01a26c527810647":[163,0,52,29],
+"group__threads.html#ga2c08a5f98ed149f0291fa9db4e660696":[163,0,150,15],
 "group__threads.html#ga53b5a1555f82d36e88b889e7bb8d1517":[163,0,150,9],
 "group__threads.html#ga664740f5d3f738649ac2811f8d656d11":[163,0,150,3],
 "group__threads.html#ga76d508b069d429d014135b59d20cc74a":[163,0,150,13],
@@ -15,6 +18,7 @@ var NAVTREEINDEX2 =
 "laplacian_8cc_source.html":[165,0,0,0,1,1],
 "laplacian_8h.html":[165,0,0,0,0,2],
 "laplacian_8h.html#a68c9ebb48889d54523bff3c6dc3870c4":[165,0,0,0,0,2,2],
+"laplacian_8h.html#a9de44048371bab8c1ae45a2f14e5e9f7":[165,0,0,0,0,2,3],
 "laplacian_8h_source.html":[165,0,0,0,0,2],
 "namespaceAdaptationStrategies.html":[163,0,0],
 "namespaceAlgorithms.html":[163,0,2],
@@ -245,9 +249,5 @@ var NAVTREEINDEX2 =
 "namespaceDoFTools.html#a211f24d29ecb14183a852411c3aed2ea":[163,0,25,37],
 "namespaceDoFTools.html#a215f4d3ce917b8e3e2bc1e6015606544":[163,0,25,96],
 "namespaceDoFTools.html#a24f73bf11d571f9d518ae7c7d29b67dc":[163,0,25,76],
-"namespaceDoFTools.html#a2c4c8d504c52cd1569b6455533c6c587":[163,0,25,45],
-"namespaceDoFTools.html#a2e367cf4d8590470cc136bec082b216b":[163,0,25,92],
-"namespaceDoFTools.html#a2fb2b92e65e7fc2c346d4810966844ef":[163,0,25,30],
-"namespaceDoFTools.html#a3540ceb577e65414bde1b6b14808da2c":[163,0,25,100],
-"namespaceDoFTools.html#a354605ef95b443c5711a61b80e646fb6":[163,0,25,91]
+"namespaceDoFTools.html#a2c4c8d504c52cd1569b6455533c6c587":[163,0,25,45]
 };

@@ -1,6 +1,8 @@
 var NAVTREEINDEX1 =
 {
-"class_poisson_problem.html#af19b3bb2762dec0942e1772e6ad33e5e":[164,0,3,2],
+"class_poisson_problem.html#ae48f8057d4405c688078dd4ff4b0d7b5":[164,0,3,31],
+"class_poisson_problem.html#aec5418239033b3c703d69b5f0c36b5bc":[164,0,3,14],
+"class_poisson_problem.html#af19b3bb2762dec0942e1772e6ad33e5e":[164,0,3,4],
 "class_problem_parameters.html":[164,0,4],
 "class_problem_parameters.html#a052929e8913f2aae2e5c1b7be7dde6a2":[164,0,4,14],
 "class_problem_parameters.html#a1678f2af5f3cb38f673558a394e5a95d":[164,0,4,12],
@@ -59,6 +61,7 @@ var NAVTREEINDEX1 =
 "files.html":[165,0],
 "functions.html":[164,3,0],
 "functions_func.html":[164,3,1],
+"functions_type.html":[164,3,3],
 "functions_vars.html":[164,3,2],
 "globals.html":[165,1,0],
 "globals_defs.html":[165,1,2],
@@ -246,8 +249,5 @@ var NAVTREEINDEX1 =
 "group__matrixfree.html#ggaee4d2d09d3fd284528a8a9c4a3e36979aaa07f0ab46904720720c338d6610b967":[163,0,56,33,48],
 "group__matrixfree.html#ggaee4d2d09d3fd284528a8a9c4a3e36979ab29cf7ec39e8f8fb54833338dcb1db0d":[163,0,56,33,34],
 "group__matrixfree.html#ggaee4d2d09d3fd284528a8a9c4a3e36979ab863fe433d49138029548f977f9916be":[163,0,56,33,38],
-"group__matrixfree.html#ggaee4d2d09d3fd284528a8a9c4a3e36979ad7ff83e1873dda740e03ef726c106a5d":[163,0,56,33,42],
-"group__matrixfree.html#ggaee4d2d09d3fd284528a8a9c4a3e36979afeacb1163020b44f26f33b91bf468fe4":[163,0,56,33,32],
-"group__reordering.html#ga461e238631f1225aa01a26c527810647":[163,0,52,29],
-"group__threads.html#ga2c08a5f98ed149f0291fa9db4e660696":[163,0,150,15]
+"group__matrixfree.html#ggaee4d2d09d3fd284528a8a9c4a3e36979ad7ff83e1873dda740e03ef726c106a5d":[163,0,56,33,42]
 };

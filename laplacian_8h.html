@@ -122,6 +122,7 @@ $(function(){initNavTree('laplacian_8h.html',''); initResizable(true); });
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/timer_8h.html">deal.II/base/timer.h</a>&gt;</code><br />
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/block__linear__operator_8h.html">deal.II/lac/block_linear_operator.h</a>&gt;</code><br />
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/generic__linear__algebra_8h.html">deal.II/lac/generic_linear_algebra.h</a>&gt;</code><br />
+<code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/la__parallel__block__vector_8h.html">deal.II/lac/la_parallel_block_vector.h</a>&gt;</code><br />
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/linear__operator_8h.html">deal.II/lac/linear_operator.h</a>&gt;</code><br />
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/linear__operator__tools_8h.html">deal.II/lac/linear_operator_tools.h</a>&gt;</code><br />
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/conditional__ostream_8h.html">deal.II/base/conditional_ostream.h</a>&gt;</code><br />
@@ -157,6 +158,7 @@ $(function(){initNavTree('laplacian_8h.html',''); initResizable(true); });
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/solver__minres_8h.html">deal.II/lac/solver_minres.h</a>&gt;</code><br />
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/sparsity__tools_8h.html">deal.II/lac/sparsity_tools.h</a>&gt;</code><br />
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/vector_8h.html">deal.II/lac/vector.h</a>&gt;</code><br />
+<code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/operators_8h.html">deal.II/matrix_free/operators.h</a>&gt;</code><br />
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/numerics_2data__out_8h.html">deal.II/numerics/data_out.h</a>&gt;</code><br />
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/error__estimator_8h.html">deal.II/numerics/error_estimator.h</a>&gt;</code><br />
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/vector__tools_8h.html">deal.II/numerics/vector_tools.h</a>&gt;</code><br />
@@ -184,6 +186,8 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="define-members" name="define-members"></a>
 Macros</h2></td></tr>
+<tr class="memitem:a9de44048371bab8c1ae45a2f14e5e9f7" id="r_a9de44048371bab8c1ae45a2f14e5e9f7"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9de44048371bab8c1ae45a2f14e5e9f7">MATRIX_FREE_PATH</a></td></tr>
+<tr class="separator:a9de44048371bab8c1ae45a2f14e5e9f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68c9ebb48889d54523bff3c6dc3870c4" id="r_a68c9ebb48889d54523bff3c6dc3870c4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a68c9ebb48889d54523bff3c6dc3870c4">FORCE_USE_OF_TRILINOS</a></td></tr>
 <tr class="separator:a68c9ebb48889d54523bff3c6dc3870c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -200,7 +204,23 @@ Macros</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00015">15</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00018">18</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
+
+</div>
+</div>
+<a id="a9de44048371bab8c1ae45a2f14e5e9f7" name="a9de44048371bab8c1ae45a2f14e5e9f7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9de44048371bab8c1ae45a2f14e5e9f7">&#9670;&#160;</a></span>MATRIX_FREE_PATH</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define MATRIX_FREE_PATH</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="laplacian_8h_source.html#l00016">16</a> of file <a class="el" href="laplacian_8h_source.html">laplacian.h</a>.</p>
 
 </div>
 </div>
@@ -210,7 +230,7 @@ Macros</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_aa394cd1d9abb8ffe941d9aaafca8d03.html">github</a></li><li class="navelem"><a class="el" href="dir_c52569aa89a7adbb6029022c2fa60a11.html">workspace</a></li><li class="navelem"><a class="el" href="dir_7a95a9cc00fcc7af5a429eec361b64d1.html">include</a></li><li class="navelem"><a class="el" href="laplacian_8h.html">laplacian.h</a></li>
-    <li class="footer">Generated on Tue Oct 15 2024 09:51:32 for Template Deal.II Application by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
+    <li class="footer">Generated on Thu Oct 24 2024 09:13:08 for Template Deal.II Application by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>
 </body>
