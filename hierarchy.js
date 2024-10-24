@@ -1,5 +1,6 @@
 var hierarchy =
 [
+    [ "CouplingOperator< dim, number, n_components >", "class_coupling_operator.html", null ],
     [ "EnableObserverPointer", "http://www.dealii.org/developer/doxygen/deal.II/classEnableObserverPointer.html", [
       [ "ElasticityProblem< dim, spacedim >", "class_elasticity_problem.html", null ],
       [ "ParameterAcceptor", "http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html", [

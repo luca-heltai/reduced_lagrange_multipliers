@@ -30,6 +30,7 @@ var class_inclusions =
     [ "setup_inclusions_particles", "class_inclusions.html#ae169f424042677002f1cc6be3c6fa6a2", null ],
     [ "update_displacement_hdf5", "class_inclusions.html#adb52fa93bd84790745eda7dbb9320cf0", null ],
     [ "update_inclusions_data", "class_inclusions.html#a6a651503528d46fc595310f49768a1a5", null ],
+    [ "CouplingOperator", "class_inclusions.html#ab9b0251c4d2a5caa9e129767c096a5eb", null ],
     [ "coefficient_offset", "class_inclusions.html#afd909a9cd3ed5c2a5af39b0245aa29f1", null ],
     [ "current_fe_values", "class_inclusions.html#a4d873c86db44d9facbf528bec5d1cd7d", null ],
     [ "current_support_points", "class_inclusions.html#aa4d1ca89709fb8cbedbbc72c0a58d632", null ],

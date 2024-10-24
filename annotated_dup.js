@@ -1,5 +1,6 @@
 var annotated_dup =
 [
+    [ "CouplingOperator", "class_coupling_operator.html", "class_coupling_operator" ],
     [ "ElasticityProblem", "class_elasticity_problem.html", "class_elasticity_problem" ],
     [ "ElasticityProblemParameters", "class_elasticity_problem_parameters.html", "class_elasticity_problem_parameters" ],
     [ "Inclusions", "class_inclusions.html", "class_inclusions" ],

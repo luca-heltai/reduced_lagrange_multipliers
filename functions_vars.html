@@ -128,9 +128,10 @@ $(function(){initNavTree('functions_vars.html',''); initResizable(true); });
 <li>coarsening_fraction&#160;:&#160;<a class="el" href="class_elasticity_problem_parameters.html#abf7178af9c1355b86f23a5d996caf982">ElasticityProblemParameters&lt; dim, spacedim &gt;</a>, <a class="el" href="class_problem_parameters.html#a99227ebc4a51680ca7ea6edda27c4bf9">ProblemParameters&lt; dim, spacedim &gt;</a></li>
 <li>coefficient_offset&#160;:&#160;<a class="el" href="class_inclusions.html#afd909a9cd3ed5c2a5af39b0245aa29f1">Inclusions&lt; spacedim &gt;</a></li>
 <li>computing_timer&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a2551e8a8eb2236de6dbd42e4f16611e5">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a87cd5be5d0e3be1a3f10c0ddf99d0809">PoissonProblem&lt; dim, spacedim &gt;</a></li>
-<li>constraints&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a30536f963e472ab7c90fa8328e375740">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#ab517e43fd3cbe319207174f2473b9a0c">PoissonProblem&lt; dim, spacedim &gt;</a></li>
+<li>constraints&#160;:&#160;<a class="el" href="class_coupling_operator.html#abcaca1e1d58f5fd428dcb60957b945ca">CouplingOperator&lt; dim, number, n_components &gt;</a>, <a class="el" href="class_elasticity_problem.html#a30536f963e472ab7c90fa8328e375740">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#ab517e43fd3cbe319207174f2473b9a0c">PoissonProblem&lt; dim, spacedim &gt;</a></li>
 <li>convergence_table&#160;:&#160;<a class="el" href="class_elasticity_problem_parameters.html#a7c0d4a1418c742ce66a5f2ca8c500b11">ElasticityProblemParameters&lt; dim, spacedim &gt;</a>, <a class="el" href="class_problem_parameters.html#a6579e9e9d12c66fccde035bbfec44a4b">ProblemParameters&lt; dim, spacedim &gt;</a></li>
 <li>coupling_matrix&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a25d37e6ee95a77dc00f64699afeca86d">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a19c35089aae155e2e45099c418feb197">PoissonProblem&lt; dim, spacedim &gt;</a></li>
+<li>coupling_operator&#160;:&#160;<a class="el" href="class_poisson_problem.html#a391443dcab3943062bfaaabfe923e223">PoissonProblem&lt; dim, spacedim &gt;</a></li>
 <li>current_fe_values&#160;:&#160;<a class="el" href="class_inclusions.html#a4d873c86db44d9facbf528bec5d1cd7d">Inclusions&lt; spacedim &gt;</a></li>
 <li>current_support_points&#160;:&#160;<a class="el" href="class_inclusions.html#aa4d1ca89709fb8cbedbbc72c0a58d632">Inclusions&lt; spacedim &gt;</a></li>
 <li>current_time&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a96a66101328a8b93468760e0238b4a04">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
@@ -144,6 +145,7 @@ $(function(){initNavTree('functions_vars.html',''); initResizable(true); });
 <li>dh&#160;:&#160;<a class="el" href="class_elasticity_problem.html#ac229d290423f57b457f553f935e88325">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a0926bb3c7caccbf1ef7a5e45bd838d2e">PoissonProblem&lt; dim, spacedim &gt;</a></li>
 <li>dirichlet_ids&#160;:&#160;<a class="el" href="class_elasticity_problem_parameters.html#a9c4188cfa0d84672c1984f69d2d35806">ElasticityProblemParameters&lt; dim, spacedim &gt;</a>, <a class="el" href="class_problem_parameters.html#ada8113c7134daf5ae403a45f977c0a1f">ProblemParameters&lt; dim, spacedim &gt;</a></li>
 <li>displacement&#160;:&#160;<a class="el" href="class_elasticity_problem.html#abec14b7006266e2fce8f12c01475ff80">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
+<li>dof_handler&#160;:&#160;<a class="el" href="class_coupling_operator.html#aedee6a48f2fd3b79c5f128334f593ff1">CouplingOperator&lt; dim, number, n_components &gt;</a></li>
 <li>domain_type&#160;:&#160;<a class="el" href="class_elasticity_problem_parameters.html#ab7d03b9554da0d83d7ab6ea8033b2f13">ElasticityProblemParameters&lt; dim, spacedim &gt;</a></li>
 <li>dt&#160;:&#160;<a class="el" href="class_elasticity_problem_parameters.html#a7394096997088451683782b34ec20055">ElasticityProblemParameters&lt; dim, spacedim &gt;</a></li>
 </ul>
@@ -156,7 +158,7 @@ $(function(){initNavTree('functions_vars.html',''); initResizable(true); });
 
 <h3><a id="index_f" name="index_f"></a>- f -</h3><ul>
 <li>face_quadrature_formula&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a56af4863b714e831049e5d9d04bdb354">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
-<li>fe&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a6220b6fc82b95adb8f6761496287635a">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a1512faa213731e01c39ad04977a6f612">PoissonProblem&lt; dim, spacedim &gt;</a></li>
+<li>fe&#160;:&#160;<a class="el" href="class_coupling_operator.html#a71246cb4f5a804718211e99cf9ee40b7">CouplingOperator&lt; dim, number, n_components &gt;</a>, <a class="el" href="class_elasticity_problem.html#a6220b6fc82b95adb8f6761496287635a">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a1512faa213731e01c39ad04977a6f612">PoissonProblem&lt; dim, spacedim &gt;</a></li>
 <li>fe_degree&#160;:&#160;<a class="el" href="class_elasticity_problem_parameters.html#ab86b4b480393c70dc6e1d67a3c4ec9fa">ElasticityProblemParameters&lt; dim, spacedim &gt;</a>, <a class="el" href="class_problem_parameters.html#aa4c8bcf8bf965feabd4f3021dca8cee1">ProblemParameters&lt; dim, spacedim &gt;</a></li>
 <li>final_time&#160;:&#160;<a class="el" href="class_elasticity_problem_parameters.html#a34ad64e08df6738b98bd2fe31c3da67b">ElasticityProblemParameters&lt; dim, spacedim &gt;</a></li>
 <li>forces&#160;:&#160;<a class="el" href="class_elasticity_problem.html#ab98ccf776963c758387637fcbcdb4e48">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
@@ -176,7 +178,7 @@ $(function(){initNavTree('functions_vars.html',''); initResizable(true); });
 <h3><a id="index_i" name="index_i"></a>- i -</h3><ul>
 <li>inclusion_constraints&#160;:&#160;<a class="el" href="class_elasticity_problem.html#ab9414899b6218001df0454e197ada02c">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a0cdfd1d072284ad1ff81dbd9142b374e">PoissonProblem&lt; dim, spacedim &gt;</a></li>
 <li>inclusion_matrix&#160;:&#160;<a class="el" href="class_elasticity_problem.html#ab50436f4cce605fb2b7e5ed1c82e7177">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a12bbed47bc1e16dba7cd033095262291">PoissonProblem&lt; dim, spacedim &gt;</a></li>
-<li>inclusions&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a866e956272e9ea02febd7a23dce5ad3f">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_inclusions.html#a73cc88ee481401bc91d73baf4c4ca37c">Inclusions&lt; spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a09d6e46dd864cd1d3b3308283f002ff2">PoissonProblem&lt; dim, spacedim &gt;</a></li>
+<li>inclusions&#160;:&#160;<a class="el" href="class_coupling_operator.html#a9fac2844a4525d5c8e80a191c9e0f2e2">CouplingOperator&lt; dim, number, n_components &gt;</a>, <a class="el" href="class_elasticity_problem.html#a866e956272e9ea02febd7a23dce5ad3f">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_inclusions.html#a73cc88ee481401bc91d73baf4c4ca37c">Inclusions&lt; spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a09d6e46dd864cd1d3b3308283f002ff2">PoissonProblem&lt; dim, spacedim &gt;</a></li>
 <li>inclusions_as_particles&#160;:&#160;<a class="el" href="class_inclusions.html#ad4989d037e998039487530d669b3aa51">Inclusions&lt; spacedim &gt;</a></li>
 <li>inclusions_data&#160;:&#160;<a class="el" href="class_inclusions.html#aa9b900fa508ef76a40148980f0c5f3e4">Inclusions&lt; spacedim &gt;</a></li>
 <li>inclusions_file&#160;:&#160;<a class="el" href="class_inclusions.html#ae1e2329a3ed403d4063d2db8c3e12898">Inclusions&lt; spacedim &gt;</a></li>
@@ -196,6 +198,7 @@ $(function(){initNavTree('functions_vars.html',''); initResizable(true); });
 
 <h3><a id="index_m" name="index_m"></a>- m -</h3><ul>
 <li>map_vessel_inclusions&#160;:&#160;<a class="el" href="class_inclusions.html#a41a470e37acda9641eca5fd0d5a4695a">Inclusions&lt; spacedim &gt;</a></li>
+<li>mapping&#160;:&#160;<a class="el" href="class_coupling_operator.html#aa0bbd1c82cb84ee7bef1f902d2e1eef2">CouplingOperator&lt; dim, number, n_components &gt;</a></li>
 <li>max_cells&#160;:&#160;<a class="el" href="class_elasticity_problem_parameters.html#a02fa96995f5fbeecfb36fc93f6e18c90">ElasticityProblemParameters&lt; dim, spacedim &gt;</a>, <a class="el" href="class_problem_parameters.html#ac8877fd93ca60e093a7e83eb5379cea5">ProblemParameters&lt; dim, spacedim &gt;</a></li>
 <li>mean_value_constraints&#160;:&#160;<a class="el" href="class_elasticity_problem.html#ac1a015336f92fd8cc187ba97935c6a97">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
 <li>mpi_communicator&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a7e3a9c63104152d6ab9b84b83cb6cb76">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_inclusions.html#acbb351f2d77986b259763400a27763b5">Inclusions&lt; spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a9f6883e75bcff4f788e96792704e4208">PoissonProblem&lt; dim, spacedim &gt;</a></li>
@@ -203,7 +206,7 @@ $(function(){initNavTree('functions_vars.html',''); initResizable(true); });
 
 
 <h3><a id="index_n" name="index_n"></a>- n -</h3><ul>
-<li>n_coefficients&#160;:&#160;<a class="el" href="class_inclusions.html#a68bce0c49a4d6b4f4d674ffbae07d4b3">Inclusions&lt; spacedim &gt;</a></li>
+<li>n_coefficients&#160;:&#160;<a class="el" href="class_coupling_operator.html#a0db76676b9d7a45e32939de648de8d66">CouplingOperator&lt; dim, number, n_components &gt;</a>, <a class="el" href="class_inclusions.html#a68bce0c49a4d6b4f4d674ffbae07d4b3">Inclusions&lt; spacedim &gt;</a></li>
 <li>n_q_points&#160;:&#160;<a class="el" href="class_inclusions.html#a50f980c471a5f75106562ab2e064d2c8">Inclusions&lt; spacedim &gt;</a></li>
 <li>n_refinement_cycles&#160;:&#160;<a class="el" href="class_elasticity_problem_parameters.html#a5cb0771c98a6c74a0356f62bcb499fef">ElasticityProblemParameters&lt; dim, spacedim &gt;</a>, <a class="el" href="class_problem_parameters.html#aeefdf7727de446d564681abaf2616319">ProblemParameters&lt; dim, spacedim &gt;</a></li>
 <li>n_vector_components&#160;:&#160;<a class="el" href="class_inclusions.html#a5f507b92734e2133e376846c7018c761">Inclusions&lt; spacedim &gt;</a></li>
@@ -243,6 +246,7 @@ $(function(){initNavTree('functions_vars.html',''); initResizable(true); });
 <li>relevant_dofs&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a1c4029c11d7263a1a0b4fa3549270b59">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#ae48f8057d4405c688078dd4ff4b0d7b5">PoissonProblem&lt; dim, spacedim &gt;</a></li>
 <li>rhs&#160;:&#160;<a class="el" href="class_elasticity_problem_parameters.html#a5f90c9b834408e6eb9473bbd9c33540b">ElasticityProblemParameters&lt; dim, spacedim &gt;</a>, <a class="el" href="class_problem_parameters.html#a4378f295e381c4cd1ee4372e82a76273">ProblemParameters&lt; dim, spacedim &gt;</a></li>
 <li>rotated_inclusion_data&#160;:&#160;<a class="el" href="class_inclusions.html#a771d84e2323ac16d6eb098150719712e">Inclusions&lt; spacedim &gt;</a></li>
+<li>rpe&#160;:&#160;<a class="el" href="class_coupling_operator.html#ae95de8c352b30a7ec838e273435c5833">CouplingOperator&lt; dim, number, n_components &gt;</a></li>
 <li>rtree_extraction_level&#160;:&#160;<a class="el" href="class_inclusions.html#a41bcd6d5727087f4522033a6a487354c">Inclusions&lt; spacedim &gt;</a></li>
 </ul>
 
@@ -270,7 +274,7 @@ $(function(){initNavTree('functions_vars.html',''); initResizable(true); });
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Oct 24 2024 09:13:08 for Template Deal.II Application by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
+    <li class="footer">Generated on Thu Oct 24 2024 13:36:24 for Template Deal.II Application by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>
 </body>

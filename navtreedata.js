@@ -199,7 +199,8 @@ var NAVTREE =
         [ "All", "functions.html", null ],
         [ "Functions", "functions_func.html", null ],
         [ "Variables", "functions_vars.html", null ],
-        [ "Typedefs", "functions_type.html", null ]
+        [ "Typedefs", "functions_type.html", null ],
+        [ "Related Symbols", "functions_rela.html", null ]
       ] ]
     ] ],
     [ "Files", "files.html", [
@@ -207,6 +208,7 @@ var NAVTREE =
       [ "File Members", "globals.html", [
         [ "All", "globals.html", null ],
         [ "Functions", "globals_func.html", null ],
+        [ "Typedefs", "globals_type.html", null ],
         [ "Macros", "globals_defs.html", null ]
       ] ]
     ] ]
@@ -216,16 +218,16 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "CodeGallery.html",
-"class_poisson_problem.html#ae48f8057d4405c688078dd4ff4b0d7b5",
-"group__matrixfree.html#ggaee4d2d09d3fd284528a8a9c4a3e36979afeacb1163020b44f26f33b91bf468fe4",
-"namespaceDoFTools.html#a2e367cf4d8590470cc136bec082b216b",
-"namespaceGridGenerator_1_1Airfoil.html",
-"namespaceLinearAlgebra_1_1TpetraWrappers_1_1TpetraTypes.html#a64c29f0902cd5138869bbf942365dd50",
-"namespacePolynomials.html#a5c1b874ba6a891f806ed53234600bf0a",
-"namespaceUtilities_1_1MPI.html#aa8e632a701db5e1ba05c4656a914e82b",
-"namespacedeal__II__exceptions_1_1internals.html#a600f8f191a6ce368afda0074dd7ea1dc",
-"namespaceinternal_1_1MatrixFreeFunctions.html",
-"namespacestd__cxx20_1_1ranges.html"
+"class_poisson_problem.html#a57026d41a6f017f1efeea35173805f66",
+"group__constraints.html#gaffac73e2b399673e3befd70d2b62fffa",
+"namespaceDoFRenumbering_1_1boost.html#a76fd1dc3212aeeca4294c358248e46d5",
+"namespaceGridGenerator.html#a91269092ac149bdc6df9baabad785d02",
+"namespaceLinearAlgebraTrilinos_1_1MPI.html#a219d353363960f663a86bf6d657945b9",
+"namespacePETScWrappers_1_1MPI.html#ab68a5e695e0b01646a5178561372812d",
+"namespaceUtilities_1_1MPI.html#a3275075df563f6e01effbd746b5e425e",
+"namespaceWorkStream.html#a275bfcc990de1d5e9b98db397d77a1a5",
+"namespaceinternal_1_1MappingQImplementation.html#a01d39a8b534a607a23d0f4ebebcaa04b",
+"namespacestd.html#a1f062580c581c7ad325863a775755265"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

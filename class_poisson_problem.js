@@ -18,6 +18,7 @@ var class_poisson_problem =
     [ "computing_timer", "class_poisson_problem.html#a87cd5be5d0e3be1a3f10c0ddf99d0809", null ],
     [ "constraints", "class_poisson_problem.html#ab517e43fd3cbe319207174f2473b9a0c", null ],
     [ "coupling_matrix", "class_poisson_problem.html#a19c35089aae155e2e45099c418feb197", null ],
+    [ "coupling_operator", "class_poisson_problem.html#a391443dcab3943062bfaaabfe923e223", null ],
     [ "cycle", "class_poisson_problem.html#a66fc5f19bc76741082da471fb392ebc9", null ],
     [ "dh", "class_poisson_problem.html#a0926bb3c7caccbf1ef7a5e45bd838d2e", null ],
     [ "fe", "class_poisson_problem.html#a1512faa213731e01c39ad04977a6f612", null ],
