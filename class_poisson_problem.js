@@ -1,6 +1,7 @@
 var class_poisson_problem =
 [
     [ "BlockVectorType", "class_poisson_problem.html#a14c3619bd72109e479d9b95e8f008618", null ],
+    [ "LevelMatrixType", "class_poisson_problem.html#a29fc0c5a8918cce7360f55cd378a7e7c", null ],
     [ "VectorType", "class_poisson_problem.html#ac5f2601c7e75983a616b2813495c14cd", null ],
     [ "PoissonProblem", "class_poisson_problem.html#a1ded5bc6029a03453340f71a4610e94a", null ],
     [ "assemble_coupling", "class_poisson_problem.html#a4940fb72b4a124deeb12f77b9fec9cdb", null ],
@@ -27,6 +28,9 @@ var class_poisson_problem =
     [ "inclusion_matrix", "class_poisson_problem.html#a12bbed47bc1e16dba7cd033095262291", null ],
     [ "inclusions", "class_poisson_problem.html#a09d6e46dd864cd1d3b3308283f002ff2", null ],
     [ "locally_relevant_solution", "class_poisson_problem.html#a8454ca90f631efd821543ba891030271", null ],
+    [ "mapping", "class_poisson_problem.html#ab7cd921fb4ef12370d26aadeaf553a83", null ],
+    [ "mg_constrained_dofs", "class_poisson_problem.html#ae89b57c6f5bdb80f481d8346736f54b8", null ],
+    [ "mg_matrices", "class_poisson_problem.html#ad32a88df4eef09f624e43a0c806ed5ef", null ],
     [ "mpi_communicator", "class_poisson_problem.html#a9f6883e75bcff4f788e96792704e4208", null ],
     [ "owned_dofs", "class_poisson_problem.html#abcb253fcf63e359b0776e3bce6200eff", null ],
     [ "par", "class_poisson_problem.html#a3421481d4ec4d3ed901f67066325f6c6", null ],

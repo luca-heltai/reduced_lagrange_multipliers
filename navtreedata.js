@@ -196,7 +196,7 @@ var NAVTREE =
       [ "Class Index", "classes.html", null ],
       [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
       [ "Class Members", "functions.html", [
-        [ "All", "functions.html", null ],
+        [ "All", "functions.html", "functions_dup" ],
         [ "Functions", "functions_func.html", null ],
         [ "Variables", "functions_vars.html", null ],
         [ "Typedefs", "functions_type.html", null ],
@@ -218,16 +218,16 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "CodeGallery.html",
-"class_poisson_problem.html#a57026d41a6f017f1efeea35173805f66",
-"group__constraints.html#gaffac73e2b399673e3befd70d2b62fffa",
-"namespaceDoFRenumbering_1_1boost.html#a76fd1dc3212aeeca4294c358248e46d5",
-"namespaceGridGenerator.html#a91269092ac149bdc6df9baabad785d02",
-"namespaceLinearAlgebraTrilinos_1_1MPI.html#a219d353363960f663a86bf6d657945b9",
-"namespacePETScWrappers_1_1MPI.html#ab68a5e695e0b01646a5178561372812d",
-"namespaceUtilities_1_1MPI.html#a3275075df563f6e01effbd746b5e425e",
-"namespaceWorkStream.html#a275bfcc990de1d5e9b98db397d77a1a5",
-"namespaceinternal_1_1MappingQImplementation.html#a01d39a8b534a607a23d0f4ebebcaa04b",
-"namespacestd.html#a1f062580c581c7ad325863a775755265"
+"class_poisson_problem.html#a52a15363b38efa470fd95a8731b1fa26",
+"group__constraints.html#ga30e706e72cad912b5398a1d01365fbeb",
+"namespaceDoFRenumbering.html#a68651164485490b86d901d9ae1fbfc3b",
+"namespaceGridGenerator.html#a324b8447f05b148e2f58bdbcf89f5325",
+"namespaceLinearAlgebraDealII.html#a1b3aec02443c044b5f4210c4f2cb62ba",
+"namespaceOpenCASCADE.html#ad4e15bf85bc1c9565ab2418bc70ca826",
+"namespaceUtilities.html#acc6aef87ce08208501a4b524563836db",
+"namespaceVectorTools.html#ac928341ce5b22e8285cf867122e92ef7",
+"namespaceinternal_1_1LAPACKFullMatrixImplementation.html#a27452f857e42a0e12844b309f920877a",
+"namespacenumbers.html#af72e16d9d7c15702d090c8d24fb45817"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
