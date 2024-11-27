@@ -100,10 +100,11 @@ main(int argc, char *argv[])
             int    iter     = 0;
             double timestep = 0.0;
             double tEnd = Utilities::MPI::broadcast(MPI_COMM_WORLD, pb1D.tEnd);
+            double tIni = Utilities::MPI::broadcast(MPI_COMM_WORLD, pb1D.tIni);
             double dt =
               Utilities::MPI::broadcast(MPI_COMM_WORLD, pb1D.dtMaxLTSLIMIT);
             MPI_Barrier(MPI_COMM_WORLD);
-            while (timestep < tEnd)
+            while (timestep < (tEnd-tIni))
               {
                 // solve time step
                 if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)

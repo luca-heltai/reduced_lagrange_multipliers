@@ -10,8 +10,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import tikzplotlib
 
-SAVE = False
+SAVE = True
 
 os.chdir('/home/camilla/Desktop/COUPLING/')
 
@@ -38,18 +39,18 @@ for c_h in hList:
     axs[0,1].set_title('Vessel 1')
     axs[0,1].set_xlabel("transversal refinement")
     
-    axs[1,0].loglog(x,-np.asarray(df[df[selection] == c_h]['p2']), marker = 'o', linestyle='None')
+    axs[1,0].loglog(x,-np.asarray(df[df[selection] == c_h]['p2']), marker = 'o', linestyle='None', label=c_h)
     axs[1,0].set_title('Vessel 2')
     axs[1,0].set_xlabel("transversal refinement")
 
-    axs[0,0].legend(str(c_h), loc='upper right')
-    print(str(c_h))
+ #   axs[0,0].legend(str(c_h), loc='upper right')
+  #  print(str(c_h))
 fig.legend(loc='lower center')
 fig.suptitle('- External Pressure')
     
 
 if SAVE:
-    plt.savefig(directory+"transv.pdf")
+    tikzplotlib.save("/home/camilla/Desktop/latex/Latex/ECCOMAS24/pres/tikzsource/transversal.tikz")
 else:
     plt.show()
         
@@ -70,9 +71,10 @@ for c_h in refList:
     axs2[0,1].set_title('Vessel 1')
     axs2[0,1].set_xlabel("longitudinal refinement")
     
-    axs2[1,0].loglog(x, -np.asarray(df[df[selection] == c_h]['p2']), marker = 'o')
+    axs2[1,0].loglog(x, -np.asarray(df[df[selection] == c_h]['p2']), marker = 'o', label=c_h)
     axs2[1,0].set_title('Vessel 2')
     axs2[1,0].set_xlabel("longitudinal refinement")
+    
 
     
     fig2.legend(loc='lower center')
@@ -80,7 +82,7 @@ for c_h in refList:
     
 
 if SAVE:
-    plt.savefig(directory+"longit.pdf")
+    tikzplotlib.save("/home/camilla/Desktop/latex/Latex/ECCOMAS24/pres/tikzsource/longitudinal.tikz")
 else:
     plt.show()
 

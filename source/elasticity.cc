@@ -1013,7 +1013,7 @@ ElasticityProblem<dim, spacedim>::check_boundary_ids()
                       ExcNotImplemented("incoherent boundary conditions."));
     }
 }
-
+/*
 template <int dim, int spacedim>
 void
 ElasticityProblem<dim, spacedim>::compute_face_stress(bool openfilefirsttime) const
@@ -1027,7 +1027,7 @@ ElasticityProblem<dim, spacedim>::compute_face_stress(bool openfilefirsttime) co
   const std::string filename(par.output_directory + "/face_stress.csv");
   std::ofstream     face_stress_file;
 
-  if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0 && openfilefirsttime)
+  if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
   {
     full_face_stress_file.open(full_filename);
     full_face_stress_file
@@ -1190,19 +1190,12 @@ ElasticityProblem<dim, spacedim>::compute_face_stress(bool openfilefirsttime) co
 
   return;
 }
-
+*/
 template <int dim, int spacedim>
 void
 ElasticityProblem<dim, spacedim>::compute_internal_and_boundary_stress(
   bool openfilefirsttime) const
 {
-  if constexpr (spacedim == 3)
-  {
-    if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
-      std::cout << "cannot use function compute internal and boundary stresses for 3D case, please select function compute face stresses and fix this at some point" << std::endl;
-    compute_face_stress(openfilefirsttime);
-    return;
-  }
   TimerOutput::Scope t(computing_timer,
                        "Postprocessing: Computing internal and boundary stresses");
 
@@ -1255,6 +1248,8 @@ ElasticityProblem<dim, spacedim>::compute_internal_and_boundary_stress(
     {
       if (cell->is_locally_owned())
         {
+          if constexpr (spacedim == 2)
+          {
           cell->get_dof_indices(local_dof_indices);
           fe_values.reinit(cell);
           for (unsigned int q = 0; q < n_q_points; ++q)
@@ -1275,6 +1270,7 @@ ElasticityProblem<dim, spacedim>::compute_internal_and_boundary_stress(
                     fe_values.JxW(q);
                 }
             }
+          }
 
           for (unsigned int f = 0; f < GeometryInfo<spacedim>::faces_per_cell;
                ++f)
@@ -1289,20 +1285,17 @@ ElasticityProblem<dim, spacedim>::compute_internal_and_boundary_stress(
                   locally_relevant_solution.block(0), displacement_gradient);
                 fe_face_values[displacement].get_function_values(
                   locally_relevant_solution.block(0), displacement_values);
+                fe_face_values[displacement].get_function_divergences(
+                  locally_relevant_solution.block(0), displacement_divergence);
 
                 for (unsigned int q = 0; q < fe_face_values.n_quadrature_points;
                      ++q)
                   {
                     perimeter[boundary_index] += fe_face_values.JxW(q);
-                    const Tensor<1, spacedim> disp_grad_x =
-                      displacement_gradient[q][0];
-                    const Tensor<1, spacedim> disp_grad_y =
-                      displacement_gradient[q][1];
-                    double div = disp_grad_x[0] + disp_grad_y[1];
 
                     boundary_stress[boundary_index] +=
                       (2 * par.Lame_mu * displacement_gradient[q] +
-                       par.Lame_lambda * div * identity) *
+                       par.Lame_lambda * displacement_divergence[q] * identity) *
                       fe_face_values.JxW(q) * fe_face_values.normal_vector(q);
                     u_dot_n[boundary_index] +=
                       (displacement_values[q] *
@@ -1313,6 +1306,8 @@ ElasticityProblem<dim, spacedim>::compute_internal_and_boundary_stress(
         }
     }
 
+  if constexpr (spacedim == 2)
+  {
   internal_stress = Utilities::MPI::sum(internal_stress, mpi_communicator);
   average_displacement =
     Utilities::MPI::sum(average_displacement, mpi_communicator);
@@ -1320,7 +1315,7 @@ ElasticityProblem<dim, spacedim>::compute_internal_and_boundary_stress(
 
   internal_stress /= internal_area;
   average_displacement /= internal_area;
-
+  }
   for (auto id : all_ids)
     {
       boundary_stress[id] =
@@ -1336,16 +1331,30 @@ ElasticityProblem<dim, spacedim>::compute_internal_and_boundary_stress(
       if (openfilefirsttime)
         {
           forces_file.open(filename);
-          forces_file
+          if constexpr (spacedim == 2)
+          {
+            forces_file
             << "cycle area perimeter meanInternalStressxx meanInternalStressxy meanInternalStressyx meanInternalStressyy avg_u_x avg_u_y";
           for (auto id : all_ids)
             forces_file << " boundaryStressX_" << id << " boundaryStressY_"
                         << id << " uDotN_" << id;
           forces_file << std::endl;
+          }
+          else
+          {
+            forces_file
+            << "cycle perimeter";
+          for (auto id : all_ids)
+            forces_file << " sigmanX_" << id << " sigmanY_" << " sigmanZ_"
+                        << id << " uDotN_" << id;
+          forces_file << std::endl;
+          }
         }
       else
         forces_file.open(filename, std::ios_base::app);
 
+if constexpr (spacedim == 2)
+{
       forces_file << cycle << " " << internal_area << " ";
       for (auto id : all_ids)
         forces_file << perimeter[id] << " ";
@@ -1353,6 +1362,16 @@ ElasticityProblem<dim, spacedim>::compute_internal_and_boundary_stress(
       for (auto id : all_ids)
         forces_file << boundary_stress[id] << " " << u_dot_n[id] << " ";
       forces_file << std::endl;
+}
+else // spacedim = 3
+{
+  forces_file << cycle << " ";
+      for (auto id : all_ids)
+        forces_file << perimeter[id] << " ";
+      for (auto id : all_ids)
+        forces_file << boundary_stress[id] << " " << u_dot_n[id] << " ";
+      forces_file << std::endl;
+}
       forces_file.close();
     }
 
