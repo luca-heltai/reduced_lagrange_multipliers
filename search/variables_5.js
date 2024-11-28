@@ -102,7 +102,7 @@ var searchData=
   ['exterior_5fface_5favailable_99',['exterior_face_available',['http://www.dealii.org/developer/doxygen/deal.II/classMeshWorker_1_1DoFInfoBox.html#aa83e950e0f9451404651ca1dfb32e448',1,'MeshWorker::DoFInfoBox']]],
   ['exterior_5fface_5fno_100',['exterior_face_no',['http://www.dealii.org/developer/doxygen/deal.II/structinternal_1_1MatrixFreeFunctions_1_1FaceToCellTopology.html#a9a0aefe527ec661a75f4b1f51a09a864',1,'internal::MatrixFreeFunctions::FaceToCellTopology']]],
   ['external_5fdata_101',['external_data',['http://www.dealii.org/developer/doxygen/deal.II/structDataOutBase_1_1PovrayFlags.html#a2f18e4a6835debc48914148e27f0c21e',1,'DataOutBase::PovrayFlags']]],
-  ['external_5fpartitioners_102',['external_partitioners',['http://www.dealii.org/developer/doxygen/deal.II/classMGTransferMF.html#a4eb4ee71e8a382ebe2b29df556277c1f',1,'MGTransferMF']]],
+  ['external_5fpartitioners_102',['external_partitioners',['http://www.dealii.org/developer/doxygen/deal.II/classMGTransferMF.html#a72466e2a93dedf889fc39af3c90dc979',1,'MGTransferMF']]],
   ['extra_5fcolumn_5ffunctions_103',['extra_column_functions',['http://www.dealii.org/developer/doxygen/deal.II/classParsedConvergenceTable.html#af723745bd58594511cf0f51e63305976',1,'ParsedConvergenceTable']]],
   ['extra_5fcolumns_104',['extra_columns',['http://www.dealii.org/developer/doxygen/deal.II/classParsedConvergenceTable.html#a9419a8cfabcb5e537847fb335cf16fb3',1,'ParsedConvergenceTable']]],
   ['extra_5foff_5fdiagonals_105',['extra_off_diagonals',['http://www.dealii.org/developer/doxygen/deal.II/classSparseLUDecomposition_1_1AdditionalData.html#a4f50008942dbfef89b34404e47ebde2c',1,'SparseLUDecomposition::AdditionalData']]],

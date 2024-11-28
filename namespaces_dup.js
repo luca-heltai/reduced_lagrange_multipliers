@@ -2473,6 +2473,7 @@ var namespaces_dup =
         [ "lanczos_largest_eigenvalue", "http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1LinearAlgebra.html#adb6a07778a777bcebaed91b93803fc52", null ]
       ] ],
       [ "MPI", "http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html", [
+        [ "ComputeIndexOwner", "http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI_1_1ComputeIndexOwner.html", null ],
         [ "ConsensusAlgorithms", "http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI_1_1ConsensusAlgorithms.html", [
           [ "nbx", "http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI_1_1ConsensusAlgorithms.html#ad3bf6e85b24c8e9796ac784b4b0df2bf", null ],
           [ "nbx", "http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI_1_1ConsensusAlgorithms.html#af57257adf3e176de2795484b0d8364cd", null ],
@@ -2487,7 +2488,6 @@ var namespaces_dup =
           [ "CollectiveMutexImplementation", "http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI_1_1internal_1_1CollectiveMutexImplementation.html", [
             [ "check_exception", "http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI_1_1internal_1_1CollectiveMutexImplementation.html#a2d8f92229e3fbe0bb4d6228ffd3e651d", null ]
           ] ],
-          [ "ComputeIndexOwner", "http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI_1_1internal_1_1ComputeIndexOwner.html", null ],
           [ "MPIDataTypes", "http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI_1_1internal_1_1MPIDataTypes.html", [
             [ "mpi_type_id", "http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI_1_1internal_1_1MPIDataTypes.html#aa452acda75bca5731c56d0000eaa337a", null ],
             [ "mpi_type_id", "http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI_1_1internal_1_1MPIDataTypes.html#adb1a0b21354abf5f92f46e1ca312c92e", null ],
