@@ -56,16 +56,16 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"elasticity_8h.html#a68c9ebb48889d54523bff3c6dc3870c4",
-"namespaceAlgorithms.html",
-"namespaceDoFTools.html#a86b041e2441000ccd13f2dad06537678",
-"namespaceGridTools.html#a0f04de5b8fee18233b4a2dbb81eb64ea",
-"namespaceMGTools.html#a173d6c72404172916aed3bc9c447c966",
-"namespaceSUNDIALS.html#a4c1be173b7d012aea503b4641dde5353",
-"namespaceUtilities_1_1MPI_1_1ConsensusAlgorithms.html#ad3bf6e85b24c8e9796ac784b4b0df2bf",
-"namespaceinternal.html",
-"namespaceinternal_1_1MatrixFreeFunctions_1_1internal.html",
-"structDoFHandler_1_1ActiveFEIndexTransfer.html"
+"coupled__elasticity_8h.html",
+"laplacian_8h.html#a68c9ebb48889d54523bff3c6dc3870c4",
+"namespaceDoFTools.html#a621c66a6f7e56cb56faac0e64014ece8",
+"namespaceGridTools.html#a002fd376a184234ccbf5eca8f8fd7012",
+"namespaceLinearAlgebra_1_1distributed.html#ae1104c07c5e57891c49403f4f1aeb1ee",
+"namespaceReferenceCells.html#a3ab331cfe2d03f3c89c0738624a11344",
+"namespaceUtilities_1_1MPI.html#af60cc1b71fa3abf1044b8db183da54a8",
+"namespacehp_1_1Refinement.html#a4ee925e92855d61dafee9de572a850b0",
+"namespaceinternal_1_1MatrixFreeFunctions.html#ab81b762e6779bbe3e2f477fc43132efa",
+"namespacetypes.html#a43d3a1573aaa7460bfe43f7a113cf2cf"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

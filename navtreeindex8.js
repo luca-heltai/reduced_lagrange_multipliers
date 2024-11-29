@@ -1,5 +1,14 @@
 var NAVTREEINDEX8 =
 {
+"namespacehp_1_1Refinement.html#a4ee925e92855d61dafee9de572a850b0":[1,0,54,1,9],
+"namespacehp_1_1Refinement.html#a4f1c9991fc50d5b952a90dcc164a2539":[1,0,54,1,4],
+"namespacehp_1_1Refinement.html#a7e0a3e2eef28a0af3a6ca7c60b273706":[1,0,54,1,11],
+"namespacehp_1_1Refinement.html#a8d1c7911e81d777123483a83b2fe1eda":[1,0,54,1,6],
+"namespacehp_1_1Refinement.html#a98a9d9d1450456815b8ed4892041065c":[1,0,54,1,1],
+"namespacehp_1_1Refinement.html#aa51769e5a5752781cd5aa9ec00b82a5c":[1,0,54,1,5],
+"namespacehp_1_1Refinement.html#ad0ca178ceaa3fbd70627d23d2adabeeb":[1,0,54,1,0],
+"namespacehp_1_1Refinement.html#adbb65ed7b6a97961a69967eaa0bb170b":[1,0,54,1,10],
+"namespacehp_1_1Refinement.html#aefd3adee5f867c94814028c0949da9de":[1,0,54,1,7],
 "namespaceinternal.html":[1,0,56],
 "namespaceinternal.html#a01af03ec12e23dda68aee7ca53a1838d":[1,0,56,198],
 "namespaceinternal.html#a027905f2066254c4933b3788268d0352":[1,0,56,171],
@@ -240,14 +249,5 @@ var NAVTREEINDEX8 =
 "namespaceinternal_1_1MatrixFreeFunctions.html#a6996a5a2494d6330aac07caa02f9c33e":[1,0,56,33,23],
 "namespaceinternal_1_1MatrixFreeFunctions.html#a749b41ef8580e352fd73fc0f89f7753c":[1,0,56,33,14],
 "namespaceinternal_1_1MatrixFreeFunctions.html#a8d579e4b2deb17048b90dcf5677ff1d2":[1,0,56,33,16],
-"namespaceinternal_1_1MatrixFreeFunctions.html#a96472c3db6d5463f2ac3a59574dce264":[1,0,56,33,5],
-"namespaceinternal_1_1MatrixFreeFunctions.html#ab81b762e6779bbe3e2f477fc43132efa":[1,0,56,33,18],
-"namespaceinternal_1_1MatrixFreeFunctions.html#ad303beab8ba2349e4a92bc743d3f3cbc":[1,0,56,33,15],
-"namespaceinternal_1_1MatrixFreeFunctions.html#ad4f45b97d337745885b8b8b5118c42a3":[1,0,56,33,4],
-"namespaceinternal_1_1MatrixFreeFunctions.html#ada241d98b4eff9004c8a5a6372deb8a7":[1,0,56,33,20],
-"namespaceinternal_1_1MatrixFreeFunctions.html#adab4328a83184fb44323924e0794c09f":[1,0,56,33,19],
-"namespaceinternal_1_1MatrixFreeFunctions.html#ae40e60719dc874fa3a92a227ba7a4ad3":[1,0,56,33,50],
-"namespaceinternal_1_1MatrixFreeFunctions.html#af8ebe1b0a37b010ba0aad6ae220fd665":[1,0,56,33,22],
-"namespaceinternal_1_1MatrixFreeFunctions_1_1VectorDataExchange.html":[1,0,56,33,3],
-"namespaceinternal_1_1MatrixFreeFunctions_1_1color.html":[1,0,56,33,0]
+"namespaceinternal_1_1MatrixFreeFunctions.html#a96472c3db6d5463f2ac3a59574dce264":[1,0,56,33,5]
 };

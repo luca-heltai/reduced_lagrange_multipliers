@@ -1,5 +1,14 @@
 var NAVTREEINDEX2 =
 {
+"laplacian_8h.html#a68c9ebb48889d54523bff3c6dc3870c4":[3,0,0,0,0,3,2],
+"laplacian_8h.html#a9de44048371bab8c1ae45a2f14e5e9f7":[3,0,0,0,0,3,3],
+"laplacian_8h_source.html":[3,0,0,0,0,3],
+"matrix__free__utils_8cc.html":[3,0,0,0,1,3],
+"matrix__free__utils_8cc_source.html":[3,0,0,0,1,3],
+"matrix__free__utils_8h.html":[3,0,0,0,0,4],
+"matrix__free__utils_8h.html#aee11d56092e5096cef1afe37587611d8":[3,0,0,0,0,4,1],
+"matrix__free__utils_8h_source.html":[3,0,0,0,0,4],
+"namespaceAdaptationStrategies.html":[1,0,0],
 "namespaceAlgorithms.html":[1,0,2],
 "namespaceAlgorithms.html#a65de55666348d122ce948f4e11c41567":[1,0,2,1],
 "namespaceAlgorithms.html#a83b47b723d922f5b15e66f8892fdd063":[1,0,2,2],
@@ -240,14 +249,5 @@ var NAVTREEINDEX2 =
 "namespaceDoFTools.html#a4790f406580eb0b0b0d73cfa0a2c4d7b":[1,0,25,41],
 "namespaceDoFTools.html#a5127bf00b985041912850ba63493770f":[1,0,25,47],
 "namespaceDoFTools.html#a5292102792fdad774ad7be1a54afb7eb":[1,0,25,49],
-"namespaceDoFTools.html#a5f745d25d2397a91dc65b9158b8d77a6":[1,0,25,42],
-"namespaceDoFTools.html#a621c66a6f7e56cb56faac0e64014ece8":[1,0,25,99],
-"namespaceDoFTools.html#a63ec0cf2cf5feceaddf484a5d72126ab":[1,0,25,31],
-"namespaceDoFTools.html#a69d19d6d574269cc6e69fa5c5b2d89e2":[1,0,25,101],
-"namespaceDoFTools.html#a6f9a91bfa884faa7a62acc8ff789f40e":[1,0,25,50],
-"namespaceDoFTools.html#a730347c0582a281b1fbea079d7906e6a":[1,0,25,74],
-"namespaceDoFTools.html#a76520181cea5bd10132542ec7f3cd15d":[1,0,25,43],
-"namespaceDoFTools.html#a7947b3175eb0d455cd2e875df09c9385":[1,0,25,86],
-"namespaceDoFTools.html#a796721b56b3a90e4e3973c7caae4c3d8":[1,0,25,8],
-"namespaceDoFTools.html#a7b5cab2021bd446e7aafd8b963f0d7d3":[1,0,25,97]
+"namespaceDoFTools.html#a5f745d25d2397a91dc65b9158b8d77a6":[1,0,25,42]
 };

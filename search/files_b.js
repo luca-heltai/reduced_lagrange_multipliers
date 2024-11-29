@@ -37,8 +37,10 @@ var searchData=
   ['convergence_5ftable_2ecc_34',['convergence_table.cc',['http://www.dealii.org/developer/doxygen/deal.II/convergence__table_8cc.html',1,'']]],
   ['convergence_5ftable_2eh_35',['convergence_table.h',['http://www.dealii.org/developer/doxygen/deal.II/convergence__table_8h.html',1,'']]],
   ['copy_5fdata_2eh_36',['copy_data.h',['http://www.dealii.org/developer/doxygen/deal.II/copy__data_8h.html',1,'']]],
-  ['coupled_5flaplace_5fproblem_2eh_37',['coupled_laplace_problem.h',['http://www.dealii.org/developer/doxygen/deal.II/coupled__laplace__problem_8h.html',1,'']]],
-  ['coupling_2ecc_38',['coupling.cc',['http://www.dealii.org/developer/doxygen/deal.II/coupling_8cc.html',1,'']]],
-  ['coupling_2eh_39',['coupling.h',['http://www.dealii.org/developer/doxygen/deal.II/coupling_8h.html',1,'']]],
-  ['crystal_5fgrowth_5fphase_5ffield_5fmodel_2eh_40',['Crystal_Growth_Phase_Field_Model.h',['http://www.dealii.org/developer/doxygen/deal.II/Crystal__Growth__Phase__Field__Model_8h.html',1,'']]]
+  ['coupled_5felasticity_2ecc_37',['coupled_elasticity.cc',['../coupled__elasticity_8cc.html',1,'']]],
+  ['coupled_5felasticity_2eh_38',['coupled_elasticity.h',['../coupled__elasticity_8h.html',1,'']]],
+  ['coupled_5flaplace_5fproblem_2eh_39',['coupled_laplace_problem.h',['http://www.dealii.org/developer/doxygen/deal.II/coupled__laplace__problem_8h.html',1,'']]],
+  ['coupling_2ecc_40',['coupling.cc',['http://www.dealii.org/developer/doxygen/deal.II/coupling_8cc.html',1,'']]],
+  ['coupling_2eh_41',['coupling.h',['http://www.dealii.org/developer/doxygen/deal.II/coupling_8h.html',1,'']]],
+  ['crystal_5fgrowth_5fphase_5ffield_5fmodel_2eh_42',['Crystal_Growth_Phase_Field_Model.h',['http://www.dealii.org/developer/doxygen/deal.II/Crystal__Growth__Phase__Field__Model_8h.html',1,'']]]
 ];

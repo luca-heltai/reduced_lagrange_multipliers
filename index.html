@@ -149,11 +149,15 @@ Installation</h1>
 Online documentation</h1>
 <p>The documentation is built and deployed at each merge to master. You can find the latest documentation here:</p>
 <p><a href="https://luca-heltai.github.io/reduced_lagrange_multipliers/">https://luca-heltai.github.io/reduced_lagrange_multipliers/</a></p>
-<p>The repository is accessible at:</p>
-<p><a href="https://github.com/luca-heltai/reduced_lagrange_multipliers">https://github.com/luca-heltai/reduced_lagrange_multipliers</a></p>
 <h1><a class="anchor" id="autotoc_md4"></a>
 Licence</h1>
-<p>See the file LICENSE.md for details </p>
+<p>See the file LICENSE.md for details</p>
+<h1><a class="anchor" id="autotoc_md5"></a>
+USE OF COUPLED ELASTICITY</h1>
+<p>run in parallel as</p>
+<p>export OMP_NUM_THREADS=1</p>
+<p>mpirun -np n ./build/coupled_elasticity_debug &lt;path_to_input_3d&gt; &lt;path_to_input_1d&gt; &lt;couplingSampling&gt; &lt;couplingStart&gt; 0 if we only want the the 1D simulation then set coupling Start to 100 if we only want the 3D Simulation then only give &lt;path_to_input_3d&gt;</p>
+<p>random error "invalid template argument" solved by changing the order od #include in app_* </p>
 </div></div><!-- PageDoc -->
 <a href="doxygen_crawl.html"></a>
 </div><!-- contents -->
@@ -161,7 +165,7 @@ Licence</h1>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Nov 28 2024 11:08:37 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
+    <li class="footer">Generated on Fri Nov 29 2024 08:51:20 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.12.0 </li>
   </ul>
 </div>
 </body>
