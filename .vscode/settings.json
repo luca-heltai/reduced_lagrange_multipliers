@@ -92,6 +92,16 @@
         "regex": "cpp",
         "source_location": "cpp",
         "span": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "barrier": "cpp",
+        "codecvt": "cpp",
+        "coroutine": "cpp",
+        "csetjmp": "cpp",
+        "csignal": "cpp",
+        "cuchar": "cpp",
+        "latch": "cpp",
+        "scoped_allocator": "cpp",
+        "syncstream": "cpp",
+        "valarray": "cpp"
     }
 }

@@ -128,30 +128,33 @@ public:
   unsigned int                  max_cells           = 20000;
   bool                          output_pressure     = false;
   bool                          pressure_coupling   = false;
-  double penalty_term =1.0e4;
-  double wave_ampltiude=0.01;
+  bool                          inertia_term        = true;
 
-  double Lame_mu = 1; double Lame_lambda = 1;
-  double lambda_CSF =1; double mu_CSF=1;
-  double lambda_Thalamus =1; double mu_Thalamus=1;
-  double lambda_HPC =1; double mu_HPC=1;
-  double lambda_WM =1; double mu_WM=1;
-  double lambda_CC =1; double mu_CC=1;
-  double lambda_Cerebellum =1; double mu_Cerebellum=1;
-  double lambda_Cortex =1; double mu_Cortex=1;
-  double lambda_BS =1; double mu_BS=1;
-  double lambda_BG =1; double mu_BG=1;
-  double lambda_Amygdala =1; double mu_Amygdala=1;
-  double rho=1;
-  double neta=1;
-  double elasticity_modulus=1;
-  double relaxation_time=1;
-  bool linear_elasticity = false;
-  bool rayleigh_damping =false;
-  double alpha_ray=0.1;
-  double beta_ray=0.01;
-  bool kelvin_voigt = false;
-  bool maxwell=false;
+  //weak boundary
+  double                        penalty_term        = 1.0e4;
+  double                        wave_ampltiude      = 0.01;
+  double                        wave_frequency      = 1;
+  bool                          weak_boundary       = false;
+
+  //absorbing layer
+  std::vector<double>           bl_point            = {0,0};
+  std::vector<double>           tr_point            = {1,1};
+  double                        layer_thickness     = 0.1;
+  double                        pml_alpha           = 1.0e-3;
+
+  //material parameters
+  double                        Lame_mu                 = 1; 
+  double                        Lame_lambda             = 1;
+  double                        rho                     = 1;
+  double                        neta                    = 0;
+  double                        elasticity_modulus_KV   = 1;
+  double                        elasticity_modulus_max  = 1;
+  double                        relaxation_time         = 1;
+  double                        alpha_ray               = 0.1;
+  double                        beta_ray                = 0.01;
+  std::string                   material_file           = "";
+  std::string                   constituitive_model     = "linear elastic";
+  
 
   mutable ParameterAcceptorProxy<Functions::ParsedFunction<spacedim>> rhs;
   mutable ParameterAcceptorProxy<Functions::ParsedFunction<spacedim>>
@@ -170,12 +173,12 @@ public:
   mutable ParsedConvergenceTable convergence_table;
 
   // Time dependency.
-  double initial_time = 0.0;
-  double final_time   = 0.0;
-  double dt           = 5e-3;
-  double beta= 0.25;
-  double gamma=0.5;
-  
+  double initial_time       = 0.0;
+  double final_time         = 0.0;
+  double dt                 = 5e-3;
+  double beta               = 0.25;
+  double gamma              = 0.5;
+
 };
 
 
@@ -207,6 +210,7 @@ ElasticityProblemParameters<dim, spacedim>::ElasticityProblemParameters()
     "If this is true, then we do NOT solve a saddle point problem, but we use the "
     "input data as a pressure field on the vasculature network, and we solve for "
     "the displacement field directly.");
+  add_parameter("Inertia term",inertia_term);
   enter_subsection("Grid generation");
   {
     add_parameter("Domain type",
@@ -235,41 +239,44 @@ ElasticityProblemParameters<dim, spacedim>::ElasticityProblemParameters()
   {
     add_parameter("density", rho);
     enter_subsection("Weak Boundary");{
+      add_parameter("weak boundary", weak_boundary);
       add_parameter("Penalty term", penalty_term);
       add_parameter("Wave amplitude", wave_ampltiude);
+      add_parameter("Wave Frequency",wave_frequency);
     }
     leave_subsection();
-    enter_subsection("Linear elasticity");{
-      add_parameter("linear elasticity", linear_elasticity);
-      add_parameter("Lame mu", Lame_mu); add_parameter("Lame lambda", Lame_lambda);
-      add_parameter("CSF lambda", lambda_CSF); add_parameter("CSF mu", mu_CSF);
-      add_parameter("Thalamus lambda", lambda_Thalamus); add_parameter("Thalamus mu", mu_Thalamus);
-      add_parameter("HPC lambda", lambda_HPC); add_parameter("HPC mu", mu_HPC);   
-      add_parameter("WM lambda", lambda_WM); add_parameter("WM mu", mu_WM);   
-      add_parameter("CC lambda", lambda_CC); add_parameter("CC mu", mu_CC);   
-      add_parameter("Cerebellum lambda", lambda_Cerebellum); add_parameter("Cerebellum mu", mu_Cerebellum);    
-      add_parameter("Cortex lambda", lambda_Cortex); add_parameter("Cortex mu", mu_Cortex);   
-      add_parameter("BS lambda", lambda_BS); add_parameter("BS mu", mu_BS);   
-      add_parameter("BG lambda", lambda_BG); add_parameter("BG mu", mu_BG);    
-      add_parameter("Amygdala lambda", lambda_Amygdala); add_parameter("Amygdala mu", mu_Amygdala);  
+    enter_subsection("PML layer");{
+      add_parameter("bottom left point",bl_point);
+      add_parameter("top right point",tr_point);
+      add_parameter("layer thickness",layer_thickness);
+      add_parameter("alpha",pml_alpha);
     }
     leave_subsection();
-    enter_subsection("Rayleigh damping");{
-      add_parameter("rayleigh damping", rayleigh_damping);
-      add_parameter("alpha", alpha_ray);
-      add_parameter("beta", beta_ray);
+    add_parameter("Constituitive Model",constituitive_model,"linear elastic",this->prm,
+                Patterns::Selection("linear elastic|rayleigh damping|kelvin voigt|maxwell"));
+    add_parameter("material file",material_file);
+    
+    enter_subsection("Linear Elasticity");
+    {
+      add_parameter("Lame mu", Lame_mu); 
+      add_parameter("Lame lambda", Lame_lambda);
     }
     leave_subsection();
-    enter_subsection("Kelvin Voigt");{
-      add_parameter("kelvin voigt", kelvin_voigt);
+    enter_subsection("Rayleigh Damping");
+    {
+      add_parameter("alpha", alpha_ray);add_parameter("beta", beta_ray);
+    }
+    leave_subsection();
+    enter_subsection("Kelvin Voigt");
+    {
       add_parameter("viscocity", neta);
-      add_parameter("elasticity modulus", elasticity_modulus);
+      add_parameter("elasticity modulus", elasticity_modulus_KV);
     }
     leave_subsection();
-    enter_subsection("Maxwell");{
-      add_parameter("maxwell", maxwell);
+    enter_subsection("Maxwell");
+    {
       add_parameter("relaxation time", relaxation_time);
-      add_parameter("elasticity modulus", elasticity_modulus);
+      add_parameter("elasticity modulus", elasticity_modulus_max);
     }
     leave_subsection();
   }
@@ -315,6 +322,10 @@ public:
   setup_fe();
   void
   setup_dofs();
+
+  std::vector<dealii::Vector<double>> 
+  read_material_data(const std::string& material_file);
+
   void
   assemble_elasticity_system();
   void
@@ -371,6 +382,7 @@ public:
 
   LA::MPI::SparseMatrix                           stiffness_matrix;
   LA::MPI::SparseMatrix                           mass_matrix;
+  LA::MPI::SparseMatrix                           boundary_matrix;
   LA::MPI::SparseMatrix                           force_matrix;
   LA::MPI::SparseMatrix                           coupling_matrix;
   LA::MPI::SparseMatrix                           damping_term;

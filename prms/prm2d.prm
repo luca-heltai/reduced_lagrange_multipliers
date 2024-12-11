@@ -1,0 +1,130 @@
+subsection Error
+  set Enable computation of the errors = true
+  set Error file name                  = 
+  set Error precision                  = 3
+  set Exponent for p-norms             = 2
+  set Extra columns                    = cells, dofs
+  set List of error norms to compute   = L2_norm, Linfty_norm, H1_norm
+  set Rate key                         = dofs
+  set Rate mode                        = reduction_rate_log2
+end
+subsection Immersed Problem
+  set Dirichlet boundary ids             = 
+  set FE degree                          = 1
+  set Initial refinement                 = 7
+  set Neumann boundary ids               = 
+  set Normal flux boundary ids           = 
+  set Output directory                   = output
+  set Output name                        = solution
+  set Output pressure                    = false
+  set Output results also before solving = false
+  set Pressure coupling                  = true
+  set Inertia term                       = true
+  subsection Dirichlet boundary conditions
+    set Function constants  = 
+    set Function expression = 0; 0
+    set Variable names      = x,y,t
+  end
+  subsection Exact solution
+    set Function constants  = 
+    set Function expression = 0; 0
+    set Variable names      = x,y,t
+    set Weight expression   = 1.
+  end
+  subsection Grid generation
+    set Domain type              = generate
+    set Grid generator           = hyper_rectangle
+    set Grid generator arguments = 0.0,0.0:0.30,0.3:true
+  end
+  subsection Immersed inclusions
+    set 3D 1D discretization                = 0.01
+    set Bounding boxes extraction level     = 1
+    set Data file                           = datafile
+    set Inclusions                          = 0.15,0.15,0.01
+    set Inclusions file                     = 
+    set Inclusions refinement               = 100
+    set Number of fourier coefficients      = 2
+    set Selection of Fourier coefficients   = 2,5
+    set Start index of Fourier coefficients = 0
+    subsection Boundary data
+      set Function constants  = 
+      set Function expression = 10;10
+      set Variable names      = x,y,t
+    end
+  end
+  subsection Neumann boundary conditions
+    set Function constants  = 
+    set Function expression = 0;0
+    set Variable names      = x,y,t
+  end
+  subsection Physical constants
+    set density = 1000.0
+    set Constituitive Model = linear elastic
+    set material file = 
+    subsection Linear Elasticity
+      set Lame mu = 10
+      set Lame lambda = 1
+    end
+    subsection Rayleigh Damping
+      set alpha            = 2
+      set beta             = 1
+    end
+    subsection Kelvin Voigt
+      set elasticity modulus = 1
+      set viscocity = 1
+    end
+    subsection Maxwell
+      set elasticity modulus =1
+      set relaxation time = 1
+    end
+    subsection PML layer
+      set alpha = 1e-3
+      set bottom left point = 0,0
+      set top right point = 0.3,0.3
+      set layer thickness = 0.01
+    end
+    subsection Weak Boundary
+      set Penalty term   = 1.0e8
+      set Wave Frequency = 1
+      set Wave amplitude = 1
+      set weak boundary  = true
+    end
+  end
+  subsection Refinement and remeshing
+    set Coarsening fraction         = 0
+    set Maximum number of cells     = 20000
+    set Number of refinement cycles = 1
+    set Refinement fraction         = 0.3
+    set Strategy                    = fixed_fraction
+  end
+  subsection Right hand side
+    set Function constants  = 
+    set Function expression = 0; 0
+    set Variable names      = x,y,t
+  end
+  subsection Solver
+    subsection Inner control
+      set Log frequency = 1
+      set Log history   = false
+      set Log result    = true
+      set Max steps     = 10000
+      set Reduction     = 1.e-6
+      set Tolerance     = 1.e-6
+    end
+    subsection Outer control
+      set Log frequency = 1
+      set Log history   = false
+      set Log result    = true
+      set Max steps     = 10000
+      set Reduction     = 1.e-6
+      set Tolerance     = 1.e-6
+    end
+  end
+  subsection Time dependency
+    set Final time   = 2.0
+    set Initial time = 0.0
+    set Time step    = 0.1
+    set beta         = 0.25
+    set gamma        = 0.5
+  end
+end

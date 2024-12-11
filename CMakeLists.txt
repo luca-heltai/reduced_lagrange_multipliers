@@ -46,7 +46,7 @@ INCLUDE_DIRECTORIES(include)
 CMAKE_MINIMUM_REQUIRED(VERSION 3.10)
 
 FIND_PACKAGE(deal.II 9.2 REQUIRED
-HINTS ${deal.II_DIR} ${DEAL_II_DIR} ../ ../../ $ENV{DEAL_II_DIR})
+HINTS ${deal.II_DIR} ${DEAL_II_DIR} ../ ../../ $ENV{DEAL_II_DIR} /opt/dealii-9.5.0_hdf5/opt/spack/linux-ubuntu22.04-skylake/gcc-12.3.0/dealii-9.5.0-26o4yaol7efkmvn46onattkytp7bluzi/lib/cmake/deal.II/)
 DEAL_II_INITIALIZE_CACHED_VARIABLES()
 
 
@@ -64,6 +64,10 @@ OPTION(ENABLE_GOOGLE_TESTING
 SET(_d2_build_types "Release;Debug")
 SET(Release_postfix "")
 SET(Debug_postfix "_debug")
+SET(DEAL_II_CXX_COMPILER "/opt/dealii-9.5.0_hdf5/opt/spack/linux-ubuntu22.04-skylake/gcc-12.3.0/openmpi-5.0.5-b6gqzdrqzwuq244rkt6pykscij3tq7e4/bin/mpicxx")
+SET(DEAL_II_C_COMPILER "/opt/dealii-9.5.0_hdf5/opt/spack/linux-ubuntu22.04-skylake/gcc-12.3.0/openmpi-5.0.5-b6gqzdrqzwuq244rkt6pykscij3tq7e4/bin/mpicc")
+SET(NUMDIFF_DIR "/opt/dealii-9.5.0_hdf5/opt/spack/linux-ubuntu22.04-skylake/gcc-12.3.0/numdiff-5.9.0-yipeoaf5vdq4m2ezeufulyouurax6hup/bin")
+
 
 FOREACH(_build_type ${_d2_build_types})
   # Postfix to use everywhere
