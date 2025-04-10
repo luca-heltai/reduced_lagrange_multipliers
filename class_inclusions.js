@@ -11,6 +11,7 @@ var class_inclusions =
     [ "get_fe_values", "class_inclusions.html#a60a042f0cd689fcb00484389f5e71979", null ],
     [ "get_fourier_component", "class_inclusions.html#a1051f7471e3756758e64e53a5010d531", null ],
     [ "get_inclusion_data", "class_inclusions.html#a2d8e186c85a52d3e5f2ba1e50b309396", null ],
+    [ "get_inclusion_data", "class_inclusions.html#ab372298306d665adc51ff05a108258e3", null ],
     [ "get_inclusion_id", "class_inclusions.html#a63fcb60efd027925d9bc73a7f334a87e", null ],
     [ "get_inclusions_in_vessel", "class_inclusions.html#aabbfb9579090b477ab2d7e20e4029dc4", null ],
     [ "get_JxW", "class_inclusions.html#a1fcaf5e0d364a10e0fcccad3deafdd29", null ],

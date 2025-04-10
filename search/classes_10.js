@@ -47,11 +47,12 @@ var searchData=
   ['quadrature_3c_201_20_3e_44',['Quadrature&lt; 1 &gt;',['http://www.dealii.org/developer/doxygen/deal.II/classQuadrature.html',1,'']]],
   ['quadrature_3c_20dim_20_2d_201_20_3e_45',['Quadrature&lt; dim - 1 &gt;',['http://www.dealii.org/developer/doxygen/deal.II/classQuadrature.html',1,'']]],
   ['quadrature_3c_20dim_20_3e_46',['Quadrature&lt; dim &gt;',['http://www.dealii.org/developer/doxygen/deal.II/classQuadrature.html',1,'']]],
-  ['quadrature_3c_20structdim_20_3e_47',['Quadrature&lt; structdim &gt;',['http://www.dealii.org/developer/doxygen/deal.II/classQuadrature.html',1,'']]],
-  ['quadraturedescriptor_48',['QuadratureDescriptor',['http://www.dealii.org/developer/doxygen/deal.II/structinternal_1_1MatrixFreeFunctions_1_1MappingInfoStorage_1_1QuadratureDescriptor.html',1,'internal::MatrixFreeFunctions::MappingInfoStorage']]],
-  ['quadraturegenerator_49',['QuadratureGenerator',['http://www.dealii.org/developer/doxygen/deal.II/classNonMatching_1_1QuadratureGenerator.html',1,'NonMatching']]],
-  ['quadraturegenerator_3c_20dim_20_2d_201_20_3e_50',['QuadratureGenerator&lt; dim - 1 &gt;',['http://www.dealii.org/developer/doxygen/deal.II/classNonMatching_1_1QuadratureGenerator.html',1,'NonMatching']]],
-  ['quadratureselector_51',['QuadratureSelector',['http://www.dealii.org/developer/doxygen/deal.II/classQuadratureSelector.html',1,'']]],
-  ['qweddle_52',['QWeddle',['http://www.dealii.org/developer/doxygen/deal.II/classQWeddle.html',1,'']]],
-  ['qwitherdenvincentsimplex_53',['QWitherdenVincentSimplex',['http://www.dealii.org/developer/doxygen/deal.II/classQWitherdenVincentSimplex.html',1,'']]]
+  ['quadrature_3c_20dim_3d_3d0_20_3f_200_20_3adim_20_2d_201_20_3e_47',['Quadrature&lt; dim==0 ? 0 :dim - 1 &gt;',['http://www.dealii.org/developer/doxygen/deal.II/classQuadrature.html',1,'']]],
+  ['quadrature_3c_20structdim_20_3e_48',['Quadrature&lt; structdim &gt;',['http://www.dealii.org/developer/doxygen/deal.II/classQuadrature.html',1,'']]],
+  ['quadraturedescriptor_49',['QuadratureDescriptor',['http://www.dealii.org/developer/doxygen/deal.II/structinternal_1_1MatrixFreeFunctions_1_1MappingInfoStorage_1_1QuadratureDescriptor.html',1,'internal::MatrixFreeFunctions::MappingInfoStorage']]],
+  ['quadraturegenerator_50',['QuadratureGenerator',['http://www.dealii.org/developer/doxygen/deal.II/classNonMatching_1_1QuadratureGenerator.html',1,'NonMatching']]],
+  ['quadraturegenerator_3c_20dim_20_2d_201_20_3e_51',['QuadratureGenerator&lt; dim - 1 &gt;',['http://www.dealii.org/developer/doxygen/deal.II/classNonMatching_1_1QuadratureGenerator.html',1,'NonMatching']]],
+  ['quadratureselector_52',['QuadratureSelector',['http://www.dealii.org/developer/doxygen/deal.II/classQuadratureSelector.html',1,'']]],
+  ['qweddle_53',['QWeddle',['http://www.dealii.org/developer/doxygen/deal.II/classQWeddle.html',1,'']]],
+  ['qwitherdenvincentsimplex_54',['QWitherdenVincentSimplex',['http://www.dealii.org/developer/doxygen/deal.II/classQWitherdenVincentSimplex.html',1,'']]]
 ];

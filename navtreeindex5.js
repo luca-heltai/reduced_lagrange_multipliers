@@ -1,9 +1,5 @@
 var NAVTREEINDEX5 =
 {
-"namespaceLinearAlgebra_1_1distributed.html#ae1104c07c5e57891c49403f4f1aeb1ee":[1,0,64,0,0],
-"namespaceLinearAlgebra_1_1distributed.html#af3f65ff09b2fae0b24fd57e85198245d":[1,0,64,0,1],
-"namespaceLocalIntegrators.html":[1,0,69],
-"namespaceMGTools.html":[1,0,87],
 "namespaceMGTools.html#a03c78eb0256983948e2cec91f4d62c6f":[1,0,87,18],
 "namespaceMGTools.html#a04ace3b3c67f9045dd5514f955c517d6":[1,0,87,8],
 "namespaceMGTools.html#a04b33c8c56960ba2c8aa6d06baae61f5":[1,0,87,20],
@@ -213,8 +209,9 @@ var NAVTREEINDEX5 =
 "namespacePETScWrappers.html#aaee0d54c2dcf333c8d84d9bd23dc7479":[1,0,100,40],
 "namespacePETScWrappers.html#abea4cbfee671814e9a780dca44516903":[1,0,100,36],
 "namespacePETScWrappers_1_1MPI.html":[1,0,100,3],
-"namespacePETScWrappers_1_1MPI.html#a6eb740cb3974671940dc394f635e72dc":[1,0,100,3,0],
-"namespacePETScWrappers_1_1MPI.html#ab68a5e695e0b01646a5178561372812d":[1,0,100,3,1],
+"namespacePETScWrappers_1_1MPI.html#a6eb740cb3974671940dc394f635e72dc":[1,0,100,3,1],
+"namespacePETScWrappers_1_1MPI.html#aa42c73b325c6bf80822a53b5f60465af":[1,0,100,3,0],
+"namespacePETScWrappers_1_1MPI.html#ab68a5e695e0b01646a5178561372812d":[1,0,100,3,2],
 "namespacePETScWrappers_1_1MatrixIterators.html":[1,0,100,2],
 "namespacePETScWrappers_1_1internal.html":[1,0,100,0],
 "namespacePETScWrappers_1_1internal.html#aea808868c3362f80ae267867c7efd970":[1,0,100,0,0],
@@ -244,10 +241,13 @@ var NAVTREEINDEX5 =
 "namespacePolynomials.html#ae66b65dc61a9dca786ec84a122651ab9":[1,0,103,2],
 "namespacePolynomials_1_1internal.html":[1,0,103,0],
 "namespacePortable.html":[1,0,104],
-"namespaceReferenceCells.html":[1,0,113],
-"namespaceReferenceCells.html#a0c212a545f1f9d88893231c66d78d552":[1,0,113,7],
-"namespaceReferenceCells.html#a14badca7aa0e6d807934973e046a2e2f":[1,0,113,6],
-"namespaceReferenceCells.html#a2a5c95240422d7dded5ef3c1c4bf07d7":[1,0,113,10],
-"namespaceReferenceCells.html#a2fa7498ee1af9d4adc73eb44c991e91c":[1,0,113,5],
-"namespaceReferenceCells.html#a32ce1a7bd91dbfce6a50f6a0889b67cb":[1,0,113,3]
+"namespacePortable.html#af1aac953f8c8675f9c2bc84190d5a6c3":[1,0,104,3],
+"namespacePortable.html#afba22b19268cceb886536501178479b2":[1,0,104,2],
+"namespacePortable_1_1internal.html":[1,0,104,0],
+"namespacePortable_1_1internal.html#a031def02d2422b91de641e2e136e176d":[1,0,104,0,6],
+"namespacePortable_1_1internal.html#a18af8f0da5da0e786795993251f514e8":[1,0,104,0,0],
+"namespacePortable_1_1internal.html#a18af8f0da5da0e786795993251f514e8a02cc45ebf6f788248ba8fa1209a4ee97":[1,0,104,0,11],
+"namespacePortable_1_1internal.html#a18af8f0da5da0e786795993251f514e8a82a685c0b6a07526f0f90d84d08b844b":[1,0,104,0,12],
+"namespacePortable_1_1internal.html#a18af8f0da5da0e786795993251f514e8af0972a0c07cebf1607d11fd34e22c954":[1,0,104,0,13],
+"namespacePortable_1_1internal.html#a2420ca935faddf263d6e1abedab14a6c":[1,0,104,0,5]
 };

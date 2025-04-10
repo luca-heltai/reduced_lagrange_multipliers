@@ -56,17 +56,17 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"coupled__elasticity_8h.html",
-"laplacian_8h.html#a68c9ebb48889d54523bff3c6dc3870c4",
-"namespaceDoFTools.html#a621c66a6f7e56cb56faac0e64014ece8",
-"namespaceGridTools.html#a002fd376a184234ccbf5eca8f8fd7012",
-"namespaceLinearAlgebra_1_1distributed.html#ae1104c07c5e57891c49403f4f1aeb1ee",
-"namespaceReferenceCells.html#a3ab331cfe2d03f3c89c0738624a11344",
-"namespaceUtilities_1_1MPI.html#af60cc1b71fa3abf1044b8db183da54a8",
-"namespacehp_1_1Refinement.html#a4ee925e92855d61dafee9de572a850b0",
-"namespaceinternal_1_1MatrixFreeFunctions.html#ab81b762e6779bbe3e2f477fc43132efa",
-"namespacetypes.html#a43d3a1573aaa7460bfe43f7a113cf2cf"
+"dir_7a95a9cc00fcc7af5a429eec361b64d1.html",
+"matrix__free__utils_8cc_source.html",
+"namespaceDoFTools.html#a76520181cea5bd10132542ec7f3cd15d",
+"namespaceGridTools.html#a07919e120e98a6a0139ffe8c9f4a2a8b",
+"namespaceMGTools.html#a03c78eb0256983948e2cec91f4d62c6f",
+"namespacePortable_1_1internal.html#a3a1c05b95df9bf4043ad546e45b3204b",
+"namespaceUtilities_1_1MPI.html#a82d3e231d6afc95814be1efbfb4f3125",
+"namespacedeal__II__exceptions.html#a8c3f112b3e59832e4ceac8f6633672be",
+"namespaceinternal_1_1MappingQImplementation.html#a80b381a5947c9e3d5e487c08205c864a",
+"namespacestd.html#a75a30aa280fd30aea596f82517daee0c"
 ];
 
-var SYNCONMSG = 'click to disable panel synchronisation';
-var SYNCOFFMSG = 'click to enable panel synchronisation';
+var SYNCONMSG = 'click to disable panel synchronization';
+var SYNCOFFMSG = 'click to enable panel synchronization';
