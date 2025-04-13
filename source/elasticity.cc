@@ -581,7 +581,7 @@ ElasticityProblem<dim, spacedim>::assemble_coupling()
 
 
                   local_mass_matrix(j, j) +=
-                    inclusion_fe_values[j] * inclusion_fe_values[j]* ds;
+                    inclusion_fe_values[j] * inclusion_fe_values[j] * ds;
                 }
               ++p;
             }
