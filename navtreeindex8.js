@@ -1,5 +1,9 @@
 var NAVTREEINDEX8 =
 {
+"namespacedeal__II__exceptions.html":[1,0,19],
+"namespacedeal__II__exceptions.html#a0a5db0650b1c82f4bc04217f9a6eb388":[1,0,19,4],
+"namespacedeal__II__exceptions.html#a366ec106ff2e4f31846bb57f43ff4bd5":[1,0,19,2],
+"namespacedeal__II__exceptions.html#a3953411a9013d21af68e53fa5bbd4f8e":[1,0,19,1],
 "namespacedeal__II__exceptions.html#a8c3f112b3e59832e4ceac8f6633672be":[1,0,19,3],
 "namespacedeal__II__exceptions.html#a9daa5d2e7e7d5b374e6a71e66472360d":[1,0,19,5],
 "namespacedeal__II__exceptions_1_1internals.html":[1,0,19,0],
@@ -245,9 +249,5 @@ var NAVTREEINDEX8 =
 "namespaceinternal_1_1MappingQImplementation.html#a01d39a8b534a607a23d0f4ebebcaa04b":[1,0,56,33,14],
 "namespaceinternal_1_1MappingQImplementation.html#a09aa79e9a962a978366e814aca484ab5":[1,0,56,33,6],
 "namespaceinternal_1_1MappingQImplementation.html#a1ab5d48ddc405377a9b628e493c64e3c":[1,0,56,33,8],
-"namespaceinternal_1_1MappingQImplementation.html#a209bdf05246096850f158356cc88d767":[1,0,56,33,1],
-"namespaceinternal_1_1MappingQImplementation.html#a400abae7b1345173e717d2ab21fbaa65":[1,0,56,33,19],
-"namespaceinternal_1_1MappingQImplementation.html#a48905b4a1d795ca870d6234e68be541f":[1,0,56,33,13],
-"namespaceinternal_1_1MappingQImplementation.html#a59969260be94bc7631e9506dbe2ce79a":[1,0,56,33,5],
-"namespaceinternal_1_1MappingQImplementation.html#a6c115dccdbc6c2a5ff7223b2a9fad4cb":[1,0,56,33,2]
+"namespaceinternal_1_1MappingQImplementation.html#a209bdf05246096850f158356cc88d767":[1,0,56,33,1]
 };

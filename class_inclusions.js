@@ -56,6 +56,7 @@ var class_inclusions =
     [ "n_vessels", "class_inclusions.html#ae5da6f89cdf0c4993db0ce3e6234a7fb", null ],
     [ "normals", "class_inclusions.html#a15536b60fd2017e71ac89e5ddf4ffe44", null ],
     [ "offset_coefficients", "class_inclusions.html#aacbcacdfd82ca2e9fea6654d59773786", null ],
+    [ "reference_inclusion_data", "class_inclusions.html#a91daf04d31555aa4d81fa50ec5352b8f", null ],
     [ "rotated_inclusion_data", "class_inclusions.html#a771d84e2323ac16d6eb098150719712e", null ],
     [ "rtree_extraction_level", "class_inclusions.html#a41bcd6d5727087f4522033a6a487354c", null ],
     [ "selected_coefficients", "class_inclusions.html#a0e5baf3eff655c343303b8d47d2cd317", null ],

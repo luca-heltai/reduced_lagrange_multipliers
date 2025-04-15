@@ -176,6 +176,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ac147dae3f7a1e6d074173da1cb613f45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the normal.  <br /></td></tr>
 <tr class="separator:ac147dae3f7a1e6d074173da1cb613f45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1fcaf5e0d364a10e0fcccad3deafdd29" id="r_a1fcaf5e0d364a10e0fcccad3deafdd29"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1fcaf5e0d364a10e0fcccad3deafdd29">get_JxW</a> (const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#a3543786f7dc7c57385fc923a6afd5917">types::global_dof_index</a> &amp;particle_id) const</td></tr>
+<tr class="memdesc:a1fcaf5e0d364a10e0fcccad3deafdd29"><td class="mdescLeft">&#160;</td><td class="mdescRight">return weight for integration normal direction of an inclusion at a quadrature point  <br /></td></tr>
 <tr class="separator:a1fcaf5e0d364a10e0fcccad3deafdd29"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a60a042f0cd689fcb00484389f5e71979" id="r_a60a042f0cd689fcb00484389f5e71979"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; double &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a60a042f0cd689fcb00484389f5e71979">get_fe_values</a> (const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#a3543786f7dc7c57385fc923a6afd5917">types::global_dof_index</a> particle_id) const</td></tr>
 <tr class="separator:a60a042f0cd689fcb00484389f5e71979"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -203,11 +204,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:adb52fa93bd84790745eda7dbb9320cf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the displacement data after the initialization reading from a hdf5 file.  <br /></td></tr>
 <tr class="separator:adb52fa93bd84790745eda7dbb9320cf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a651503528d46fc595310f49768a1a5" id="r_a6a651503528d46fc595310f49768a1a5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6a651503528d46fc595310f49768a1a5">update_inclusions_data</a> (std::vector&lt; double &gt; new_data)</td></tr>
-<tr class="memdesc:a6a651503528d46fc595310f49768a1a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the displacement data after the initialization reading from a vector of lenght n_vessels (constant displacement along the vessel) or of lenght inclusions.size()  <br /></td></tr>
+<tr class="memdesc:a6a651503528d46fc595310f49768a1a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the displacement data after the initialization, 3D case only.  <br /></td></tr>
 <tr class="separator:a6a651503528d46fc595310f49768a1a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5ae975a861ff8f5f80dfb2973d773ed4" id="r_a5ae975a861ff8f5f80dfb2973d773ed4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5ae975a861ff8f5f80dfb2973d773ed4">update_inclusions_data</a> (std::vector&lt; std::vector&lt; double &gt; &gt; new_data)</td></tr>
 <tr class="separator:a5ae975a861ff8f5f80dfb2973d773ed4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab36c7fda75807df6e3ca7e83620aa327" id="r_ab36c7fda75807df6e3ca7e83620aa327"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab36c7fda75807df6e3ca7e83620aa327">get_vesselID</a> (const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#a3543786f7dc7c57385fc923a6afd5917">types::global_dof_index</a> &amp;inclusion_id) const</td></tr>
+<tr class="memdesc:ab36c7fda75807df6e3ca7e83620aa327"><td class="mdescLeft">&#160;</td><td class="mdescRight">3D return the vessel that a given inclusion belongs to, 2D return 0  <br /></td></tr>
 <tr class="separator:ab36c7fda75807df6e3ca7e83620aa327"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae4d4ea0c049aaaba2d2bf414bca9dfa9" id="r_ae4d4ea0c049aaaba2d2bf414bca9dfa9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae4d4ea0c049aaaba2d2bf414bca9dfa9">update_single_inclusion_data_along_normal</a> (const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#a3543786f7dc7c57385fc923a6afd5917">types::global_dof_index</a> &amp;inclusion_id, const double nd)</td></tr>
 <tr class="separator:ae4d4ea0c049aaaba2d2bf414bca9dfa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -224,6 +226,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa18673f64d938a52b919939048608199" id="r_aa18673f64d938a52b919939048608199"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa18673f64d938a52b919939048608199">compute_rotated_inclusion_data</a> ()</td></tr>
 <tr class="separator:aa18673f64d938a52b919939048608199"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9f38fa4ec2defc3bcea2f7e958c4399e" id="r_a9f38fa4ec2defc3bcea2f7e958c4399e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9f38fa4ec2defc3bcea2f7e958c4399e">get_rotated_inclusion_data</a> (const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#a3543786f7dc7c57385fc923a6afd5917">types::global_dof_index</a> &amp;inclusion_id) const</td></tr>
+<tr class="memdesc:a9f38fa4ec2defc3bcea2f7e958c4399e"><td class="mdescLeft">&#160;</td><td class="mdescRight">return the rotate the data of a given inclusion  <br /></td></tr>
 <tr class="separator:a9f38fa4ec2defc3bcea2f7e958c4399e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa10505c128ddc73c11e96b9706ce94fe" id="r_aa10505c128ddc73c11e96b9706ce94fe"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa10505c128ddc73c11e96b9706ce94fe">set_n_q_points</a> (unsigned int n_q)</td></tr>
 <tr class="separator:aa10505c128ddc73c11e96b9706ce94fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -310,6 +313,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a7db796c153cdda2b4720485a066f844a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa9b900fa508ef76a40148980f0c5f3e4" id="r_aa9b900fa508ef76a40148980f0c5f3e4"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa9b900fa508ef76a40148980f0c5f3e4">inclusions_data</a></td></tr>
 <tr class="separator:aa9b900fa508ef76a40148980f0c5f3e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a91daf04d31555aa4d81fa50ec5352b8f" id="r_a91daf04d31555aa4d81fa50ec5352b8f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a91daf04d31555aa4d81fa50ec5352b8f">reference_inclusion_data</a></td></tr>
+<tr class="separator:a91daf04d31555aa4d81fa50ec5352b8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a771d84e2323ac16d6eb098150719712e" id="r_a771d84e2323ac16d6eb098150719712e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a771d84e2323ac16d6eb098150719712e">rotated_inclusion_data</a></td></tr>
 <tr class="separator:a771d84e2323ac16d6eb098150719712e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a41a470e37acda9641eca5fd0d5a4695a" id="r_a41a470e37acda9641eca5fd0d5a4695a"><td class="memItemLeft" align="right" valign="top">std::map&lt; unsigned int, std::vector&lt; <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#a3543786f7dc7c57385fc923a6afd5917">types::global_dof_index</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a41a470e37acda9641eca5fd0d5a4695a">map_vessel_inclusions</a></td></tr>
@@ -399,7 +404,7 @@ Additional Inherited Members</h2></td></tr>
 class Inclusions&lt; spacedim &gt;</div><p>Class for handling inclusions in an immersed boundary method. </p>
 <p>This class provides functionality for handling inclusions in an immersed boundary method. It stores the positions, radii, and Fourier coefficients of the inclusions, and provides methods for computing their normals, center, and direction. It also provides methods for initializing the inclusions from a file, setting up particles for the inclusions, and getting degrees of freedom associated with each inclusion. </p>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00065">65</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00064">64</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a55fe8a6d375ddbc2f5621c21d7ca149d" name="a55fe8a6d375ddbc2f5621c21d7ca149d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a55fe8a6d375ddbc2f5621c21d7ca149d">&#9670;&#160;</a></span>Inclusions()</h2>
@@ -434,9 +439,9 @@ template&lt;int spacedim&gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00076">76</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00075">75</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#af2a534c7f1ea5bfa165fa8a469744a5d">ParameterAcceptor::add_parameter()</a>, <a class="el" href="inclusions_8h_source.html#l01006">data_file</a>, <a class="el" href="inclusions_8h_source.html#l01004">inclusions</a>, <a class="el" href="inclusions_8h_source.html#l01032">inclusions_file</a>, <a class="el" href="inclusions_8h_source.html#l01002">inclusions_rhs</a>, <a class="el" href="inclusions_8h_source.html#l01016">n_coefficients</a>, <a class="el" href="inclusions_8h_source.html#l01015">n_q_points</a>, <a class="el" href="inclusions_8h_source.html#l01020">n_vector_components</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#a7bf9ccbc4d618a248324748a41f625cf">ParameterAcceptor::ParameterAcceptor()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#a96081d4cc985b722c9841fcf0c0e54ec">ParameterAcceptor::prm</a>, <a class="el" href="inclusions_8h_source.html#l01033">rtree_extraction_level</a>, and <a class="el" href="inclusions_8h_source.html#l01018">selected_coefficients</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#af2a534c7f1ea5bfa165fa8a469744a5d">ParameterAcceptor::add_parameter()</a>, <a class="el" href="inclusions_8h_source.html#l01024">data_file</a>, <a class="el" href="inclusions_8h_source.html#l01022">inclusions</a>, <a class="el" href="inclusions_8h_source.html#l01051">inclusions_file</a>, <a class="el" href="inclusions_8h_source.html#l01020">inclusions_rhs</a>, <a class="el" href="inclusions_8h_source.html#l01035">n_coefficients</a>, <a class="el" href="inclusions_8h_source.html#l01034">n_q_points</a>, <a class="el" href="inclusions_8h_source.html#l01039">n_vector_components</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#a7bf9ccbc4d618a248324748a41f625cf">ParameterAcceptor::ParameterAcceptor()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#a96081d4cc985b722c9841fcf0c0e54ec">ParameterAcceptor::prm</a>, <a class="el" href="inclusions_8h_source.html#l01027">reference_inclusion_data</a>, <a class="el" href="inclusions_8h_source.html#l01052">rtree_extraction_level</a>, and <a class="el" href="inclusions_8h_source.html#l01037">selected_coefficients</a>.</p>
 
 </div>
 </div>
@@ -468,11 +473,11 @@ template&lt;int spacedim&gt; </div>
 
 <p>Check that all vesselsID are present and create the map vessel_inclusions. </p>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01040">1040</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01059">1059</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00854">get_vesselID()</a>, <a class="el" href="inclusions_8h_source.html#l01004">inclusions</a>, <a class="el" href="inclusions_8h_source.html#l01012">map_vessel_inclusions</a>, and <a class="el" href="inclusions_8h_source.html#l01030">n_vessels</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00867">get_vesselID()</a>, <a class="el" href="inclusions_8h_source.html#l01022">inclusions</a>, <a class="el" href="inclusions_8h_source.html#l01031">map_vessel_inclusions</a>, and <a class="el" href="inclusions_8h_source.html#l01049">n_vessels</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00166">initialize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00168">initialize()</a>.</p>
 
 </div>
 </div>
@@ -501,11 +506,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00924">924</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00937">937</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00630">get_rotation()</a>, <a class="el" href="inclusions_8h_source.html#l01008">inclusions_data</a>, <a class="el" href="inclusions_8h_source.html#l01009">rotated_inclusion_data</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html#a5227508480598cc2adf237d1327b779a">Tensor&lt; int rank_, int dim, typename Number &gt;::unroll()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00284">setup_inclusions_particles()</a>, <a class="el" href="inclusions_8h_source.html#l00699">update_displacement_hdf5()</a>, <a class="el" href="inclusions_8h_source.html#l00742">update_inclusions_data()</a>, and <a class="el" href="inclusions_8h_source.html#l00781">update_inclusions_data()</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00644">get_rotation()</a>, <a class="el" href="inclusions_8h_source.html#l01026">inclusions_data</a>, <a class="el" href="inclusions_8h_source.html#l01028">rotated_inclusion_data</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html#a5227508480598cc2adf237d1327b779a">Tensor&lt; int rank_, int dim, typename Number &gt;::unroll()</a>.</p>
 
 </div>
 </div>
@@ -543,11 +546,11 @@ template&lt;int spacedim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classPoint.html">Point&lt;spacedim&gt;</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00537">537</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00551">551</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01004">inclusions</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01022">inclusions</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00669">get_current_support_points()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00683">get_current_support_points()</a>.</p>
 
 </div>
 </div>
@@ -585,9 +588,9 @@ template&lt;int spacedim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>unsigned int The index of the current component </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00357">357</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00366">366</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00121">n_dofs()</a>, <a class="el" href="inclusions_8h_source.html#l00156">n_dofs_per_inclusion()</a>, <a class="el" href="inclusions_8h_source.html#l01020">n_vector_components</a>, and <a class="el" href="inclusions_8h_source.html#l01018">selected_coefficients</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00123">n_dofs()</a>, <a class="el" href="inclusions_8h_source.html#l00158">n_dofs_per_inclusion()</a>, <a class="el" href="inclusions_8h_source.html#l01039">n_vector_components</a>, and <a class="el" href="inclusions_8h_source.html#l01037">selected_coefficients</a>.</p>
 
 </div>
 </div>
@@ -616,11 +619,11 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00669">669</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00683">683</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01027">current_support_points</a>, <a class="el" href="inclusions_8h_source.html#l00537">get_center()</a>, <a class="el" href="inclusions_8h_source.html#l00556">get_radius()</a>, <a class="el" href="inclusions_8h_source.html#l00630">get_rotation()</a>, <a class="el" href="inclusions_8h_source.html#l01015">n_q_points</a>, and <a class="el" href="inclusions_8h_source.html#l01022">support_points</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01046">current_support_points</a>, <a class="el" href="inclusions_8h_source.html#l00551">get_center()</a>, <a class="el" href="inclusions_8h_source.html#l00570">get_radius()</a>, <a class="el" href="inclusions_8h_source.html#l00644">get_rotation()</a>, <a class="el" href="inclusions_8h_source.html#l01034">n_q_points</a>, and <a class="el" href="inclusions_8h_source.html#l01041">support_points</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00284">setup_inclusions_particles()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00293">setup_inclusions_particles()</a>.</p>
 
 </div>
 </div>
@@ -658,11 +661,11 @@ template&lt;int spacedim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html">Tensor&lt;1, spacedim&gt;</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00599">599</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00613">613</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01004">inclusions</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html#a4df6cb10807fbe5fb432a19b5ef9aeb6">Tensor&lt; int rank_, int dim, typename Number &gt;::norm()</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01022">inclusions</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html#a4df6cb10807fbe5fb432a19b5ef9aeb6">Tensor&lt; int rank_, int dim, typename Number &gt;::norm()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00461">get_JxW()</a>, <a class="el" href="inclusions_8h_source.html#l00630">get_rotation()</a>, and <a class="el" href="inclusions_8h_source.html#l00579">get_section_measure()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00475">get_JxW()</a>, <a class="el" href="inclusions_8h_source.html#l00644">get_rotation()</a>, and <a class="el" href="inclusions_8h_source.html#l00593">get_section_measure()</a>.</p>
 
 </div>
 </div>
@@ -700,9 +703,9 @@ template&lt;int spacedim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A vector containing the degrees of freedom indices. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00268">268</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00277">277</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00156">n_dofs_per_inclusion()</a>, <a class="el" href="inclusions_8h_source.html#l00133">n_particles()</a>, and <a class="el" href="inclusions_8h_source.html#l01015">n_q_points</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00158">n_dofs_per_inclusion()</a>, <a class="el" href="inclusions_8h_source.html#l00135">n_particles()</a>, and <a class="el" href="inclusions_8h_source.html#l01034">n_q_points</a>.</p>
 
 </div>
 </div>
@@ -739,9 +742,9 @@ template&lt;int spacedim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>const std::vector&lt;double&gt;&amp; </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00478">478</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00492">492</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacestd.html#a7feec1948e651b6285311f2ab804435c">std::cos()</a>, <a class="el" href="inclusions_8h_source.html#l01028">current_fe_values</a>, <a class="el" href="inclusions_8h_source.html#l00556">get_radius()</a>, <a class="el" href="inclusions_8h_source.html#l01004">inclusions</a>, <a class="el" href="inclusions_8h_source.html#l01016">n_coefficients</a>, <a class="el" href="inclusions_8h_source.html#l00133">n_particles()</a>, <a class="el" href="inclusions_8h_source.html#l01015">n_q_points</a>, <a class="el" href="inclusions_8h_source.html#l01020">n_vector_components</a>, <a class="el" href="inclusions_8h_source.html#l01018">selected_coefficients</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacestd.html#a8f997d77755b36a819873b85f9f57375">std::sin()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacestd.html#aa2def4dc0bd5b6d07af7aff83feba9b2">std::sqrt()</a>, and <a class="el" href="inclusions_8h_source.html#l01023">theta</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacestd.html#a7feec1948e651b6285311f2ab804435c">std::cos()</a>, <a class="el" href="inclusions_8h_source.html#l01047">current_fe_values</a>, <a class="el" href="inclusions_8h_source.html#l00570">get_radius()</a>, <a class="el" href="inclusions_8h_source.html#l01022">inclusions</a>, <a class="el" href="inclusions_8h_source.html#l01035">n_coefficients</a>, <a class="el" href="inclusions_8h_source.html#l00135">n_particles()</a>, <a class="el" href="inclusions_8h_source.html#l01034">n_q_points</a>, <a class="el" href="inclusions_8h_source.html#l01039">n_vector_components</a>, <a class="el" href="inclusions_8h_source.html#l01037">selected_coefficients</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacestd.html#a8f997d77755b36a819873b85f9f57375">std::sin()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacestd.html#aa2def4dc0bd5b6d07af7aff83feba9b2">std::sqrt()</a>, and <a class="el" href="inclusions_8h_source.html#l01042">theta</a>.</p>
 
 </div>
 </div>
@@ -779,11 +782,11 @@ template&lt;int spacedim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>unsigned int The index of the current component </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00373">373</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00382">382</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00121">n_dofs()</a>, <a class="el" href="inclusions_8h_source.html#l00156">n_dofs_per_inclusion()</a>, and <a class="el" href="inclusions_8h_source.html#l01018">selected_coefficients</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00123">n_dofs()</a>, <a class="el" href="inclusions_8h_source.html#l00158">n_dofs_per_inclusion()</a>, and <a class="el" href="inclusions_8h_source.html#l01037">selected_coefficients</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00389">get_inclusion_data()</a>, and <a class="el" href="inclusions_8h_source.html#l00408">get_inclusion_data()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00398">get_inclusion_data()</a>, and <a class="el" href="inclusions_8h_source.html#l00417">get_inclusion_data()</a>.</p>
 
 </div>
 </div>
@@ -826,9 +829,9 @@ template&lt;int spacedim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>unsigned int The index of the current component </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00389">389</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00398">398</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00373">get_fourier_component()</a>, <a class="el" href="inclusions_8h_source.html#l00978">get_rotated_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l00121">n_dofs()</a>, and <a class="el" href="inclusions_8h_source.html#l00145">n_inclusions()</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00382">get_fourier_component()</a>, <a class="el" href="inclusions_8h_source.html#l00995">get_rotated_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l00123">n_dofs()</a>, and <a class="el" href="inclusions_8h_source.html#l00147">n_inclusions()</a>.</p>
 
 </div>
 </div>
@@ -877,9 +880,9 @@ template&lt;int spacedim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>unsigned int The index of the current component </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00408">408</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00417">417</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00373">get_fourier_component()</a>, <a class="el" href="inclusions_8h_source.html#l00978">get_rotated_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l01008">inclusions_data</a>, <a class="el" href="inclusions_8h_source.html#l01002">inclusions_rhs</a>, <a class="el" href="inclusions_8h_source.html#l00121">n_dofs()</a>, <a class="el" href="inclusions_8h_source.html#l00145">n_inclusions()</a>, and <a class="el" href="inclusions_8h_source.html#l01020">n_vector_components</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00382">get_fourier_component()</a>, <a class="el" href="inclusions_8h_source.html#l00995">get_rotated_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l01026">inclusions_data</a>, <a class="el" href="inclusions_8h_source.html#l01020">inclusions_rhs</a>, <a class="el" href="inclusions_8h_source.html#l00123">n_dofs()</a>, <a class="el" href="inclusions_8h_source.html#l00147">n_inclusions()</a>, and <a class="el" href="inclusions_8h_source.html#l01039">n_vector_components</a>.</p>
 
 </div>
 </div>
@@ -916,11 +919,11 @@ template&lt;int spacedim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#a3543786f7dc7c57385fc923a6afd5917">types::global_dof_index</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00344">344</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00353">353</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00133">n_particles()</a>, and <a class="el" href="inclusions_8h_source.html#l01015">n_q_points</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00135">n_particles()</a>, and <a class="el" href="inclusions_8h_source.html#l01034">n_q_points</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00446">get_normal()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00455">get_normal()</a>.</p>
 
 </div>
 </div>
@@ -949,9 +952,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00916">916</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00929">929</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01012">map_vessel_inclusions</a>, and <a class="el" href="inclusions_8h_source.html#l01030">n_vessels</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01031">map_vessel_inclusions</a>, and <a class="el" href="inclusions_8h_source.html#l01049">n_vessels</a>.</p>
 
 </div>
 </div>
@@ -980,9 +983,18 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00461">461</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p>return weight for integration normal direction of an inclusion at a quadrature point </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">quadrature_id</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html">Tensor&lt;1, spacedim&gt;</a>&amp; </dd></dl>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00599">get_direction()</a>, <a class="el" href="inclusions_8h_source.html#l00556">get_radius()</a>, <a class="el" href="inclusions_8h_source.html#l01004">inclusions</a>, <a class="el" href="inclusions_8h_source.html#l00133">n_particles()</a>, <a class="el" href="inclusions_8h_source.html#l01015">n_q_points</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html#a4df6cb10807fbe5fb432a19b5ef9aeb6">Tensor&lt; int rank_, int dim, typename Number &gt;::norm()</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacenumbers.html#a3e24f194a9cb9b6ff4442b8a7a877d4a">numbers::PI</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00475">475</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00613">get_direction()</a>, <a class="el" href="inclusions_8h_source.html#l00570">get_radius()</a>, <a class="el" href="inclusions_8h_source.html#l01022">inclusions</a>, <a class="el" href="inclusions_8h_source.html#l00135">n_particles()</a>, <a class="el" href="inclusions_8h_source.html#l01034">n_q_points</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html#a4df6cb10807fbe5fb432a19b5ef9aeb6">Tensor&lt; int rank_, int dim, typename Number &gt;::norm()</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacenumbers.html#a3e24f194a9cb9b6ff4442b8a7a877d4a">numbers::PI</a>.</p>
 
 </div>
 </div>
@@ -1011,9 +1023,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00904">904</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00917">917</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01016">n_coefficients</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01035">n_coefficients</a>.</p>
 
 </div>
 </div>
@@ -1042,9 +1054,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00898">898</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00911">911</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01030">n_vessels</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01049">n_vessels</a>.</p>
 
 </div>
 </div>
@@ -1082,9 +1094,9 @@ template&lt;int spacedim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html">Tensor&lt;1, spacedim&gt;</a>&amp; </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00446">446</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00455">455</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00344">get_inclusion_id()</a>, <a class="el" href="inclusions_8h_source.html#l00630">get_rotation()</a>, <a class="el" href="inclusions_8h_source.html#l00133">n_particles()</a>, <a class="el" href="inclusions_8h_source.html#l01015">n_q_points</a>, and <a class="el" href="inclusions_8h_source.html#l01026">normals</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00353">get_inclusion_id()</a>, <a class="el" href="inclusions_8h_source.html#l00644">get_rotation()</a>, <a class="el" href="inclusions_8h_source.html#l00135">n_particles()</a>, <a class="el" href="inclusions_8h_source.html#l01034">n_q_points</a>, and <a class="el" href="inclusions_8h_source.html#l01045">normals</a>.</p>
 
 </div>
 </div>
@@ -1113,9 +1125,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00910">910</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00923">923</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01017">offset_coefficients</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01036">offset_coefficients</a>.</p>
 
 </div>
 </div>
@@ -1153,11 +1165,11 @@ template&lt;int spacedim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>double </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00556">556</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00570">570</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01004">inclusions</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01022">inclusions</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00669">get_current_support_points()</a>, <a class="el" href="inclusions_8h_source.html#l00478">get_fe_values()</a>, <a class="el" href="inclusions_8h_source.html#l00461">get_JxW()</a>, and <a class="el" href="inclusions_8h_source.html#l00579">get_section_measure()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00683">get_current_support_points()</a>, <a class="el" href="inclusions_8h_source.html#l00492">get_fe_values()</a>, <a class="el" href="inclusions_8h_source.html#l00475">get_JxW()</a>, and <a class="el" href="inclusions_8h_source.html#l00593">get_section_measure()</a>.</p>
 
 </div>
 </div>
@@ -1186,11 +1198,20 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00978">978</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p>return the rotate the data of a given inclusion </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">inclusion_id</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;double&gt; rotated data </dd></dl>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01004">inclusions</a>, <a class="el" href="inclusions_8h_source.html#l01008">inclusions_data</a>, and <a class="el" href="inclusions_8h_source.html#l01009">rotated_inclusion_data</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00995">995</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00389">get_inclusion_data()</a>, and <a class="el" href="inclusions_8h_source.html#l00408">get_inclusion_data()</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01022">inclusions</a>, <a class="el" href="inclusions_8h_source.html#l01026">inclusions_data</a>, and <a class="el" href="inclusions_8h_source.html#l01028">rotated_inclusion_data</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00398">get_inclusion_data()</a>, and <a class="el" href="inclusions_8h_source.html#l00417">get_inclusion_data()</a>.</p>
 
 </div>
 </div>
@@ -1228,11 +1249,11 @@ template&lt;int spacedim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html">Tensor&lt;2, spacedim&gt;</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00630">630</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00644">644</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacestd.html#ae348f4ef7dd5887ba9c50b03a842950a">std::abs()</a>, and <a class="el" href="inclusions_8h_source.html#l00599">get_direction()</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacestd.html#ae348f4ef7dd5887ba9c50b03a842950a">std::abs()</a>, and <a class="el" href="inclusions_8h_source.html#l00613">get_direction()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00924">compute_rotated_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l00669">get_current_support_points()</a>, and <a class="el" href="inclusions_8h_source.html#l00446">get_normal()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00937">compute_rotated_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l00683">get_current_support_points()</a>, and <a class="el" href="inclusions_8h_source.html#l00455">get_normal()</a>.</p>
 
 </div>
 </div>
@@ -1270,9 +1291,9 @@ template&lt;int spacedim&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>double </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00579">579</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00593">593</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00599">get_direction()</a>, <a class="el" href="inclusions_8h_source.html#l00556">get_radius()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html#a4df6cb10807fbe5fb432a19b5ef9aeb6">Tensor&lt; int rank_, int dim, typename Number &gt;::norm()</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacenumbers.html#a3e24f194a9cb9b6ff4442b8a7a877d4a">numbers::PI</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00613">get_direction()</a>, <a class="el" href="inclusions_8h_source.html#l00570">get_radius()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html#a4df6cb10807fbe5fb432a19b5ef9aeb6">Tensor&lt; int rank_, int dim, typename Number &gt;::norm()</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacenumbers.html#a3e24f194a9cb9b6ff4442b8a7a877d4a">numbers::PI</a>.</p>
 
 </div>
 </div>
@@ -1301,11 +1322,20 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00854">854</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p>3D return the vessel that a given inclusion belongs to, 2D return 0 </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">inclusion_id</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>unsigned int of vessel id </dd></dl>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01004">inclusions</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00867">867</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l01040">check_vessels()</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01022">inclusions</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l01059">check_vessels()</a>.</p>
 
 </div>
 </div>
@@ -1335,11 +1365,11 @@ template&lt;int spacedim&gt; </div>
 </div><div class="memdoc">
 <p>Reinit all reference points and normals, and read inclusions file. </p>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00166">166</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00168">168</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01040">check_vessels()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacestd.html#a7feec1948e651b6285311f2ab804435c">std::cos()</a>, <a class="el" href="inclusions_8h_source.html#l01028">current_fe_values</a>, <a class="el" href="inclusions_8h_source.html#l01027">current_support_points</a>, <a class="el" href="inclusions_8h_source.html#l01006">data_file</a>, <a class="el" href="inclusions_8h_source.html#l01004">inclusions</a>, <a class="el" href="inclusions_8h_source.html#l01008">inclusions_data</a>, <a class="el" href="inclusions_8h_source.html#l01032">inclusions_file</a>, <a class="el" href="inclusions_8h_source.html#l01021">mpi_communicator</a>, <a class="el" href="inclusions_8h_source.html#l01016">n_coefficients</a>, <a class="el" href="inclusions_8h_source.html#l00156">n_dofs_per_inclusion()</a>, <a class="el" href="inclusions_8h_source.html#l00145">n_inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l01015">n_q_points</a>, <a class="el" href="inclusions_8h_source.html#l01020">n_vector_components</a>, <a class="el" href="inclusions_8h_source.html#l01026">normals</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacenumbers.html#a3e24f194a9cb9b6ff4442b8a7a877d4a">numbers::PI</a>, <a class="el" href="inclusions_8h_source.html#l01018">selected_coefficients</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacestd.html#a8f997d77755b36a819873b85f9f57375">std::sin()</a>, <a class="el" href="inclusions_8h_source.html#l01022">support_points</a>, <a class="el" href="inclusions_8h_source.html#l01023">theta</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a7ebd336c94126a6ab230f766f8f25ff7">Utilities::MPI::this_mpi_process()</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01059">check_vessels()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacestd.html#a7feec1948e651b6285311f2ab804435c">std::cos()</a>, <a class="el" href="inclusions_8h_source.html#l01047">current_fe_values</a>, <a class="el" href="inclusions_8h_source.html#l01046">current_support_points</a>, <a class="el" href="inclusions_8h_source.html#l01024">data_file</a>, <a class="el" href="inclusions_8h_source.html#l01022">inclusions</a>, <a class="el" href="inclusions_8h_source.html#l01026">inclusions_data</a>, <a class="el" href="inclusions_8h_source.html#l01051">inclusions_file</a>, <a class="el" href="inclusions_8h_source.html#l01040">mpi_communicator</a>, <a class="el" href="inclusions_8h_source.html#l01035">n_coefficients</a>, <a class="el" href="inclusions_8h_source.html#l00158">n_dofs_per_inclusion()</a>, <a class="el" href="inclusions_8h_source.html#l00147">n_inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l01034">n_q_points</a>, <a class="el" href="inclusions_8h_source.html#l01039">n_vector_components</a>, <a class="el" href="inclusions_8h_source.html#l01045">normals</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacenumbers.html#a3e24f194a9cb9b6ff4442b8a7a877d4a">numbers::PI</a>, <a class="el" href="inclusions_8h_source.html#l01027">reference_inclusion_data</a>, <a class="el" href="inclusions_8h_source.html#l01037">selected_coefficients</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacestd.html#a8f997d77755b36a819873b85f9f57375">std::sin()</a>, <a class="el" href="inclusions_8h_source.html#l01041">support_points</a>, <a class="el" href="inclusions_8h_source.html#l01042">theta</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a7ebd336c94126a6ab230f766f8f25ff7">Utilities::MPI::this_mpi_process()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00284">setup_inclusions_particles()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00293">setup_inclusions_particles()</a>.</p>
 
 </div>
 </div>
@@ -1370,11 +1400,11 @@ template&lt;int spacedim&gt; </div>
 <p>Returns the number of degrees of freedom in the system.</p>
 <dl class="section return"><dt>Returns</dt><dd>The number of degrees of freedom. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00121">121</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00123">123</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01004">inclusions</a>, and <a class="el" href="inclusions_8h_source.html#l00156">n_dofs_per_inclusion()</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01022">inclusions</a>, and <a class="el" href="inclusions_8h_source.html#l00158">n_dofs_per_inclusion()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00357">get_component()</a>, <a class="el" href="inclusions_8h_source.html#l00373">get_fourier_component()</a>, <a class="el" href="inclusions_8h_source.html#l00389">get_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l00408">get_inclusion_data()</a>, and <a class="el" href="inclusions_8h_source.html#l00284">setup_inclusions_particles()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00366">get_component()</a>, <a class="el" href="inclusions_8h_source.html#l00382">get_fourier_component()</a>, <a class="el" href="inclusions_8h_source.html#l00398">get_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l00417">get_inclusion_data()</a>, and <a class="el" href="inclusions_8h_source.html#l00293">setup_inclusions_particles()</a>.</p>
 
 </div>
 </div>
@@ -1406,11 +1436,11 @@ template&lt;int spacedim&gt; </div>
 <p>Number of degrees of freedom associated to each inclusion. </p>
 <dl class="section return"><dt>Returns</dt><dd>unsigned int </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00156">156</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00158">158</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01018">selected_coefficients</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01037">selected_coefficients</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00357">get_component()</a>, <a class="el" href="inclusions_8h_source.html#l00268">get_dof_indices()</a>, <a class="el" href="inclusions_8h_source.html#l00373">get_fourier_component()</a>, <a class="el" href="inclusions_8h_source.html#l00166">initialize()</a>, and <a class="el" href="inclusions_8h_source.html#l00121">n_dofs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00366">get_component()</a>, <a class="el" href="inclusions_8h_source.html#l00277">get_dof_indices()</a>, <a class="el" href="inclusions_8h_source.html#l00382">get_fourier_component()</a>, <a class="el" href="inclusions_8h_source.html#l00168">initialize()</a>, and <a class="el" href="inclusions_8h_source.html#l00123">n_dofs()</a>.</p>
 
 </div>
 </div>
@@ -1442,11 +1472,11 @@ template&lt;int spacedim&gt; </div>
 <p>Returns the number of inclusions in the mesh. </p>
 <dl class="section return"><dt>Returns</dt><dd>The number of inclusions in the mesh. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00145">145</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00147">147</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01004">inclusions</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01022">inclusions</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00389">get_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l00408">get_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l00166">initialize()</a>, <a class="el" href="inclusions_8h_source.html#l00284">setup_inclusions_particles()</a>, and <a class="el" href="inclusions_8h_source.html#l00699">update_displacement_hdf5()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00398">get_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l00417">get_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l00168">initialize()</a>, <a class="el" href="inclusions_8h_source.html#l00293">setup_inclusions_particles()</a>, and <a class="el" href="inclusions_8h_source.html#l00713">update_displacement_hdf5()</a>.</p>
 
 </div>
 </div>
@@ -1477,11 +1507,11 @@ template&lt;int spacedim&gt; </div>
 <p>Returns the number of particles in the system.</p>
 <dl class="section return"><dt>Returns</dt><dd>The number of particles in the system. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00133">133</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00135">135</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01004">inclusions</a>, and <a class="el" href="inclusions_8h_source.html#l01015">n_q_points</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01022">inclusions</a>, and <a class="el" href="inclusions_8h_source.html#l01034">n_q_points</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00268">get_dof_indices()</a>, <a class="el" href="inclusions_8h_source.html#l00478">get_fe_values()</a>, <a class="el" href="inclusions_8h_source.html#l00344">get_inclusion_id()</a>, <a class="el" href="inclusions_8h_source.html#l00461">get_JxW()</a>, <a class="el" href="inclusions_8h_source.html#l00446">get_normal()</a>, and <a class="el" href="inclusions_8h_source.html#l00284">setup_inclusions_particles()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00277">get_dof_indices()</a>, <a class="el" href="inclusions_8h_source.html#l00492">get_fe_values()</a>, <a class="el" href="inclusions_8h_source.html#l00353">get_inclusion_id()</a>, <a class="el" href="inclusions_8h_source.html#l00475">get_JxW()</a>, <a class="el" href="inclusions_8h_source.html#l00455">get_normal()</a>, and <a class="el" href="inclusions_8h_source.html#l00293">setup_inclusions_particles()</a>.</p>
 
 </div>
 </div>
@@ -1518,9 +1548,9 @@ template&lt;int spacedim&gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00688">688</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00702">702</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParticles_1_1DataOut.html#adf095165dc286310226584b2b9972701">Particles::DataOut&lt; int dim, int spacedim &gt;::build_patches()</a>, <a class="el" href="inclusions_8h_source.html#l01003">inclusions_as_particles</a>, <a class="el" href="inclusions_8h_source.html#l01021">mpi_communicator</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDataOutInterface.html#ab7eae1ac0db6ce4c76851fa6fe0f9519">Particles::DataOut&lt; int dim, int spacedim &gt;::write_vtu_in_parallel()</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParticles_1_1DataOut.html#adf095165dc286310226584b2b9972701">Particles::DataOut&lt; int dim, int spacedim &gt;::build_patches()</a>, <a class="el" href="inclusions_8h_source.html#l01021">inclusions_as_particles</a>, <a class="el" href="inclusions_8h_source.html#l01040">mpi_communicator</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDataOutInterface.html#ab7eae1ac0db6ce4c76851fa6fe0f9519">Particles::DataOut&lt; int dim, int spacedim &gt;::write_vtu_in_parallel()</a>.</p>
 
 </div>
 </div>
@@ -1549,9 +1579,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00996">996</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01014">1014</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01016">n_coefficients</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01035">n_coefficients</a>.</p>
 
 </div>
 </div>
@@ -1580,9 +1610,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00989">989</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01007">1007</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01015">n_q_points</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01034">n_q_points</a>.</p>
 
 </div>
 </div>
@@ -1619,9 +1649,9 @@ template&lt;int spacedim&gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00284">284</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00293">293</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__CPP11.html#ga9bd9f259f5b6c617c9ed88aa8b140ee8">parallel::distributed::Triangulation&lt; int dim, int spacedim &gt;::active_cell_iterators()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a69d12772ff67523f52e380d516c329bb">Utilities::MPI::all_gather()</a>, <a class="el" href="inclusions_8h_source.html#l00924">compute_rotated_inclusion_data()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a850d6df5f523ab38a24229d021de3f1a">Utilities::MPI::create_evenly_distributed_partitioning()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTriangulation.html#a0a2bf98c3056379a2b132ad62266f780">parallel::distributed::Triangulation&lt; int dim, int spacedim &gt;::get_communicator()</a>, <a class="el" href="inclusions_8h_source.html#l00669">get_current_support_points()</a>, <a class="el" href="inclusions_8h_source.html#l01003">inclusions_as_particles</a>, <a class="el" href="inclusions_8h_source.html#l00166">initialize()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/structStaticMappingQ1.html#a98ab35af832f316b5b441b4402560d16">StaticMappingQ1&lt; int dim, int spacedim &gt;::mapping</a>, <a class="el" href="inclusions_8h_source.html#l01021">mpi_communicator</a>, <a class="el" href="inclusions_8h_source.html#l00121">n_dofs()</a>, <a class="el" href="inclusions_8h_source.html#l00145">n_inclusions()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classparallel_1_1TriangulationBase.html#a74e904416671ca175093274144e49439">parallel::distributed::Triangulation&lt; int dim, int spacedim &gt;::n_locally_owned_active_cells()</a>, <a class="el" href="inclusions_8h_source.html#l00133">n_particles()</a>, and <a class="el" href="inclusions_8h_source.html#l01033">rtree_extraction_level</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__CPP11.html#ga9bd9f259f5b6c617c9ed88aa8b140ee8">parallel::distributed::Triangulation&lt; int dim, int spacedim &gt;::active_cell_iterators()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a69d12772ff67523f52e380d516c329bb">Utilities::MPI::all_gather()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a850d6df5f523ab38a24229d021de3f1a">Utilities::MPI::create_evenly_distributed_partitioning()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTriangulation.html#a0a2bf98c3056379a2b132ad62266f780">parallel::distributed::Triangulation&lt; int dim, int spacedim &gt;::get_communicator()</a>, <a class="el" href="inclusions_8h_source.html#l00683">get_current_support_points()</a>, <a class="el" href="inclusions_8h_source.html#l01021">inclusions_as_particles</a>, <a class="el" href="inclusions_8h_source.html#l00168">initialize()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/structStaticMappingQ1.html#a98ab35af832f316b5b441b4402560d16">StaticMappingQ1&lt; int dim, int spacedim &gt;::mapping</a>, <a class="el" href="inclusions_8h_source.html#l01040">mpi_communicator</a>, <a class="el" href="inclusions_8h_source.html#l00123">n_dofs()</a>, <a class="el" href="inclusions_8h_source.html#l00147">n_inclusions()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classparallel_1_1TriangulationBase.html#a74e904416671ca175093274144e49439">parallel::distributed::Triangulation&lt; int dim, int spacedim &gt;::n_locally_owned_active_cells()</a>, <a class="el" href="inclusions_8h_source.html#l00135">n_particles()</a>, and <a class="el" href="inclusions_8h_source.html#l01052">rtree_extraction_level</a>.</p>
 
 </div>
 </div>
@@ -1652,9 +1682,9 @@ template&lt;int spacedim&gt; </div>
 
 <p>Update the displacement data after the initialization reading from a hdf5 file. </p>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00699">699</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00713">713</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00924">compute_rotated_inclusion_data()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a850d6df5f523ab38a24229d021de3f1a">Utilities::MPI::create_evenly_distributed_partitioning()</a>, <a class="el" href="inclusions_8h_source.html#l01006">data_file</a>, <a class="el" href="inclusions_8h_source.html#l01007">data_file_h</a>, <a class="el" href="inclusions_8h_source.html#l01008">inclusions_data</a>, <a class="el" href="inclusions_8h_source.html#l01021">mpi_communicator</a>, and <a class="el" href="inclusions_8h_source.html#l00145">n_inclusions()</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a850d6df5f523ab38a24229d021de3f1a">Utilities::MPI::create_evenly_distributed_partitioning()</a>, <a class="el" href="inclusions_8h_source.html#l01024">data_file</a>, <a class="el" href="inclusions_8h_source.html#l01025">data_file_h</a>, <a class="el" href="inclusions_8h_source.html#l01026">inclusions_data</a>, <a class="el" href="inclusions_8h_source.html#l01040">mpi_communicator</a>, and <a class="el" href="inclusions_8h_source.html#l00147">n_inclusions()</a>.</p>
 
 </div>
 </div>
@@ -1683,11 +1713,17 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p>Update the displacement data after the initialization reading from a vector of lenght n_vessels (constant displacement along the vessel) or of lenght inclusions.size() </p>
+<p>Update the displacement data after the initialization, 3D case only. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">new_data</td><td>vector of lenght equal to the number of inclusions or to the number of vessels, elements of the vector are the new values to be assigned for normal expansion </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00742">742</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00755">755</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00924">compute_rotated_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l01004">inclusions</a>, <a class="el" href="inclusions_8h_source.html#l01012">map_vessel_inclusions</a>, <a class="el" href="inclusions_8h_source.html#l01030">n_vessels</a>, and <a class="el" href="inclusions_8h_source.html#l00870">update_single_inclusion_data_along_normal()</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01022">inclusions</a>, <a class="el" href="inclusions_8h_source.html#l01031">map_vessel_inclusions</a>, <a class="el" href="inclusions_8h_source.html#l01049">n_vessels</a>, and <a class="el" href="inclusions_8h_source.html#l00883">update_single_inclusion_data_along_normal()</a>.</p>
 
 </div>
 </div>
@@ -1716,9 +1752,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00781">781</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00791">791</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00924">compute_rotated_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l01012">map_vessel_inclusions</a>, <a class="el" href="inclusions_8h_source.html#l01030">n_vessels</a>, and <a class="el" href="inclusions_8h_source.html#l00870">update_single_inclusion_data_along_normal()</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01031">map_vessel_inclusions</a>, <a class="el" href="inclusions_8h_source.html#l01049">n_vessels</a>, and <a class="el" href="inclusions_8h_source.html#l00883">update_single_inclusion_data_along_normal()</a>.</p>
 
 </div>
 </div>
@@ -1751,11 +1787,11 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00870">870</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00883">883</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01008">inclusions_data</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l01026">inclusions_data</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00742">update_inclusions_data()</a>, and <a class="el" href="inclusions_8h_source.html#l00781">update_inclusions_data()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00755">update_inclusions_data()</a>, and <a class="el" href="inclusions_8h_source.html#l00791">update_inclusions_data()</a>.</p>
 
 </div>
 </div>
@@ -1788,7 +1824,7 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00893">893</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00906">906</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
 </div>
 </div>
@@ -1817,11 +1853,11 @@ template&lt;int dim, typename number, int n_components&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00069">69</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l00068">68</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00069">CouplingOperator</a>.</p>
+<p class="reference">References <a class="el" href="inclusions_8h_source.html#l00068">CouplingOperator</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00069">CouplingOperator</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00068">CouplingOperator</a>.</p>
 
 </div>
 </div>
@@ -1848,9 +1884,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01028">1028</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01047">1047</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00478">get_fe_values()</a>, and <a class="el" href="inclusions_8h_source.html#l00166">initialize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00492">get_fe_values()</a>, and <a class="el" href="inclusions_8h_source.html#l00168">initialize()</a>.</p>
 
 </div>
 </div>
@@ -1876,9 +1912,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01027">1027</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01046">1046</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00669">get_current_support_points()</a>, and <a class="el" href="inclusions_8h_source.html#l00166">initialize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00683">get_current_support_points()</a>, and <a class="el" href="inclusions_8h_source.html#l00168">initialize()</a>.</p>
 
 </div>
 </div>
@@ -1896,9 +1932,9 @@ template&lt;int spacedim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01006">1006</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01024">1024</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00076">Inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l00166">initialize()</a>, and <a class="el" href="inclusions_8h_source.html#l00699">update_displacement_hdf5()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00075">Inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l00168">initialize()</a>, and <a class="el" href="inclusions_8h_source.html#l00713">update_displacement_hdf5()</a>.</p>
 
 </div>
 </div>
@@ -1924,9 +1960,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01007">1007</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01025">1025</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00699">update_displacement_hdf5()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00713">update_displacement_hdf5()</a>.</p>
 
 </div>
 </div>
@@ -1944,9 +1980,9 @@ template&lt;int spacedim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01004">1004</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01022">1022</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l01040">check_vessels()</a>, <a class="el" href="inclusions_8h_source.html#l00537">get_center()</a>, <a class="el" href="inclusions_8h_source.html#l00599">get_direction()</a>, <a class="el" href="inclusions_8h_source.html#l00478">get_fe_values()</a>, <a class="el" href="inclusions_8h_source.html#l00461">get_JxW()</a>, <a class="el" href="inclusions_8h_source.html#l00556">get_radius()</a>, <a class="el" href="inclusions_8h_source.html#l00978">get_rotated_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l00854">get_vesselID()</a>, <a class="el" href="inclusions_8h_source.html#l00076">Inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l00166">initialize()</a>, <a class="el" href="inclusions_8h_source.html#l00121">n_dofs()</a>, <a class="el" href="inclusions_8h_source.html#l00145">n_inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l00133">n_particles()</a>, and <a class="el" href="inclusions_8h_source.html#l00742">update_inclusions_data()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l01059">check_vessels()</a>, <a class="el" href="inclusions_8h_source.html#l00551">get_center()</a>, <a class="el" href="inclusions_8h_source.html#l00613">get_direction()</a>, <a class="el" href="inclusions_8h_source.html#l00492">get_fe_values()</a>, <a class="el" href="inclusions_8h_source.html#l00475">get_JxW()</a>, <a class="el" href="inclusions_8h_source.html#l00570">get_radius()</a>, <a class="el" href="inclusions_8h_source.html#l00995">get_rotated_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l00867">get_vesselID()</a>, <a class="el" href="inclusions_8h_source.html#l00075">Inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l00168">initialize()</a>, <a class="el" href="inclusions_8h_source.html#l00123">n_dofs()</a>, <a class="el" href="inclusions_8h_source.html#l00147">n_inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l00135">n_particles()</a>, and <a class="el" href="inclusions_8h_source.html#l00755">update_inclusions_data()</a>.</p>
 
 </div>
 </div>
@@ -1964,9 +2000,9 @@ template&lt;int spacedim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01003">1003</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01021">1021</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00688">output_particles()</a>, and <a class="el" href="inclusions_8h_source.html#l00284">setup_inclusions_particles()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00702">output_particles()</a>, and <a class="el" href="inclusions_8h_source.html#l00293">setup_inclusions_particles()</a>.</p>
 
 </div>
 </div>
@@ -1984,9 +2020,9 @@ template&lt;int spacedim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01008">1008</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01026">1026</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00924">compute_rotated_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l00408">get_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l00978">get_rotated_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l00166">initialize()</a>, <a class="el" href="inclusions_8h_source.html#l00699">update_displacement_hdf5()</a>, and <a class="el" href="inclusions_8h_source.html#l00870">update_single_inclusion_data_along_normal()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00937">compute_rotated_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l00417">get_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l00995">get_rotated_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l00168">initialize()</a>, <a class="el" href="inclusions_8h_source.html#l00713">update_displacement_hdf5()</a>, and <a class="el" href="inclusions_8h_source.html#l00883">update_single_inclusion_data_along_normal()</a>.</p>
 
 </div>
 </div>
@@ -2012,9 +2048,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01032">1032</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01051">1051</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00076">Inclusions()</a>, and <a class="el" href="inclusions_8h_source.html#l00166">initialize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00075">Inclusions()</a>, and <a class="el" href="inclusions_8h_source.html#l00168">initialize()</a>.</p>
 
 </div>
 </div>
@@ -2032,9 +2068,9 @@ template&lt;int spacedim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01002">1002</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01020">1020</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00408">get_inclusion_data()</a>, and <a class="el" href="inclusions_8h_source.html#l00076">Inclusions()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00417">get_inclusion_data()</a>, and <a class="el" href="inclusions_8h_source.html#l00075">Inclusions()</a>.</p>
 
 </div>
 </div>
@@ -2052,9 +2088,9 @@ template&lt;int spacedim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01012">1012</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01031">1031</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l01040">check_vessels()</a>, <a class="el" href="inclusions_8h_source.html#l00916">get_inclusions_in_vessel()</a>, <a class="el" href="inclusions_8h_source.html#l00742">update_inclusions_data()</a>, and <a class="el" href="inclusions_8h_source.html#l00781">update_inclusions_data()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l01059">check_vessels()</a>, <a class="el" href="inclusions_8h_source.html#l00929">get_inclusions_in_vessel()</a>, <a class="el" href="inclusions_8h_source.html#l00755">update_inclusions_data()</a>, and <a class="el" href="inclusions_8h_source.html#l00791">update_inclusions_data()</a>.</p>
 
 </div>
 </div>
@@ -2080,9 +2116,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01021">1021</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01040">1040</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00166">initialize()</a>, <a class="el" href="inclusions_8h_source.html#l00688">output_particles()</a>, <a class="el" href="inclusions_8h_source.html#l00284">setup_inclusions_particles()</a>, and <a class="el" href="inclusions_8h_source.html#l00699">update_displacement_hdf5()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00168">initialize()</a>, <a class="el" href="inclusions_8h_source.html#l00702">output_particles()</a>, <a class="el" href="inclusions_8h_source.html#l00293">setup_inclusions_particles()</a>, and <a class="el" href="inclusions_8h_source.html#l00713">update_displacement_hdf5()</a>.</p>
 
 </div>
 </div>
@@ -2108,9 +2144,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01016">1016</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01035">1035</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00478">get_fe_values()</a>, <a class="el" href="inclusions_8h_source.html#l00904">get_n_coefficients()</a>, <a class="el" href="inclusions_8h_source.html#l00076">Inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l00166">initialize()</a>, and <a class="el" href="inclusions_8h_source.html#l00996">set_n_coefficients()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00492">get_fe_values()</a>, <a class="el" href="inclusions_8h_source.html#l00917">get_n_coefficients()</a>, <a class="el" href="inclusions_8h_source.html#l00075">Inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l00168">initialize()</a>, and <a class="el" href="inclusions_8h_source.html#l01014">set_n_coefficients()</a>.</p>
 
 </div>
 </div>
@@ -2136,9 +2172,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01015">1015</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01034">1034</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00669">get_current_support_points()</a>, <a class="el" href="inclusions_8h_source.html#l00268">get_dof_indices()</a>, <a class="el" href="inclusions_8h_source.html#l00478">get_fe_values()</a>, <a class="el" href="inclusions_8h_source.html#l00344">get_inclusion_id()</a>, <a class="el" href="inclusions_8h_source.html#l00461">get_JxW()</a>, <a class="el" href="inclusions_8h_source.html#l00446">get_normal()</a>, <a class="el" href="inclusions_8h_source.html#l00076">Inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l00166">initialize()</a>, <a class="el" href="inclusions_8h_source.html#l00133">n_particles()</a>, and <a class="el" href="inclusions_8h_source.html#l00989">set_n_q_points()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00683">get_current_support_points()</a>, <a class="el" href="inclusions_8h_source.html#l00277">get_dof_indices()</a>, <a class="el" href="inclusions_8h_source.html#l00492">get_fe_values()</a>, <a class="el" href="inclusions_8h_source.html#l00353">get_inclusion_id()</a>, <a class="el" href="inclusions_8h_source.html#l00475">get_JxW()</a>, <a class="el" href="inclusions_8h_source.html#l00455">get_normal()</a>, <a class="el" href="inclusions_8h_source.html#l00075">Inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l00168">initialize()</a>, <a class="el" href="inclusions_8h_source.html#l00135">n_particles()</a>, and <a class="el" href="inclusions_8h_source.html#l01007">set_n_q_points()</a>.</p>
 
 </div>
 </div>
@@ -2164,9 +2200,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01020">1020</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01039">1039</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00357">get_component()</a>, <a class="el" href="inclusions_8h_source.html#l00478">get_fe_values()</a>, <a class="el" href="inclusions_8h_source.html#l00408">get_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l00076">Inclusions()</a>, and <a class="el" href="inclusions_8h_source.html#l00166">initialize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00366">get_component()</a>, <a class="el" href="inclusions_8h_source.html#l00492">get_fe_values()</a>, <a class="el" href="inclusions_8h_source.html#l00417">get_inclusion_data()</a>, <a class="el" href="inclusions_8h_source.html#l00075">Inclusions()</a>, and <a class="el" href="inclusions_8h_source.html#l00168">initialize()</a>.</p>
 
 </div>
 </div>
@@ -2192,9 +2228,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01030">1030</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01049">1049</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l01040">check_vessels()</a>, <a class="el" href="inclusions_8h_source.html#l00916">get_inclusions_in_vessel()</a>, <a class="el" href="inclusions_8h_source.html#l00898">get_n_vessels()</a>, <a class="el" href="inclusions_8h_source.html#l00742">update_inclusions_data()</a>, and <a class="el" href="inclusions_8h_source.html#l00781">update_inclusions_data()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l01059">check_vessels()</a>, <a class="el" href="inclusions_8h_source.html#l00929">get_inclusions_in_vessel()</a>, <a class="el" href="inclusions_8h_source.html#l00911">get_n_vessels()</a>, <a class="el" href="inclusions_8h_source.html#l00755">update_inclusions_data()</a>, and <a class="el" href="inclusions_8h_source.html#l00791">update_inclusions_data()</a>.</p>
 
 </div>
 </div>
@@ -2220,9 +2256,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01026">1026</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01045">1045</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00446">get_normal()</a>, and <a class="el" href="inclusions_8h_source.html#l00166">initialize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00455">get_normal()</a>, and <a class="el" href="inclusions_8h_source.html#l00168">initialize()</a>.</p>
 
 </div>
 </div>
@@ -2248,9 +2284,29 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01017">1017</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01036">1036</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00910">get_offset_coefficients()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00923">get_offset_coefficients()</a>.</p>
+
+</div>
+</div>
+<a id="a91daf04d31555aa4d81fa50ec5352b8f" name="a91daf04d31555aa4d81fa50ec5352b8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91daf04d31555aa4d81fa50ec5352b8f">&#9670;&#160;</a></span>reference_inclusion_data</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int spacedim&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; <a class="el" href="class_inclusions.html">Inclusions</a>&lt; spacedim &gt;::reference_inclusion_data</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01027">1027</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00075">Inclusions()</a>, and <a class="el" href="inclusions_8h_source.html#l00168">initialize()</a>.</p>
 
 </div>
 </div>
@@ -2268,9 +2324,9 @@ template&lt;int spacedim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01009">1009</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01028">1028</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00924">compute_rotated_inclusion_data()</a>, and <a class="el" href="inclusions_8h_source.html#l00978">get_rotated_inclusion_data()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00937">compute_rotated_inclusion_data()</a>, and <a class="el" href="inclusions_8h_source.html#l00995">get_rotated_inclusion_data()</a>.</p>
 
 </div>
 </div>
@@ -2296,9 +2352,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01033">1033</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01052">1052</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="matrix__free__utils_8cc_source.html#l00037">CouplingOperator&lt; dim, number, n_components &gt;::CouplingOperator()</a>, <a class="el" href="inclusions_8h_source.html#l00076">Inclusions()</a>, and <a class="el" href="inclusions_8h_source.html#l00284">setup_inclusions_particles()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="matrix__free__utils_8cc_source.html#l00037">CouplingOperator&lt; dim, number, n_components &gt;::CouplingOperator()</a>, <a class="el" href="inclusions_8h_source.html#l00075">Inclusions()</a>, and <a class="el" href="inclusions_8h_source.html#l00293">setup_inclusions_particles()</a>.</p>
 
 </div>
 </div>
@@ -2324,9 +2380,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01018">1018</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01037">1037</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00357">get_component()</a>, <a class="el" href="inclusions_8h_source.html#l00478">get_fe_values()</a>, <a class="el" href="inclusions_8h_source.html#l00373">get_fourier_component()</a>, <a class="el" href="inclusions_8h_source.html#l00076">Inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l00166">initialize()</a>, and <a class="el" href="inclusions_8h_source.html#l00156">n_dofs_per_inclusion()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00366">get_component()</a>, <a class="el" href="inclusions_8h_source.html#l00492">get_fe_values()</a>, <a class="el" href="inclusions_8h_source.html#l00382">get_fourier_component()</a>, <a class="el" href="inclusions_8h_source.html#l00075">Inclusions()</a>, <a class="el" href="inclusions_8h_source.html#l00168">initialize()</a>, and <a class="el" href="inclusions_8h_source.html#l00158">n_dofs_per_inclusion()</a>.</p>
 
 </div>
 </div>
@@ -2352,9 +2408,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01022">1022</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01041">1041</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00669">get_current_support_points()</a>, and <a class="el" href="inclusions_8h_source.html#l00166">initialize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00683">get_current_support_points()</a>, and <a class="el" href="inclusions_8h_source.html#l00168">initialize()</a>.</p>
 
 </div>
 </div>
@@ -2380,9 +2436,9 @@ template&lt;int spacedim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01023">1023</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="inclusions_8h_source.html#l01042">1042</a> of file <a class="el" href="inclusions_8h_source.html">inclusions.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00478">get_fe_values()</a>, and <a class="el" href="inclusions_8h_source.html#l00166">initialize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="inclusions_8h_source.html#l00492">get_fe_values()</a>, and <a class="el" href="inclusions_8h_source.html#l00168">initialize()</a>.</p>
 
 </div>
 </div>
@@ -2395,7 +2451,7 @@ template&lt;int spacedim&gt; </div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="class_inclusions.html">Inclusions</a></li>
-    <li class="footer">Generated on Thu Apr 10 2025 12:56:50 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Tue Apr 15 2025 10:13:02 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

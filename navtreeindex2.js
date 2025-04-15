@@ -1,5 +1,9 @@
 var NAVTREEINDEX2 =
 {
+"laplacian_8h.html":[3,0,0,0,0,3],
+"laplacian_8h.html#a68c9ebb48889d54523bff3c6dc3870c4":[3,0,0,0,0,3,2],
+"laplacian_8h_source.html":[3,0,0,0,0,3],
+"matrix__free__utils_8cc.html":[3,0,0,0,1,3],
 "matrix__free__utils_8cc_source.html":[3,0,0,0,1,3],
 "matrix__free__utils_8h.html":[3,0,0,0,0,4],
 "matrix__free__utils_8h.html#aee11d56092e5096cef1afe37587611d8":[3,0,0,0,0,4,1],
@@ -245,9 +249,5 @@ var NAVTREEINDEX2 =
 "namespaceDoFTools.html#a5127bf00b985041912850ba63493770f":[1,0,25,47],
 "namespaceDoFTools.html#a5292102792fdad774ad7be1a54afb7eb":[1,0,25,49],
 "namespaceDoFTools.html#a5f745d25d2397a91dc65b9158b8d77a6":[1,0,25,42],
-"namespaceDoFTools.html#a621c66a6f7e56cb56faac0e64014ece8":[1,0,25,99],
-"namespaceDoFTools.html#a63ec0cf2cf5feceaddf484a5d72126ab":[1,0,25,31],
-"namespaceDoFTools.html#a69d19d6d574269cc6e69fa5c5b2d89e2":[1,0,25,101],
-"namespaceDoFTools.html#a6f9a91bfa884faa7a62acc8ff789f40e":[1,0,25,50],
-"namespaceDoFTools.html#a730347c0582a281b1fbea079d7906e6a":[1,0,25,74]
+"namespaceDoFTools.html#a621c66a6f7e56cb56faac0e64014ece8":[1,0,25,99]
 };
