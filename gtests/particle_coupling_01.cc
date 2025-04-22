@@ -101,6 +101,9 @@ TEST(ParticleCoupling, MPI_OutputParticles) // NOLINT
   // Check that the particles were inserted correctly
   const auto &particles = particle_coupling.get_particles();
 
+  // Perform a round of local refinement around the immersed domain
+  particle_coupling.perform_local_refinement_around_particles();
+
   auto n_total_points = Utilities::MPI::sum(qpoints.size(), MPI_COMM_WORLD);
 
   ASSERT_EQ(particles.n_global_particles(), n_total_points)
