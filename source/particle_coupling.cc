@@ -102,6 +102,11 @@ ParticleCoupling<dim>::insert_points(const std::vector<Point<dim>> &points)
   AssertThrow(tria_background, ExcNotInitialized());
   local_indices_map =
     particles.insert_global_particles(points, global_bounding_boxes);
+
+  // Store given points in particles_positions
+  particles_positions.reserve(32);
+  for (const Point<dim> &p : points)
+    particles_positions.push_back(p);
 }
 
 
@@ -110,6 +115,7 @@ void
 ParticleCoupling<dim>::perform_local_refinement_around_particles()
 {
   AssertThrow(tria_background, ExcNotInitialized());
+  AssertThrow(particles_positions.size() > 0, ExcNotInitialized());
 
   auto particle = particles.begin();
   while (particle != particles.end())
@@ -127,6 +133,24 @@ ParticleCoupling<dim>::perform_local_refinement_around_particles()
 
   const_cast<parallel::TriangulationBase<dim> *>(&*tria_background)
     ->execute_coarsening_and_refinement();
+
+  // Re-initialize the ParticleHandler with the newly refined background
+  // triangulation
+  particles.initialize(*tria_background, *mapping);
+  {
+    std::vector<BoundingBox<dim>> all_boxes;
+    all_boxes.reserve(tria_background->n_locally_owned_active_cells());
+    for (const auto &cell : tria_background->active_cell_iterators())
+      if (cell->is_locally_owned())
+        all_boxes.emplace_back(cell->bounding_box());
+    const auto tree = pack_rtree(all_boxes);
+    const auto local_boxes =
+      extract_rtree_level(tree, par.rtree_extraction_level);
+
+    global_bounding_boxes =
+      Utilities::MPI::all_gather(mpi_communicator, local_boxes);
+  }
+  particles.insert_global_particles(particles_positions, global_bounding_boxes);
 }
 
 // Explicit instantiations

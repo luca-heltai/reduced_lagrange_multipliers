@@ -172,6 +172,11 @@ private:
    * the part of triangulation owned by this mpi process.
    */
   std::map<unsigned int, IndexSet> local_indices_map;
+
+  /**
+   * A vector storing the real locations of the inserted particles.
+   */
+  std::vector<Point<dim>> particles_positions;
 };
 
 #endif
