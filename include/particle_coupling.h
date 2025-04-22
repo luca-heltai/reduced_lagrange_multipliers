@@ -122,6 +122,15 @@ public:
   void
   insert_points(const std::vector<Point<dim>> &points);
 
+  /**
+   * @brief Perform local refinement around particles.
+   *
+   * Refine locally the background mesh around the particles to improve
+   * resolution in the vicinity of the particles.
+   */
+  void
+  perform_local_refinement_around_particles();
+
 private:
   /**
    * @brief Parameters for particle coupling.
