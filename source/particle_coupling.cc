@@ -120,7 +120,9 @@ ParticleCoupling<dim>::perform_local_refinement_around_particles()
   auto particle = particles.begin();
   while (particle != particles.end())
     {
-      const auto &cell = particle->get_surrounding_cell();
+      const auto        &cell = particle->get_surrounding_cell();
+      const unsigned int n_particles_in_cell =
+        particles.n_particles_in_cell(cell);
       if (cell->is_locally_owned())
         {
           cell->set_refine_flag();
@@ -128,7 +130,7 @@ ParticleCoupling<dim>::perform_local_refinement_around_particles()
             if (!cell->at_boundary(face_no))
               cell->neighbor(face_no)->set_refine_flag();
         }
-      ++particle;
+      std::advance(particle, n_particles_in_cell);
     }
 
   const_cast<parallel::TriangulationBase<dim> *>(&*tria_background)
