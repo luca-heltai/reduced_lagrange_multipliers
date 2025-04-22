@@ -168,6 +168,18 @@ private:
    * @brief Handler for managing particles in the simulation.
    */
   Particles::ParticleHandler<dim> particles;
+
+  /**
+   * A map from owner to IndexSet, that contains the local indices of the points
+   * that were inserted with insert_quadrature_points(), and that falls within
+   * the part of triangulation owned by this mpi process.
+   */
+  std::map<unsigned int, IndexSet> local_indices_map;
+
+  /**
+   * A vector storing the real locations of the inserted particles.
+   */
+  std::vector<Point<dim>> particles_positions;
 };
 
 #endif
