@@ -109,6 +109,31 @@ ParticleCoupling<dim>::insert_points(
   return local_indices_map;
 }
 
+
+template <int dim>
+void
+ParticleCoupling<dim>::perform_local_refinement_around_particles()
+{
+  AssertThrow(tria_background, ExcNotInitialized());
+
+  auto particle = particles.begin();
+  while (particle != particles.end())
+    {
+      const auto &cell = particle->get_surrounding_cell();
+      if (cell->is_locally_owned())
+        {
+          cell->set_refine_flag();
+          for (const auto face_no : cell->face_indices())
+            if (!cell->at_boundary(face_no))
+              cell->neighbor(face_no)->set_refine_flag();
+        }
+      ++particle;
+    }
+
+  const_cast<parallel::TriangulationBase<dim> *>(&*tria_background)
+    ->execute_coarsening_and_refinement();
+}
+
 // Explicit instantiations
 
 template class ParticleCouplingParameters<2>;
