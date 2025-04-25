@@ -192,5 +192,39 @@ adjust_grids(Triangulation<spacedim, spacedim>    &space_triangulation,
 }
 
 
+/**
+ * Find the vertices of the Y-junctions in a 1D network embedded in 3D.
+ */
+std::vector<unsigned int>
+find_y_junction_vertices(const Triangulation<1, 3> &tria)
+{
+  std::map<unsigned int, unsigned int> vertex_valence;
+  std::vector<unsigned int>            junction_vertices;
+
+  // store the number of cells connected to each vertex
+  for (const auto &cell : tria.active_cell_iterators())
+    for (unsigned int v = 0; v < GeometryInfo<1>::vertices_per_cell; ++v)
+      vertex_valence[cell->vertex_index(v)]++;
+
+  // Y-junctions have valence > 2
+  //       \         /
+  //        \       /
+  //         \     /
+  //          \   /
+  //           \ /
+  //            *  --> 3
+  //            |
+  //            |
+  //            |
+  //            |
+
+  for (const auto &[vertex_idx, valence] : vertex_valence)
+    if (valence > 2)
+      junction_vertices.push_back(vertex_idx);
+
+  return junction_vertices;
+}
+
+
 
 #endif
