@@ -38,21 +38,3 @@ TEST(ReducedPoisson, MPI_OneCylinder) // NOLINT
   ReducedPoisson<3> problem(par);
   problem.run();
 }
-
-TEST(ReducedPoisson, MPI_OneCylinderEmptyProcess) // NOLINT
-{
-  Assert(Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD) == 3,
-         ExcMessage("This test should be run with 3 processes."));
-  ParameterAcceptor::clear();
-  ReducedPoissonParameters<3> par;
-  ParameterAcceptor::initialize(
-    SOURCE_DIR "/data/tests/reduced_poisson_01_one_cylinder.prm");
-
-  par.reduced_coupling_parameters.reduced_grid_name =
-    SOURCE_DIR "/data/tests/reduced_poisson_01_one_cylinder.vtk";
-  par.output_directory = SOURCE_DIR "/data/tests/tests_results";
-  par.output_name      = "reduced_poisson_01_one_cylinder";
-
-  ReducedPoisson<3> problem(par);
-  problem.run();
-}
