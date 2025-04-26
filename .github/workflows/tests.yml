@@ -48,7 +48,8 @@ jobs:
       run: |
          cd build_linux_debug
          cd gtests 
-         mpirun -n 2 ./gtests_debug --gtest_filter="*.MPI_*"
+         mpirun -n 2 ./gtests_debug --gtest_filter="*.MPI_*:-*.MPI_OneCylinderEmptyProcess"
+         mpirun -n 3 ./gtests_debug --gtest_filter="*.MPI_OneCylinderEmptyProcess"
 
   release:
 
