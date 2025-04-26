@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['force_5fuse_5fof_5ftrilinos_0',['FORCE_USE_OF_TRILINOS',['../elasticity_8h.html#a68c9ebb48889d54523bff3c6dc3870c4',1,'FORCE_USE_OF_TRILINOS:&#160;elasticity.h'],['../laplacian_8h.html#a68c9ebb48889d54523bff3c6dc3870c4',1,'FORCE_USE_OF_TRILINOS:&#160;laplacian.h']]]
+  ['augmented_5flagrangian_5fprec_5fh_0',['augmented_lagrangian_prec_h',['../augmented__lagrangian__preconditioner_8h.html#ace20a84acddf8b74a896807e2e4c3549',1,'augmented_lagrangian_preconditioner.h']]]
 ];

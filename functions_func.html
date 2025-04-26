@@ -113,16 +113,25 @@ $(function(){initNavTree('functions_func.html',''); initResizable(true); });
 
 <h3><a id="index_a" name="index_a"></a>- a -</h3><ul>
 <li>assemble_coupling()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#af1d83e7a8362f532c4070401250d2434">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a4940fb72b4a124deeb12f77b9fec9cdb">PoissonProblem&lt; dim, spacedim &gt;</a></li>
-<li>assemble_coupling_sparsity()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#acbb2126908224b1d98cd0f13ed96989b">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#af19b3bb2762dec0942e1772e6ad33e5e">PoissonProblem&lt; dim, spacedim &gt;</a></li>
+<li>assemble_coupling_matrix()&#160;:&#160;<a class="el" href="struct_reduced_coupling.html#a134df09d3c251c94d48c420cdfed516d">ReducedCoupling&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+<li>assemble_coupling_sparsity()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#acbb2126908224b1d98cd0f13ed96989b">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#af19b3bb2762dec0942e1772e6ad33e5e">PoissonProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="struct_reduced_coupling.html#a8a79798c0e76238ce6248bd25341fcd6">ReducedCoupling&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>assemble_elasticity_system()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a96c0fb6c738c0157ab81a680c8f93a76">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
-<li>assemble_poisson_system()&#160;:&#160;<a class="el" href="class_poisson_problem.html#ae412391f992f6c44302bb4623a0bd6ef">PoissonProblem&lt; dim, spacedim &gt;</a></li>
+<li>assemble_poisson_system()&#160;:&#160;<a class="el" href="class_poisson_problem.html#ae412391f992f6c44302bb4623a0bd6ef">PoissonProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reduced_poisson.html#af4b3ef6228f30727992d8669f08ce308">ReducedPoisson&lt; dim, spacedim &gt;</a></li>
+<li>assemble_reduced_rhs()&#160;:&#160;<a class="el" href="struct_reduced_coupling.html#a0b95fee9e2eb0c19baf9cbbf44636db4">ReducedCoupling&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+</ul>
+
+
+<h3><a id="index_b" name="index_b"></a>- b -</h3><ul>
+<li>BlockPreconditionerAugmentedLagrangian()&#160;:&#160;<a class="el" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a8cf6939d3108cbe93fa012abc3ea0c98">UtilitiesAL::BlockPreconditionerAugmentedLagrangian&lt; VectorType, BlockVectorType &gt;</a></li>
 </ul>
 
 
 <h3><a id="index_c" name="index_c"></a>- c -</h3><ul>
 <li>check_boundary_ids()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a26b3051e5769dbeca559b05ae39a2f7e">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
 <li>check_vessels()&#160;:&#160;<a class="el" href="class_inclusions.html#aa8626e28c16a2f5f26c2c689bb61e8f3">Inclusions&lt; spacedim &gt;</a></li>
+<li>compute_basis()&#160;:&#160;<a class="el" href="class_reference_cross_section.html#a42e35777ec2af755f7813eac869e2086">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a></li>
 <li>compute_internal_and_boundary_stress()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a16968efd48f76d7a6046c6bf7bc6f348">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
+<li>compute_points_and_weights()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#a4cd01f366716dfe449f3f5f60aa119ed">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>compute_rotated_inclusion_data()&#160;:&#160;<a class="el" href="class_inclusions.html#aa18673f64d938a52b919939048608199">Inclusions&lt; spacedim &gt;</a></li>
 <li>CouplingOperator()&#160;:&#160;<a class="el" href="class_coupling_operator.html#adc789969bde09223a70135d6a132bb58">CouplingOperator&lt; dim, number, n_components &gt;</a></li>
 </ul>
@@ -135,38 +144,65 @@ $(function(){initNavTree('functions_func.html',''); initResizable(true); });
 
 
 <h3><a id="index_g" name="index_g"></a>- g -</h3><ul>
+<li>get_basis_functions()&#160;:&#160;<a class="el" href="class_reference_cross_section.html#a9f79f77f0308671bf649aa8b58bd68ab">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a></li>
 <li>get_center()&#160;:&#160;<a class="el" href="class_inclusions.html#ac2677741f77e3e03f562849c11e88974">Inclusions&lt; spacedim &gt;</a></li>
 <li>get_component()&#160;:&#160;<a class="el" href="class_inclusions.html#a5cc8694e9ab6e5b4aa81aa1e7ad87e30">Inclusions&lt; spacedim &gt;</a></li>
+<li>get_coupling_constraints()&#160;:&#160;<a class="el" href="struct_reduced_coupling.html#af8b7c97780c5a0cd8a1d1a7c6423e1f1">ReducedCoupling&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>get_current_support_points()&#160;:&#160;<a class="el" href="class_inclusions.html#af09de1f02f56635cb666a9e5ab2b4401">Inclusions&lt; spacedim &gt;</a></li>
 <li>get_direction()&#160;:&#160;<a class="el" href="class_inclusions.html#aad11eaa80754a56b3fb301e0e4c6e516">Inclusions&lt; spacedim &gt;</a></li>
-<li>get_dof_indices()&#160;:&#160;<a class="el" href="class_inclusions.html#a9b410791a0125d035d7453893da3517d">Inclusions&lt; spacedim &gt;</a></li>
+<li>get_dof_handler()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#a776bcfa1b71578ead79b5212f1e20f03">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+<li>get_dof_indices()&#160;:&#160;<a class="el" href="class_inclusions.html#a9b410791a0125d035d7453893da3517d">Inclusions&lt; spacedim &gt;</a>, <a class="el" href="class_tensor_product_space.html#a9ad04353d1a1bd132988ffd043e9740c">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>get_fe_values()&#160;:&#160;<a class="el" href="class_inclusions.html#a60a042f0cd689fcb00484389f5e71979">Inclusions&lt; spacedim &gt;</a></li>
 <li>get_fourier_component()&#160;:&#160;<a class="el" href="class_inclusions.html#a1051f7471e3756758e64e53a5010d531">Inclusions&lt; spacedim &gt;</a></li>
+<li>get_global_bounding_boxes()&#160;:&#160;<a class="el" href="class_particle_coupling.html#a611ea2340df4ae622d90eb20ae9a0f3c">ParticleCoupling&lt; dim &gt;</a></li>
+<li>get_global_quadrature()&#160;:&#160;<a class="el" href="class_reference_cross_section.html#ab307decbbe6df88a61a31176dfe20332">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a></li>
 <li>get_inclusion_data()&#160;:&#160;<a class="el" href="class_inclusions.html#a2d8e186c85a52d3e5f2ba1e50b309396">Inclusions&lt; spacedim &gt;</a></li>
 <li>get_inclusion_id()&#160;:&#160;<a class="el" href="class_inclusions.html#a63fcb60efd027925d9bc73a7f334a87e">Inclusions&lt; spacedim &gt;</a></li>
 <li>get_inclusions_in_vessel()&#160;:&#160;<a class="el" href="class_inclusions.html#aabbfb9579090b477ab2d7e20e4029dc4">Inclusions&lt; spacedim &gt;</a></li>
 <li>get_JxW()&#160;:&#160;<a class="el" href="class_inclusions.html#a1fcaf5e0d364a10e0fcccad3deafdd29">Inclusions&lt; spacedim &gt;</a></li>
+<li>get_locally_owned_qpoints()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#a2bc251d7b9d702174d4d7dd787b4ad51">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+<li>get_locally_owned_reduced_qpoints()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#ae1562c800b1beaaee606f3070068ca1f">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+<li>get_locally_owned_reduced_weights()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#aaede75374c18a0969237fd537127ea99">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+<li>get_locally_owned_weights()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#af6f3d877e2b87661484b5e6a70e7d62b">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+<li>get_mass_matrix()&#160;:&#160;<a class="el" href="class_reference_cross_section.html#a2ac73fbab4961091d5df84a0d7bd1bda">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a></li>
 <li>get_n_coefficients()&#160;:&#160;<a class="el" href="class_inclusions.html#a3f62f1c91c07fa612135b807341b80a6">Inclusions&lt; spacedim &gt;</a></li>
 <li>get_n_vessels()&#160;:&#160;<a class="el" href="class_inclusions.html#aa0c4f187ba04de8dff272ade653420ba">Inclusions&lt; spacedim &gt;</a></li>
 <li>get_normal()&#160;:&#160;<a class="el" href="class_inclusions.html#ac147dae3f7a1e6d074173da1cb613f45">Inclusions&lt; spacedim &gt;</a></li>
 <li>get_offset_coefficients()&#160;:&#160;<a class="el" href="class_inclusions.html#ab08b123ef627c261ea06571d86dd9b10">Inclusions&lt; spacedim &gt;</a></li>
+<li>get_particles()&#160;:&#160;<a class="el" href="class_particle_coupling.html#aa86a4d9a377c949b0cc8b260d7b87783">ParticleCoupling&lt; dim &gt;</a></li>
+<li>get_quadrature()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#a5a06b0e0c7a337aa37a14842316728aa">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>get_radius()&#160;:&#160;<a class="el" href="class_inclusions.html#ae553d2932cc5f7ee315a56b99acf366f">Inclusions&lt; spacedim &gt;</a></li>
+<li>get_reference_cross_section()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#a501406da84723532122f310596d388b4">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>get_rotated_inclusion_data()&#160;:&#160;<a class="el" href="class_inclusions.html#a9f38fa4ec2defc3bcea2f7e958c4399e">Inclusions&lt; spacedim &gt;</a></li>
 <li>get_rotation()&#160;:&#160;<a class="el" href="class_inclusions.html#af70ea0aa1f0428ebb718d6fc68b19dd7">Inclusions&lt; spacedim &gt;</a></li>
+<li>get_scaling()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#a38aae8f8823ae8a0d850c295b146a05f">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>get_section_measure()&#160;:&#160;<a class="el" href="class_inclusions.html#a6c96ccc465632610714092fcd805d70e">Inclusions&lt; spacedim &gt;</a></li>
+<li>get_transformed_quadrature()&#160;:&#160;<a class="el" href="class_reference_cross_section.html#a21288022e170baf8b32881e78cf0f5a1">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a></li>
+<li>get_triangulation()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#a158aafd6bae93a1ff02046b069f2a252">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>get_vesselID()&#160;:&#160;<a class="el" href="class_inclusions.html#ab36c7fda75807df6e3ca7e83620aa327">Inclusions&lt; spacedim &gt;</a></li>
 </ul>
 
 
 <h3><a id="index_i" name="index_i"></a>- i -</h3><ul>
+<li>ImmersedRepartitioner()&#160;:&#160;<a class="el" href="class_immersed_repartitioner.html#a9b5ba6fe77579e1e1a3c2acc546bf97b">ImmersedRepartitioner&lt; dim, spacedim &gt;</a></li>
 <li>Inclusions()&#160;:&#160;<a class="el" href="class_inclusions.html#a55fe8a6d375ddbc2f5621c21d7ca149d">Inclusions&lt; spacedim &gt;</a></li>
-<li>initialize()&#160;:&#160;<a class="el" href="class_inclusions.html#af4294f474f555ee43b1fa648bd5e2690">Inclusions&lt; spacedim &gt;</a></li>
+<li>initialize()&#160;:&#160;<a class="el" href="class_inclusions.html#af4294f474f555ee43b1fa648bd5e2690">Inclusions&lt; spacedim &gt;</a>, <a class="el" href="struct_reduced_coupling.html#a08b4187f7f0ff9958a9da77e3da428aa">ReducedCoupling&lt; reduced_dim, dim, spacedim, n_components &gt;</a>, <a class="el" href="class_tensor_product_space.html#a79b9eb0b3e38d4414fe77579da71e2df">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>initialize_dof_vector()&#160;:&#160;<a class="el" href="class_coupling_operator.html#a2f765bbfdbd43d39f70cc8b0a860abae">CouplingOperator&lt; dim, number, n_components &gt;</a></li>
+<li>initialize_particle_handler()&#160;:&#160;<a class="el" href="class_particle_coupling.html#af06c136073b2cb569623313c7f3149fa">ParticleCoupling&lt; dim &gt;</a></li>
+<li>insert_points()&#160;:&#160;<a class="el" href="class_particle_coupling.html#a5c2477d317bcaf6bb59441f8c7be1f57">ParticleCoupling&lt; dim &gt;</a></li>
+</ul>
+
+
+<h3><a id="index_l" name="index_l"></a>- l -</h3><ul>
+<li>local_q_point_indices_to_global_cell_indices()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#aef82b4843a1bfee806a6c887d5bc862f">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+<li>locally_owned_qpoints()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#ac310ec0eb5a2e28382c47558023ef279">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+<li>locally_relevant_indices()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#abdd7d1710ff266c682beeb01f0550f6f">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 </ul>
 
 
 <h3><a id="index_m" name="index_m"></a>- m -</h3><ul>
-<li>make_grid()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#afa140c84e0f366c5737ba99d0a634ea1">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#ad71234db14a41d3ff34239105d97f35e">PoissonProblem&lt; dim, spacedim &gt;</a></li>
+<li>make_grid()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#afa140c84e0f366c5737ba99d0a634ea1">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#ad71234db14a41d3ff34239105d97f35e">PoissonProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reduced_poisson.html#aeaf6e376706b86f46d35b9299a0e5398">ReducedPoisson&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reference_cross_section.html#a022f89d01cd721f51a127e64e0367166">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a></li>
+<li>max_n_basis()&#160;:&#160;<a class="el" href="class_reference_cross_section.html#a2199a444c64f7bfd20770f43d94ee71b">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a></li>
 </ul>
 
 
@@ -175,43 +211,58 @@ $(function(){initNavTree('functions_func.html',''); initResizable(true); });
 <li>n_dofs_per_inclusion()&#160;:&#160;<a class="el" href="class_inclusions.html#a26c9a6dbdfdd8b09f6cdd67ea1f3a5ce">Inclusions&lt; spacedim &gt;</a></li>
 <li>n_inclusions()&#160;:&#160;<a class="el" href="class_inclusions.html#a92da48ebcd3e5a8afdf3ed2c58d9e9f8">Inclusions&lt; spacedim &gt;</a></li>
 <li>n_particles()&#160;:&#160;<a class="el" href="class_inclusions.html#ab030a4810736b56d67fc32e72565da15">Inclusions&lt; spacedim &gt;</a></li>
+<li>n_quadrature_points()&#160;:&#160;<a class="el" href="class_reference_cross_section.html#aae30b34084eae080463f3c109b2a3ac4">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a></li>
+<li>n_selected_basis()&#160;:&#160;<a class="el" href="class_reference_cross_section.html#ab6abec966823c6549d0d601a2752356a">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a></li>
 </ul>
 
 
 <h3><a id="index_o" name="index_o"></a>- o -</h3><ul>
 <li>output_lambda()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a1d4f753324a3ff3f7c3105fc22fd1abb">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
-<li>output_particles()&#160;:&#160;<a class="el" href="class_inclusions.html#a400402fe87b54e39bf2e3fff1e9bd13e">Inclusions&lt; spacedim &gt;</a></li>
+<li>output_particles()&#160;:&#160;<a class="el" href="class_inclusions.html#a400402fe87b54e39bf2e3fff1e9bd13e">Inclusions&lt; spacedim &gt;</a>, <a class="el" href="class_particle_coupling.html#a42493f4c374d8078c15e0c6c49805d16">ParticleCoupling&lt; dim &gt;</a></li>
 <li>output_pressure()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a0c22b232642fd9c4009c1e2cf32bdf21">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
-<li>output_results()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#add27fe4bfbb9686baa08b3b35f2294ed">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a356e342b575af660616550b094d6b810">PoissonProblem&lt; dim, spacedim &gt;</a></li>
-<li>output_solution()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a6f5b19f4f6c8a7b53e32f5ff62ad13d3">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#aa554316393aeaf60d9c7cfe17b388f63">PoissonProblem&lt; dim, spacedim &gt;</a></li>
+<li>output_results()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#add27fe4bfbb9686baa08b3b35f2294ed">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a356e342b575af660616550b094d6b810">PoissonProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reduced_poisson.html#ae1cedb13f5121294cf376b48a0df13e8">ReducedPoisson&lt; dim, spacedim &gt;</a></li>
+<li>output_solution()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a6f5b19f4f6c8a7b53e32f5ff62ad13d3">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#aa554316393aeaf60d9c7cfe17b388f63">PoissonProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reduced_poisson.html#af54b45837125f746c2037d0d1dfaeafa">ReducedPoisson&lt; dim, spacedim &gt;</a></li>
 <li>output_stresses()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a670b1a20b449de1e4360710420641727">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
 </ul>
 
 
 <h3><a id="index_p" name="index_p"></a>- p -</h3><ul>
+<li>particle_id_to_cell_and_qpoint_indices()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#ac3d571bc9fa0eaa72f0e1a7916636170">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+<li>ParticleCoupling()&#160;:&#160;<a class="el" href="class_particle_coupling.html#afd70659f4fac72f3c98da664e48df6bf">ParticleCoupling&lt; dim &gt;</a></li>
+<li>ParticleCouplingParameters()&#160;:&#160;<a class="el" href="class_particle_coupling_parameters.html#a7ba7eb65b5700cdbc098178d46184da4">ParticleCouplingParameters&lt; dim &gt;</a></li>
+<li>partition()&#160;:&#160;<a class="el" href="class_immersed_repartitioner.html#ace452278ea11d45344dee7fe8b2306d6">ImmersedRepartitioner&lt; dim, spacedim &gt;</a></li>
 <li>PoissonProblem()&#160;:&#160;<a class="el" href="class_poisson_problem.html#a1ded5bc6029a03453340f71a4610e94a">PoissonProblem&lt; dim, spacedim &gt;</a></li>
-<li>print_parameters()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a474f7ae3ae7b90463c9253a9c40914ba">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#ac63882838bfdeaac7072569bee50410b">PoissonProblem&lt; dim, spacedim &gt;</a></li>
+<li>print_parameters()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a474f7ae3ae7b90463c9253a9c40914ba">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#ac63882838bfdeaac7072569bee50410b">PoissonProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reduced_poisson.html#acfcef39b0c69c304aff46144ec11abbd">ReducedPoisson&lt; dim, spacedim &gt;</a></li>
 <li>ProblemParameters()&#160;:&#160;<a class="el" href="class_problem_parameters.html#a5d9083310da641751d6870429b1fcf8d">ProblemParameters&lt; dim, spacedim &gt;</a></li>
 </ul>
 
 
 <h3><a id="index_r" name="index_r"></a>- r -</h3><ul>
-<li>refine_and_transfer()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a331bfcf90f1f74707929a28ebd875cb8">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a52a15363b38efa470fd95a8731b1fa26">PoissonProblem&lt; dim, spacedim &gt;</a></li>
-<li>run()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#af80c64ca7d93128b3267f5b3edeee46e">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a884238511d4ad76388deb04fd50ce7cd">PoissonProblem&lt; dim, spacedim &gt;</a></li>
+<li>ReducedCoupling()&#160;:&#160;<a class="el" href="struct_reduced_coupling.html#a7af034f810c9b639400fc88eceffb638">ReducedCoupling&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+<li>ReducedCouplingParameters()&#160;:&#160;<a class="el" href="struct_reduced_coupling_parameters.html#a10364738582292db676f379445e04d84">ReducedCouplingParameters&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+<li>ReducedPoisson()&#160;:&#160;<a class="el" href="class_reduced_poisson.html#ab3510a840a204a09cea789d897545269">ReducedPoisson&lt; dim, spacedim &gt;</a></li>
+<li>ReducedPoissonParameters()&#160;:&#160;<a class="el" href="class_reduced_poisson_parameters.html#a5f3b01b67d443819cee4822eee1ec394">ReducedPoissonParameters&lt; spacedim &gt;</a></li>
+<li>ReferenceCrossSection()&#160;:&#160;<a class="el" href="class_reference_cross_section.html#a6989247bf532c352fb2322c125248fa3">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a></li>
+<li>ReferenceCrossSectionParameters()&#160;:&#160;<a class="el" href="struct_reference_cross_section_parameters.html#a248d8f498118207fc0d1e9f9a4881143">ReferenceCrossSectionParameters&lt; dim, spacedim, n_components &gt;</a></li>
+<li>refine_and_transfer()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a331bfcf90f1f74707929a28ebd875cb8">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a52a15363b38efa470fd95a8731b1fa26">PoissonProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reduced_poisson.html#a545ac43c2c5e4cd870b88d72ea8e3704">ReducedPoisson&lt; dim, spacedim &gt;</a></li>
+<li>run()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#af80c64ca7d93128b3267f5b3edeee46e">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a884238511d4ad76388deb04fd50ce7cd">PoissonProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reduced_poisson.html#aa44754dd15843653e56d118ac54b33d7">ReducedPoisson&lt; dim, spacedim &gt;</a></li>
 </ul>
 
 
 <h3><a id="index_s" name="index_s"></a>- s -</h3><ul>
 <li>set_n_coefficients()&#160;:&#160;<a class="el" href="class_inclusions.html#a3ad396158e33da9e954e54d922592bab">Inclusions&lt; spacedim &gt;</a></li>
 <li>set_n_q_points()&#160;:&#160;<a class="el" href="class_inclusions.html#aa10505c128ddc73c11e96b9706ce94fe">Inclusions&lt; spacedim &gt;</a></li>
-<li>setup_dofs()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a6aeec5310ae0ae570552dae157e94d60">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#aafec98ff158e986b073a93f80cb628c8">PoissonProblem&lt; dim, spacedim &gt;</a></li>
-<li>setup_fe()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a3370269bb4e0f420871d628e6f430e61">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a2b60021e9bcf5b9ad57fdf1197a2de32">PoissonProblem&lt; dim, spacedim &gt;</a></li>
+<li>setup_dofs()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a6aeec5310ae0ae570552dae157e94d60">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#aafec98ff158e986b073a93f80cb628c8">PoissonProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reduced_poisson.html#aac3ef0219006c518664bbc942d1bae46">ReducedPoisson&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reference_cross_section.html#aca4a72b06365112fa29f511a45c195cc">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a>, <a class="el" href="class_tensor_product_space.html#a9c674b79c07283baa9313285fcd7f6fc">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+<li>setup_fe()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a3370269bb4e0f420871d628e6f430e61">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a2b60021e9bcf5b9ad57fdf1197a2de32">PoissonProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reduced_poisson.html#a1bd92529cb6e2e4591f82ae0d710d5ee">ReducedPoisson&lt; dim, spacedim &gt;</a></li>
 <li>setup_inclusions_particles()&#160;:&#160;<a class="el" href="class_inclusions.html#ae169f424042677002f1cc6be3c6fa6a2">Inclusions&lt; spacedim &gt;</a></li>
-<li>solve()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#ab6c843df1c4f13b217e26467e9a360a0">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#aec5418239033b3c703d69b5f0c36b5bc">PoissonProblem&lt; dim, spacedim &gt;</a></li>
+<li>shape_value()&#160;:&#160;<a class="el" href="class_reference_cross_section.html#adfc668904719061d5aefa2a64c42e13c">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a></li>
+<li>solve()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#ab6c843df1c4f13b217e26467e9a360a0">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#aec5418239033b3c703d69b5f0c36b5bc">PoissonProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reduced_poisson.html#a00c5be16f9b03c60bb789355dabe3c8d">ReducedPoisson&lt; dim, spacedim &gt;</a></li>
 </ul>
 
 
 <h3><a id="index_t" name="index_t"></a>- t -</h3><ul>
+<li>TensorProductSpace()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#a2e90489b65e3ed41ea4abc806accaaab">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+<li>TensorProductSpaceParameters()&#160;:&#160;<a class="el" href="struct_tensor_product_space_parameters.html#a4499874681baaa4c99f21f09f23aa0ba">TensorProductSpaceParameters&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>Tvmult()&#160;:&#160;<a class="el" href="class_coupling_operator.html#ab9ef6f6b2709e9d3852c3362c9a14789">CouplingOperator&lt; dim, number, n_components &gt;</a></li>
 <li>Tvmult_add()&#160;:&#160;<a class="el" href="class_coupling_operator.html#a741db1d24d2538aa29f05556791f73bd">CouplingOperator&lt; dim, number, n_components &gt;</a></li>
 </ul>
@@ -220,21 +271,27 @@ $(function(){initNavTree('functions_func.html',''); initResizable(true); });
 <h3><a id="index_u" name="index_u"></a>- u -</h3><ul>
 <li>update_displacement_hdf5()&#160;:&#160;<a class="el" href="class_inclusions.html#adb52fa93bd84790745eda7dbb9320cf0">Inclusions&lt; spacedim &gt;</a></li>
 <li>update_inclusions_data()&#160;:&#160;<a class="el" href="class_inclusions.html#a6a651503528d46fc595310f49768a1a5">Inclusions&lt; spacedim &gt;</a></li>
+<li>update_local_dof_indices()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#a8b6fd7381ee96c29b479b607b0fd0a93">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>update_single_inclusion_data_along_normal()&#160;:&#160;<a class="el" href="class_inclusions.html#ae4d4ea0c049aaaba2d2bf414bca9dfa9">Inclusions&lt; spacedim &gt;</a></li>
 <li>update_single_vessel_data()&#160;:&#160;<a class="el" href="class_inclusions.html#af1c2bb77fc0dc9c3409fd671ebc6d34b">Inclusions&lt; spacedim &gt;</a></li>
 </ul>
 
 
 <h3><a id="index_v" name="index_v"></a>- v -</h3><ul>
-<li>vmult()&#160;:&#160;<a class="el" href="class_coupling_operator.html#a32e90e4d0f023e825d2290c5316739f4">CouplingOperator&lt; dim, number, n_components &gt;</a></li>
+<li>vmult()&#160;:&#160;<a class="el" href="class_coupling_operator.html#a32e90e4d0f023e825d2290c5316739f4">CouplingOperator&lt; dim, number, n_components &gt;</a>, <a class="el" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a8adb81dbe68c36f21e722d8054d4ebd2">UtilitiesAL::BlockPreconditionerAugmentedLagrangian&lt; VectorType, BlockVectorType &gt;</a></li>
 <li>vmult_add()&#160;:&#160;<a class="el" href="class_coupling_operator.html#a5620f6567e354f1bf6bc7a5f8d1c1743">CouplingOperator&lt; dim, number, n_components &gt;</a></li>
+</ul>
+
+
+<h3><a id="index_w" name="index_w"></a>- w -</h3><ul>
+<li>weight_shape_value()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#aa57e099c13324b41878bf86f5c36a5ea">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Apr 15 2025 10:13:02 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Sat Apr 26 2025 09:39:25 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

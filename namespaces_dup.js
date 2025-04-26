@@ -677,12 +677,12 @@ var namespaces_dup =
       [ "simplex", "http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#adbe4bebfe752ba2a50542780efd3eb6e", null ],
       [ "subdivided_cylinder", "http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a95f6e6a7ae2fe3a862df035dd2cb4467", null ],
       [ "subdivided_hyper_cube", "http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a358d5bd545bc115c8645d93fa79b64bc", null ],
-      [ "subdivided_hyper_cube_with_simplices", "http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a00002873580ef3b74d81c5ed4250bfbc", null ],
+      [ "subdivided_hyper_cube_with_simplices", "http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a5b9253d0dbac18459bd403a8484f1114", null ],
       [ "subdivided_hyper_L", "http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#aab74ba287a243b478588be824ad65ba6", null ],
       [ "subdivided_hyper_rectangle", "http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#ab96bbbe1d7cd1a894dcc038028a9684a", null ],
       [ "subdivided_hyper_rectangle", "http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a0e245f7c5788b6dcfcf93279a67fdbbb", null ],
       [ "subdivided_hyper_rectangle", "http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#ac76417d7404b75cf53c732f456e6e971", null ],
-      [ "subdivided_hyper_rectangle_with_simplices", "http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a88f07aec3ce0611f459d2f692ade0c17", null ],
+      [ "subdivided_hyper_rectangle_with_simplices", "http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#aab9aee163e3f536f6ff40c607ddd5926", null ],
       [ "subdivided_parallelepiped", "http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a91269092ac149bdc6df9baabad785d02", null ],
       [ "subdivided_parallelepiped", "http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a3e16fb3b8412754508c3b574f3ccfdbc", null ],
       [ "subdivided_parallelepiped", "http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#aa93a16355ace7092f5160b44cfeac767", null ],
@@ -2741,6 +2741,7 @@ var namespaces_dup =
       [ "unpack", "http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities.html#a3db5c925d2b5221b0bb9b5be300ea1de", null ],
       [ "mutable_bind", "http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities.html#a76e25c38ecbb1059e5ea5905ce68f9cd", null ]
     ] ],
+    [ "UtilitiesAL", "namespace_utilities_a_l.html", "namespace_utilities_a_l" ],
     [ "VectorMemory", "http://www.dealii.org/developer/doxygen/deal.II/classVectorMemory_1_1Pointer.html", [
       [ "ExcNotAllocatedHere", "http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga540aa5475bfcc3495bf3cf98e67de44b", null ]
     ] ],

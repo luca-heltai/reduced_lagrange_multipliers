@@ -14,5 +14,6 @@ var searchData=
   ['utilities_3a_3ampi_3a_3aremotepointevaluation_11',['RemotePointEvaluation',['http://www.dealii.org/developer/doxygen/deal.II/structUtilities_1_1MPI_1_1RemotePointEvaluation_1_1AdditionalData.html',1,'Utilities::MPI']]],
   ['utilities_3a_3asystem_12',['System',['http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1System.html',1,'Utilities']]],
   ['utilities_3a_3atrilinos_13',['Trilinos',['http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1Trilinos.html',1,'Utilities']]],
-  ['utilities_3a_3atrilinos_3a_3ainternal_14',['internal',['http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1Trilinos_1_1internal.html',1,'Utilities::Trilinos']]]
+  ['utilities_3a_3atrilinos_3a_3ainternal_14',['internal',['http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1Trilinos_1_1internal.html',1,'Utilities::Trilinos']]],
+  ['utilitiesal_15',['UtilitiesAL',['../namespace_utilities_a_l.html',1,'']]]
 ];

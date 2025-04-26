@@ -38,5 +38,6 @@ var searchData=
   ['9_2e4_2e0_2dvs_2d9_2e5_2e0_2eh_35',['9.4.0-vs-9.5.0.h',['http://www.dealii.org/developer/doxygen/deal.II/9_84_80-vs-9_85_80_8h.html',1,'']]],
   ['9_2e5_2e0_2dvs_2d9_2e5_2e2_2eh_36',['9.5.0-vs-9.5.2.h',['http://www.dealii.org/developer/doxygen/deal.II/9_85_80-vs-9_85_82_8h.html',1,'']]],
   ['9_2e5_2e2_2dvs_2d9_2e6_2e0_2eh_37',['9.5.2-vs-9.6.0.h',['http://www.dealii.org/developer/doxygen/deal.II/9_85_82-vs-9_86_80_8h.html',1,'']]],
-  ['90_20tutorial_20program_38',['The step-90 tutorial program',['http://www.dealii.org/developer/doxygen/deal.II/step_90.html',1,'']]]
+  ['90_20tutorial_20program_38',['The step-90 tutorial program',['http://www.dealii.org/developer/doxygen/deal.II/step_90.html',1,'']]],
+  ['93_20tutorial_20program_39',['The step-93 tutorial program',['http://www.dealii.org/developer/doxygen/deal.II/step_93.html',1,'']]]
 ];

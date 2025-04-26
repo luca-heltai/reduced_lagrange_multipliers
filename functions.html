@@ -112,12 +112,17 @@ $(function(){initNavTree('functions.html',''); initResizable(true); });
 <div class="textblock">Here is a list of all class members with links to the classes they belong to:</div>
 
 <h3><a id="index_a" name="index_a"></a>- a -</h3><ul>
+<li>all_qpoints&#160;:&#160;<a class="el" href="class_tensor_product_space.html#a6042407fda8f143e02392d3f63b96440">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+<li>all_weights&#160;:&#160;<a class="el" href="class_tensor_product_space.html#a1f1df2b7b715bc483f942c4ac86b2b53">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>areas&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a5d6f974fba848d690c21ec7bbb3b3c7f">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
-<li>arguments_for_grid&#160;:&#160;<a class="el" href="class_elasticity_problem_parameters.html#ac80b26d9c63039e74cee879fc1df1883">ElasticityProblemParameters&lt; dim, spacedim &gt;</a>, <a class="el" href="class_problem_parameters.html#a23414d5f914fb8d7f1b5ff1acf6b777c">ProblemParameters&lt; dim, spacedim &gt;</a></li>
+<li>arguments_for_grid&#160;:&#160;<a class="el" href="class_elasticity_problem_parameters.html#ac80b26d9c63039e74cee879fc1df1883">ElasticityProblemParameters&lt; dim, spacedim &gt;</a>, <a class="el" href="class_problem_parameters.html#a23414d5f914fb8d7f1b5ff1acf6b777c">ProblemParameters&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reduced_poisson_parameters.html#a8631fc939a63d3b7a1941e0aeca010f9">ReducedPoissonParameters&lt; spacedim &gt;</a></li>
 <li>assemble_coupling()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#af1d83e7a8362f532c4070401250d2434">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a4940fb72b4a124deeb12f77b9fec9cdb">PoissonProblem&lt; dim, spacedim &gt;</a></li>
-<li>assemble_coupling_sparsity()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#acbb2126908224b1d98cd0f13ed96989b">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#af19b3bb2762dec0942e1772e6ad33e5e">PoissonProblem&lt; dim, spacedim &gt;</a></li>
+<li>assemble_coupling_matrix()&#160;:&#160;<a class="el" href="struct_reduced_coupling.html#a134df09d3c251c94d48c420cdfed516d">ReducedCoupling&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+<li>assemble_coupling_sparsity()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#acbb2126908224b1d98cd0f13ed96989b">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#af19b3bb2762dec0942e1772e6ad33e5e">PoissonProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="struct_reduced_coupling.html#a8a79798c0e76238ce6248bd25341fcd6">ReducedCoupling&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>assemble_elasticity_system()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a96c0fb6c738c0157ab81a680c8f93a76">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
-<li>assemble_poisson_system()&#160;:&#160;<a class="el" href="class_poisson_problem.html#ae412391f992f6c44302bb4623a0bd6ef">PoissonProblem&lt; dim, spacedim &gt;</a></li>
+<li>assemble_poisson_system()&#160;:&#160;<a class="el" href="class_poisson_problem.html#ae412391f992f6c44302bb4623a0bd6ef">PoissonProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reduced_poisson.html#af4b3ef6228f30727992d8669f08ce308">ReducedPoisson&lt; dim, spacedim &gt;</a></li>
+<li>assemble_reduced_rhs()&#160;:&#160;<a class="el" href="struct_reduced_coupling.html#a0b95fee9e2eb0c19baf9cbbf44636db4">ReducedCoupling&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+<li>Aug_inv&#160;:&#160;<a class="el" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a820d06af7f8ba7cf1d390161684906e9">UtilitiesAL::BlockPreconditionerAugmentedLagrangian&lt; VectorType, BlockVectorType &gt;</a></li>
 <li>average_displacements&#160;:&#160;<a class="el" href="class_elasticity_problem.html#ae91899f92702d4c8ed69c37888b7a326">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
 <li>average_normals&#160;:&#160;<a class="el" href="class_elasticity_problem.html#ac93336f841bec25ad7c070e120aeaecc">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
 </ul>
@@ -126,7 +131,7 @@ $(function(){initNavTree('functions.html',''); initResizable(true); });
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Apr 15 2025 10:13:02 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Sat Apr 26 2025 09:39:25 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

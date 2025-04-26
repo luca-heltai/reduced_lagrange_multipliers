@@ -27,7 +27,11 @@ var NAVTREE =
   [ "Reduced Lagrange Multipliers", "index.html", [
     [ "Reduced Lagrange Multipliers Method", "index.html", "index" ],
     [ "Namespaces", "namespaces.html", [
-      [ "Namespace List", "namespaces.html", "namespaces_dup" ]
+      [ "Namespace List", "namespaces.html", "namespaces_dup" ],
+      [ "Namespace Members", "namespacemembers.html", [
+        [ "All", "namespacemembers.html", null ],
+        [ "Functions", "namespacemembers_func.html", null ]
+      ] ]
     ] ],
     [ "Classes", "annotated.html", [
       [ "Class List", "annotated.html", "annotated_dup" ],
@@ -36,7 +40,7 @@ var NAVTREE =
       [ "Class Members", "functions.html", [
         [ "All", "functions.html", "functions_dup" ],
         [ "Functions", "functions_func.html", null ],
-        [ "Variables", "functions_vars.html", null ],
+        [ "Variables", "functions_vars.html", "functions_vars" ],
         [ "Typedefs", "functions_type.html", null ],
         [ "Related Symbols", "functions_rela.html", null ]
       ] ]
@@ -56,16 +60,17 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"coupled__elasticity_8cc_source.html",
-"laplacian_8h.html",
-"namespaceDoFTools.html#a63ec0cf2cf5feceaddf484a5d72126ab",
-"namespaceGridTools.html#a002fd376a184234ccbf5eca8f8fd7012",
-"namespaceLinearAlgebra_1_1distributed.html#ae1104c07c5e57891c49403f4f1aeb1ee",
-"namespacePortable_1_1internal.html#a18af8f0da5da0e786795993251f514e8a02cc45ebf6f788248ba8fa1209a4ee97",
-"namespaceUtilities_1_1MPI.html#a71f2c4c1f62a6ea83d1d5ce01f30fc29",
-"namespacedeal__II__exceptions.html",
-"namespaceinternal_1_1MappingQImplementation.html#a400abae7b1345173e717d2ab21fbaa65",
-"namespacestd.html#a1f062580c581c7ad325863a775755265"
+"class_poisson_problem.html#af19b3bb2762dec0942e1772e6ad33e5e",
+"group__Exceptions.html#ga434767a4876fd536f7fc8fa040623e91",
+"namespaceCGALWrappers_1_1internal.html",
+"namespaceEvaluationFlags.html#a13a274365d8897d39017c341dce13cde",
+"namespaceGridTools.html#a995b90803c22dbe67fc6d510494b2e51a3f53fb4be316505bd3d554a60f36b66b",
+"namespaceMatrixFreeTools.html",
+"namespaceTensorAccessors.html#a9d87f57bc155a2544393d1b7840d5d33",
+"namespaceUtilities_1_1MPI_1_1internal_1_1MPIDataTypes.html#aae8a964bb755340e30ecce2b390affb6",
+"namespaceinternal.html#a2e51593ed3bbe58d13d4e8ae643a3e50",
+"namespaceinternal_1_1QGaussLobattoChebyshev.html#a837bc4f5764b0faeb777925c230a2920",
+"structArpackSolver_1_1AdditionalData.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';
