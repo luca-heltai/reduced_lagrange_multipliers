@@ -17,6 +17,7 @@
 #ifndef utils_h
 #define utils_h
 
+#include <deal.II/base/exception_macros.h>
 #include <deal.II/base/mpi.h>
 
 #include <deal.II/distributed/fully_distributed_tria.h>
@@ -195,34 +196,33 @@ adjust_grids(Triangulation<spacedim, spacedim>    &space_triangulation,
 /**
  * Find the vertices of the Y-junctions in a 1D network embedded in 3D.
  */
-std::vector<unsigned int>
-find_y_junction_vertices(const Triangulation<1, 3> &tria)
+template <typename CellContainer>
+std::map<typename CellContainer::active_face_iterator,
+         std::vector<typename CellContainer::active_cell_iterator>>
+get_non_manifold_faces(const CellContainer &cell_container)
 {
-  std::map<unsigned int, unsigned int> vertex_valence;
-  std::vector<unsigned int>            junction_vertices;
+  // Loop over all cells, and for each cell loop over all faces. Store in
+  // the container for each face the list of insisting cells. Then remove
+  // from the container all entries that have only two neighbors.
 
-  // store the number of cells connected to each vertex
-  for (const auto &cell : tria.active_cell_iterators())
-    for (unsigned int v = 0; v < GeometryInfo<1>::vertices_per_cell; ++v)
-      vertex_valence[cell->vertex_index(v)]++;
+  std::map<typename CellContainer::active_face_iterator,
+           std::vector<typename CellContainer::active_cell_iterator>>
+    face_to_cells;
 
-  // Y-junctions have valence > 2
-  //       \         /
-  //        \       /
-  //         \     /
-  //          \   /
-  //           \ /
-  //            *  --> 3
-  //            |
-  //            |
-  //            |
-  //            |
+  for (const auto &cell : cell_container.active_cell_iterators())
+    for (const auto f : cell->face_indices())
+      face_to_cells[cell->face(f)].push_back(cell);
 
-  for (const auto &[vertex_idx, valence] : vertex_valence)
-    if (valence > 2)
-      junction_vertices.push_back(vertex_idx);
 
-  return junction_vertices;
+  for (auto it = face_to_cells.begin(); it != face_to_cells.end();)
+    {
+      if (it->second.size() <= 2)
+        it = face_to_cells.erase(it);
+      else
+        ++it;
+    }
+
+  return face_to_cells;
 }
 
 
