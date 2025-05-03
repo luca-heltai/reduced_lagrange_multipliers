@@ -117,7 +117,9 @@ $(function(){initNavTree('augmented__lagrangian__preconditioner_8h.html',''); in
   <div class="headertitle"><div class="title">augmented_lagrangian_preconditioner.h File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/include_2deal_8II_2base_2exceptions_8h.html">deal.II/base/exceptions.h</a>&gt;</code><br />
+<div class="textblock"><code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/config_8h.html">deal.II/base/config.h</a>&gt;</code><br />
+<code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/include_2deal_8II_2base_2exceptions_8h.html">deal.II/base/exceptions.h</a>&gt;</code><br />
+<code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/dof__tools_8h.html">deal.II/dofs/dof_tools.h</a>&gt;</code><br />
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/block__vector_8h.html">deal.II/lac/block_vector.h</a>&gt;</code><br />
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/linear__operator_8h.html">deal.II/lac/linear_operator.h</a>&gt;</code><br />
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/linear__operator__tools_8h.html">deal.II/lac/linear_operator_tools.h</a>&gt;</code><br />
@@ -146,6 +148,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a83b65fd33c446ddb42ba1ce92fcbacd9" id="r_a83b65fd33c446ddb42ba1ce92fcbacd9"><td class="memTemplParams" colspan="2">template&lt;typename MatrixType = SparseMatrix&lt;double&gt;, typename VectorType = Vector&lt;typename MatrixType::value_type&gt;, typename PreconditionerType = TrilinosWrappers::PreconditionAMG&gt; </td></tr>
 <tr class="memitem:a83b65fd33c446ddb42ba1ce92fcbacd9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_utilities_a_l.html#a83b65fd33c446ddb42ba1ce92fcbacd9">UtilitiesAL::create_augmented_block</a> (const MatrixType &amp;A, const MatrixType &amp;Ct, const VectorType &amp;scaling_vector, const double gamma, MatrixType &amp;augmented_matrix)</td></tr>
 <tr class="separator:a83b65fd33c446ddb42ba1ce92fcbacd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5aa12b7f8fcd55bb3420eb723cc5b83" id="r_af5aa12b7f8fcd55bb3420eb723cc5b83"><td class="memTemplParams" colspan="2">template&lt;int spacedim, typename VectorType&gt; </td></tr>
+<tr class="memitem:af5aa12b7f8fcd55bb3420eb723cc5b83"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespace_utilities_a_l.html#af5aa12b7f8fcd55bb3420eb723cc5b83">UtilitiesAL::set_null_space</a> (Teuchos::ParameterList &amp;parameter_list, std::unique_ptr&lt; Epetra_MultiVector &gt; &amp;ptr_distributed_modes, const Epetra_RowMatrix &amp;matrix, const std::vector&lt; VectorType &gt; &amp;modes)</td></tr>
+<tr class="memdesc:af5aa12b7f8fcd55bb3420eb723cc5b83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the null space of the matrix using a pre-computed set of vectors. Needed for the AMG preconditioner to work properly with linear elasticity. In particular, parameter_list will be filled by this function.  <br /></td></tr>
+<tr class="separator:af5aa12b7f8fcd55bb3420eb723cc5b83"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a id="ace20a84acddf8b74a896807e2e4c3549" name="ace20a84acddf8b74a896807e2e4c3549"></a>
@@ -160,7 +166,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="augmented__lagrangian__preconditioner_8h_source.html#l00023">23</a> of file <a class="el" href="augmented__lagrangian__preconditioner_8h_source.html">augmented_lagrangian_preconditioner.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="augmented__lagrangian__preconditioner_8h_source.html#l00026">26</a> of file <a class="el" href="augmented__lagrangian__preconditioner_8h_source.html">augmented_lagrangian_preconditioner.h</a>.</p>
 
 </div>
 </div>
@@ -170,7 +176,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_aa394cd1d9abb8ffe941d9aaafca8d03.html">github</a></li><li class="navelem"><a class="el" href="dir_c52569aa89a7adbb6029022c2fa60a11.html">workspace</a></li><li class="navelem"><a class="el" href="dir_7a95a9cc00fcc7af5a429eec361b64d1.html">include</a></li><li class="navelem"><a class="el" href="augmented__lagrangian__preconditioner_8h.html">augmented_lagrangian_preconditioner.h</a></li>
-    <li class="footer">Generated on Sat Apr 26 2025 09:39:25 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Sat May 3 2025 14:10:30 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

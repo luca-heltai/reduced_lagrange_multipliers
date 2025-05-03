@@ -18,6 +18,7 @@ var annotated_dup =
     [ "ReducedPoissonParameters", "class_reduced_poisson_parameters.html", "class_reduced_poisson_parameters" ],
     [ "ReferenceCrossSection", "class_reference_cross_section.html", "class_reference_cross_section" ],
     [ "ReferenceCrossSectionParameters", "struct_reference_cross_section_parameters.html", "struct_reference_cross_section_parameters" ],
+    [ "RigidBodyMotion", "class_rigid_body_motion.html", "class_rigid_body_motion" ],
     [ "TensorProductSpace", "class_tensor_product_space.html", "class_tensor_product_space" ],
     [ "TensorProductSpaceParameters", "struct_tensor_product_space_parameters.html", "struct_tensor_product_space_parameters" ]
 ];

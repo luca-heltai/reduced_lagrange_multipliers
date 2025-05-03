@@ -1,5 +1,9 @@
 var NAVTREEINDEX3 =
 {
+"namespaceCGALWrappers.html#acca95e5d43c714330206ff8a7fa169a4":[1,0,9,34],
+"namespaceCGALWrappers.html#ace61a89fb6186586112abd8a95254ab9":[1,0,9,5],
+"namespaceCGALWrappers.html#add8b979ebb0396b0ab7b3e68c842a920":[1,0,9,39],
+"namespaceCGALWrappers.html#afa5b29e80bd919ad3129e0ce7b5b9e26":[1,0,9,19],
 "namespaceCGALWrappers_1_1internal.html":[1,0,9,0],
 "namespaceCGALWrappers_1_1internal.html#a19f9f3e6cb3dcb7da476f20507cb6d95":[1,0,9,0,10],
 "namespaceCGALWrappers_1_1internal.html#a20f9a8bbd2fa5e63a0e718fda9330774":[1,0,9,0,3],
@@ -245,9 +249,5 @@ var NAVTREEINDEX3 =
 "namespaceDoFTools_1_1internal.html#ad2ef140f5d6f248aa4eebdac221fa94c":[1,0,25,0,13],
 "namespaceDoFTools_1_1internal.html#ae01a54c56148d8c0fa3bc4789348e599":[1,0,25,0,3],
 "namespaceDoFTools_1_1internal.html#aefcb004ed33058d0aedcd64af08a9112":[1,0,25,0,14],
-"namespaceDoFTools_1_1internal.html#af539027bba9331145773d7340eb6ad2e":[1,0,25,0,2],
-"namespaceDoFTools_1_1internal_1_1Assembler.html":[1,0,25,0,0],
-"namespaceDynamicSparsityPatternIterators.html":[1,0,26],
-"namespaceDynamicSparsityPatternIterators.html#a55d4a609ddf51cf0645ddeeb04ae8168":[1,0,26,0],
-"namespaceEvaluationFlags.html":[1,0,29]
+"namespaceDoFTools_1_1internal.html#af539027bba9331145773d7340eb6ad2e":[1,0,25,0,2]
 };

@@ -126,6 +126,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a83b65fd33c446ddb42ba1ce92fcbacd9" id="r_a83b65fd33c446ddb42ba1ce92fcbacd9"><td class="memTemplParams" colspan="2">template&lt;typename MatrixType = SparseMatrix&lt;double&gt;, typename VectorType = Vector&lt;typename MatrixType::value_type&gt;, typename PreconditionerType = TrilinosWrappers::PreconditionAMG&gt; </td></tr>
 <tr class="memitem:a83b65fd33c446ddb42ba1ce92fcbacd9"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a83b65fd33c446ddb42ba1ce92fcbacd9">create_augmented_block</a> (const MatrixType &amp;A, const MatrixType &amp;Ct, const VectorType &amp;scaling_vector, const double gamma, MatrixType &amp;augmented_matrix)</td></tr>
 <tr class="separator:a83b65fd33c446ddb42ba1ce92fcbacd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5aa12b7f8fcd55bb3420eb723cc5b83" id="r_af5aa12b7f8fcd55bb3420eb723cc5b83"><td class="memTemplParams" colspan="2">template&lt;int spacedim, typename VectorType&gt; </td></tr>
+<tr class="memitem:af5aa12b7f8fcd55bb3420eb723cc5b83"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#af5aa12b7f8fcd55bb3420eb723cc5b83">set_null_space</a> (Teuchos::ParameterList &amp;parameter_list, std::unique_ptr&lt; Epetra_MultiVector &gt; &amp;ptr_distributed_modes, const Epetra_RowMatrix &amp;matrix, const std::vector&lt; VectorType &gt; &amp;modes)</td></tr>
+<tr class="memdesc:af5aa12b7f8fcd55bb3420eb723cc5b83"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the null space of the matrix using a pre-computed set of vectors. Needed for the AMG preconditioner to work properly with linear elasticity. In particular, parameter_list will be filled by this function.  <br /></td></tr>
+<tr class="separator:af5aa12b7f8fcd55bb3420eb723cc5b83"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a83b65fd33c446ddb42ba1ce92fcbacd9" name="a83b65fd33c446ddb42ba1ce92fcbacd9"></a>
@@ -164,9 +168,50 @@ template&lt;typename MatrixType = SparseMatrix&lt;double&gt;, typename VectorTyp
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="augmented__lagrangian__preconditioner_8h_source.html#l00074">74</a> of file <a class="el" href="augmented__lagrangian__preconditioner_8h_source.html">augmented_lagrangian_preconditioner.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="augmented__lagrangian__preconditioner_8h_source.html#l00077">77</a> of file <a class="el" href="augmented__lagrangian__preconditioner_8h_source.html">augmented_lagrangian_preconditioner.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="reduced__poisson_8cc_source.html#l00543">ReducedPoisson&lt; dim, spacedim &gt;::solve()</a>.</p>
+
+</div>
+</div>
+<a id="af5aa12b7f8fcd55bb3420eb723cc5b83" name="af5aa12b7f8fcd55bb3420eb723cc5b83"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5aa12b7f8fcd55bb3420eb723cc5b83">&#9670;&#160;</a></span>set_null_space()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int spacedim, typename VectorType&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void UtilitiesAL::set_null_space </td>
+          <td>(</td>
+          <td class="paramtype">Teuchos::ParameterList &amp;</td>          <td class="paramname"><span class="paramname"><em>parameter_list</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::unique_ptr&lt; Epetra_MultiVector &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>ptr_distributed_modes</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const Epetra_RowMatrix &amp;</td>          <td class="paramname"><span class="paramname"><em>matrix</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; VectorType &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>modes</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the null space of the matrix using a pre-computed set of vectors. Needed for the AMG preconditioner to work properly with linear elasticity. In particular, parameter_list will be filled by this function. </p>
+
+<p class="definition">Definition at line <a class="el" href="augmented__lagrangian__preconditioner_8h_source.html#l00186">186</a> of file <a class="el" href="augmented__lagrangian__preconditioner_8h_source.html">augmented_lagrangian_preconditioner.h</a>.</p>
+
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers.html#a0fa35a38e466d9c3b2dab8beca1df5b2">TrilinosWrappers::global_index()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers.html#a1fc7a95abc642e46a4f3d3fe8d6f1d20">TrilinosWrappers::global_length()</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers.html#a0ff199060f012806ea1458864aabe49a">TrilinosWrappers::n_global_rows()</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00583">ElasticityProblem&lt; dim, spacedim &gt;::solve()</a>.</p>
 
 </div>
 </div>
@@ -176,7 +221,7 @@ template&lt;typename MatrixType = SparseMatrix&lt;double&gt;, typename VectorTyp
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="namespace_utilities_a_l.html">UtilitiesAL</a></li>
-    <li class="footer">Generated on Sat Apr 26 2025 09:39:25 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Sat May 3 2025 14:10:31 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

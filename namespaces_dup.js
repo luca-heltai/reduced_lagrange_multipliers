@@ -2275,6 +2275,11 @@ var namespaces_dup =
         [ "create_reference_mass_and_stiffness_matrices", "http://www.dealii.org/developer/doxygen/deal.II/namespaceTensorProductMatrixCreator_1_1internal.html#a43ab426153d9e6f340a4e7d034f6b78e", null ]
       ] ],
       [ "LaplaceBoundaryType", "http://www.dealii.org/developer/doxygen/deal.II/namespaceTensorProductMatrixCreator.html#aa2d3de7eafde69e6dbbce59ff62d35bc", null ],
+      [ "create_1d_cell_laplace_matrix", "http://www.dealii.org/developer/doxygen/deal.II/namespaceTensorProductMatrixCreator.html#ad43683192389b0aec34776d72866b005", null ],
+      [ "create_1d_cell_mass_matrix", "http://www.dealii.org/developer/doxygen/deal.II/namespaceTensorProductMatrixCreator.html#a72a28b171c4f7a7e3c6fcf1145bf0f4f", null ],
+      [ "create_1D_discretization_matrix", "http://www.dealii.org/developer/doxygen/deal.II/namespaceTensorProductMatrixCreator.html#aa832ced3e7ff4dac9882afc3f66cd797", null ],
+      [ "create_1d_ghost_penalty_matrix", "http://www.dealii.org/developer/doxygen/deal.II/namespaceTensorProductMatrixCreator.html#ad5d4c394789393e140d377686e0c2044", null ],
+      [ "create_1d_ghost_penalty_matrix", "http://www.dealii.org/developer/doxygen/deal.II/namespaceTensorProductMatrixCreator.html#acf8ac22f4c9c6d9ed97fc97dc6348901", null ],
       [ "create_laplace_tensor_product_matrix", "http://www.dealii.org/developer/doxygen/deal.II/namespaceTensorProductMatrixCreator.html#a0ea124a06b804766442f7b011da41c76", null ],
       [ "create_laplace_tensor_product_matrix", "http://www.dealii.org/developer/doxygen/deal.II/namespaceTensorProductMatrixCreator.html#ac02fbd39c290172e115b40cd8c8cc051", null ],
       [ "dirichlet", "http://www.dealii.org/developer/doxygen/deal.II/namespaceTensorProductMatrixCreator.html#aa2d3de7eafde69e6dbbce59ff62d35bca81ab7f61d5ef4107fec34ed5f3580775", null ],
@@ -2332,6 +2337,8 @@ var namespaces_dup =
       [ "MAX_DELTA_T", "http://www.dealii.org/developer/doxygen/deal.II/namespaceTimeStepping.html#a7525dd86ba25abe8627d2361b596d4c5af3f4ad50084d7f6f27027b8d2c25ae70", null ],
       [ "MIN_DELTA_T", "http://www.dealii.org/developer/doxygen/deal.II/namespaceTimeStepping.html#a7525dd86ba25abe8627d2361b596d4c5a1ce7e8a57b031da76fef95f47baa33da", null ],
       [ "RK_CLASSIC_FOURTH_ORDER", "http://www.dealii.org/developer/doxygen/deal.II/namespaceTimeStepping.html#abff97b5326e452552f108a379dd6cff4a32b4e44cc3d0746c448d48f3fcb6f633", null ],
+      [ "RK_FIFTH_ORDER", "http://www.dealii.org/developer/doxygen/deal.II/namespaceTimeStepping.html#abff97b5326e452552f108a379dd6cff4a7d0fd2a61e8def0b01aac6736d2e7e49", null ],
+      [ "RK_SIXTH_ORDER", "http://www.dealii.org/developer/doxygen/deal.II/namespaceTimeStepping.html#abff97b5326e452552f108a379dd6cff4a0fe7389b6b92263adb369cafae736585", null ],
       [ "RK_THIRD_ORDER", "http://www.dealii.org/developer/doxygen/deal.II/namespaceTimeStepping.html#abff97b5326e452552f108a379dd6cff4acd53dff7339f8bd6d11e3e26ee207894", null ],
       [ "SDIRK_TWO_STAGES", "http://www.dealii.org/developer/doxygen/deal.II/namespaceTimeStepping.html#abff97b5326e452552f108a379dd6cff4a2102ce2c5306320faa2eb291b505d495", null ],
       [ "SSP_THIRD_ORDER", "http://www.dealii.org/developer/doxygen/deal.II/namespaceTimeStepping.html#abff97b5326e452552f108a379dd6cff4a2c9983d26b0e7884012397c87bb3809a", null ]

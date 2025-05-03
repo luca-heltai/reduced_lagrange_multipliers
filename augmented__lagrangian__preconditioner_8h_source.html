@@ -112,211 +112,288 @@ $(function(){initNavTree('augmented__lagrangian__preconditioner_8h_source.html',
   <div class="headertitle"><div class="title">augmented_lagrangian_preconditioner.h</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="augmented__lagrangian__preconditioner_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;<a class="codeRef" href="http://www.dealii.org/developer/doxygen/deal.II/include_2deal_8II_2base_2exceptions_8h.html">deal.II/base/exceptions.h</a>&gt;</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;<a class="codeRef" href="http://www.dealii.org/developer/doxygen/deal.II/block__vector_8h.html">deal.II/lac/block_vector.h</a>&gt;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;<a class="codeRef" href="http://www.dealii.org/developer/doxygen/deal.II/linear__operator_8h.html">deal.II/lac/linear_operator.h</a>&gt;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;<a class="codeRef" href="http://www.dealii.org/developer/doxygen/deal.II/linear__operator__tools_8h.html">deal.II/lac/linear_operator_tools.h</a>&gt;</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;<a class="codeRef" href="http://www.dealii.org/developer/doxygen/deal.II/sparse__matrix_8h.html">deal.II/lac/sparse_matrix.h</a>&gt;</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;<a class="codeRef" href="http://www.dealii.org/developer/doxygen/deal.II/vector_8h.html">deal.II/lac/vector.h</a>&gt;</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#ifdef DEAL_II_WITH_TRILINOS</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#  include &lt;<a class="codeRef" href="http://www.dealii.org/developer/doxygen/deal.II/trilinos__precondition_8h.html">deal.II/lac/trilinos_precondition.h</a>&gt;</span></div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#  include &lt;<a class="codeRef" href="http://www.dealii.org/developer/doxygen/deal.II/trilinos__sparse__matrix_8h.html">deal.II/lac/trilinos_sparse_matrix.h</a>&gt;</span></div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#  include &lt;EpetraExt_MatrixMatrix.h&gt;</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#  include &lt;Epetra_Comm.h&gt;</span></div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#  include &lt;Epetra_CrsMatrix.h&gt;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#  include &lt;Epetra_Map.h&gt;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#  include &lt;Epetra_RowMatrixTransposer.h&gt;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#endif</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#ifndef augmented_lagrangian_prec_h</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="augmented__lagrangian__preconditioner_8h.html#ace20a84acddf8b74a896807e2e4c3549">   23</a></span><span class="preprocessor">#  define augmented_lagrangian_prec_h</span></div>
+<a href="augmented__lagrangian__preconditioner_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;<a class="codeRef" href="http://www.dealii.org/developer/doxygen/deal.II/config_8h.html">deal.II/base/config.h</a>&gt;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;<a class="codeRef" href="http://www.dealii.org/developer/doxygen/deal.II/include_2deal_8II_2base_2exceptions_8h.html">deal.II/base/exceptions.h</a>&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;<a class="codeRef" href="http://www.dealii.org/developer/doxygen/deal.II/dof__tools_8h.html">deal.II/dofs/dof_tools.h</a>&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;<a class="codeRef" href="http://www.dealii.org/developer/doxygen/deal.II/block__vector_8h.html">deal.II/lac/block_vector.h</a>&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;<a class="codeRef" href="http://www.dealii.org/developer/doxygen/deal.II/linear__operator_8h.html">deal.II/lac/linear_operator.h</a>&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;<a class="codeRef" href="http://www.dealii.org/developer/doxygen/deal.II/linear__operator__tools_8h.html">deal.II/lac/linear_operator_tools.h</a>&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;<a class="codeRef" href="http://www.dealii.org/developer/doxygen/deal.II/sparse__matrix_8h.html">deal.II/lac/sparse_matrix.h</a>&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;<a class="codeRef" href="http://www.dealii.org/developer/doxygen/deal.II/vector_8h.html">deal.II/lac/vector.h</a>&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#ifdef DEAL_II_WITH_TRILINOS</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#  include &lt;<a class="codeRef" href="http://www.dealii.org/developer/doxygen/deal.II/trilinos__precondition_8h.html">deal.II/lac/trilinos_precondition.h</a>&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="preprocessor">#  include &lt;<a class="codeRef" href="http://www.dealii.org/developer/doxygen/deal.II/trilinos__sparse__matrix_8h.html">deal.II/lac/trilinos_sparse_matrix.h</a>&gt;</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#  include &lt;EpetraExt_MatrixMatrix.h&gt;</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#  include &lt;Epetra_Comm.h&gt;</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#  include &lt;Epetra_CrsMatrix.h&gt;</span></div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#  include &lt;Epetra_Map.h&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#  include &lt;Epetra_RowMatrixTransposer.h&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">using namespace </span><a class="code hl_namespaceRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacedealii.html">dealii</a>;</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span> </div>
-<div class="foldopen" id="foldopen00027" data-start="{" data-end="}">
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="namespace_utilities_a_l.html">   27</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_utilities_a_l.html">UtilitiesAL</a></div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>{</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#ifndef augmented_lagrangian_prec_h</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="augmented__lagrangian__preconditioner_8h.html#ace20a84acddf8b74a896807e2e4c3549">   26</a></span><span class="preprocessor">#  define augmented_lagrangian_prec_h</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">using namespace </span><a class="code hl_namespaceRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacedealii.html">dealii</a>;</div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> VectorType,</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>            <span class="keyword">typename</span> BlockVectorType = <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTrilinosWrappers_1_1MPI_1_1BlockVector.html">TrilinosWrappers::MPI::BlockVector</a>&gt;</div>
-<div class="foldopen" id="foldopen00032" data-start="{" data-end="};">
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html">   32</a></span>  <span class="keyword">class </span><a class="code hl_function" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a8cf6939d3108cbe93fa012abc3ea0c98">BlockPreconditionerAugmentedLagrangian</a></div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>  {</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>  <span class="keyword">public</span>:</div>
-<div class="foldopen" id="foldopen00035" data-start="{" data-end="}">
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a8cf6939d3108cbe93fa012abc3ea0c98">   35</a></span>    <a class="code hl_function" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a8cf6939d3108cbe93fa012abc3ea0c98">BlockPreconditionerAugmentedLagrangian</a>(</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>      <span class="keyword">const</span> <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearOperator.html">LinearOperator&lt;VectorType&gt;</a> Aug_inv_,</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>      <span class="keyword">const</span> <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearOperator.html">LinearOperator&lt;VectorType&gt;</a> C_,</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>      <span class="keyword">const</span> <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearOperator.html">LinearOperator&lt;VectorType&gt;</a> Ct_,</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>      <span class="keyword">const</span> <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearOperator.html">LinearOperator&lt;VectorType&gt;</a> invW_,</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>      <span class="keyword">const</span> <span class="keywordtype">double</span>                     gamma_ = 1e1)</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    {</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>      <span class="keyword">static_assert</span>(</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        std::is_same&lt;VectorType, TrilinosWrappers::MPI::Vector&gt;::value == <span class="keyword">true</span>);</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>      <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a820d06af7f8ba7cf1d390161684906e9">Aug_inv</a> = Aug_inv_;</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>      <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#abaaf28da84a987d685a7b55ed1bf0d30">C</a>       = C_;</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>      <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#aa6b2a8f90aadd4aac43853ecbc3d09a7">Ct</a>      = Ct_;</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>      <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#aacc6a751e88d3ebdfd4c321641c46b4d">invW</a>    = invW_;</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>      <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a09d895263844d73c0e9d35a707a9deea">gamma</a>   = gamma_;</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    }</div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="}">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="namespace_utilities_a_l.html">   30</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespace_utilities_a_l.html">UtilitiesAL</a></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>{</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span> </div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> VectorType,</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            <span class="keyword">typename</span> BlockVectorType = <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTrilinosWrappers_1_1MPI_1_1BlockVector.html">TrilinosWrappers::MPI::BlockVector</a>&gt;</div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="};">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html">   35</a></span>  <span class="keyword">class </span><a class="code hl_function" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a8cf6939d3108cbe93fa012abc3ea0c98">BlockPreconditionerAugmentedLagrangian</a></div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>  {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>  <span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="}">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a8cf6939d3108cbe93fa012abc3ea0c98">   38</a></span>    <a class="code hl_function" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a8cf6939d3108cbe93fa012abc3ea0c98">BlockPreconditionerAugmentedLagrangian</a>(</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>      <span class="keyword">const</span> <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearOperator.html">LinearOperator&lt;VectorType&gt;</a> Aug_inv_,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>      <span class="keyword">const</span> <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearOperator.html">LinearOperator&lt;VectorType&gt;</a> C_,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>      <span class="keyword">const</span> <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearOperator.html">LinearOperator&lt;VectorType&gt;</a> Ct_,</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>      <span class="keyword">const</span> <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearOperator.html">LinearOperator&lt;VectorType&gt;</a> invW_,</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>      <span class="keyword">const</span> <span class="keywordtype">double</span>                     gamma_ = 1e1)</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>      <span class="keyword">static_assert</span>(</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        std::is_same&lt;VectorType, TrilinosWrappers::MPI::Vector&gt;::value == <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>      <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a820d06af7f8ba7cf1d390161684906e9">Aug_inv</a> = Aug_inv_;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>      <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#abaaf28da84a987d685a7b55ed1bf0d30">C</a>       = C_;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>      <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#aa6b2a8f90aadd4aac43853ecbc3d09a7">Ct</a>      = Ct_;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>      <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#aacc6a751e88d3ebdfd4c321641c46b4d">invW</a>    = invW_;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>      <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a09d895263844d73c0e9d35a707a9deea">gamma</a>   = gamma_;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    }</div>
 </div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordtype">void</span></div>
-<div class="foldopen" id="foldopen00052" data-start="{" data-end="}">
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a8adb81dbe68c36f21e722d8054d4ebd2">   52</a></span>    <a class="code hl_function" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a8adb81dbe68c36f21e722d8054d4ebd2">vmult</a>(BlockVectorType &amp;v, <span class="keyword">const</span> BlockVectorType &amp;u)<span class="keyword"> const</span></div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keyword">    </span>{</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>      v.block(0) = 0.;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>      v.block(1) = 0.;</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>      v.block(1) = -<a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a09d895263844d73c0e9d35a707a9deea">gamma</a> * <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#aacc6a751e88d3ebdfd4c321641c46b4d">invW</a> * u.block(1);</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>      v.block(0) = <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a820d06af7f8ba7cf1d390161684906e9">Aug_inv</a> * (u.block(0) - <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#aa6b2a8f90aadd4aac43853ecbc3d09a7">Ct</a> * v.block(1));</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <span class="keywordtype">void</span></div>
+<div class="foldopen" id="foldopen00055" data-start="{" data-end="}">
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a8adb81dbe68c36f21e722d8054d4ebd2">   55</a></span>    <a class="code hl_function" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a8adb81dbe68c36f21e722d8054d4ebd2">vmult</a>(BlockVectorType &amp;v, <span class="keyword">const</span> BlockVectorType &amp;u)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="keyword">    </span>{</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>      v.block(0) = 0.;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>      v.block(1) = 0.;</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>      v.block(1) = -<a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a09d895263844d73c0e9d35a707a9deea">gamma</a> * <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#aacc6a751e88d3ebdfd4c321641c46b4d">invW</a> * u.block(1);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>      v.block(0) = <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a820d06af7f8ba7cf1d390161684906e9">Aug_inv</a> * (u.block(0) - <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#aa6b2a8f90aadd4aac43853ecbc3d09a7">Ct</a> * v.block(1));</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    }</div>
 </div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>  <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#ae5e2740ed8393ff6883477340645d141">   62</a></span>    <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearOperator.html">LinearOperator&lt;VectorType&gt;</a> <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#ae5e2740ed8393ff6883477340645d141">K</a>;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a820d06af7f8ba7cf1d390161684906e9">   63</a></span>    <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearOperator.html">LinearOperator&lt;VectorType&gt;</a> <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a820d06af7f8ba7cf1d390161684906e9">Aug_inv</a>;</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#abaaf28da84a987d685a7b55ed1bf0d30">   64</a></span>    <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearOperator.html">LinearOperator&lt;VectorType&gt;</a> <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#abaaf28da84a987d685a7b55ed1bf0d30">C</a>;</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#aacc6a751e88d3ebdfd4c321641c46b4d">   65</a></span>    <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearOperator.html">LinearOperator&lt;VectorType&gt;</a> <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#aacc6a751e88d3ebdfd4c321641c46b4d">invW</a>;</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#aa6b2a8f90aadd4aac43853ecbc3d09a7">   66</a></span>    <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearOperator.html">LinearOperator&lt;VectorType&gt;</a> <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#aa6b2a8f90aadd4aac43853ecbc3d09a7">Ct</a>;</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a09d895263844d73c0e9d35a707a9deea">   67</a></span>    <span class="keywordtype">double</span>                     <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a09d895263844d73c0e9d35a707a9deea">gamma</a>;</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>  };</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>  <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#ae5e2740ed8393ff6883477340645d141">   65</a></span>    <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearOperator.html">LinearOperator&lt;VectorType&gt;</a> <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#ae5e2740ed8393ff6883477340645d141">K</a>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a820d06af7f8ba7cf1d390161684906e9">   66</a></span>    <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearOperator.html">LinearOperator&lt;VectorType&gt;</a> <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a820d06af7f8ba7cf1d390161684906e9">Aug_inv</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#abaaf28da84a987d685a7b55ed1bf0d30">   67</a></span>    <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearOperator.html">LinearOperator&lt;VectorType&gt;</a> <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#abaaf28da84a987d685a7b55ed1bf0d30">C</a>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#aacc6a751e88d3ebdfd4c321641c46b4d">   68</a></span>    <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearOperator.html">LinearOperator&lt;VectorType&gt;</a> <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#aacc6a751e88d3ebdfd4c321641c46b4d">invW</a>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#aa6b2a8f90aadd4aac43853ecbc3d09a7">   69</a></span>    <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearOperator.html">LinearOperator&lt;VectorType&gt;</a> <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#aa6b2a8f90aadd4aac43853ecbc3d09a7">Ct</a>;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a09d895263844d73c0e9d35a707a9deea">   70</a></span>    <span class="keywordtype">double</span>                     <a class="code hl_variable" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a09d895263844d73c0e9d35a707a9deea">gamma</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>  };</div>
 </div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> MatrixType = SparseMatrix&lt;<span class="keywordtype">double</span>&gt;,</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            <span class="keyword">typename</span> VectorType = Vector&lt;<span class="keyword">typename</span> MatrixType::value_type&gt;,</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            <span class="keyword">typename</span> PreconditionerType = TrilinosWrappers::PreconditionAMG&gt;</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>  <span class="keywordtype">void</span></div>
-<div class="foldopen" id="foldopen00074" data-start="{" data-end="}">
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="namespace_utilities_a_l.html#a83b65fd33c446ddb42ba1ce92fcbacd9">   74</a></span>  <a class="code hl_function" href="namespace_utilities_a_l.html#a83b65fd33c446ddb42ba1ce92fcbacd9">create_augmented_block</a>(<span class="keyword">const</span> MatrixType &amp;A,</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                         <span class="keyword">const</span> MatrixType &amp;Ct,</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                         <span class="keyword">const</span> VectorType &amp;scaling_vector,</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                         <span class="keyword">const</span> <span class="keywordtype">double</span>      gamma,</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                         MatrixType       &amp;augmented_matrix)</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>  {</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span><span class="preprocessor">#  ifdef DEAL_II_WITH_TRILINOS</span></div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;TrilinosWrappers::SparseMatrix, MatrixType&gt;)</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>      {</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <a class="code hl_defineRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a>((std::is_same_v&lt;TrilinosWrappers::MPI::Vector, VectorType&gt;),</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>               ExcMessage(<span class="stringliteral">&quot;You must use Trilinos vectors, as you are using &quot;</span></div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                          <span class="stringliteral">&quot;Trilinos matrices.&quot;</span>));</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>        Epetra_CrsMatrix A_trilinos   = A.trilinos_matrix();</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        Epetra_CrsMatrix Ct_trilinos  = Ct.trilinos_matrix();</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        <span class="keyword">auto</span>             multi_vector = scaling_vector.trilinos_vector();</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <a class="code hl_defineRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a>((A_trilinos.NumGlobalRows() !=</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                Ct_trilinos.DomainMap().NumGlobalElements()),</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>               ExcMessage(<span class="stringliteral">&quot;Number of columns in C must match dimension of A&quot;</span>));</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        <span class="comment">// Ensure the MultiVector has only one column.</span></div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        <a class="code hl_defineRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a>((multi_vector.NumVectors() == 1),</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>               ExcMessage(<span class="stringliteral">&quot;The MultiVector must have exactly one column.&quot;</span>));</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span> </div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span> </div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="comment">// Create diagonal matrix from first vector of v</span></div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="comment">// Explicitly cast the map to Epetra_Map</span></div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        <span class="keyword">const</span> Epetra_Map &amp;map =</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>          <span class="keyword">static_cast&lt;</span><span class="keyword">const </span>Epetra_Map &amp;<span class="keyword">&gt;</span>(multi_vector.Map());</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="comment">// Create a diagonal matrix with 1 nonzero entry per row</span></div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        Epetra_CrsMatrix diag_matrix(Copy, map, 1);</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; multi_vector.Map().NumMyElements(); ++i)</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>          {</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            <span class="keywordtype">int</span>    global_row = multi_vector.Map().GID(i);</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>            <span class="keywordtype">double</span> val        = multi_vector[0][i]; <span class="comment">// Access first vector</span></div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            diag_matrix.InsertGlobalValues(global_row, 1, &amp;val, &amp;global_row);</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>          }</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        diag_matrix.FillComplete();</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        Epetra_CrsMatrix *W =</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>          <span class="keyword">new</span> Epetra_CrsMatrix(Copy, Ct_trilinos.RowMap(), 0);</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        EpetraExt::MatrixMatrix::Multiply(</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>          Ct_trilinos, <span class="keyword">false</span>, diag_matrix, <span class="keyword">false</span>, *W);</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        <span class="comment">// Compute Ct^T * W, which is equivalent to (C^T * diag(V)) * C</span></div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>        Epetra_CrsMatrix *CtT_W = <span class="keyword">new</span> Epetra_CrsMatrix(Copy, W-&gt;RangeMap(), 0);</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        EpetraExt::MatrixMatrix::Multiply(</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>          *W, <span class="keyword">false</span> <span class="comment">/* transpose */</span>, Ct_trilinos, <span class="keyword">true</span>, *CtT_W);</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        <span class="comment">// Add A to the result, scaling with gamma</span></div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        Epetra_CrsMatrix *result =</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>          <span class="keyword">new</span> Epetra_CrsMatrix(Copy,</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>                               A_trilinos.RowMap(),</div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>                               A_trilinos.MaxNumEntries());</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        EpetraExt::MatrixMatrix::Add(</div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>          A_trilinos, <span class="keyword">false</span>, 1.0, *CtT_W, <span class="keyword">false</span>, gamma, result);</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>        result-&gt;FillComplete();</div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
-<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span> </div>
-<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        <span class="comment">// Initialize the final Trilinos matrix</span></div>
-<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>        augmented_matrix.reinit(*result, <span class="keyword">true</span> <span class="comment">/*copy_values*/</span>);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> MatrixType = SparseMatrix&lt;<span class="keywordtype">double</span>&gt;,</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="keyword">typename</span> VectorType = Vector&lt;<span class="keyword">typename</span> MatrixType::value_type&gt;,</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="keyword">typename</span> PreconditionerType = TrilinosWrappers::PreconditionAMG&gt;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>  <span class="keywordtype">void</span></div>
+<div class="foldopen" id="foldopen00077" data-start="{" data-end="}">
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="namespace_utilities_a_l.html#a83b65fd33c446ddb42ba1ce92fcbacd9">   77</a></span>  <a class="code hl_function" href="namespace_utilities_a_l.html#a83b65fd33c446ddb42ba1ce92fcbacd9">create_augmented_block</a>(<span class="keyword">const</span> MatrixType &amp;A,</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                         <span class="keyword">const</span> MatrixType &amp;Ct,</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                         <span class="keyword">const</span> VectorType &amp;scaling_vector,</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                         <span class="keyword">const</span> <span class="keywordtype">double</span>      gamma,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                         MatrixType       &amp;augmented_matrix)</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>  {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="preprocessor">#  ifdef DEAL_II_WITH_TRILINOS</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keywordflow">if</span> <span class="keyword">constexpr</span> (std::is_same_v&lt;TrilinosWrappers::SparseMatrix, MatrixType&gt;)</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>      {</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <a class="code hl_defineRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a>((std::is_same_v&lt;TrilinosWrappers::MPI::Vector, VectorType&gt;),</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>               ExcMessage(<span class="stringliteral">&quot;You must use Trilinos vectors, as you are using &quot;</span></div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                          <span class="stringliteral">&quot;Trilinos matrices.&quot;</span>));</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        Epetra_CrsMatrix A_trilinos   = A.trilinos_matrix();</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>        Epetra_CrsMatrix Ct_trilinos  = Ct.trilinos_matrix();</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keyword">auto</span>             multi_vector = scaling_vector.trilinos_vector();</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <a class="code hl_defineRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a>((A_trilinos.NumGlobalRows() !=</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                Ct_trilinos.DomainMap().NumGlobalElements()),</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>               ExcMessage(<span class="stringliteral">&quot;Number of columns in C must match dimension of A&quot;</span>));</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span> </div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <span class="comment">// Ensure the MultiVector has only one column.</span></div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <a class="code hl_defineRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a>((multi_vector.NumVectors() == 1),</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>               ExcMessage(<span class="stringliteral">&quot;The MultiVector must have exactly one column.&quot;</span>));</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        <span class="comment">// Create diagonal matrix from first vector of v</span></div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="comment">// Explicitly cast the map to Epetra_Map</span></div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keyword">const</span> Epetra_Map &amp;map =</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>          <span class="keyword">static_cast&lt;</span><span class="keyword">const </span>Epetra_Map &amp;<span class="keyword">&gt;</span>(multi_vector.Map());</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span> </div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        <span class="comment">// Create a diagonal matrix with 1 nonzero entry per row</span></div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        Epetra_CrsMatrix diag_matrix(Copy, map, 1);</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; multi_vector.Map().NumMyElements(); ++i)</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>          {</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>            <span class="keywordtype">int</span>    global_row = multi_vector.Map().GID(i);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            <span class="keywordtype">double</span> val        = multi_vector[0][i]; <span class="comment">// Access first vector</span></div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            diag_matrix.InsertGlobalValues(global_row, 1, &amp;val, &amp;global_row);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>          }</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        diag_matrix.FillComplete();</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span> </div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        Epetra_CrsMatrix *W =</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>          <span class="keyword">new</span> Epetra_CrsMatrix(Copy, Ct_trilinos.RowMap(), 0);</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>        EpetraExt::MatrixMatrix::Multiply(</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>          Ct_trilinos, <span class="keyword">false</span>, diag_matrix, <span class="keyword">false</span>, *W);</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        <span class="comment">// Compute Ct^T * W, which is equivalent to (C^T * diag(V)) * C</span></div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        Epetra_CrsMatrix *CtT_W = <span class="keyword">new</span> Epetra_CrsMatrix(Copy, W-&gt;RangeMap(), 0);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>        EpetraExt::MatrixMatrix::Multiply(</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>          *W, <span class="keyword">false</span> <span class="comment">/* transpose */</span>, Ct_trilinos, <span class="keyword">true</span>, *CtT_W);</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        <span class="comment">// Add A to the result, scaling with gamma</span></div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        Epetra_CrsMatrix *result =</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>          <span class="keyword">new</span> Epetra_CrsMatrix(Copy,</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>                               A_trilinos.RowMap(),</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>                               A_trilinos.MaxNumEntries());</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>        EpetraExt::MatrixMatrix::Add(</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>          A_trilinos, <span class="keyword">false</span>, 1.0, *CtT_W, <span class="keyword">false</span>, gamma, result);</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        result-&gt;FillComplete();</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
 <div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span> </div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        <span class="comment">// Delete unnecessary objects.</span></div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>        <span class="keyword">delete</span> W;</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        <span class="keyword">delete</span> CtT_W;</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        <span class="keyword">delete</span> result;</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>      }</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="keywordflow">else</span></div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>      {</div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        <span class="comment">// PETSc not supported so far.</span></div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>        <a class="code hl_defineRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#gafc0ca7ad85b3ebd64e8e51689ac85caf">AssertThrow</a>(<span class="keyword">false</span>, ExcNotImplemented(<span class="stringliteral">&quot;Matrix type not supported!&quot;</span>));</div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>      }</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span><span class="preprocessor">#  else</span></div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <a class="code hl_defineRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#gafc0ca7ad85b3ebd64e8e51689ac85caf">AssertThrow</a>(</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>      <span class="keyword">false</span>,</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>      ExcMessage(</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        <span class="stringliteral">&quot;This function requires deal.II to be configured with Trilinos.&quot;</span>));</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span> </div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    (void)velocity_dh;</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    (void)<a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a1943fbf50cc8f2010771e80d79b0f62a">C</a>;</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    (void)Ct;</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    (void)scaling_vector;</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    (void)velocity_constraints;</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    (void)gamma;</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    (void)augmented_matrix;</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span><span class="preprocessor">#  endif</span></div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>  }</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>        <span class="comment">// Initialize the final Trilinos matrix</span></div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        augmented_matrix.reinit(*result, <span class="keyword">true</span> <span class="comment">/*copy_values*/</span>);</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span> </div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        <span class="comment">// Delete unnecessary objects.</span></div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>        <span class="keyword">delete</span> W;</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <span class="keyword">delete</span> CtT_W;</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <span class="keyword">delete</span> result;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>      }</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>      {</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        <span class="comment">// PETSc not supported so far.</span></div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>        <a class="code hl_defineRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#gafc0ca7ad85b3ebd64e8e51689ac85caf">AssertThrow</a>(<span class="keyword">false</span>, ExcNotImplemented(<span class="stringliteral">&quot;Matrix type not supported!&quot;</span>));</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>      }</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span><span class="preprocessor">#  else</span></div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <a class="code hl_defineRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#gafc0ca7ad85b3ebd64e8e51689ac85caf">AssertThrow</a>(</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>      <span class="keyword">false</span>,</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>      ExcMessage(</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        <span class="stringliteral">&quot;This function requires deal.II to be configured with Trilinos.&quot;</span>));</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    (void)velocity_dh;</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>    (void)<a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a1943fbf50cc8f2010771e80d79b0f62a">C</a>;</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    (void)Ct;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    (void)scaling_vector;</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    (void)velocity_constraints;</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>    (void)gamma;</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    (void)augmented_matrix;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span><span class="preprocessor">#  endif</span></div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>  }</div>
 </div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>} <span class="comment">// namespace UtilitiesAL</span></div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span> </div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span></div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>  <span class="keyword">template</span> &lt;<span class="keywordtype">int</span> spacedim, <span class="keyword">typename</span> VectorType&gt;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>  <span class="keywordtype">void</span></div>
+<div class="foldopen" id="foldopen00186" data-start="{" data-end="}">
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno"><a class="line" href="namespace_utilities_a_l.html#af5aa12b7f8fcd55bb3420eb723cc5b83">  186</a></span>  <a class="code hl_function" href="namespace_utilities_a_l.html#af5aa12b7f8fcd55bb3420eb723cc5b83">set_null_space</a>(Teuchos::ParameterList              &amp;parameter_list,</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>                 std::unique_ptr&lt;Epetra_MultiVector&gt; &amp;ptr_distributed_modes,</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>                 <span class="keyword">const</span> Epetra_RowMatrix              &amp;matrix,</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                 <span class="keyword">const</span> std::vector&lt;VectorType&gt;       &amp;modes)</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>  {</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keyword">static_assert</span>((spacedim == 2 || spacedim == 3),</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>                  <span class="stringliteral">&quot;This function only works for 2D and 3D.&quot;</span>);</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span><span class="preprocessor">#  ifdef DEAL_II_WITH_TRILINOS</span></div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span> </div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span> </div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>    <span class="keyword">using </span>size_type = TrilinosWrappers::PreconditionAMG::size_type;</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    <span class="keyword">const</span> Epetra_Map   &amp;domain_map      = matrix.OperatorDomainMap();</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>    <span class="keyword">constexpr</span> size_type modes_dimension = spacedim == 3 ? 6 : 3;</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span> </div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>    ptr_distributed_modes.reset(</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>      <span class="keyword">new</span> Epetra_MultiVector(domain_map, modes_dimension));</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>    <a class="code hl_defineRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a>(ptr_distributed_modes, ExcNotInitialized());</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    Epetra_MultiVector &amp;distributed_modes = *ptr_distributed_modes;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <span class="keyword">const</span> size_type global_size = <a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers.html#a0ff199060f012806ea1458864aabe49a">TrilinosWrappers::n_global_rows</a>(matrix);</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span> </div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>    <a class="code hl_defineRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a>(global_size == <span class="keyword">static_cast&lt;</span>size_type<span class="keyword">&gt;</span>(</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>                            <a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers.html#a1fc7a95abc642e46a4f3d3fe8d6f1d20">TrilinosWrappers::global_length</a>(distributed_modes)),</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>           ExcDimensionMismatch(</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>             global_size, <a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers.html#a1fc7a95abc642e46a4f3d3fe8d6f1d20">TrilinosWrappers::global_length</a>(distributed_modes)));</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span> </div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    <span class="keyword">const</span> size_type my_size = domain_map.NumMyElements();</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span> </div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>    <span class="comment">// Reshape null space as a contiguous vector of doubles so that</span></div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>    <span class="comment">// Trilinos can read from it.</span></div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    [[maybe_unused]] <span class="keyword">const</span> size_type expected_mode_size = global_size;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>    <span class="keywordflow">for</span> (size_type <a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a93f65b0385560a34ec1d3c5ec5a882b8">d</a> = 0; <a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a93f65b0385560a34ec1d3c5ec5a882b8">d</a> &lt; modes_dimension; ++<a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a93f65b0385560a34ec1d3c5ec5a882b8">d</a>)</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>      {</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>        <a class="code hl_defineRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a>(modes[<a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a93f65b0385560a34ec1d3c5ec5a882b8">d</a>].<a class="code hl_variableRef" href="http://www.dealii.org/developer/doxygen/deal.II/mpi_8cc.html#a6dd26ea9a9661025c81cf220b3d92ea0">size</a>() == expected_mode_size,</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>               ExcDimensionMismatch(modes[<a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a93f65b0385560a34ec1d3c5ec5a882b8">d</a>].<a class="code hl_variableRef" href="http://www.dealii.org/developer/doxygen/deal.II/mpi_8cc.html#a6dd26ea9a9661025c81cf220b3d92ea0">size</a>(), expected_mode_size));</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        <span class="keywordflow">for</span> (size_type row = 0; row &lt; my_size; ++row)</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>          {</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>            <span class="keyword">const</span> <a class="code hl_typedefRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers_1_1types.html#a0ab3247b28264ebfd78314acd47c558a">TrilinosWrappers::types::int_type</a> mode_index =</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>              <a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers.html#a0fa35a38e466d9c3b2dab8beca1df5b2">TrilinosWrappers::global_index</a>(domain_map, row);</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>            distributed_modes[<a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a93f65b0385560a34ec1d3c5ec5a882b8">d</a>][row] =</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>              <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(modes[<a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a93f65b0385560a34ec1d3c5ec5a882b8">d</a>][mode_index]);</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>          }</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>      }</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span> </div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    parameter_list.set(<span class="stringliteral">&quot;null space: type&quot;</span>, <span class="stringliteral">&quot;pre-computed&quot;</span>);</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    parameter_list.set(<span class="stringliteral">&quot;null space: dimension&quot;</span>, distributed_modes.NumVectors());</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    parameter_list.set(<span class="stringliteral">&quot;null space: vectors&quot;</span>, distributed_modes.Values());</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span> </div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span><span class="preprocessor">#  else</span></div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>    <a class="code hl_defineRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#gafc0ca7ad85b3ebd64e8e51689ac85caf">AssertThrow</a>(</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>      <span class="keyword">false</span>,</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>      ExcMessage(</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        <span class="stringliteral">&quot;This function requires deal.II to be configured with Trilinos.&quot;</span>));</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span> </div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span><span class="preprocessor">#  endif</span></div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>  }</div>
 </div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span> </div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span> </div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>} <span class="comment">// namespace UtilitiesAL</span></div>
+</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="ablock__vector_8h_html"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/block__vector_8h.html">block_vector.h</a></div></div>
 <div class="ttc" id="aclassLinearOperator_html"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/classLinearOperator.html">LinearOperator</a></div></div>
 <div class="ttc" id="aclassTrilinosWrappers_1_1MPI_1_1BlockVector_html"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/classTrilinosWrappers_1_1MPI_1_1BlockVector.html">TrilinosWrappers::MPI::BlockVector</a></div></div>
-<div class="ttc" id="aclass_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian_html_a09d895263844d73c0e9d35a707a9deea"><div class="ttname"><a href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a09d895263844d73c0e9d35a707a9deea">UtilitiesAL::BlockPreconditionerAugmentedLagrangian::gamma</a></div><div class="ttdeci">double gamma</div><div class="ttdef"><b>Definition</b> <a href="#l00067">augmented_lagrangian_preconditioner.h:67</a></div></div>
-<div class="ttc" id="aclass_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian_html_a820d06af7f8ba7cf1d390161684906e9"><div class="ttname"><a href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a820d06af7f8ba7cf1d390161684906e9">UtilitiesAL::BlockPreconditionerAugmentedLagrangian::Aug_inv</a></div><div class="ttdeci">LinearOperator&lt; VectorType &gt; Aug_inv</div><div class="ttdef"><b>Definition</b> <a href="#l00063">augmented_lagrangian_preconditioner.h:63</a></div></div>
-<div class="ttc" id="aclass_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian_html_a8adb81dbe68c36f21e722d8054d4ebd2"><div class="ttname"><a href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a8adb81dbe68c36f21e722d8054d4ebd2">UtilitiesAL::BlockPreconditionerAugmentedLagrangian::vmult</a></div><div class="ttdeci">void vmult(BlockVectorType &amp;v, const BlockVectorType &amp;u) const</div><div class="ttdef"><b>Definition</b> <a href="#l00052">augmented_lagrangian_preconditioner.h:52</a></div></div>
-<div class="ttc" id="aclass_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian_html_a8cf6939d3108cbe93fa012abc3ea0c98"><div class="ttname"><a href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a8cf6939d3108cbe93fa012abc3ea0c98">UtilitiesAL::BlockPreconditionerAugmentedLagrangian::BlockPreconditionerAugmentedLagrangian</a></div><div class="ttdeci">BlockPreconditionerAugmentedLagrangian(const LinearOperator&lt; VectorType &gt; Aug_inv_, const LinearOperator&lt; VectorType &gt; C_, const LinearOperator&lt; VectorType &gt; Ct_, const LinearOperator&lt; VectorType &gt; invW_, const double gamma_=1e1)</div><div class="ttdef"><b>Definition</b> <a href="#l00035">augmented_lagrangian_preconditioner.h:35</a></div></div>
-<div class="ttc" id="aclass_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian_html_aa6b2a8f90aadd4aac43853ecbc3d09a7"><div class="ttname"><a href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#aa6b2a8f90aadd4aac43853ecbc3d09a7">UtilitiesAL::BlockPreconditionerAugmentedLagrangian::Ct</a></div><div class="ttdeci">LinearOperator&lt; VectorType &gt; Ct</div><div class="ttdef"><b>Definition</b> <a href="#l00066">augmented_lagrangian_preconditioner.h:66</a></div></div>
-<div class="ttc" id="aclass_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian_html_aacc6a751e88d3ebdfd4c321641c46b4d"><div class="ttname"><a href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#aacc6a751e88d3ebdfd4c321641c46b4d">UtilitiesAL::BlockPreconditionerAugmentedLagrangian::invW</a></div><div class="ttdeci">LinearOperator&lt; VectorType &gt; invW</div><div class="ttdef"><b>Definition</b> <a href="#l00065">augmented_lagrangian_preconditioner.h:65</a></div></div>
-<div class="ttc" id="aclass_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian_html_abaaf28da84a987d685a7b55ed1bf0d30"><div class="ttname"><a href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#abaaf28da84a987d685a7b55ed1bf0d30">UtilitiesAL::BlockPreconditionerAugmentedLagrangian::C</a></div><div class="ttdeci">LinearOperator&lt; VectorType &gt; C</div><div class="ttdef"><b>Definition</b> <a href="#l00064">augmented_lagrangian_preconditioner.h:64</a></div></div>
-<div class="ttc" id="aclass_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian_html_ae5e2740ed8393ff6883477340645d141"><div class="ttname"><a href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#ae5e2740ed8393ff6883477340645d141">UtilitiesAL::BlockPreconditionerAugmentedLagrangian::K</a></div><div class="ttdeci">LinearOperator&lt; VectorType &gt; K</div><div class="ttdef"><b>Definition</b> <a href="#l00062">augmented_lagrangian_preconditioner.h:62</a></div></div>
+<div class="ttc" id="aclass_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian_html_a09d895263844d73c0e9d35a707a9deea"><div class="ttname"><a href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a09d895263844d73c0e9d35a707a9deea">UtilitiesAL::BlockPreconditionerAugmentedLagrangian::gamma</a></div><div class="ttdeci">double gamma</div><div class="ttdef"><b>Definition</b> <a href="#l00070">augmented_lagrangian_preconditioner.h:70</a></div></div>
+<div class="ttc" id="aclass_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian_html_a820d06af7f8ba7cf1d390161684906e9"><div class="ttname"><a href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a820d06af7f8ba7cf1d390161684906e9">UtilitiesAL::BlockPreconditionerAugmentedLagrangian::Aug_inv</a></div><div class="ttdeci">LinearOperator&lt; VectorType &gt; Aug_inv</div><div class="ttdef"><b>Definition</b> <a href="#l00066">augmented_lagrangian_preconditioner.h:66</a></div></div>
+<div class="ttc" id="aclass_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian_html_a8adb81dbe68c36f21e722d8054d4ebd2"><div class="ttname"><a href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a8adb81dbe68c36f21e722d8054d4ebd2">UtilitiesAL::BlockPreconditionerAugmentedLagrangian::vmult</a></div><div class="ttdeci">void vmult(BlockVectorType &amp;v, const BlockVectorType &amp;u) const</div><div class="ttdef"><b>Definition</b> <a href="#l00055">augmented_lagrangian_preconditioner.h:55</a></div></div>
+<div class="ttc" id="aclass_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian_html_a8cf6939d3108cbe93fa012abc3ea0c98"><div class="ttname"><a href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a8cf6939d3108cbe93fa012abc3ea0c98">UtilitiesAL::BlockPreconditionerAugmentedLagrangian::BlockPreconditionerAugmentedLagrangian</a></div><div class="ttdeci">BlockPreconditionerAugmentedLagrangian(const LinearOperator&lt; VectorType &gt; Aug_inv_, const LinearOperator&lt; VectorType &gt; C_, const LinearOperator&lt; VectorType &gt; Ct_, const LinearOperator&lt; VectorType &gt; invW_, const double gamma_=1e1)</div><div class="ttdef"><b>Definition</b> <a href="#l00038">augmented_lagrangian_preconditioner.h:38</a></div></div>
+<div class="ttc" id="aclass_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian_html_aa6b2a8f90aadd4aac43853ecbc3d09a7"><div class="ttname"><a href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#aa6b2a8f90aadd4aac43853ecbc3d09a7">UtilitiesAL::BlockPreconditionerAugmentedLagrangian::Ct</a></div><div class="ttdeci">LinearOperator&lt; VectorType &gt; Ct</div><div class="ttdef"><b>Definition</b> <a href="#l00069">augmented_lagrangian_preconditioner.h:69</a></div></div>
+<div class="ttc" id="aclass_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian_html_aacc6a751e88d3ebdfd4c321641c46b4d"><div class="ttname"><a href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#aacc6a751e88d3ebdfd4c321641c46b4d">UtilitiesAL::BlockPreconditionerAugmentedLagrangian::invW</a></div><div class="ttdeci">LinearOperator&lt; VectorType &gt; invW</div><div class="ttdef"><b>Definition</b> <a href="#l00068">augmented_lagrangian_preconditioner.h:68</a></div></div>
+<div class="ttc" id="aclass_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian_html_abaaf28da84a987d685a7b55ed1bf0d30"><div class="ttname"><a href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#abaaf28da84a987d685a7b55ed1bf0d30">UtilitiesAL::BlockPreconditionerAugmentedLagrangian::C</a></div><div class="ttdeci">LinearOperator&lt; VectorType &gt; C</div><div class="ttdef"><b>Definition</b> <a href="#l00067">augmented_lagrangian_preconditioner.h:67</a></div></div>
+<div class="ttc" id="aclass_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian_html_ae5e2740ed8393ff6883477340645d141"><div class="ttname"><a href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#ae5e2740ed8393ff6883477340645d141">UtilitiesAL::BlockPreconditionerAugmentedLagrangian::K</a></div><div class="ttdeci">LinearOperator&lt; VectorType &gt; K</div><div class="ttdef"><b>Definition</b> <a href="#l00065">augmented_lagrangian_preconditioner.h:65</a></div></div>
+<div class="ttc" id="aconfig_8h_html"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/config_8h.html">config.h</a></div></div>
+<div class="ttc" id="adof__tools_8h_html"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/dof__tools_8h.html">dof_tools.h</a></div></div>
 <div class="ttc" id="agroup__Exceptions_html_ga70a0bb353656e704acf927945277bbc6"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a></div><div class="ttdeci">#define Assert(cond, exc)</div></div>
 <div class="ttc" id="agroup__Exceptions_html_gafc0ca7ad85b3ebd64e8e51689ac85caf"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#gafc0ca7ad85b3ebd64e8e51689ac85caf">AssertThrow</a></div><div class="ttdeci">#define AssertThrow(cond, exc)</div></div>
 <div class="ttc" id="ainclude_2deal_8II_2base_2exceptions_8h_html"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/include_2deal_8II_2base_2exceptions_8h.html">exceptions.h</a></div></div>
 <div class="ttc" id="alinear__operator_8h_html"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/linear__operator_8h.html">linear_operator.h</a></div></div>
 <div class="ttc" id="alinear__operator__tools_8h_html"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/linear__operator__tools_8h.html">linear_operator_tools.h</a></div></div>
+<div class="ttc" id="ampi_8cc_html_a6dd26ea9a9661025c81cf220b3d92ea0"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/mpi_8cc.html#a6dd26ea9a9661025c81cf220b3d92ea0">size</a></div><div class="ttdeci">std::size_t size</div></div>
 <div class="ttc" id="anamespacePhysics_1_1Elasticity_1_1Kinematics_html_a1943fbf50cc8f2010771e80d79b0f62a"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a1943fbf50cc8f2010771e80d79b0f62a">C</a></div><div class="ttdeci">SymmetricTensor&lt; 2, dim, Number &gt; C(const Tensor&lt; 2, dim, Number &gt; &amp;F)</div></div>
-<div class="ttc" id="anamespace_utilities_a_l_html"><div class="ttname"><a href="namespace_utilities_a_l.html">UtilitiesAL</a></div><div class="ttdef"><b>Definition</b> <a href="#l00027">augmented_lagrangian_preconditioner.h:28</a></div></div>
-<div class="ttc" id="anamespace_utilities_a_l_html_a83b65fd33c446ddb42ba1ce92fcbacd9"><div class="ttname"><a href="namespace_utilities_a_l.html#a83b65fd33c446ddb42ba1ce92fcbacd9">UtilitiesAL::create_augmented_block</a></div><div class="ttdeci">void create_augmented_block(const MatrixType &amp;A, const MatrixType &amp;Ct, const VectorType &amp;scaling_vector, const double gamma, MatrixType &amp;augmented_matrix)</div><div class="ttdef"><b>Definition</b> <a href="#l00074">augmented_lagrangian_preconditioner.h:74</a></div></div>
+<div class="ttc" id="anamespacePhysics_1_1Elasticity_1_1Kinematics_html_a93f65b0385560a34ec1d3c5ec5a882b8"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Elasticity_1_1Kinematics.html#a93f65b0385560a34ec1d3c5ec5a882b8">d</a></div><div class="ttdeci">SymmetricTensor&lt; 2, dim, Number &gt; d(const Tensor&lt; 2, dim, Number &gt; &amp;F, const Tensor&lt; 2, dim, Number &gt; &amp;dF_dt)</div></div>
+<div class="ttc" id="anamespaceTrilinosWrappers_1_1types_html_a0ab3247b28264ebfd78314acd47c558a"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers_1_1types.html#a0ab3247b28264ebfd78314acd47c558a">TrilinosWrappers::types::int_type</a></div><div class="ttdeci">int int_type</div></div>
+<div class="ttc" id="anamespaceTrilinosWrappers_html_a0fa35a38e466d9c3b2dab8beca1df5b2"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers.html#a0fa35a38e466d9c3b2dab8beca1df5b2">TrilinosWrappers::global_index</a></div><div class="ttdeci">TrilinosWrappers::types::int_type global_index(const Epetra_BlockMap &amp;map, const ::types::global_dof_index i)</div></div>
+<div class="ttc" id="anamespaceTrilinosWrappers_html_a0ff199060f012806ea1458864aabe49a"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers.html#a0ff199060f012806ea1458864aabe49a">TrilinosWrappers::n_global_rows</a></div><div class="ttdeci">TrilinosWrappers::types::int_type n_global_rows(const Epetra_CrsGraph &amp;graph)</div></div>
+<div class="ttc" id="anamespaceTrilinosWrappers_html_a1fc7a95abc642e46a4f3d3fe8d6f1d20"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/namespaceTrilinosWrappers.html#a1fc7a95abc642e46a4f3d3fe8d6f1d20">TrilinosWrappers::global_length</a></div><div class="ttdeci">TrilinosWrappers::types::int_type global_length(const Epetra_MultiVector &amp;vector)</div></div>
+<div class="ttc" id="anamespace_utilities_a_l_html"><div class="ttname"><a href="namespace_utilities_a_l.html">UtilitiesAL</a></div><div class="ttdef"><b>Definition</b> <a href="#l00030">augmented_lagrangian_preconditioner.h:31</a></div></div>
+<div class="ttc" id="anamespace_utilities_a_l_html_a83b65fd33c446ddb42ba1ce92fcbacd9"><div class="ttname"><a href="namespace_utilities_a_l.html#a83b65fd33c446ddb42ba1ce92fcbacd9">UtilitiesAL::create_augmented_block</a></div><div class="ttdeci">void create_augmented_block(const MatrixType &amp;A, const MatrixType &amp;Ct, const VectorType &amp;scaling_vector, const double gamma, MatrixType &amp;augmented_matrix)</div><div class="ttdef"><b>Definition</b> <a href="#l00077">augmented_lagrangian_preconditioner.h:77</a></div></div>
+<div class="ttc" id="anamespace_utilities_a_l_html_af5aa12b7f8fcd55bb3420eb723cc5b83"><div class="ttname"><a href="namespace_utilities_a_l.html#af5aa12b7f8fcd55bb3420eb723cc5b83">UtilitiesAL::set_null_space</a></div><div class="ttdeci">void set_null_space(Teuchos::ParameterList &amp;parameter_list, std::unique_ptr&lt; Epetra_MultiVector &gt; &amp;ptr_distributed_modes, const Epetra_RowMatrix &amp;matrix, const std::vector&lt; VectorType &gt; &amp;modes)</div><div class="ttdoc">Set the null space of the matrix using a pre-computed set of vectors. Needed for the AMG precondition...</div><div class="ttdef"><b>Definition</b> <a href="#l00186">augmented_lagrangian_preconditioner.h:186</a></div></div>
 <div class="ttc" id="anamespacedealii_html"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/namespacedealii.html">dealii</a></div></div>
 <div class="ttc" id="asparse__matrix_8h_html"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/sparse__matrix_8h.html">sparse_matrix.h</a></div></div>
 <div class="ttc" id="atrilinos__precondition_8h_html"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/trilinos__precondition_8h.html">trilinos_precondition.h</a></div></div>
@@ -328,7 +405,7 @@ $(function(){initNavTree('augmented__lagrangian__preconditioner_8h_source.html',
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_aa394cd1d9abb8ffe941d9aaafca8d03.html">github</a></li><li class="navelem"><a class="el" href="dir_c52569aa89a7adbb6029022c2fa60a11.html">workspace</a></li><li class="navelem"><a class="el" href="dir_7a95a9cc00fcc7af5a429eec361b64d1.html">include</a></li><li class="navelem"><a class="el" href="augmented__lagrangian__preconditioner_8h.html">augmented_lagrangian_preconditioner.h</a></li>
-    <li class="footer">Generated on Sat Apr 26 2025 09:39:25 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Sat May 3 2025 14:10:30 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

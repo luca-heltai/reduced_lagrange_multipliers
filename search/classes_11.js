@@ -87,7 +87,7 @@ var searchData=
   ['returntype_84',['ReturnType',['http://www.dealii.org/developer/doxygen/deal.II/structTensorAccessors_1_1ReturnType.html',1,'TensorAccessors']]],
   ['returntype_3c_200_2c_20t_20_3e_85',['ReturnType&lt; 0, T &gt;',['http://www.dealii.org/developer/doxygen/deal.II/structTensorAccessors_1_1ReturnType_3_010_00_01T_01_4.html',1,'TensorAccessors']]],
   ['rgbvalues_86',['RgbValues',['http://www.dealii.org/developer/doxygen/deal.II/structDataOutBase_1_1EpsFlags_1_1RgbValues.html',1,'DataOutBase::EpsFlags']]],
-  ['rigidbodymotion_87',['RigidBodyMotion',['http://www.dealii.org/developer/doxygen/deal.II/classDoFTools_1_1internal_1_1RigidBodyMotion.html',1,'DoFTools::internal']]],
+  ['rigidbodymotion_87',['RigidBodyMotion',['http://www.dealii.org/developer/doxygen/deal.II/classDoFTools_1_1internal_1_1RigidBodyMotion.html',1,'DoFTools::internal::RigidBodyMotion&lt; int dim &gt;'],['../class_rigid_body_motion.html',1,'RigidBodyMotion&lt; dim &gt;']]],
   ['rootfinder_88',['RootFinder',['http://www.dealii.org/developer/doxygen/deal.II/classNonMatching_1_1internal_1_1QuadratureGeneratorImplementation_1_1RootFinder.html',1,'NonMatching::internal::QuadratureGeneratorImplementation']]],
   ['rotate2d_89',['Rotate2d',['http://www.dealii.org/developer/doxygen/deal.II/classGridTools_1_1internal_1_1Rotate2d.html',1,'GridTools::internal']]],
   ['rotate3d_90',['Rotate3d',['http://www.dealii.org/developer/doxygen/deal.II/classGridTools_1_1internal_1_1Rotate3d.html',1,'GridTools::internal']]],

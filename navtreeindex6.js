@@ -1,5 +1,9 @@
 var NAVTREEINDEX6 =
 {
+"namespaceMatrixCreator.html#ae0d4b646beff4cd22d51368a53ebdbc2":[1,0,77,9],
+"namespaceMatrixCreator.html#aec60bdf772d8be66a734652a445bab79":[1,0,77,6],
+"namespaceMatrixCreator.html#af9300fa019b82b3e084c3a0c095b3848":[1,0,77,8],
+"namespaceMatrixFreeOperators.html":[1,0,79],
 "namespaceMatrixFreeTools.html":[1,0,80],
 "namespaceMatrixFreeTools.html#a08cd17d09ebd2be9e313e33bdd102d30":[1,0,80,4],
 "namespaceMatrixFreeTools.html#a388df1dd6f7009b23b622e42e39ae7f1":[1,0,80,8],
@@ -245,9 +249,5 @@ var NAVTREEINDEX6 =
 "namespaceSparsityTools.html#ae7336d79d8674b4832bde6fe50510cda":[1,0,139,6],
 "namespaceSparsityTools.html#af306ee8725068408ab270d0517ebc58a":[1,0,139,3],
 "namespaceSparsityTools_1_1internal.html":[1,0,139,0],
-"namespaceSparsityTools_1_1internal.html#a08af5e83076134bbf9dcfd33530dfe7a":[1,0,139,0,0],
-"namespaceSparsityTools_1_1internal.html#a243b3132891524bc886242fe76b350b1":[1,0,139,0,1],
-"namespaceStandardExceptions.html":[1,0,140],
-"namespaceTensorAccessors.html":[1,0,146],
-"namespaceTensorAccessors.html#a3fcdbfc0f85477439646f1e65d77cf1b":[1,0,146,3]
+"namespaceSparsityTools_1_1internal.html#a08af5e83076134bbf9dcfd33530dfe7a":[1,0,139,0,0]
 };

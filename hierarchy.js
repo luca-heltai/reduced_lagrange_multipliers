@@ -3,6 +3,9 @@ var hierarchy =
     [ "UtilitiesAL::BlockPreconditionerAugmentedLagrangian< VectorType, BlockVectorType >", "class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html", null ],
     [ "CouplingOperator< dim, number, n_components >", "class_coupling_operator.html", null ],
     [ "EnableObserverPointer", "http://www.dealii.org/developer/doxygen/deal.II/classEnableObserverPointer.html", [
+      [ "Function< dim >", "http://www.dealii.org/developer/doxygen/deal.II/classFunction.html", [
+        [ "RigidBodyMotion< dim >", "class_rigid_body_motion.html", null ]
+      ] ],
       [ "RepartitioningPolicyTools::Base< dim, dim >", "http://www.dealii.org/developer/doxygen/deal.II/classRepartitioningPolicyTools_1_1Base.html", [
         [ "ImmersedRepartitioner< dim, spacedim >", "class_immersed_repartitioner.html", null ]
       ] ],
@@ -31,6 +34,9 @@ var hierarchy =
       ] ],
       [ "PoissonProblem< dim, spacedim >", "class_poisson_problem.html", null ],
       [ "ReducedPoisson< dim, spacedim >", "class_reduced_poisson.html", null ]
+    ] ],
+    [ "FunctionTime< typename Number >", "http://www.dealii.org/developer/doxygen/deal.II/classFunctionTime.html", [
+      [ "Function< dim >", "http://www.dealii.org/developer/doxygen/deal.II/classFunction.html", null ]
     ] ],
     [ "ParticleCoupling< dim >", "class_particle_coupling.html", [
       [ "ReducedCoupling< reduced_dim, dim, spacedim, n_components >", "struct_reduced_coupling.html", null ]

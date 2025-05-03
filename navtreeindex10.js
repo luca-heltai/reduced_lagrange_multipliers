@@ -1,5 +1,17 @@
 var NAVTREEINDEX10 =
 {
+"namespaceinternal_1_1PackagedOperationImplementation.html":[1,0,56,38],
+"namespaceinternal_1_1PointValueHistoryImplementation.html":[1,0,56,40],
+"namespaceinternal_1_1PolynomialsRannacherTurekImplementation.html":[1,0,56,41],
+"namespaceinternal_1_1PolynomialsRannacherTurekImplementation.html#a5d55f955230e562606378d4a4bb7f64b":[1,0,56,41,0],
+"namespaceinternal_1_1PolynomialsRannacherTurekImplementation.html#ac27569020d8af5868bac0200eeac1b51":[1,0,56,41,1],
+"namespaceinternal_1_1QGaussChebyshev.html":[1,0,56,42],
+"namespaceinternal_1_1QGaussChebyshev.html#a13c1f57716a9bab396ce646a84746535":[1,0,56,42,1],
+"namespaceinternal_1_1QGaussChebyshev.html#ab7f0dfcd2561b6c5bb94623e7c0bb088":[1,0,56,42,0],
+"namespaceinternal_1_1QGaussLobatto.html":[1,0,56,43],
+"namespaceinternal_1_1QGaussLobatto.html#a78ea4686e647b7d7fb86b1b3b12ddbf0":[1,0,56,43,0],
+"namespaceinternal_1_1QGaussLobatto.html#ac1aec52fdbb26c78e2d32fc0bed659c7":[1,0,56,43,1],
+"namespaceinternal_1_1QGaussLobattoChebyshev.html":[1,0,56,44],
 "namespaceinternal_1_1QGaussLobattoChebyshev.html#a837bc4f5764b0faeb777925c230a2920":[1,0,56,44,0],
 "namespaceinternal_1_1QGaussLobattoChebyshev.html#ac6eee2f525174bb0c3b25db03e13e68b":[1,0,56,44,1],
 "namespaceinternal_1_1QGaussRadau.html":[1,0,56,45],
@@ -237,17 +249,5 @@ var NAVTREEINDEX10 =
 "particle__coupling_8h.html":[3,0,0,0,0,7],
 "particle__coupling_8h_source.html":[3,0,0,0,0,7],
 "reduced__coupling_8cc.html":[3,0,0,0,1,6],
-"reduced__coupling_8cc_source.html":[3,0,0,0,1,6],
-"reduced__coupling_8h.html":[3,0,0,0,0,8],
-"reduced__coupling_8h_source.html":[3,0,0,0,0,8],
-"reduced__poisson_8cc.html":[3,0,0,0,1,7],
-"reduced__poisson_8cc.html#a553034346c0de67e14a78f80f57d84e7":[3,0,0,0,1,7,0],
-"reduced__poisson_8cc_source.html":[3,0,0,0,1,7],
-"reduced__poisson_8h.html":[3,0,0,0,0,9],
-"reduced__poisson_8h.html#a68c9ebb48889d54523bff3c6dc3870c4":[3,0,0,0,0,9,2],
-"reduced__poisson_8h_source.html":[3,0,0,0,0,9],
-"reference__cross__section_8cc.html":[3,0,0,0,1,8],
-"reference__cross__section_8cc_source.html":[3,0,0,0,1,8],
-"reference__cross__section_8h.html":[3,0,0,0,0,10],
-"reference__cross__section_8h_source.html":[3,0,0,0,0,10]
+"reduced__coupling_8cc_source.html":[3,0,0,0,1,6]
 };
