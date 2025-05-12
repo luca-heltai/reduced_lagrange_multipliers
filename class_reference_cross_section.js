@@ -6,8 +6,10 @@ var class_reference_cross_section =
     [ "get_global_quadrature", "class_reference_cross_section.html#ab307decbbe6df88a61a31176dfe20332", null ],
     [ "get_mass_matrix", "class_reference_cross_section.html#a2ac73fbab4961091d5df84a0d7bd1bda", null ],
     [ "get_transformed_quadrature", "class_reference_cross_section.html#a21288022e170baf8b32881e78cf0f5a1", null ],
+    [ "initialize", "class_reference_cross_section.html#a6f241e6ac1605d8e8201e3346294a9e3", null ],
     [ "make_grid", "class_reference_cross_section.html#a022f89d01cd721f51a127e64e0367166", null ],
     [ "max_n_basis", "class_reference_cross_section.html#a2199a444c64f7bfd20770f43d94ee71b", null ],
+    [ "measure", "class_reference_cross_section.html#aa3e88d5652bab29a4bd86243dd68c01e", null ],
     [ "n_quadrature_points", "class_reference_cross_section.html#aae30b34084eae080463f3c109b2a3ac4", null ],
     [ "n_selected_basis", "class_reference_cross_section.html#ab6abec966823c6549d0d601a2752356a", null ],
     [ "setup_dofs", "class_reference_cross_section.html#aca4a72b06365112fa29f511a45c195cc", null ],
@@ -22,6 +24,7 @@ var class_reference_cross_section =
     [ "par", "class_reference_cross_section.html#acb9ca71b46ebb2659b6f0c284663d497", null ],
     [ "polynomials", "class_reference_cross_section.html#a27ba8e9da0a801328301894a522832e2", null ],
     [ "quadrature_formula", "class_reference_cross_section.html#af10377b5cd9365684c81c675ad188b9f", null ],
+    [ "reference_measure", "class_reference_cross_section.html#afbacf6767a4754773ac4256c17d1f193", null ],
     [ "selected_basis_functions", "class_reference_cross_section.html#a3619b8ef31b29896b6f7d68883aeda21", null ],
     [ "sparsity_pattern", "class_reference_cross_section.html#a4ac23c892e5794687eee4fc3d4f8246d", null ],
     [ "triangulation", "class_reference_cross_section.html#aafd0072374118e7df0cfa812d1cd3701", null ]

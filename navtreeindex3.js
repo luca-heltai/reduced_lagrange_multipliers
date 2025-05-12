@@ -1,5 +1,8 @@
 var NAVTREEINDEX3 =
 {
+"namespaceCGALWrappers.html#abd91048d272174029b1055321a02e5b1":[1,0,9,18],
+"namespaceCGALWrappers.html#ac0f15f5ccbb0660e1bf09ecaddb4e9e5":[1,0,9,9],
+"namespaceCGALWrappers.html#ac8ad2b787c0cf60b46647a68b62387db":[1,0,9,40],
 "namespaceCGALWrappers.html#acca95e5d43c714330206ff8a7fa169a4":[1,0,9,34],
 "namespaceCGALWrappers.html#ace61a89fb6186586112abd8a95254ab9":[1,0,9,5],
 "namespaceCGALWrappers.html#add8b979ebb0396b0ab7b3e68c842a920":[1,0,9,39],
@@ -246,8 +249,5 @@ var NAVTREEINDEX3 =
 "namespaceDoFTools_1_1internal.html#ab5b1cacb8c5c131d5e0f86742c64e226":[1,0,25,0,16],
 "namespaceDoFTools_1_1internal.html#abe866825835bb267b66e0a7b6a3908b6":[1,0,25,0,17],
 "namespaceDoFTools_1_1internal.html#ac8fb3858c74e5732550d26a2edf1bdf2":[1,0,25,0,8],
-"namespaceDoFTools_1_1internal.html#ad2ef140f5d6f248aa4eebdac221fa94c":[1,0,25,0,13],
-"namespaceDoFTools_1_1internal.html#ae01a54c56148d8c0fa3bc4789348e599":[1,0,25,0,3],
-"namespaceDoFTools_1_1internal.html#aefcb004ed33058d0aedcd64af08a9112":[1,0,25,0,14],
-"namespaceDoFTools_1_1internal.html#af539027bba9331145773d7340eb6ad2e":[1,0,25,0,2]
+"namespaceDoFTools_1_1internal.html#ad2ef140f5d6f248aa4eebdac221fa94c":[1,0,25,0,13]
 };

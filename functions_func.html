@@ -163,6 +163,7 @@ $(function(){initNavTree('functions_func.html',''); initResizable(true); });
 <li>get_locally_owned_qpoints()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#a2bc251d7b9d702174d4d7dd787b4ad51">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>get_locally_owned_reduced_qpoints()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#ae1562c800b1beaaee606f3070068ca1f">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>get_locally_owned_reduced_weights()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#aaede75374c18a0969237fd537127ea99">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+<li>get_locally_owned_section_measure()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#a6404eae02eb404aa8ebd50bd59f14757">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>get_locally_owned_weights()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#af6f3d877e2b87661484b5e6a70e7d62b">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>get_mass_matrix()&#160;:&#160;<a class="el" href="class_reference_cross_section.html#a2ac73fbab4961091d5df84a0d7bd1bda">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a></li>
 <li>get_n_coefficients()&#160;:&#160;<a class="el" href="class_inclusions.html#a3f62f1c91c07fa612135b807341b80a6">Inclusions&lt; spacedim &gt;</a></li>
@@ -186,7 +187,7 @@ $(function(){initNavTree('functions_func.html',''); initResizable(true); });
 <h3><a id="index_i" name="index_i"></a>- i -</h3><ul>
 <li>ImmersedRepartitioner()&#160;:&#160;<a class="el" href="class_immersed_repartitioner.html#a9b5ba6fe77579e1e1a3c2acc546bf97b">ImmersedRepartitioner&lt; dim, spacedim &gt;</a></li>
 <li>Inclusions()&#160;:&#160;<a class="el" href="class_inclusions.html#a55fe8a6d375ddbc2f5621c21d7ca149d">Inclusions&lt; spacedim &gt;</a></li>
-<li>initialize()&#160;:&#160;<a class="el" href="class_inclusions.html#af4294f474f555ee43b1fa648bd5e2690">Inclusions&lt; spacedim &gt;</a>, <a class="el" href="struct_reduced_coupling.html#a08b4187f7f0ff9958a9da77e3da428aa">ReducedCoupling&lt; reduced_dim, dim, spacedim, n_components &gt;</a>, <a class="el" href="class_tensor_product_space.html#a79b9eb0b3e38d4414fe77579da71e2df">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+<li>initialize()&#160;:&#160;<a class="el" href="class_inclusions.html#af4294f474f555ee43b1fa648bd5e2690">Inclusions&lt; spacedim &gt;</a>, <a class="el" href="struct_reduced_coupling.html#a08b4187f7f0ff9958a9da77e3da428aa">ReducedCoupling&lt; reduced_dim, dim, spacedim, n_components &gt;</a>, <a class="el" href="class_reference_cross_section.html#a6f241e6ac1605d8e8201e3346294a9e3">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a>, <a class="el" href="class_tensor_product_space.html#a79b9eb0b3e38d4414fe77579da71e2df">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>initialize_dof_vector()&#160;:&#160;<a class="el" href="class_coupling_operator.html#a2f765bbfdbd43d39f70cc8b0a860abae">CouplingOperator&lt; dim, number, n_components &gt;</a></li>
 <li>initialize_particle_handler()&#160;:&#160;<a class="el" href="class_particle_coupling.html#af06c136073b2cb569623313c7f3149fa">ParticleCoupling&lt; dim &gt;</a></li>
 <li>insert_points()&#160;:&#160;<a class="el" href="class_particle_coupling.html#a5c2477d317bcaf6bb59441f8c7be1f57">ParticleCoupling&lt; dim &gt;</a></li>
@@ -203,6 +204,7 @@ $(function(){initNavTree('functions_func.html',''); initResizable(true); });
 <h3><a id="index_m" name="index_m"></a>- m -</h3><ul>
 <li>make_grid()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#afa140c84e0f366c5737ba99d0a634ea1">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#ad71234db14a41d3ff34239105d97f35e">PoissonProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reduced_poisson.html#aeaf6e376706b86f46d35b9299a0e5398">ReducedPoisson&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reference_cross_section.html#a022f89d01cd721f51a127e64e0367166">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a></li>
 <li>max_n_basis()&#160;:&#160;<a class="el" href="class_reference_cross_section.html#a2199a444c64f7bfd20770f43d94ee71b">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a></li>
+<li>measure()&#160;:&#160;<a class="el" href="class_reference_cross_section.html#aa3e88d5652bab29a4bd86243dd68c01e">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a></li>
 </ul>
 
 
@@ -283,17 +285,12 @@ $(function(){initNavTree('functions_func.html',''); initResizable(true); });
 <li>vmult()&#160;:&#160;<a class="el" href="class_coupling_operator.html#a32e90e4d0f023e825d2290c5316739f4">CouplingOperator&lt; dim, number, n_components &gt;</a>, <a class="el" href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#a8adb81dbe68c36f21e722d8054d4ebd2">UtilitiesAL::BlockPreconditionerAugmentedLagrangian&lt; VectorType, BlockVectorType &gt;</a></li>
 <li>vmult_add()&#160;:&#160;<a class="el" href="class_coupling_operator.html#a5620f6567e354f1bf6bc7a5f8d1c1743">CouplingOperator&lt; dim, number, n_components &gt;</a></li>
 </ul>
-
-
-<h3><a id="index_w" name="index_w"></a>- w -</h3><ul>
-<li>weight_shape_value()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#aa57e099c13324b41878bf86f5c36a5ea">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
-</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Sat May 3 2025 14:10:31 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Mon May 12 2025 14:12:46 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

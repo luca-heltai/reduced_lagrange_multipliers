@@ -2061,6 +2061,7 @@ var namespaces_dup =
     [ "SolverMinRes", "http://www.dealii.org/developer/doxygen/deal.II/structSolverMinRes_1_1AdditionalData.html", [
       [ "ExcPreconditionerNotDefinite", "http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga152e5a209aa3e01977742f288a3b47af", null ]
     ] ],
+    [ "SolverMPGMRES", "http://www.dealii.org/developer/doxygen/deal.II/structSolverMPGMRES_1_1AdditionalData.html", null ],
     [ "SolverQMRS", "http://www.dealii.org/developer/doxygen/deal.II/structSolverQMRS_1_1AdditionalData.html", null ],
     [ "SolverRelaxation", "http://www.dealii.org/developer/doxygen/deal.II/structSolverRelaxation_1_1AdditionalData.html", null ],
     [ "SolverRichardson", "http://www.dealii.org/developer/doxygen/deal.II/structSolverRichardson_1_1AdditionalData.html", null ],

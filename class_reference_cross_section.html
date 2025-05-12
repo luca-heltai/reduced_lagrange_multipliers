@@ -149,6 +149,11 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a21288022e170baf8b32881e78cf0f5a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aae30b34084eae080463f3c109b2a3ac4" id="r_aae30b34084eae080463f3c109b2a3ac4"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aae30b34084eae080463f3c109b2a3ac4">n_quadrature_points</a> () const</td></tr>
 <tr class="separator:aae30b34084eae080463f3c109b2a3ac4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f241e6ac1605d8e8201e3346294a9e3" id="r_a6f241e6ac1605d8e8201e3346294a9e3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6f241e6ac1605d8e8201e3346294a9e3">initialize</a> ()</td></tr>
+<tr class="memdesc:a6f241e6ac1605d8e8201e3346294a9e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the reference inclusion domain.  <br /></td></tr>
+<tr class="separator:a6f241e6ac1605d8e8201e3346294a9e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3e88d5652bab29a4bd86243dd68c01e" id="r_aa3e88d5652bab29a4bd86243dd68c01e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa3e88d5652bab29a4bd86243dd68c01e">measure</a> (const double <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceGridTools.html#a0967563badadd81f77f62622dd8bc2cd">scale</a>=1.0) const</td></tr>
+<tr class="separator:aa3e88d5652bab29a4bd86243dd68c01e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
@@ -199,6 +204,9 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:ad5513847621ca33c0d89aecb2224b1c8" id="r_ad5513847621ca33c0d89aecb2224b1c8"><td class="memItemLeft" align="right" valign="top"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classQuadrature.html">Quadrature</a>&lt; spacedim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad5513847621ca33c0d89aecb2224b1c8">global_quadrature</a></td></tr>
 <tr class="memdesc:ad5513847621ca33c0d89aecb2224b1c8"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classQuadrature.html">Quadrature</a> rule in the embedding space.  <br /></td></tr>
 <tr class="separator:ad5513847621ca33c0d89aecb2224b1c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbacf6767a4754773ac4256c17d1f193" id="r_afbacf6767a4754773ac4256c17d1f193"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afbacf6767a4754773ac4256c17d1f193">reference_measure</a></td></tr>
+<tr class="memdesc:afbacf6767a4754773ac4256c17d1f193"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reference measure for the inclusion.  <br /></td></tr>
+<tr class="separator:afbacf6767a4754773ac4256c17d1f193"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ace2b2e50c320bed7bfd7d724ccf86fab" id="r_ace2b2e50c320bed7bfd7d724ccf86fab"><td class="memItemLeft" align="right" valign="top"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFullMatrix.html">FullMatrix</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ace2b2e50c320bed7bfd7d724ccf86fab">basis_functions_on_qpoints</a></td></tr>
 <tr class="memdesc:ace2b2e50c320bed7bfd7d724ccf86fab"><td class="mdescLeft">&#160;</td><td class="mdescRight">The basis functions computed on the quadrature points.  <br /></td></tr>
 <tr class="separator:ace2b2e50c320bed7bfd7d724ccf86fab"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -237,9 +245,9 @@ template&lt;int dim, int spacedim, int n_components&gt; </div>
 
 <p>Constructs the <a class="el" href="class_reference_cross_section.html" title="Handles the construction and management of a reference inclusion geometry and its basis.">ReferenceCrossSection</a> from parameters. </p>
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00042">42</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00041">41</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="reference__cross__section_8cc_source.html#l00131">compute_basis()</a>, <a class="el" href="reference__cross__section_8h_source.html#l00166">dof_handler</a>, <a class="el" href="reference__cross__section_8h_source.html#l00160">fe</a>, <a class="el" href="reference__cross__section_8cc_source.html#l00059">make_grid()</a>, <a class="el" href="reference__cross__section_8h_source.html#l00163">mapping</a>, <a class="el" href="reference__cross__section_8h_source.html#l00148">par</a>, <a class="el" href="reference__cross__section_8h_source.html#l00151">polynomials</a>, <a class="el" href="reference__cross__section_8h_source.html#l00157">quadrature_formula</a>, <a class="el" href="reference__cross__section_8cc_source.html#l00092">setup_dofs()</a>, and <a class="el" href="reference__cross__section_8h_source.html#l00154">triangulation</a>.</p>
+<p class="reference">References <a class="el" href="reference__cross__section_8h_source.html#l00180">dof_handler</a>, <a class="el" href="reference__cross__section_8h_source.html#l00174">fe</a>, <a class="el" href="reference__cross__section_8cc_source.html#l00407">initialize()</a>, <a class="el" href="reference__cross__section_8h_source.html#l00177">mapping</a>, <a class="el" href="reference__cross__section_8h_source.html#l00162">par</a>, <a class="el" href="reference__cross__section_8h_source.html#l00165">polynomials</a>, <a class="el" href="reference__cross__section_8h_source.html#l00171">quadrature_formula</a>, and <a class="el" href="reference__cross__section_8h_source.html#l00168">triangulation</a>.</p>
 
 </div>
 </div>
@@ -273,7 +281,7 @@ template&lt;int dim, int spacedim, int n_components&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00131">131</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00042">ReferenceCrossSection()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00407">initialize()</a>.</p>
 
 </div>
 </div>
@@ -296,9 +304,9 @@ template&lt;int dim, int spacedim, int n_components&gt; </div>
 
 <p>Returns the list of selected basis functions. </p>
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00252">252</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00262">262</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="reference__cross__section_8h_source.html#l00172">selected_basis_functions</a>.</p>
+<p class="reference">References <a class="el" href="reference__cross__section_8h_source.html#l00186">selected_basis_functions</a>.</p>
 
 </div>
 </div>
@@ -321,9 +329,9 @@ template&lt;int dim, int spacedim, int n_components&gt; </div>
 
 <p>Returns the global quadrature object in the embedding space. </p>
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00242">242</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00252">252</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="reference__cross__section_8h_source.html#l00181">global_quadrature</a>.</p>
+<p class="reference">References <a class="el" href="reference__cross__section_8h_source.html#l00195">global_quadrature</a>.</p>
 
 </div>
 </div>
@@ -346,9 +354,9 @@ template&lt;int dim, int spacedim, int n_components&gt; </div>
 
 <p>Returns the mass matrix corresponding to selected basis functions. </p>
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00280">280</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00290">290</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="reference__cross__section_8h_source.html#l00178">mass_matrix</a>.</p>
+<p class="reference">References <a class="el" href="reference__cross__section_8h_source.html#l00192">mass_matrix</a>.</p>
 
 </div>
 </div>
@@ -378,9 +386,36 @@ template&lt;int dim, int spacedim, int n_components&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00327">327</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00337">337</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1VectorRelations.html#a9f05135611d90ad209c97bd73a4c4d20">Physics::VectorRelations::angle()</a>, <a class="el" href="reference__cross__section_8h_source.html#l00181">global_quadrature</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html#a4df6cb10807fbe5fb432a19b5ef9aeb6">Tensor&lt; int rank_, int dim, typename Number &gt;::norm()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacestd.html#aa951f50adf9841cf8def28819c19cc53">std::pow()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Transformations_1_1Rotations.html#acbdc295a7525dc81ea05455b266dd9fb">Physics::Transformations::Rotations::rotation_matrix_2d()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Transformations_1_1Rotations.html#a68bba56f6c1ebfbb52f871996df965ae">Physics::Transformations::Rotations::rotation_matrix_3d()</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1VectorRelations.html#a4a251fcd21fa8f22c996ada851dacca7">Physics::VectorRelations::signed_angle()</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1VectorRelations.html#a9f05135611d90ad209c97bd73a4c4d20">Physics::VectorRelations::angle()</a>, <a class="el" href="reference__cross__section_8h_source.html#l00195">global_quadrature</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html#a4df6cb10807fbe5fb432a19b5ef9aeb6">Tensor&lt; int rank_, int dim, typename Number &gt;::norm()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacestd.html#aa951f50adf9841cf8def28819c19cc53">std::pow()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Transformations_1_1Rotations.html#acbdc295a7525dc81ea05455b266dd9fb">Physics::Transformations::Rotations::rotation_matrix_2d()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1Transformations_1_1Rotations.html#a68bba56f6c1ebfbb52f871996df965ae">Physics::Transformations::Rotations::rotation_matrix_3d()</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacePhysics_1_1VectorRelations.html#a4a251fcd21fa8f22c996ada851dacca7">Physics::VectorRelations::signed_angle()</a>.</p>
+
+</div>
+</div>
+<a id="a6f241e6ac1605d8e8201e3346294a9e3" name="a6f241e6ac1605d8e8201e3346294a9e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f241e6ac1605d8e8201e3346294a9e3">&#9670;&#160;</a></span>initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int dim, int spacedim, int n_components&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="class_reference_cross_section.html">ReferenceCrossSection</a>&lt; dim, spacedim, n_components &gt;::initialize </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initializes the reference inclusion domain. </p>
+
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00407">407</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
+
+<p class="reference">References <a class="el" href="reference__cross__section_8cc_source.html#l00131">compute_basis()</a>, <a class="el" href="reference__cross__section_8h_source.html#l00180">dof_handler</a>, <a class="el" href="reference__cross__section_8cc_source.html#l00056">make_grid()</a>, <a class="el" href="reference__cross__section_8cc_source.html#l00089">setup_dofs()</a>, and <a class="el" href="reference__cross__section_8h_source.html#l00168">triangulation</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00041">ReferenceCrossSection()</a>.</p>
 
 </div>
 </div>
@@ -411,11 +446,11 @@ template&lt;int dim, int spacedim, int n_components&gt; </div>
 
 <p>Builds the mesh for the reference inclusion domain. </p>
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00059">59</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00056">56</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="reference__cross__section_8h_source.html#l00148">par</a>.</p>
+<p class="reference">References <a class="el" href="reference__cross__section_8h_source.html#l00162">par</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00042">ReferenceCrossSection()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00407">initialize()</a>.</p>
 
 </div>
 </div>
@@ -438,9 +473,39 @@ template&lt;int dim, int spacedim, int n_components&gt; </div>
 
 <p>Returns the total number of available basis functions. </p>
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00300">300</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00310">310</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="reference__cross__section_8h_source.html#l00169">basis_functions</a>.</p>
+<p class="reference">References <a class="el" href="reference__cross__section_8h_source.html#l00183">basis_functions</a>.</p>
+
+</div>
+</div>
+<a id="aa3e88d5652bab29a4bd86243dd68c01e" name="aa3e88d5652bab29a4bd86243dd68c01e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3e88d5652bab29a4bd86243dd68c01e">&#9670;&#160;</a></span>measure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int dim, int spacedim, int n_components&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="class_reference_cross_section.html">ReferenceCrossSection</a>&lt; dim, spacedim, n_components &gt;::measure </td>
+          <td>(</td>
+          <td class="paramtype">const double</td>          <td class="paramname"><span class="paramname"><em>scale</em></span><span class="paramdefsep"> = </span><span class="paramdefval">1.0</span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Compute the cross section measure for the inclusion. The returned value is exact w.r.t. to the used quadrature formula, i.e., it is the integral of one on the cross section. If a scale is provided, the measure is multiplied by the scale^dim.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">scale</td><td>The scaling factor for the measure. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00242">242</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
+
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacestd.html#aa951f50adf9841cf8def28819c19cc53">std::pow()</a>, and <a class="el" href="reference__cross__section_8h_source.html#l00198">reference_measure</a>.</p>
 
 </div>
 </div>
@@ -461,9 +526,9 @@ template&lt;int dim, int spacedim, int n_components&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00390">390</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00400">400</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="reference__cross__section_8h_source.html#l00181">global_quadrature</a>.</p>
+<p class="reference">References <a class="el" href="reference__cross__section_8h_source.html#l00195">global_quadrature</a>.</p>
 
 </div>
 </div>
@@ -486,9 +551,9 @@ template&lt;int dim, int spacedim, int n_components&gt; </div>
 
 <p>Returns the number of selected basis functions. </p>
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00290">290</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00300">300</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="reference__cross__section_8h_source.html#l00172">selected_basis_functions</a>.</p>
+<p class="reference">References <a class="el" href="reference__cross__section_8h_source.html#l00186">selected_basis_functions</a>.</p>
 
 </div>
 </div>
@@ -519,11 +584,11 @@ template&lt;int dim, int spacedim, int n_components&gt; </div>
 
 <p>Initializes the degrees of freedom and finite element space. </p>
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00092">92</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00089">89</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="reference__cross__section_8h_source.html#l00166">dof_handler</a>, and <a class="el" href="reference__cross__section_8h_source.html#l00160">fe</a>.</p>
+<p class="reference">References <a class="el" href="reference__cross__section_8h_source.html#l00180">dof_handler</a>, <a class="el" href="reference__cross__section_8h_source.html#l00174">fe</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__constraints.html#ga432d35b9ef18d1802d48b576300b04fd">DoFTools::make_sparsity_pattern()</a>, and <a class="el" href="reference__cross__section_8h_source.html#l00189">sparsity_pattern</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00042">ReferenceCrossSection()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00407">initialize()</a>.</p>
 
 </div>
 </div>
@@ -554,9 +619,9 @@ template&lt;int dim, int spacedim, int n_components&gt; </div>
 </div><div class="memdoc">
 <p>the component comp of the ith selected reference basis function, at the quadrature point index q, </p>
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00260">260</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8cc_source.html#l00270">270</a> of file <a class="el" href="reference__cross__section_8cc_source.html">reference_cross_section.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="reference__cross__section_8h_source.html#l00184">basis_functions_on_qpoints</a>, <a class="el" href="reference__cross__section_8h_source.html#l00181">global_quadrature</a>, and <a class="el" href="reference__cross__section_8h_source.html#l00172">selected_basis_functions</a>.</p>
+<p class="reference">References <a class="el" href="reference__cross__section_8h_source.html#l00201">basis_functions_on_qpoints</a>, <a class="el" href="reference__cross__section_8h_source.html#l00195">global_quadrature</a>, and <a class="el" href="reference__cross__section_8h_source.html#l00186">selected_basis_functions</a>.</p>
 
 </div>
 </div>
@@ -585,9 +650,9 @@ template&lt;int dim, int spacedim = dim, int n_components = 1&gt; </div>
 
 <p>List of all computed basis functions. </p>
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00169">169</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00183">183</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00300">max_n_basis()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00310">max_n_basis()</a>.</p>
 
 </div>
 </div>
@@ -615,9 +680,9 @@ template&lt;int dim, int spacedim = dim, int n_components = 1&gt; </div>
 
 <p>The basis functions computed on the quadrature points. </p>
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00184">184</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00201">201</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00260">shape_value()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00270">shape_value()</a>.</p>
 
 </div>
 </div>
@@ -645,9 +710,9 @@ template&lt;int dim, int spacedim = dim, int n_components = 1&gt; </div>
 
 <p>Degree of freedom handler for the inclusion. </p>
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00166">166</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00180">180</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00042">ReferenceCrossSection()</a>, and <a class="el" href="reference__cross__section_8cc_source.html#l00092">setup_dofs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00407">initialize()</a>, <a class="el" href="reference__cross__section_8cc_source.html#l00041">ReferenceCrossSection()</a>, and <a class="el" href="reference__cross__section_8cc_source.html#l00089">setup_dofs()</a>.</p>
 
 </div>
 </div>
@@ -675,9 +740,9 @@ template&lt;int dim, int spacedim = dim, int n_components = 1&gt; </div>
 
 <p>Finite element space for the inclusion. </p>
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00160">160</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00174">174</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00042">ReferenceCrossSection()</a>, and <a class="el" href="reference__cross__section_8cc_source.html#l00092">setup_dofs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00041">ReferenceCrossSection()</a>, and <a class="el" href="reference__cross__section_8cc_source.html#l00089">setup_dofs()</a>.</p>
 
 </div>
 </div>
@@ -705,9 +770,9 @@ template&lt;int dim, int spacedim = dim, int n_components = 1&gt; </div>
 
 <p><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classQuadrature.html">Quadrature</a> rule in the embedding space. </p>
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00181">181</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00195">195</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00242">get_global_quadrature()</a>, <a class="el" href="reference__cross__section_8cc_source.html#l00327">get_transformed_quadrature()</a>, <a class="el" href="reference__cross__section_8cc_source.html#l00390">n_quadrature_points()</a>, and <a class="el" href="reference__cross__section_8cc_source.html#l00260">shape_value()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00252">get_global_quadrature()</a>, <a class="el" href="reference__cross__section_8cc_source.html#l00337">get_transformed_quadrature()</a>, <a class="el" href="reference__cross__section_8cc_source.html#l00400">n_quadrature_points()</a>, and <a class="el" href="reference__cross__section_8cc_source.html#l00270">shape_value()</a>.</p>
 
 </div>
 </div>
@@ -733,9 +798,9 @@ template&lt;int dim, int spacedim = dim, int n_components = 1&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00163">163</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00177">177</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00042">ReferenceCrossSection()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00041">ReferenceCrossSection()</a>.</p>
 
 </div>
 </div>
@@ -763,9 +828,9 @@ template&lt;int dim, int spacedim = dim, int n_components = 1&gt; </div>
 
 <p>Mass matrix associated with the selected basis functions. </p>
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00178">178</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00192">192</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00280">get_mass_matrix()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00290">get_mass_matrix()</a>.</p>
 
 </div>
 </div>
@@ -793,9 +858,9 @@ template&lt;int dim, int spacedim = dim, int n_components = 1&gt; </div>
 
 <p>Reference to parameter configuration. </p>
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00148">148</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00162">162</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00059">make_grid()</a>, and <a class="el" href="reference__cross__section_8cc_source.html#l00042">ReferenceCrossSection()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00056">make_grid()</a>, and <a class="el" href="reference__cross__section_8cc_source.html#l00041">ReferenceCrossSection()</a>.</p>
 
 </div>
 </div>
@@ -823,9 +888,9 @@ template&lt;int dim, int spacedim = dim, int n_components = 1&gt; </div>
 
 <p>Polynomial space used for modal basis generation. </p>
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00151">151</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00165">165</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00042">ReferenceCrossSection()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00041">ReferenceCrossSection()</a>.</p>
 
 </div>
 </div>
@@ -853,9 +918,39 @@ template&lt;int dim, int spacedim = dim, int n_components = 1&gt; </div>
 
 <p><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classQuadrature.html">Quadrature</a> formula for integration on the reference domain. </p>
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00157">157</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00171">171</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00042">ReferenceCrossSection()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00041">ReferenceCrossSection()</a>.</p>
+
+</div>
+</div>
+<a id="afbacf6767a4754773ac4256c17d1f193" name="afbacf6767a4754773ac4256c17d1f193"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbacf6767a4754773ac4256c17d1f193">&#9670;&#160;</a></span>reference_measure</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int dim, int spacedim = dim, int n_components = 1&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="class_reference_cross_section.html">ReferenceCrossSection</a>&lt; dim, spacedim, n_components &gt;::reference_measure</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reference measure for the inclusion. </p>
+
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00198">198</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00242">measure()</a>.</p>
 
 </div>
 </div>
@@ -883,9 +978,9 @@ template&lt;int dim, int spacedim = dim, int n_components = 1&gt; </div>
 
 <p>Subset of selected basis functions. </p>
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00172">172</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00186">186</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00252">get_basis_functions()</a>, <a class="el" href="reference__cross__section_8cc_source.html#l00290">n_selected_basis()</a>, and <a class="el" href="reference__cross__section_8cc_source.html#l00260">shape_value()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00262">get_basis_functions()</a>, <a class="el" href="reference__cross__section_8cc_source.html#l00300">n_selected_basis()</a>, and <a class="el" href="reference__cross__section_8cc_source.html#l00270">shape_value()</a>.</p>
 
 </div>
 </div>
@@ -913,7 +1008,9 @@ template&lt;int dim, int spacedim = dim, int n_components = 1&gt; </div>
 
 <p>Sparsity pattern used for assembling the mass matrix. </p>
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00175">175</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00189">189</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00089">setup_dofs()</a>.</p>
 
 </div>
 </div>
@@ -941,9 +1038,9 @@ template&lt;int dim, int spacedim = dim, int n_components = 1&gt; </div>
 
 <p><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTriangulation.html">Triangulation</a> of the reference inclusion domain. </p>
 
-<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00154">154</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reference__cross__section_8h_source.html#l00168">168</a> of file <a class="el" href="reference__cross__section_8h_source.html">reference_cross_section.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00042">ReferenceCrossSection()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="reference__cross__section_8cc_source.html#l00407">initialize()</a>, and <a class="el" href="reference__cross__section_8cc_source.html#l00041">ReferenceCrossSection()</a>.</p>
 
 </div>
 </div>
@@ -957,7 +1054,7 @@ template&lt;int dim, int spacedim = dim, int n_components = 1&gt; </div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="class_reference_cross_section.html">ReferenceCrossSection</a></li>
-    <li class="footer">Generated on Sat May 3 2025 14:10:31 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Mon May 12 2025 14:12:46 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

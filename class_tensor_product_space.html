@@ -149,6 +149,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ae1562c800b1beaaee606f3070068ca1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaede75374c18a0969237fd537127ea99" id="r_aaede75374c18a0969237fd537127ea99"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::vector&lt; double &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaede75374c18a0969237fd537127ea99">get_locally_owned_reduced_weights</a> () const</td></tr>
 <tr class="separator:aaede75374c18a0969237fd537127ea99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6404eae02eb404aa8ebd50bd59f14757" id="r_a6404eae02eb404aa8ebd50bd59f14757"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::vector&lt; double &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6404eae02eb404aa8ebd50bd59f14757">get_locally_owned_section_measure</a> () const</td></tr>
+<tr class="separator:a6404eae02eb404aa8ebd50bd59f14757"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b6fd7381ee96c29b479b607b0fd0a93" id="r_a8b6fd7381ee96c29b479b607b0fd0a93"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8b6fd7381ee96c29b479b607b0fd0a93">update_local_dof_indices</a> (const std::map&lt; unsigned int, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classIndexSet.html">IndexSet</a> &gt; &amp;remote_q_point_indices)</td></tr>
 <tr class="separator:a8b6fd7381ee96c29b479b607b0fd0a93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ad04353d1a1bd132988ffd043e9740c" id="r_a9ad04353d1a1bd132988ffd043e9740c"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#a3543786f7dc7c57385fc923a6afd5917">types::global_dof_index</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9ad04353d1a1bd132988ffd043e9740c">get_dof_indices</a> (const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#a88f8129eb3e40ecc8022e92a1e15d70e">types::global_cell_index</a> <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/grid__tools__topology_8cc.html#aff11e57deb99b39b7d7d26cf866798f2">cell_index</a>) const</td></tr>
@@ -165,8 +167,6 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a4cd01f366716dfe449f3f5f60aa119ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a158aafd6bae93a1ff02046b069f2a252" id="r_a158aafd6bae93a1ff02046b069f2a252"><td class="memItemLeft" align="right" valign="top">const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classparallel_1_1fullydistributed_1_1Triangulation.html">parallel::fullydistributed::Triangulation</a>&lt; reduced_dim, spacedim &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a158aafd6bae93a1ff02046b069f2a252">get_triangulation</a> () const</td></tr>
 <tr class="separator:a158aafd6bae93a1ff02046b069f2a252"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa57e099c13324b41878bf86f5c36a5ea" id="r_aa57e099c13324b41878bf86f5c36a5ea"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa57e099c13324b41878bf86f5c36a5ea">weight_shape_value</a> (const unsigned int i, const unsigned int global_reduced_q, const unsigned int section_q, const unsigned int comp) const</td></tr>
-<tr class="separator:aa57e099c13324b41878bf86f5c36a5ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38aae8f8823ae8a0d850c295b146a05f" id="r_a38aae8f8823ae8a0d850c295b146a05f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a38aae8f8823ae8a0d850c295b146a05f">get_scaling</a> (const unsigned int) const</td></tr>
 <tr class="separator:a38aae8f8823ae8a0d850c295b146a05f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -238,7 +238,7 @@ class TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00120">120</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00130">130</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a2e90489b65e3ed41ea4abc806accaaab" name="a2e90489b65e3ed41ea4abc806accaaab"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2e90489b65e3ed41ea4abc806accaaab">&#9670;&#160;</a></span>TensorProductSpace()</h2>
@@ -269,9 +269,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00038">38</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00039">39</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00333">dof_handler</a>, <a class="el" href="tensor__product__space_8h_source.html#l00320">fe</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#acea0cbcd68e52ce8113d1134b87de403">GridGenerator::hyper_cube()</a>, <a class="el" href="tensor__product__space_8h_source.html#l00151">make_reduced_grid</a>, <a class="el" href="tensor__product__space_8h_source.html#l00287">mpi_communicator</a>, <a class="el" href="tensor__product__space_8h_source.html#l00296">par</a>, <a class="el" href="tensor__product__space_8h_source.html#l00325">quadrature_formula</a>, <a class="el" href="tensor__product__space_8h_source.html#l00304">reference_cross_section</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTriangulation.html#a6ad0b3fb24aae17f4668427a433dea19">Triangulation&lt; int dim, int spacedim &gt;::refine_global()</a>, and <a class="el" href="tensor__product__space_8h_source.html#l00312">triangulation</a>.</p>
+<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00336">dof_handler</a>, <a class="el" href="tensor__product__space_8h_source.html#l00323">fe</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#acea0cbcd68e52ce8113d1134b87de403">GridGenerator::hyper_cube()</a>, <a class="el" href="tensor__product__space_8h_source.html#l00161">make_reduced_grid</a>, <a class="el" href="tensor__product__space_8h_source.html#l00290">mpi_communicator</a>, <a class="el" href="tensor__product__space_8h_source.html#l00299">par</a>, <a class="el" href="tensor__product__space_8h_source.html#l00328">quadrature_formula</a>, <a class="el" href="tensor__product__space_8h_source.html#l00307">reference_cross_section</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTriangulation.html#a6ad0b3fb24aae17f4668427a433dea19">Triangulation&lt; int dim, int spacedim &gt;::refine_global()</a>, and <a class="el" href="tensor__product__space_8h_source.html#l00315">triangulation</a>.</p>
 
 </div>
 </div>
@@ -293,11 +293,11 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00329">329</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00333">333</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00341">all_qpoints</a>, <a class="el" href="tensor__product__space_8h_source.html#l00342">all_weights</a>, <a class="el" href="tensor__product__space_8h_source.html#l00320">fe</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a12f35f70a163d65a9ac381a73d3b909e">FEValues&lt; int dim, int spacedim &gt;::get_JxW_values()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a351e7a77fe4323c4bda53a55dba12233">FEValues&lt; int dim, int spacedim &gt;::get_quadrature_points()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aeb33b877f81e2143752dda2c14a0029d">FEValues&lt; int dim, int spacedim &gt;::JxW()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a5efdeca6c8f0cbdd671c7e2573d4c708">FEValues&lt; int dim, int spacedim &gt;::normal_vector()</a>, <a class="el" href="tensor__product__space_8h_source.html#l00296">par</a>, <a class="el" href="tensor__product__space_8h_source.html#l00325">quadrature_formula</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a8c564784dcd8d2f2a3e2f2fb19553721">FEValues&lt; int dim, int spacedim &gt;::quadrature_point_indices()</a>, <a class="el" href="tensor__product__space_8h_source.html#l00344">reduced_qpoints</a>, <a class="el" href="tensor__product__space_8h_source.html#l00345">reduced_weights</a>, <a class="el" href="tensor__product__space_8h_source.html#l00304">reference_cross_section</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValues.html#acc8fe9d042c6b5e5da89858400feb24f">FEValues&lt; int dim, int spacedim &gt;::reinit()</a>, and <a class="el" href="tensor__product__space_8h_source.html#l00312">triangulation</a>.</p>
+<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00344">all_qpoints</a>, <a class="el" href="tensor__product__space_8h_source.html#l00345">all_weights</a>, <a class="el" href="tensor__product__space_8h_source.html#l00323">fe</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a12f35f70a163d65a9ac381a73d3b909e">FEValues&lt; int dim, int spacedim &gt;::get_JxW_values()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a351e7a77fe4323c4bda53a55dba12233">FEValues&lt; int dim, int spacedim &gt;::get_quadrature_points()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aeb33b877f81e2143752dda2c14a0029d">FEValues&lt; int dim, int spacedim &gt;::JxW()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a5efdeca6c8f0cbdd671c7e2573d4c708">FEValues&lt; int dim, int spacedim &gt;::normal_vector()</a>, <a class="el" href="tensor__product__space_8h_source.html#l00299">par</a>, <a class="el" href="tensor__product__space_8h_source.html#l00328">quadrature_formula</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a8c564784dcd8d2f2a3e2f2fb19553721">FEValues&lt; int dim, int spacedim &gt;::quadrature_point_indices()</a>, <a class="el" href="tensor__product__space_8h_source.html#l00347">reduced_qpoints</a>, <a class="el" href="tensor__product__space_8h_source.html#l00348">reduced_weights</a>, <a class="el" href="tensor__product__space_8h_source.html#l00307">reference_cross_section</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValues.html#acc8fe9d042c6b5e5da89858400feb24f">FEValues&lt; int dim, int spacedim &gt;::reinit()</a>, and <a class="el" href="tensor__product__space_8h_source.html#l00315">triangulation</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00065">initialize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="#a6404eae02eb404aa8ebd50bd59f14757">get_locally_owned_section_measure()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00067">initialize()</a>.</p>
 
 </div>
 </div>
@@ -320,9 +320,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>Retrieves the <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDoFHandler.html">DoFHandler</a> for the reduced domain.</p>
 <dl class="section return"><dt>Returns</dt><dd>A constant reference to the <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDoFHandler.html">DoFHandler</a> object. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00091">91</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00095">95</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00333">dof_handler</a>.</p>
+<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00336">dof_handler</a>.</p>
 
 </div>
 </div>
@@ -343,7 +343,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00195">195</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00199">199</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
+
+<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00342">global_cell_to_dof_indices</a>.</p>
 
 </div>
 </div>
@@ -366,9 +368,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>Return a vector of all quadrature points in the tensor product space that are locally owned by the reduced domain.</p>
 <dl class="section return"><dt>Returns</dt><dd>std::vector&lt;Point&lt;spacedim&gt;&gt; </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00105">105</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00109">109</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00341">all_qpoints</a>, <a class="el" href="tensor__product__space_8h_source.html#l00287">mpi_communicator</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a2d0b85e7f2c375999968a0f438174e0c">Utilities::MPI::sum()</a>.</p>
+<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00344">all_qpoints</a>, <a class="el" href="tensor__product__space_8h_source.html#l00290">mpi_communicator</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a2d0b85e7f2c375999968a0f438174e0c">Utilities::MPI::sum()</a>.</p>
 
 </div>
 </div>
@@ -389,9 +391,7 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00135">135</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
-
-<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00287">mpi_communicator</a>, <a class="el" href="tensor__product__space_8h_source.html#l00344">reduced_qpoints</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a2d0b85e7f2c375999968a0f438174e0c">Utilities::MPI::sum()</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00139">139</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
 
 </div>
 </div>
@@ -412,9 +412,30 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00151">151</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00155">155</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00287">mpi_communicator</a>, <a class="el" href="tensor__product__space_8h_source.html#l00345">reduced_weights</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a2d0b85e7f2c375999968a0f438174e0c">Utilities::MPI::sum()</a>.</p>
+<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00290">mpi_communicator</a>, <a class="el" href="tensor__product__space_8h_source.html#l00348">reduced_weights</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a2d0b85e7f2c375999968a0f438174e0c">Utilities::MPI::sum()</a>.</p>
+
+</div>
+</div>
+<a id="a6404eae02eb404aa8ebd50bd59f14757" name="a6404eae02eb404aa8ebd50bd59f14757"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6404eae02eb404aa8ebd50bd59f14757">&#9670;&#160;</a></span>get_locally_owned_section_measure()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; std::vector&lt; double &gt; &gt; &amp; <a class="el" href="class_tensor_product_space.html">TensorProductSpace</a>&lt; reduced_dim, dim, spacedim, n_components &gt;::get_locally_owned_section_measure </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="reference">References <a class="el" href="tensor__product__space_8cc_source.html#l00334">compute_points_and_weights()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00402">get_scaling()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00395">get_triangulation()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00241">local_q_point_indices_to_global_cell_indices()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00273">setup_dofs()</a>.</p>
 
 </div>
 </div>
@@ -435,9 +456,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00121">121</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00125">125</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00342">all_weights</a>, <a class="el" href="tensor__product__space_8h_source.html#l00287">mpi_communicator</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a2d0b85e7f2c375999968a0f438174e0c">Utilities::MPI::sum()</a>.</p>
+<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00345">all_weights</a>, <a class="el" href="tensor__product__space_8h_source.html#l00290">mpi_communicator</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a2d0b85e7f2c375999968a0f438174e0c">Utilities::MPI::sum()</a>.</p>
 
 </div>
 </div>
@@ -460,9 +481,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>Retrieve the quadrature formula used in the reduced domain.</p>
 <dl class="section return"><dt>Returns</dt><dd>A constant reference to the quadrature formula. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00321">321</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00325">325</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00325">quadrature_formula</a>.</p>
+<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00328">quadrature_formula</a>.</p>
 
 </div>
 </div>
@@ -485,9 +506,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>Retrieves the reference cross-section.</p>
 <dl class="section return"><dt>Returns</dt><dd>A constant reference to the reference cross-section object. </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00083">83</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00087">87</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00304">reference_cross_section</a>.</p>
+<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00307">reference_cross_section</a>.</p>
 
 </div>
 </div>
@@ -508,11 +529,11 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00413">413</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00402">402</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00296">par</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacestd.html#aa951f50adf9841cf8def28819c19cc53">std::pow()</a>.</p>
+<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00299">par</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacestd.html#aa951f50adf9841cf8def28819c19cc53">std::pow()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00399">weight_shape_value()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="#a6404eae02eb404aa8ebd50bd59f14757">get_locally_owned_section_measure()</a>.</p>
 
 </div>
 </div>
@@ -533,9 +554,11 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00390">390</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00394">394</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00312">triangulation</a>.</p>
+<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00315">triangulation</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="#a6404eae02eb404aa8ebd50bd59f14757">get_locally_owned_section_measure()</a>.</p>
 
 </div>
 </div>
@@ -558,9 +581,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>Initializes the tensor product space.</p>
 <p>This function sets up the necessary components, such as the <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDoFHandler.html">DoFHandler</a> and finite element system. </p>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00065">65</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00067">67</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="tensor__product__space_8cc_source.html#l00330">compute_points_and_weights()</a>, <a class="el" href="tensor__product__space_8h_source.html#l00151">make_reduced_grid</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00269">setup_dofs()</a>, and <a class="el" href="tensor__product__space_8h_source.html#l00312">triangulation</a>.</p>
+<p class="reference">References <a class="el" href="tensor__product__space_8cc_source.html#l00334">compute_points_and_weights()</a>, <a class="el" href="tensor__product__space_8h_source.html#l00161">make_reduced_grid</a>, <a class="el" href="tensor__product__space_8h_source.html#l00307">reference_cross_section</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00273">setup_dofs()</a>, and <a class="el" href="tensor__product__space_8h_source.html#l00315">triangulation</a>.</p>
 
 </div>
 </div>
@@ -590,7 +613,11 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 </div><div class="memdoc">
 <p>Given a map of processor to local quadrature point indices, return a map of processor to the corresponding global cell indices. </p>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00236">236</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00240">240</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
+
+<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00315">triangulation</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="#a6404eae02eb404aa8ebd50bd59f14757">get_locally_owned_section_measure()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00172">update_local_dof_indices()</a>.</p>
 
 </div>
 </div>
@@ -613,9 +640,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>Return the indices of the quadrature points that are locally owned by the reduced domain.</p>
 <dl class="section return"><dt>Returns</dt><dd><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classIndexSet.html">IndexSet</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00285">285</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00289">289</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00325">quadrature_formula</a>, <a class="el" href="tensor__product__space_8h_source.html#l00304">reference_cross_section</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classIndexSet.html#a919aabc634e406438ec287af481aed05">IndexSet::tensor_product()</a>, and <a class="el" href="tensor__product__space_8h_source.html#l00312">triangulation</a>.</p>
+<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00328">quadrature_formula</a>, <a class="el" href="tensor__product__space_8h_source.html#l00307">reference_cross_section</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classIndexSet.html#a919aabc634e406438ec287af481aed05">IndexSet::tensor_product()</a>, and <a class="el" href="tensor__product__space_8h_source.html#l00315">triangulation</a>.</p>
 
 </div>
 </div>
@@ -638,9 +665,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>Return the indices of the cells that are required to assemble the coupling matrix.</p>
 <dl class="section return"><dt>Returns</dt><dd><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classIndexSet.html">IndexSet</a> </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00307">307</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00311">311</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classIndexSet.html#a91a9df936f1d4a5098af7cbda4a9a21a">IndexSet::add_index()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classIndexSet.html#af0d579d3585ade55e22714e7dc9968a7">IndexSet::compress()</a>, <a class="el" href="tensor__product__space_8h_source.html#l00339">global_cell_to_dof_indices</a>, and <a class="el" href="tensor__product__space_8h_source.html#l00312">triangulation</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classIndexSet.html#a91a9df936f1d4a5098af7cbda4a9a21a">IndexSet::add_index()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classIndexSet.html#af0d579d3585ade55e22714e7dc9968a7">IndexSet::compress()</a>, <a class="el" href="tensor__product__space_8h_source.html#l00342">global_cell_to_dof_indices</a>, and <a class="el" href="tensor__product__space_8h_source.html#l00315">triangulation</a>.</p>
 
 </div>
 </div>
@@ -669,9 +696,7 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>std::tuple&lt;unsigned int, unsigned int, unsigned int&gt; cell_index, q_index, qpoint_index_in_section </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00208">208</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
-
-<p class="reference">References <a class="el" href="tensor__product__space_8h_source.html#l00325">quadrature_formula</a>, and <a class="el" href="tensor__product__space_8h_source.html#l00312">triangulation</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00212">212</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
 
 </div>
 </div>
@@ -702,9 +727,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>Sets up the degrees of freedom (DoFs) for the reduced domain.</p>
 <p>This function initializes the <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDoFHandler.html">DoFHandler</a> and associates it with the finite element system. </p>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00269">269</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00273">273</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00065">initialize()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="#a6404eae02eb404aa8ebd50bd59f14757">get_locally_owned_section_measure()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00067">initialize()</a>.</p>
 
 </div>
 </div>
@@ -727,45 +752,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>Update the relevant local dof_indices.</p>
 <p>After inserting global particles, this function updates the indices that are required to assemble the coupling matrix. </p>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00167">167</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00171">171</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
 
-</div>
-</div>
-<a id="aa57e099c13324b41878bf86f5c36a5ea" name="aa57e099c13324b41878bf86f5c36a5ea"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa57e099c13324b41878bf86f5c36a5ea">&#9670;&#160;</a></span>weight_shape_value()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">double <a class="el" href="class_tensor_product_space.html">TensorProductSpace</a>&lt; reduced_dim, dim, spacedim, n_components &gt;::weight_shape_value </td>
-          <td>(</td>
-          <td class="paramtype">const unsigned int</td>          <td class="paramname"><span class="paramname"><em>i</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const unsigned int</td>          <td class="paramname"><span class="paramname"><em>global_reduced_q</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const unsigned int</td>          <td class="paramname"><span class="paramname"><em>section_q</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const unsigned int</td>          <td class="paramname"><span class="paramname"><em>comp</em></span>&#160;) const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>the component comp of the ith selected weight basis function, at the global reduced quadrature point index global_reduced_q, and section quadrature point index section_q </p>
-
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00398">398</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
-
-<p class="reference">References <a class="el" href="tensor__product__space_8cc_source.html#l00413">get_scaling()</a>, and <a class="el" href="tensor__product__space_8h_source.html#l00304">reference_cross_section</a>.</p>
+<p class="reference">References <a class="el" href="tensor__product__space_8cc_source.html#l00241">local_q_point_indices_to_global_cell_indices()</a>.</p>
 
 </div>
 </div>
@@ -792,9 +781,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00341">341</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00344">344</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00330">compute_points_and_weights()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00106">get_locally_owned_qpoints()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00334">compute_points_and_weights()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00110">get_locally_owned_qpoints()</a>.</p>
 
 </div>
 </div>
@@ -820,9 +809,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00342">342</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00345">345</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00330">compute_points_and_weights()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00122">get_locally_owned_weights()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00334">compute_points_and_weights()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00126">get_locally_owned_weights()</a>.</p>
 
 </div>
 </div>
@@ -850,7 +839,7 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>The dimension of the cross-section of the reduced domain.</p>
 <p>This is computed as the difference between the full dimension and the reduced dimension. </p>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00141">141</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00151">151</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
 
 </div>
 </div>
@@ -878,9 +867,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>The <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDoFHandler.html">DoFHandler</a> for the reduced domain.</p>
 <p>This object manages the degrees of freedom for the reduced-dimensional domain. </p>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00333">333</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00336">336</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00091">get_dof_handler()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00039">TensorProductSpace()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00095">get_dof_handler()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00040">TensorProductSpace()</a>.</p>
 
 </div>
 </div>
@@ -908,9 +897,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>The finite element system used for the reduced domain.</p>
 <p>This object defines the finite element basis functions for the reduced-dimensional domain. </p>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00320">320</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00323">323</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00330">compute_points_and_weights()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00039">TensorProductSpace()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00334">compute_points_and_weights()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00040">TensorProductSpace()</a>.</p>
 
 </div>
 </div>
@@ -937,9 +926,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 </div><div class="memdoc">
 <p><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classMapping.html">Mapping</a> from global cell index to dof indices. </p>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00339">339</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00342">342</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00308">locally_relevant_indices()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00199">get_dof_indices()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00312">locally_relevant_indices()</a>.</p>
 
 </div>
 </div>
@@ -959,9 +948,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>A function to create the reduced grid.</p>
 <p>This function is used to generate the triangulation for the reduced-dimensional domain. </p>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00151">151</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00161">161</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00065">initialize()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00039">TensorProductSpace()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00067">initialize()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00040">TensorProductSpace()</a>.</p>
 
 </div>
 </div>
@@ -989,9 +978,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>The MPI communicator for parallel processing.</p>
 <p>This object is used to manage communication between different processes in a parallel environment. </p>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00287">287</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00290">290</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00106">get_locally_owned_qpoints()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00136">get_locally_owned_reduced_qpoints()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00152">get_locally_owned_reduced_weights()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00122">get_locally_owned_weights()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00039">TensorProductSpace()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00110">get_locally_owned_qpoints()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00156">get_locally_owned_reduced_weights()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00126">get_locally_owned_weights()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00040">TensorProductSpace()</a>.</p>
 
 </div>
 </div>
@@ -1019,9 +1008,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>The parameters defining the tensor product space.</p>
 <p>This object contains all the necessary configuration for the tensor product space. </p>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00296">296</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00299">299</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00330">compute_points_and_weights()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00413">get_scaling()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00039">TensorProductSpace()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00334">compute_points_and_weights()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00402">get_scaling()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00040">TensorProductSpace()</a>.</p>
 
 </div>
 </div>
@@ -1048,9 +1037,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 </div><div class="memdoc">
 <p>The quadrature formula used for integration in the reduced domain. </p>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00325">325</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00328">328</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00330">compute_points_and_weights()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00321">get_quadrature()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00286">locally_owned_qpoints()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00209">particle_id_to_cell_and_qpoint_indices()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00039">TensorProductSpace()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00334">compute_points_and_weights()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00325">get_quadrature()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00290">locally_owned_qpoints()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00040">TensorProductSpace()</a>.</p>
 
 </div>
 </div>
@@ -1076,9 +1065,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00344">344</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00347">347</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00330">compute_points_and_weights()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00136">get_locally_owned_reduced_qpoints()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00334">compute_points_and_weights()</a>.</p>
 
 </div>
 </div>
@@ -1104,9 +1093,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00345">345</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00348">348</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00330">compute_points_and_weights()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00152">get_locally_owned_reduced_weights()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00334">compute_points_and_weights()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00156">get_locally_owned_reduced_weights()</a>.</p>
 
 </div>
 </div>
@@ -1134,9 +1123,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>The reference cross-section for the reduced domain.</p>
 <p>This object represents the cross-section of the reduced-dimensional domain. </p>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00304">304</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00307">307</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00330">compute_points_and_weights()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00084">get_reference_cross_section()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00286">locally_owned_qpoints()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00039">TensorProductSpace()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00399">weight_shape_value()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00334">compute_points_and_weights()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00088">get_reference_cross_section()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00067">initialize()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00290">locally_owned_qpoints()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00040">TensorProductSpace()</a>.</p>
 
 </div>
 </div>
@@ -1164,9 +1153,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>The triangulation representing the reduced domain.</p>
 <p>This object holds the mesh for the reduced-dimensional domain. </p>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00312">312</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00315">315</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00330">compute_points_and_weights()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00391">get_triangulation()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00065">initialize()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00286">locally_owned_qpoints()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00308">locally_relevant_indices()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00209">particle_id_to_cell_and_qpoint_indices()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00039">TensorProductSpace()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00334">compute_points_and_weights()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00395">get_triangulation()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00067">initialize()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00241">local_q_point_indices_to_global_cell_indices()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00290">locally_owned_qpoints()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00312">locally_relevant_indices()</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00040">TensorProductSpace()</a>.</p>
 
 </div>
 </div>
@@ -1180,7 +1169,7 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="class_tensor_product_space.html">TensorProductSpace</a></li>
-    <li class="footer">Generated on Sat May 3 2025 14:10:31 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Mon May 12 2025 14:12:46 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

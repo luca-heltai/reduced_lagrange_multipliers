@@ -4,6 +4,7 @@ var struct_reduced_coupling_parameters =
     [ "coupling_rhs_expressions", "struct_reduced_coupling_parameters.html#aaa1a9d4e9c22500a5316c01fcb76bee4", null ],
     [ "particle_coupling_parameters", "struct_reduced_coupling_parameters.html#a1ba78736c30e08814c04528465884581", null ],
     [ "pre_refinement", "struct_reduced_coupling_parameters.html#addfbe1d17f2fb8b4d63221dfa1b5adcc", null ],
+    [ "radius_field_name", "struct_reduced_coupling_parameters.html#a089fc5ee9ce0324fdefc405ae3ddc996", null ],
     [ "reduced_grid_name", "struct_reduced_coupling_parameters.html#aa0ed55522c06cf613f3827dcdf146203", null ],
     [ "tensor_product_space_parameters", "struct_reduced_coupling_parameters.html#aa732bfcc64df78742fb30376c595616c", null ]
 ];

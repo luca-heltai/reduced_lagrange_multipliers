@@ -207,6 +207,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a431aff3f31a200d1a1b3834feb47b514"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6932cbae4c1adf139da3219114239b4a" id="r_a6932cbae4c1adf139da3219114239b4a"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6932cbae4c1adf139da3219114239b4a">fe_degree</a> = 1</td></tr>
 <tr class="separator:a6932cbae4c1adf139da3219114239b4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b5b4584e5baf037f8f01cc85b333192" id="r_a0b5b4584e5baf037f8f01cc85b333192"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0b5b4584e5baf037f8f01cc85b333192">n_q_points</a> = 0</td></tr>
+<tr class="separator:a0b5b4584e5baf037f8f01cc85b333192"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af81d11a8e4e96ef5c7bf07da742671d1" id="r_af81d11a8e4e96ef5c7bf07da742671d1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af81d11a8e4e96ef5c7bf07da742671d1">radius</a> = 0.01</td></tr>
 <tr class="separator:af81d11a8e4e96ef5c7bf07da742671d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_classParameterAcceptor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classParameterAcceptor')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el"  href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html">ParameterAcceptor</a></td></tr>
@@ -288,7 +290,7 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00028">28</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#af2a534c7f1ea5bfa165fa8a469744a5d">ParameterAcceptor::add_parameter()</a>, <a class="el" href="tensor__product__space_8h_source.html#l00087">fe_degree</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#a7bf9ccbc4d618a248324748a41f625cf">ParameterAcceptor::ParameterAcceptor()</a>, and <a class="el" href="tensor__product__space_8h_source.html#l00092">radius</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#af2a534c7f1ea5bfa165fa8a469744a5d">ParameterAcceptor::add_parameter()</a>, <a class="el" href="tensor__product__space_8h_source.html#l00087">fe_degree</a>, <a class="el" href="tensor__product__space_8h_source.html#l00097">n_q_points</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#a7bf9ccbc4d618a248324748a41f625cf">ParameterAcceptor::ParameterAcceptor()</a>, and <a class="el" href="tensor__product__space_8h_source.html#l00102">radius</a>.</p>
 
 </div>
 </div>
@@ -343,6 +345,28 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 
 </div>
 </div>
+<a id="a0b5b4584e5baf037f8f01cc85b333192" name="a0b5b4584e5baf037f8f01cc85b333192"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b5b4584e5baf037f8f01cc85b333192">&#9670;&#160;</a></span>n_q_points</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">unsigned int <a class="el" href="struct_tensor_product_space_parameters.html">TensorProductSpaceParameters</a>&lt; reduced_dim, dim, spacedim, n_components &gt;::n_q_points = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Number of quadrature points to be used in the reduced domain.</p>
+<p>This parameter controls the accuracy of the numerical integration in the reduced domain. If left to zero, the number of quadrature points will be set to the minimum required for the finite element degree. </p>
+
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00097">97</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00029">TensorProductSpaceParameters()</a>.</p>
+
+</div>
+</div>
 <a id="af81d11a8e4e96ef5c7bf07da742671d1" name="af81d11a8e4e96ef5c7bf07da742671d1"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af81d11a8e4e96ef5c7bf07da742671d1">&#9670;&#160;</a></span>radius</h2>
 
@@ -358,7 +382,7 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 </div><div class="memdoc">
 <p>Radius of the inclusion. </p>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00092">92</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00102">102</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00029">TensorProductSpaceParameters()</a>.</p>
 
@@ -394,7 +418,7 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="struct_tensor_product_space_parameters.html">TensorProductSpaceParameters</a></li>
-    <li class="footer">Generated on Sat May 3 2025 14:10:31 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Mon May 12 2025 14:12:46 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>
