@@ -113,6 +113,7 @@ $(function(){initNavTree('functions_func.html',''); initResizable(true); });
 
 <h3><a id="index_a" name="index_a"></a>- a -</h3><ul>
 <li>assemble_coupling()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#af1d83e7a8362f532c4070401250d2434">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a4940fb72b4a124deeb12f77b9fec9cdb">PoissonProblem&lt; dim, spacedim &gt;</a></li>
+<li>assemble_coupling_mass_matrix()&#160;:&#160;<a class="el" href="struct_reduced_coupling.html#a0bc7c1d58f6ef401ff171e9ea85da542">ReducedCoupling&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>assemble_coupling_matrix()&#160;:&#160;<a class="el" href="struct_reduced_coupling.html#a134df09d3c251c94d48c420cdfed516d">ReducedCoupling&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>assemble_coupling_sparsity()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#acbb2126908224b1d98cd0f13ed96989b">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#af19b3bb2762dec0942e1772e6ad33e5e">PoissonProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="struct_reduced_coupling.html#a8a79798c0e76238ce6248bd25341fcd6">ReducedCoupling&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>assemble_elasticity_system()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a96c0fb6c738c0157ab81a680c8f93a76">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
@@ -171,6 +172,9 @@ $(function(){initNavTree('functions_func.html',''); initResizable(true); });
 <li>get_normal()&#160;:&#160;<a class="el" href="class_inclusions.html#ac147dae3f7a1e6d074173da1cb613f45">Inclusions&lt; spacedim &gt;</a></li>
 <li>get_offset_coefficients()&#160;:&#160;<a class="el" href="class_inclusions.html#ab08b123ef627c261ea06571d86dd9b10">Inclusions&lt; spacedim &gt;</a></li>
 <li>get_particles()&#160;:&#160;<a class="el" href="class_particle_coupling.html#aa86a4d9a377c949b0cc8b260d7b87783">ParticleCoupling&lt; dim &gt;</a></li>
+<li>get_properties()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#a09d909f5efcde656e3ee8cbccb2f6286">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+<li>get_properties_dh()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#aa524882e7e54174b93a203b44492e9aa">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+<li>get_properties_names()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#adc20e31e117437f1591a8f9de5ccd3b7">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>get_quadrature()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#a5a06b0e0c7a337aa37a14842316728aa">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>get_radius()&#160;:&#160;<a class="el" href="class_inclusions.html#ae553d2932cc5f7ee315a56b99acf366f">Inclusions&lt; spacedim &gt;</a></li>
 <li>get_reference_cross_section()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#a501406da84723532122f310596d388b4">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
@@ -203,6 +207,7 @@ $(function(){initNavTree('functions_func.html',''); initResizable(true); });
 
 <h3><a id="index_m" name="index_m"></a>- m -</h3><ul>
 <li>make_grid()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#afa140c84e0f366c5737ba99d0a634ea1">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#ad71234db14a41d3ff34239105d97f35e">PoissonProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reduced_poisson.html#aeaf6e376706b86f46d35b9299a0e5398">ReducedPoisson&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reference_cross_section.html#a022f89d01cd721f51a127e64e0367166">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a></li>
+<li>make_reduced_grid_and_properties()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#ab008143e284af08613f513a74b3d655e">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
 <li>max_n_basis()&#160;:&#160;<a class="el" href="class_reference_cross_section.html#a2199a444c64f7bfd20770f43d94ee71b">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a></li>
 <li>measure()&#160;:&#160;<a class="el" href="class_reference_cross_section.html#aa3e88d5652bab29a4bd86243dd68c01e">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a></li>
 </ul>
@@ -290,7 +295,7 @@ $(function(){initNavTree('functions_func.html',''); initResizable(true); });
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Mon May 12 2025 14:12:46 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Sun May 18 2025 21:39:32 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

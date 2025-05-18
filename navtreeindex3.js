@@ -1,5 +1,14 @@
 var NAVTREEINDEX3 =
 {
+"namespaceCGALWrappers.html#a9a4b77bb490d8969d970b6b6ab4b10f2":[1,0,9,26],
+"namespaceCGALWrappers.html#a9af5466f408f20c50dca6669d68999a8":[1,0,9,22],
+"namespaceCGALWrappers.html#a9f6df41eee715c6edde64d39ace042f3":[1,0,9,33],
+"namespaceCGALWrappers.html#aaafe791d547c123fa06a343b88d312a8":[1,0,9,27],
+"namespaceCGALWrappers.html#aab5955acf200707d7cebaee1de8f929c":[1,0,9,2],
+"namespaceCGALWrappers.html#aaecbd6aec2448258e4683c53ef10411a":[1,0,9,21],
+"namespaceCGALWrappers.html#aaff65dd04dd0b8f69893a729a3cbddc7":[1,0,9,12],
+"namespaceCGALWrappers.html#ab217c479619d0c8e5868636bdf720fdb":[1,0,9,3],
+"namespaceCGALWrappers.html#ab7217bb4ac46512126b8cbc73beaf40f":[1,0,9,31],
 "namespaceCGALWrappers.html#abd91048d272174029b1055321a02e5b1":[1,0,9,18],
 "namespaceCGALWrappers.html#ac0f15f5ccbb0660e1bf09ecaddb4e9e5":[1,0,9,9],
 "namespaceCGALWrappers.html#ac8ad2b787c0cf60b46647a68b62387db":[1,0,9,40],
@@ -240,14 +249,5 @@ var NAVTREEINDEX3 =
 "namespaceDoFTools_1_1internal.html#a20eb35b94e472ea7b5e338c0912860b6":[1,0,25,0,15],
 "namespaceDoFTools_1_1internal.html#a2a4052f43ef4e73da6bbfd62d01f5197":[1,0,25,0,1],
 "namespaceDoFTools_1_1internal.html#a324f18749a092d65550437dd941a2a91":[1,0,25,0,9],
-"namespaceDoFTools_1_1internal.html#a3cb5fed9373028ca1ed54e96dbac4448":[1,0,25,0,10],
-"namespaceDoFTools_1_1internal.html#a4e398e8e5c2769fc839aaee77e78b557":[1,0,25,0,4],
-"namespaceDoFTools_1_1internal.html#a5ad8b255537b48e40e516a36e1472eb8":[1,0,25,0,18],
-"namespaceDoFTools_1_1internal.html#a7a7f02ac543826b3d717a34f629f4aba":[1,0,25,0,7],
-"namespaceDoFTools_1_1internal.html#a7aaf930ab35522dab7780ce94312650f":[1,0,25,0,6],
-"namespaceDoFTools_1_1internal.html#aa6027abb270ff54a76661ca1c2bf2bcf":[1,0,25,0,12],
-"namespaceDoFTools_1_1internal.html#ab5b1cacb8c5c131d5e0f86742c64e226":[1,0,25,0,16],
-"namespaceDoFTools_1_1internal.html#abe866825835bb267b66e0a7b6a3908b6":[1,0,25,0,17],
-"namespaceDoFTools_1_1internal.html#ac8fb3858c74e5732550d26a2edf1bdf2":[1,0,25,0,8],
-"namespaceDoFTools_1_1internal.html#ad2ef140f5d6f248aa4eebdac221fa94c":[1,0,25,0,13]
+"namespaceDoFTools_1_1internal.html#a3cb5fed9373028ca1ed54e96dbac4448":[1,0,25,0,10]
 };

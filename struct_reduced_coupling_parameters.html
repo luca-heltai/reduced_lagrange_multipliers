@@ -212,11 +212,8 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:a1ba78736c30e08814c04528465884581" id="r_a1ba78736c30e08814c04528465884581"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_particle_coupling_parameters.html">ParticleCouplingParameters</a>&lt; spacedim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1ba78736c30e08814c04528465884581">particle_coupling_parameters</a></td></tr>
 <tr class="memdesc:a1ba78736c30e08814c04528465884581"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters for the particle coupling.  <br /></td></tr>
 <tr class="separator:a1ba78736c30e08814c04528465884581"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa0ed55522c06cf613f3827dcdf146203" id="r_aa0ed55522c06cf613f3827dcdf146203"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa0ed55522c06cf613f3827dcdf146203">reduced_grid_name</a> = &quot;&quot;</td></tr>
-<tr class="memdesc:aa0ed55522c06cf613f3827dcdf146203"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of the grid to read from a file.  <br /></td></tr>
-<tr class="separator:aa0ed55522c06cf613f3827dcdf146203"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a089fc5ee9ce0324fdefc405ae3ddc996" id="r_a089fc5ee9ce0324fdefc405ae3ddc996"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a089fc5ee9ce0324fdefc405ae3ddc996">radius_field_name</a> = &quot;&quot;</td></tr>
-<tr class="separator:a089fc5ee9ce0324fdefc405ae3ddc996"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a548f12024d6c3b3028e43efaca33ef35" id="r_a548f12024d6c3b3028e43efaca33ef35"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a548f12024d6c3b3028e43efaca33ef35">thickness_field_name</a> = &quot;&quot;</td></tr>
+<tr class="separator:a548f12024d6c3b3028e43efaca33ef35"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:addfbe1d17f2fb8b4d63221dfa1b5adcc" id="r_addfbe1d17f2fb8b4d63221dfa1b5adcc"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#addfbe1d17f2fb8b4d63221dfa1b5adcc">pre_refinement</a> = 0</td></tr>
 <tr class="memdesc:addfbe1d17f2fb8b4d63221dfa1b5adcc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of pre-refinements to apply to the grid before distribution.  <br /></td></tr>
 <tr class="separator:addfbe1d17f2fb8b4d63221dfa1b5adcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -274,7 +271,7 @@ class ReducedCouplingParameters&lt; reduced_dim, dim, spacedim, n_components &gt
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00064">64</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00067">67</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a10364738582292db676f379445e04d84" name="a10364738582292db676f379445e04d84"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a10364738582292db676f379445e04d84">&#9670;&#160;</a></span>ReducedCouplingParameters()</h2>
@@ -295,9 +292,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 
 <p>Constructor that registers parameters with the <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html">ParameterAcceptor</a>. </p>
 
-<p class="definition">Definition at line <a class="el" href="reduced__coupling_8cc_source.html#l00013">13</a> of file <a class="el" href="reduced__coupling_8cc_source.html">reduced_coupling.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reduced__coupling_8cc_source.html#l00015">15</a> of file <a class="el" href="reduced__coupling_8cc_source.html">reduced_coupling.cc</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#af2a534c7f1ea5bfa165fa8a469744a5d">ParameterAcceptor::add_parameter()</a>, <a class="el" href="reduced__coupling_8h_source.html#l00102">coupling_rhs_expressions</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#aa5bd2385b9c9dea5664813eb63e0b8fe">ParameterAcceptor::enter_subsection()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#ac1020eae02ca8fbd2a3a1c315994591b">ParameterAcceptor::leave_subsection()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classPatterns_1_1List.html#ae222b608ee2b34c26791473c07f0be08">Patterns::List::max_int_value</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#a7bf9ccbc4d618a248324748a41f625cf">ParameterAcceptor::ParameterAcceptor()</a>, <a class="el" href="reduced__coupling_8h_source.html#l00097">pre_refinement</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#a96081d4cc985b722c9841fcf0c0e54ec">ParameterAcceptor::prm</a>, and <a class="el" href="reduced__coupling_8h_source.html#l00085">reduced_grid_name</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#af2a534c7f1ea5bfa165fa8a469744a5d">ParameterAcceptor::add_parameter()</a>, <a class="el" href="reduced__coupling_8h_source.html#l00101">coupling_rhs_expressions</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#aa5bd2385b9c9dea5664813eb63e0b8fe">ParameterAcceptor::enter_subsection()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#ac1020eae02ca8fbd2a3a1c315994591b">ParameterAcceptor::leave_subsection()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classPatterns_1_1List.html#ae222b608ee2b34c26791473c07f0be08">Patterns::List::max_int_value</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#a7bf9ccbc4d618a248324748a41f625cf">ParameterAcceptor::ParameterAcceptor()</a>, <a class="el" href="reduced__coupling_8h_source.html#l00096">pre_refinement</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#a96081d4cc985b722c9841fcf0c0e54ec">ParameterAcceptor::prm</a>.</p>
 
 </div>
 </div>
@@ -318,9 +315,9 @@ template&lt;int reduced_dim, int dim, int spacedim = dim, int n_components = 1&g
 
 <p>Right hand side expressions for the reduced coupling. </p>
 
-<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00102">102</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00101">101</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="reduced__coupling_8cc_source.html#l00014">ReducedCouplingParameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="reduced__coupling_8cc_source.html#l00016">ReducedCouplingParameters()</a>.</p>
 
 </div>
 </div>
@@ -340,7 +337,7 @@ template&lt;int reduced_dim, int dim, int spacedim = dim, int n_components = 1&g
 
 <p>Parameters for the particle coupling. </p>
 
-<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00080">80</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00083">83</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
 
 </div>
 </div>
@@ -360,50 +357,9 @@ template&lt;int reduced_dim, int dim, int spacedim = dim, int n_components = 1&g
 
 <p>Number of pre-refinements to apply to the grid before distribution. </p>
 
-<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00097">97</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00096">96</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="reduced__coupling_8cc_source.html#l00014">ReducedCouplingParameters()</a>.</p>
-
-</div>
-</div>
-<a id="a089fc5ee9ce0324fdefc405ae3ddc996" name="a089fc5ee9ce0324fdefc405ae3ddc996"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a089fc5ee9ce0324fdefc405ae3ddc996">&#9670;&#160;</a></span>radius_field_name</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;int reduced_dim, int dim, int spacedim = dim, int n_components = 1&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string <a class="el" href="struct_reduced_coupling_parameters.html">ReducedCouplingParameters</a>&lt; reduced_dim, dim, spacedim, n_components &gt;::radius_field_name = &quot;&quot;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Name of the field name to use for the radius of the inclusion. This is read from the reduced_grid_name file. If empty, the radius is assumed to be constant, and taken from the tensor_product_space_parameters. </p>
-
-<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00092">92</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
-
-</div>
-</div>
-<a id="aa0ed55522c06cf613f3827dcdf146203" name="aa0ed55522c06cf613f3827dcdf146203"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa0ed55522c06cf613f3827dcdf146203">&#9670;&#160;</a></span>reduced_grid_name</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;int reduced_dim, int dim, int spacedim = dim, int n_components = 1&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string <a class="el" href="struct_reduced_coupling_parameters.html">ReducedCouplingParameters</a>&lt; reduced_dim, dim, spacedim, n_components &gt;::reduced_grid_name = &quot;&quot;</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Name of the grid to read from a file. </p>
-
-<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00085">85</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="reduced__coupling_8cc_source.html#l00014">ReducedCouplingParameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="reduced__coupling_8cc_source.html#l00016">ReducedCouplingParameters()</a>.</p>
 
 </div>
 </div>
@@ -423,7 +379,26 @@ template&lt;int reduced_dim, int dim, int spacedim = dim, int n_components = 1&g
 
 <p>Parameters for the tensor product space. </p>
 
-<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00075">75</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00078">78</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
+
+</div>
+</div>
+<a id="a548f12024d6c3b3028e43efaca33ef35" name="a548f12024d6c3b3028e43efaca33ef35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a548f12024d6c3b3028e43efaca33ef35">&#9670;&#160;</a></span>thickness_field_name</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int reduced_dim, int dim, int spacedim = dim, int n_components = 1&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="struct_reduced_coupling_parameters.html">ReducedCouplingParameters</a>&lt; reduced_dim, dim, spacedim, n_components &gt;::thickness_field_name = &quot;&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Name of the field name to use for the thickness of the inclusion. This is read from the reduced_grid_name file. If empty, the thickness is assumed to be constant, and taken from the tensor_product_space_parameters.thickness argument. </p>
+
+<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00091">91</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
 
 </div>
 </div>
@@ -437,7 +412,7 @@ template&lt;int reduced_dim, int dim, int spacedim = dim, int n_components = 1&g
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="struct_reduced_coupling_parameters.html">ReducedCouplingParameters</a></li>
-    <li class="footer">Generated on Mon May 12 2025 14:12:46 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Sun May 18 2025 21:39:32 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

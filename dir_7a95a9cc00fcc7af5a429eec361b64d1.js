@@ -11,5 +11,6 @@ var dir_7a95a9cc00fcc7af5a429eec361b64d1 =
     [ "reduced_coupling.h", "reduced__coupling_8h.html", "reduced__coupling_8h" ],
     [ "reduced_poisson.h", "reduced__poisson_8h.html", "reduced__poisson_8h" ],
     [ "reference_cross_section.h", "reference__cross__section_8h.html", "reference__cross__section_8h" ],
-    [ "tensor_product_space.h", "tensor__product__space_8h.html", "tensor__product__space_8h" ]
+    [ "tensor_product_space.h", "tensor__product__space_8h.html", "tensor__product__space_8h" ],
+    [ "vtk_utils.h", "vtk__utils_8h.html", null ]
 ];

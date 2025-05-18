@@ -9,6 +9,10 @@ var hierarchy =
       [ "RepartitioningPolicyTools::Base< dim, dim >", "http://www.dealii.org/developer/doxygen/deal.II/classRepartitioningPolicyTools_1_1Base.html", [
         [ "ImmersedRepartitioner< dim, spacedim >", "class_immersed_repartitioner.html", null ]
       ] ],
+      [ "RepartitioningPolicyTools::Base< dim, spacedim >", "http://www.dealii.org/developer/doxygen/deal.II/classRepartitioningPolicyTools_1_1Base.html", [
+        [ "ImmersedRepartitioner< reduced_dim, dim >", "class_immersed_repartitioner.html", null ],
+        [ "ImmersedRepartitioner< reduced_dim, spacedim >", "class_immersed_repartitioner.html", null ]
+      ] ],
       [ "ElasticityProblem< dim, spacedim >", "class_elasticity_problem.html", null ],
       [ "ParameterAcceptor", "http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html", [
         [ "ElasticityProblemParameters< dim, dim >", "class_elasticity_problem_parameters.html", null ],

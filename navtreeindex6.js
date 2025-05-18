@@ -1,5 +1,14 @@
 var NAVTREEINDEX6 =
 {
+"namespaceMatrixCreator.html#a35973e42cee9bedbbfce9603f4529223":[1,0,77,15],
+"namespaceMatrixCreator.html#a3dcb0e51fb0879d7e03a1cd7843ec88e":[1,0,77,10],
+"namespaceMatrixCreator.html#a732a9613fb6a99b6f15f6027c66b6e54":[1,0,77,19],
+"namespaceMatrixCreator.html#a7f14e9a975bcd542c365410c91aedd97":[1,0,77,14],
+"namespaceMatrixCreator.html#a7ff999169c21638c3dac1acd4685aaea":[1,0,77,18],
+"namespaceMatrixCreator.html#a91a1f77cb57e44959aceb78f49b6d590":[1,0,77,11],
+"namespaceMatrixCreator.html#a98c8160119d34f77bf1cf9a93cca49e2":[1,0,77,1],
+"namespaceMatrixCreator.html#ab72d5dae987001231e3c4ccb1bb55913":[1,0,77,7],
+"namespaceMatrixCreator.html#ac275b5f347785b1b4ee3c48e2e8b42db":[1,0,77,12],
 "namespaceMatrixCreator.html#aca3d881827dcfdaff10922400e218a78":[1,0,77,5],
 "namespaceMatrixCreator.html#acdd7d20c2c3d77889adc8afcdaa64921":[1,0,77,13],
 "namespaceMatrixCreator.html#adef4c0c33fba6a38518bfa39130ba02d":[1,0,77,2],
@@ -240,14 +249,5 @@ var NAVTREEINDEX6 =
 "namespaceSparsityPatternIterators.html":[1,0,139],
 "namespaceSparsityPatternIterators.html#a60b8b8534c2b95e4fc84b89b585eeb2e":[1,0,139,0],
 "namespaceSparsityTools.html":[1,0,140],
-"namespaceSparsityTools.html#a2a19180267dae516a09317edb4995cff":[1,0,140,2],
-"namespaceSparsityTools.html#a34d8cbf5559e454001e512c4368c2c3e":[1,0,140,1],
-"namespaceSparsityTools.html#a452753b6ffdf31b33f2bcd792b05df93":[1,0,140,17],
-"namespaceSparsityTools.html#a576797328aeace287d271ee4e48e04a6":[1,0,140,19],
-"namespaceSparsityTools.html#a6b5444028171035f8ffb3fb5c3f8da08":[1,0,140,5],
-"namespaceSparsityTools.html#aa51c64b340d0dbd53018574a1e0fff2e":[1,0,140,16],
-"namespaceSparsityTools.html#acf67676085b71915680a15103cc7cb3f":[1,0,140,15],
-"namespaceSparsityTools.html#ad7da91ef608d0e4c17d75c21070db6e4":[1,0,140,18],
-"namespaceSparsityTools.html#ade09f775d8cfb0c1ca98154ea4a7df1f":[1,0,140,4],
-"namespaceSparsityTools.html#ae7336d79d8674b4832bde6fe50510cda":[1,0,140,6]
+"namespaceSparsityTools.html#a2a19180267dae516a09317edb4995cff":[1,0,140,2]
 };

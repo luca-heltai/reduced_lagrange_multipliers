@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.13.2"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Reduced Lagrange Multipliers: Class Members - Variables</title>
+<title>Reduced Lagrange Multipliers: /github/workspace/include/vtk_utils.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -83,7 +83,7 @@ $(function() { codefold.init(0); });
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(function(){initNavTree('functions_vars_o.html',''); initResizable(true); });
+$(function(){initNavTree('vtk__utils_8h.html',''); initResizable(true); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -108,23 +108,34 @@ $(function(){initNavTree('functions_vars_o.html',''); initResizable(true); });
 </div>
 </div>
 
+<div class="header">
+  <div class="headertitle"><div class="title">vtk_utils.h File Reference</div></div>
+</div><!--header-->
 <div class="contents">
-<div class="textblock">Here is a list of all variables with links to the classes they belong to:</div>
-
-<h3><a id="index_o" name="index_o"></a>- o -</h3><ul>
-<li>offset_coefficients&#160;:&#160;<a class="el" href="class_inclusions.html#aacbcacdfd82ca2e9fea6654d59773786">Inclusions&lt; spacedim &gt;</a></li>
-<li>outer_control&#160;:&#160;<a class="el" href="class_elasticity_problem_parameters.html#a7ee1fbc7c26eadcf62d55a6d7eaf154e">ElasticityProblemParameters&lt; dim, spacedim &gt;</a>, <a class="el" href="class_problem_parameters.html#a1678f2af5f3cb38f673558a394e5a95d">ProblemParameters&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reduced_poisson_parameters.html#af348a0b4a579eefe71e5789d52306b2e">ReducedPoissonParameters&lt; spacedim &gt;</a></li>
-<li>output_directory&#160;:&#160;<a class="el" href="class_elasticity_problem_parameters.html#aee34d46cba030aebca9aa58408cec54a">ElasticityProblemParameters&lt; dim, spacedim &gt;</a>, <a class="el" href="class_problem_parameters.html#ac85c367581045cf7199733b97072a7b0">ProblemParameters&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reduced_poisson_parameters.html#ae9a84a35ef28ba6ad0aef14e85cf8f5f">ReducedPoissonParameters&lt; spacedim &gt;</a></li>
-<li>output_name&#160;:&#160;<a class="el" href="class_elasticity_problem_parameters.html#a17adc32249a43561b21106396a0a2cb7">ElasticityProblemParameters&lt; dim, spacedim &gt;</a>, <a class="el" href="class_problem_parameters.html#a052929e8913f2aae2e5c1b7be7dde6a2">ProblemParameters&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reduced_poisson_parameters.html#a4038adb3819e00a6d142877ac5a4ccc9">ReducedPoissonParameters&lt; spacedim &gt;</a></li>
-<li>output_pressure&#160;:&#160;<a class="el" href="class_elasticity_problem_parameters.html#aaf66d5974352232cd51f4ec5472fa68f">ElasticityProblemParameters&lt; dim, spacedim &gt;</a></li>
-<li>output_results_before_solving&#160;:&#160;<a class="el" href="class_elasticity_problem_parameters.html#a08ba32736ac335d3b3bbff5e15d1ebb8">ElasticityProblemParameters&lt; dim, spacedim &gt;</a>, <a class="el" href="class_problem_parameters.html#a844a8b341996720ff77aa71f684ff33c">ProblemParameters&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reduced_poisson_parameters.html#a60e643cd9e44b1b9d544632ee44ad191">ReducedPoissonParameters&lt; spacedim &gt;</a></li>
-<li>owned_dofs&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a836685c9a7022550081c32bf875bb71c">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#abcb253fcf63e359b0776e3bce6200eff">PoissonProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_reduced_poisson.html#a4f37961d008a737dd43516cbe4e7c57d">ReducedPoisson&lt; dim, spacedim &gt;</a></li>
-</ul>
+<div class="textblock"><code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/config_8h.html">deal.II/base/config.h</a>&gt;</code><br />
+<code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/mpi_8h.html">deal.II/base/mpi.h</a>&gt;</code><br />
+<code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/base_2point_8h.html">deal.II/base/point.h</a>&gt;</code><br />
+<code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/distributed_2tria_8h.html">deal.II/distributed/tria.h</a>&gt;</code><br />
+<code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/dof__handler_8h.html">deal.II/dofs/dof_handler.h</a>&gt;</code><br />
+<code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/dof__tools_8h.html">deal.II/dofs/dof_tools.h</a>&gt;</code><br />
+<code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/fe__q_8h.html">deal.II/fe/fe_q.h</a>&gt;</code><br />
+<code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/fe__system_8h.html">deal.II/fe/fe_system.h</a>&gt;</code><br />
+<code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/mapping__q1_8h.html">deal.II/fe/mapping_q1.h</a>&gt;</code><br />
+<code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/grid__generator_8h.html">deal.II/grid/grid_generator.h</a>&gt;</code><br />
+<code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/grid_2tria_8h.html">deal.II/grid/tria.h</a>&gt;</code><br />
+<code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/la__parallel__vector_8h.html">deal.II/lac/la_parallel_vector.h</a>&gt;</code><br />
+<code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/vector_8h.html">deal.II/lac/vector.h</a>&gt;</code><br />
+<code>#include &lt;iostream&gt;</code><br />
+<code>#include &lt;map&gt;</code><br />
+<code>#include &lt;unordered_map&gt;</code><br />
+</div>
+<p><a href="vtk__utils_8h_source.html">Go to the source code of this file.</a></p>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
+    <li class="navelem"><a class="el" href="dir_aa394cd1d9abb8ffe941d9aaafca8d03.html">github</a></li><li class="navelem"><a class="el" href="dir_c52569aa89a7adbb6029022c2fa60a11.html">workspace</a></li><li class="navelem"><a class="el" href="dir_7a95a9cc00fcc7af5a429eec361b64d1.html">include</a></li><li class="navelem"><a class="el" href="vtk__utils_8h.html">vtk_utils.h</a></li>
     <li class="footer">Generated on Sun May 18 2025 21:39:32 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>

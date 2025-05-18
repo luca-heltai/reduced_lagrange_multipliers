@@ -147,6 +147,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a134df09d3c251c94d48c420cdfed516d"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a134df09d3c251c94d48c420cdfed516d">assemble_coupling_matrix</a> (MatrixType &amp;coupling_matrix, const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDoFHandler.html">DoFHandler</a>&lt; spacedim &gt; &amp;dh, const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classAffineConstraints.html">AffineConstraints</a>&lt; double &gt; &amp;constraints) const</td></tr>
 <tr class="memdesc:a134df09d3c251c94d48c420cdfed516d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assemble the coupling matrix between background and reduced spaces.  <br /></td></tr>
 <tr class="separator:a134df09d3c251c94d48c420cdfed516d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0bc7c1d58f6ef401ff171e9ea85da542" id="r_a0bc7c1d58f6ef401ff171e9ea85da542"><td class="memTemplParams" colspan="2">template&lt;typename MatrixType&gt; </td></tr>
+<tr class="memitem:a0bc7c1d58f6ef401ff171e9ea85da542"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a0bc7c1d58f6ef401ff171e9ea85da542">assemble_coupling_mass_matrix</a> (MatrixType &amp;mass_matrix) const</td></tr>
+<tr class="separator:a0bc7c1d58f6ef401ff171e9ea85da542"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b95fee9e2eb0c19baf9cbbf44636db4" id="r_a0b95fee9e2eb0c19baf9cbbf44636db4"><td class="memTemplParams" colspan="2">template&lt;typename VectorType&gt; </td></tr>
 <tr class="memitem:a0b95fee9e2eb0c19baf9cbbf44636db4"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a0b95fee9e2eb0c19baf9cbbf44636db4">assemble_reduced_rhs</a> (VectorType &amp;reduced_rhs) const</td></tr>
 <tr class="memdesc:a0b95fee9e2eb0c19baf9cbbf44636db4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Assemble the right-hand side vector for the reduced space.  <br /></td></tr>
@@ -161,6 +164,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a79b9eb0b3e38d4414fe77579da71e2df inherit pub_methods_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a501406da84723532122f310596d388b4 inherit pub_methods_class_tensor_product_space" id="r_a501406da84723532122f310596d388b4"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_reference_cross_section.html">ReferenceCrossSection</a>&lt; dim - reduced_dim, spacedim, n_components &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#a501406da84723532122f310596d388b4">get_reference_cross_section</a> () const</td></tr>
 <tr class="separator:a501406da84723532122f310596d388b4 inherit pub_methods_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab008143e284af08613f513a74b3d655e inherit pub_methods_class_tensor_product_space" id="r_ab008143e284af08613f513a74b3d655e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#ab008143e284af08613f513a74b3d655e">make_reduced_grid_and_properties</a> ()</td></tr>
+<tr class="separator:ab008143e284af08613f513a74b3d655e inherit pub_methods_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a776bcfa1b71578ead79b5212f1e20f03 inherit pub_methods_class_tensor_product_space" id="r_a776bcfa1b71578ead79b5212f1e20f03"><td class="memItemLeft" align="right" valign="top">const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDoFHandler.html">DoFHandler</a>&lt; reduced_dim, spacedim &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#a776bcfa1b71578ead79b5212f1e20f03">get_dof_handler</a> () const</td></tr>
 <tr class="separator:a776bcfa1b71578ead79b5212f1e20f03 inherit pub_methods_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2bc251d7b9d702174d4d7dd787b4ad51 inherit pub_methods_class_tensor_product_space" id="r_a2bc251d7b9d702174d4d7dd787b4ad51"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classPoint.html">Point</a>&lt; spacedim &gt; &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#a2bc251d7b9d702174d4d7dd787b4ad51">get_locally_owned_qpoints</a> () const</td></tr>
@@ -191,6 +196,16 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a158aafd6bae93a1ff02046b069f2a252 inherit pub_methods_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a38aae8f8823ae8a0d850c295b146a05f inherit pub_methods_class_tensor_product_space" id="r_a38aae8f8823ae8a0d850c295b146a05f"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#a38aae8f8823ae8a0d850c295b146a05f">get_scaling</a> (const unsigned int) const</td></tr>
 <tr class="separator:a38aae8f8823ae8a0d850c295b146a05f inherit pub_methods_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09d909f5efcde656e3ee8cbccb2f6286 inherit pub_methods_class_tensor_product_space" id="r_a09d909f5efcde656e3ee8cbccb2f6286"><td class="memItemLeft" align="right" valign="top">const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearAlgebra_1_1distributed_1_1Vector.html">LinearAlgebra::distributed::Vector</a>&lt; double &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#a09d909f5efcde656e3ee8cbccb2f6286">get_properties</a> () const</td></tr>
+<tr class="separator:a09d909f5efcde656e3ee8cbccb2f6286 inherit pub_methods_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa524882e7e54174b93a203b44492e9aa inherit pub_methods_class_tensor_product_space" id="r_aa524882e7e54174b93a203b44492e9aa"><td class="memItemLeft" align="right" valign="top">const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDoFHandler.html">DoFHandler</a>&lt; reduced_dim, spacedim &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#aa524882e7e54174b93a203b44492e9aa">get_properties_dh</a> () const</td></tr>
+<tr class="separator:aa524882e7e54174b93a203b44492e9aa inherit pub_methods_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acff8f4ce0bb66d6a007a2d7b98784b52 inherit pub_methods_class_tensor_product_space" id="r_acff8f4ce0bb66d6a007a2d7b98784b52"><td class="memItemLeft" align="right" valign="top"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDoFHandler.html">DoFHandler</a>&lt; reduced_dim, spacedim &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#acff8f4ce0bb66d6a007a2d7b98784b52">get_properties_dh</a> ()</td></tr>
+<tr class="separator:acff8f4ce0bb66d6a007a2d7b98784b52 inherit pub_methods_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc20e31e117437f1591a8f9de5ccd3b7 inherit pub_methods_class_tensor_product_space" id="r_adc20e31e117437f1591a8f9de5ccd3b7"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#adc20e31e117437f1591a8f9de5ccd3b7">get_properties_names</a> () const</td></tr>
+<tr class="separator:adc20e31e117437f1591a8f9de5ccd3b7 inherit pub_methods_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77f7999ff3e7248e444f88bb4b35a392 inherit pub_methods_class_tensor_product_space" id="r_a77f7999ff3e7248e444f88bb4b35a392"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#a77f7999ff3e7248e444f88bb4b35a392">get_properties_names</a> ()</td></tr>
+<tr class="separator:a77f7999ff3e7248e444f88bb4b35a392 inherit pub_methods_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_class_particle_coupling"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_class_particle_coupling')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="class_particle_coupling.html">ParticleCoupling&lt; dim &gt;</a></td></tr>
 <tr class="memitem:afd70659f4fac72f3c98da664e48df6bf inherit pub_methods_class_particle_coupling" id="r_afd70659f4fac72f3c98da664e48df6bf"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_particle_coupling.html#afd70659f4fac72f3c98da664e48df6bf">ParticleCoupling</a> (const <a class="el" href="class_particle_coupling_parameters.html">ParticleCouplingParameters</a>&lt; dim &gt; &amp;<a class="el" href="class_particle_coupling.html#aed05ad3e1fe40081a41a4f21f3805842">par</a>)</td></tr>
 <tr class="memdesc:afd70659f4fac72f3c98da664e48df6bf inherit pub_methods_class_particle_coupling"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor.  <br /></td></tr>
@@ -224,15 +239,71 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a391e4d5bfff04bc616d1611444abe64b" id="r_a391e4d5bfff04bc616d1611444abe64b"><td class="memItemLeft" align="right" valign="top">std::unique_ptr&lt; <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFunctionParser.html">FunctionParser</a>&lt; spacedim &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a391e4d5bfff04bc616d1611444abe64b">coupling_rhs</a></td></tr>
 <tr class="memdesc:a391e4d5bfff04bc616d1611444abe64b"><td class="mdescLeft">&#160;</td><td class="mdescRight">The right-hand side function for the coupling.  <br /></td></tr>
 <tr class="separator:a391e4d5bfff04bc616d1611444abe64b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a2dac7df818128b87814e73c94bee93" id="r_a0a2dac7df818128b87814e73c94bee93"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_immersed_repartitioner.html">ImmersedRepartitioner</a>&lt; reduced_dim, spacedim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0a2dac7df818128b87814e73c94bee93">immersed_partitioner</a></td></tr>
+<tr class="separator:a0a2dac7df818128b87814e73c94bee93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_attribs_class_tensor_product_space"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_class_tensor_product_space')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="class_tensor_product_space.html">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;</a></td></tr>
-<tr class="memitem:aba2edb798100e36799a30139d385c383 inherit pub_attribs_class_tensor_product_space" id="r_aba2edb798100e36799a30139d385c383"><td class="memItemLeft" align="right" valign="top">std::function&lt; void(<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classparallel_1_1fullydistributed_1_1Triangulation.html">parallel::fullydistributed::Triangulation</a>&lt; reduced_dim, spacedim &gt; &amp;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#aba2edb798100e36799a30139d385c383">make_reduced_grid</a></td></tr>
-<tr class="separator:aba2edb798100e36799a30139d385c383 inherit pub_attribs_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a632d48ca57cb9afc61af762d5950afd0 inherit pub_attribs_class_tensor_product_space" id="r_a632d48ca57cb9afc61af762d5950afd0"><td class="memItemLeft" align="right" valign="top">std::function&lt; void(<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classparallel_1_1fullydistributed_1_1Triangulation.html">parallel::fullydistributed::Triangulation</a>&lt; reduced_dim, spacedim &gt; &amp;)&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#a632d48ca57cb9afc61af762d5950afd0">set_partitioner</a></td></tr>
+<tr class="separator:a632d48ca57cb9afc61af762d5950afd0 inherit pub_attribs_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_static_attribs_class_tensor_product_space"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_static_attribs_class_tensor_product_space')"><img src="closed.png" alt="-"/>&#160;Static Public Attributes inherited from <a class="el" href="class_tensor_product_space.html">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;</a></td></tr>
 <tr class="memitem:aa0ba7d94dee866558a6b7796bcf3ce7b inherit pub_static_attribs_class_tensor_product_space" id="r_aa0ba7d94dee866558a6b7796bcf3ce7b"><td class="memItemLeft" align="right" valign="top">static constexpr int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#aa0ba7d94dee866558a6b7796bcf3ce7b">cross_section_dim</a></td></tr>
 <tr class="separator:aa0ba7d94dee866558a6b7796bcf3ce7b inherit pub_static_attribs_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_methods_class_tensor_product_space"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_methods_class_tensor_product_space')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="class_tensor_product_space.html">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;</a></td></tr>
+<tr class="memitem:a9c674b79c07283baa9313285fcd7f6fc inherit pro_methods_class_tensor_product_space" id="r_a9c674b79c07283baa9313285fcd7f6fc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#a9c674b79c07283baa9313285fcd7f6fc">setup_dofs</a> ()</td></tr>
+<tr class="separator:a9c674b79c07283baa9313285fcd7f6fc inherit pro_methods_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef82b4843a1bfee806a6c887d5bc862f inherit pro_methods_class_tensor_product_space" id="r_aef82b4843a1bfee806a6c887d5bc862f"><td class="memItemLeft" align="right" valign="top">std::map&lt; unsigned int, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classIndexSet.html">IndexSet</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#aef82b4843a1bfee806a6c887d5bc862f">local_q_point_indices_to_global_cell_indices</a> (const std::map&lt; unsigned int, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classIndexSet.html">IndexSet</a> &gt; &amp;local_q_point_indices) const</td></tr>
+<tr class="separator:aef82b4843a1bfee806a6c887d5bc862f inherit pro_methods_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_class_tensor_product_space"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_class_tensor_product_space')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="class_tensor_product_space.html">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;</a></td></tr>
+<tr class="memitem:a088de87c814c2260ab72908eee858405 inherit pro_attribs_class_tensor_product_space" id="r_a088de87c814c2260ab72908eee858405"><td class="memItemLeft" align="right" valign="top">MPI_Comm&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#a088de87c814c2260ab72908eee858405">mpi_communicator</a></td></tr>
+<tr class="separator:a088de87c814c2260ab72908eee858405 inherit pro_attribs_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeac8fc62e7461ad1b78cf990bfb6aaa4 inherit pro_attribs_class_tensor_product_space" id="r_aeac8fc62e7461ad1b78cf990bfb6aaa4"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="struct_tensor_product_space_parameters.html">TensorProductSpaceParameters</a>&lt; reduced_dim, dim, spacedim, n_components &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#aeac8fc62e7461ad1b78cf990bfb6aaa4">par</a></td></tr>
+<tr class="separator:aeac8fc62e7461ad1b78cf990bfb6aaa4 inherit pro_attribs_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcc2cef949552a8770243575b0649e01 inherit pro_attribs_class_tensor_product_space" id="r_afcc2cef949552a8770243575b0649e01"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_reference_cross_section.html">ReferenceCrossSection</a>&lt; <a class="el" href="class_tensor_product_space.html#aa0ba7d94dee866558a6b7796bcf3ce7b">cross_section_dim</a>, spacedim, n_components &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#afcc2cef949552a8770243575b0649e01">reference_cross_section</a></td></tr>
+<tr class="separator:afcc2cef949552a8770243575b0649e01 inherit pro_attribs_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0555a97d439e7a728c8fc79b4d3c8d9e inherit pro_attribs_class_tensor_product_space" id="r_a0555a97d439e7a728c8fc79b4d3c8d9e"><td class="memItemLeft" align="right" valign="top"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classparallel_1_1fullydistributed_1_1Triangulation.html">parallel::fullydistributed::Triangulation</a>&lt; reduced_dim, spacedim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#a0555a97d439e7a728c8fc79b4d3c8d9e">triangulation</a></td></tr>
+<tr class="separator:a0555a97d439e7a728c8fc79b4d3c8d9e inherit pro_attribs_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aff4bb0c3ac8fa55f91a1c4328d7aa62c inherit pro_attribs_class_tensor_product_space" id="r_aff4bb0c3ac8fa55f91a1c4328d7aa62c"><td class="memItemLeft" align="right" valign="top"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFESystem.html">FESystem</a>&lt; reduced_dim, spacedim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#aff4bb0c3ac8fa55f91a1c4328d7aa62c">fe</a></td></tr>
+<tr class="separator:aff4bb0c3ac8fa55f91a1c4328d7aa62c inherit pro_attribs_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7be7a7ea957648a93ac2f97510a8ede inherit pro_attribs_class_tensor_product_space" id="r_ae7be7a7ea957648a93ac2f97510a8ede"><td class="memItemLeft" align="right" valign="top"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classQGauss.html">QGauss</a>&lt; reduced_dim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#ae7be7a7ea957648a93ac2f97510a8ede">quadrature_formula</a></td></tr>
+<tr class="separator:ae7be7a7ea957648a93ac2f97510a8ede inherit pro_attribs_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4af4c3bfde43b7397006a7c739a3118 inherit pro_attribs_class_tensor_product_space" id="r_ac4af4c3bfde43b7397006a7c739a3118"><td class="memItemLeft" align="right" valign="top"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDoFHandler.html">DoFHandler</a>&lt; reduced_dim, spacedim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#ac4af4c3bfde43b7397006a7c739a3118">dof_handler</a></td></tr>
+<tr class="separator:ac4af4c3bfde43b7397006a7c739a3118 inherit pro_attribs_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fb71975c9bde50d7445a3a89f4243ad inherit pro_attribs_class_tensor_product_space" id="r_a6fb71975c9bde50d7445a3a89f4243ad"><td class="memItemLeft" align="right" valign="top">std::map&lt; <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#a88f8129eb3e40ecc8022e92a1e15d70e">types::global_cell_index</a>, std::vector&lt; <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#a3543786f7dc7c57385fc923a6afd5917">types::global_dof_index</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#a6fb71975c9bde50d7445a3a89f4243ad">global_cell_to_dof_indices</a></td></tr>
+<tr class="separator:a6fb71975c9bde50d7445a3a89f4243ad inherit pro_attribs_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6042407fda8f143e02392d3f63b96440 inherit pro_attribs_class_tensor_product_space" id="r_a6042407fda8f143e02392d3f63b96440"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classPoint.html">Point</a>&lt; spacedim &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#a6042407fda8f143e02392d3f63b96440">all_qpoints</a></td></tr>
+<tr class="separator:a6042407fda8f143e02392d3f63b96440 inherit pro_attribs_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f1df2b7b715bc483f942c4ac86b2b53 inherit pro_attribs_class_tensor_product_space" id="r_a1f1df2b7b715bc483f942c4ac86b2b53"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#a1f1df2b7b715bc483f942c4ac86b2b53">all_weights</a></td></tr>
+<tr class="separator:a1f1df2b7b715bc483f942c4ac86b2b53 inherit pro_attribs_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a06f68f2beb432271a8bd7733646a51cc inherit pro_attribs_class_tensor_product_space" id="r_a06f68f2beb432271a8bd7733646a51cc"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classPoint.html">Point</a>&lt; spacedim &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#a06f68f2beb432271a8bd7733646a51cc">reduced_qpoints</a></td></tr>
+<tr class="separator:a06f68f2beb432271a8bd7733646a51cc inherit pro_attribs_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0887cc315c08ab53ef6441dad22dc8f4 inherit pro_attribs_class_tensor_product_space" id="r_a0887cc315c08ab53ef6441dad22dc8f4"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; double &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#a0887cc315c08ab53ef6441dad22dc8f4">reduced_weights</a></td></tr>
+<tr class="separator:a0887cc315c08ab53ef6441dad22dc8f4 inherit pro_attribs_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae671f1945bf823050d7ea2a16d99dafc inherit pro_attribs_class_tensor_product_space" id="r_ae671f1945bf823050d7ea2a16d99dafc"><td class="memItemLeft" align="right" valign="top"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classLinearAlgebra_1_1distributed_1_1Vector.html">LinearAlgebra::distributed::Vector</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#ae671f1945bf823050d7ea2a16d99dafc">properties</a></td></tr>
+<tr class="separator:ae671f1945bf823050d7ea2a16d99dafc inherit pro_attribs_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3252be08d0cb9ba5ac5096880c29433f inherit pro_attribs_class_tensor_product_space" id="r_a3252be08d0cb9ba5ac5096880c29433f"><td class="memItemLeft" align="right" valign="top"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDoFHandler.html">DoFHandler</a>&lt; reduced_dim, spacedim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#a3252be08d0cb9ba5ac5096880c29433f">properties_dh</a></td></tr>
+<tr class="separator:a3252be08d0cb9ba5ac5096880c29433f inherit pro_attribs_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0493045e956d52005396b66fe25fbbc inherit pro_attribs_class_tensor_product_space" id="r_ac0493045e956d52005396b66fe25fbbc"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_tensor_product_space.html#ac0493045e956d52005396b66fe25fbbc">properties_names</a></td></tr>
+<tr class="separator:ac0493045e956d52005396b66fe25fbbc inherit pro_attribs_class_tensor_product_space"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_class_particle_coupling"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_class_particle_coupling')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="class_particle_coupling.html">ParticleCoupling&lt; dim &gt;</a></td></tr>
+<tr class="memitem:aed05ad3e1fe40081a41a4f21f3805842 inherit pro_attribs_class_particle_coupling" id="r_aed05ad3e1fe40081a41a4f21f3805842"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="class_particle_coupling_parameters.html">ParticleCouplingParameters</a>&lt; dim &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_particle_coupling.html#aed05ad3e1fe40081a41a4f21f3805842">par</a></td></tr>
+<tr class="memdesc:aed05ad3e1fe40081a41a4f21f3805842 inherit pro_attribs_class_particle_coupling"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parameters for particle coupling.  <br /></td></tr>
+<tr class="separator:aed05ad3e1fe40081a41a4f21f3805842 inherit pro_attribs_class_particle_coupling"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac4e8d8547d42bfd63578d952e7acc1b1 inherit pro_attribs_class_particle_coupling" id="r_ac4e8d8547d42bfd63578d952e7acc1b1"><td class="memItemLeft" align="right" valign="top">MPI_Comm&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_particle_coupling.html#ac4e8d8547d42bfd63578d952e7acc1b1">mpi_communicator</a></td></tr>
+<tr class="memdesc:ac4e8d8547d42bfd63578d952e7acc1b1 inherit pro_attribs_class_particle_coupling"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the MPI communicator associated with the triangulation.  <br /></td></tr>
+<tr class="separator:ac4e8d8547d42bfd63578d952e7acc1b1 inherit pro_attribs_class_particle_coupling"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad68b91330e2f49078d21834656afab06 inherit pro_attribs_class_particle_coupling" id="r_ad68b91330e2f49078d21834656afab06"><td class="memItemLeft" align="right" valign="top"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/observer__pointer_8h.html#a3b6d40085e56aa07e0ac14c306ddb0cd">SmartPointer</a>&lt; const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classparallel_1_1TriangulationBase.html">parallel::TriangulationBase</a>&lt; dim &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_particle_coupling.html#ad68b91330e2f49078d21834656afab06">tria_background</a></td></tr>
+<tr class="memdesc:ad68b91330e2f49078d21834656afab06 inherit pro_attribs_class_particle_coupling"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smart pointer to the background triangulation.  <br /></td></tr>
+<tr class="separator:ad68b91330e2f49078d21834656afab06 inherit pro_attribs_class_particle_coupling"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a16dabfa6dffde1b0c0b5cfe6519f55c4 inherit pro_attribs_class_particle_coupling" id="r_a16dabfa6dffde1b0c0b5cfe6519f55c4"><td class="memItemLeft" align="right" valign="top"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/observer__pointer_8h.html#a3b6d40085e56aa07e0ac14c306ddb0cd">SmartPointer</a>&lt; const <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classMapping.html">Mapping</a>&lt; dim &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_particle_coupling.html#a16dabfa6dffde1b0c0b5cfe6519f55c4">mapping</a></td></tr>
+<tr class="memdesc:a16dabfa6dffde1b0c0b5cfe6519f55c4 inherit pro_attribs_class_particle_coupling"><td class="mdescLeft">&#160;</td><td class="mdescRight">Smart pointer to the mapping associated with the triangulation.  <br /></td></tr>
+<tr class="separator:a16dabfa6dffde1b0c0b5cfe6519f55c4 inherit pro_attribs_class_particle_coupling"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35437acd2153c4069277f2a5efc57501 inherit pro_attribs_class_particle_coupling" id="r_a35437acd2153c4069277f2a5efc57501"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classBoundingBox.html">BoundingBox</a>&lt; dim &gt; &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_particle_coupling.html#a35437acd2153c4069277f2a5efc57501">global_bounding_boxes</a></td></tr>
+<tr class="separator:a35437acd2153c4069277f2a5efc57501 inherit pro_attribs_class_particle_coupling"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9a35d3a035103f2d61efe90d0670195 inherit pro_attribs_class_particle_coupling" id="r_ad9a35d3a035103f2d61efe90d0670195"><td class="memItemLeft" align="right" valign="top"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParticles_1_1ParticleHandler.html">Particles::ParticleHandler</a>&lt; dim &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_particle_coupling.html#ad9a35d3a035103f2d61efe90d0670195">particles</a></td></tr>
+<tr class="memdesc:ad9a35d3a035103f2d61efe90d0670195 inherit pro_attribs_class_particle_coupling"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handler for managing particles in the simulation.  <br /></td></tr>
+<tr class="separator:ad9a35d3a035103f2d61efe90d0670195 inherit pro_attribs_class_particle_coupling"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;int reduced_dim, int dim, int spacedim = dim, int n_components = 1&gt;<br />
@@ -248,7 +319,7 @@ class ReducedCoupling&lt; reduced_dim, dim, spacedim, n_components &gt;</div><p>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00120">120</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00119">119</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a7af034f810c9b639400fc88eceffb638" name="a7af034f810c9b639400fc88eceffb638"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a7af034f810c9b639400fc88eceffb638">&#9670;&#160;</a></span>ReducedCoupling()</h2>
@@ -280,11 +351,44 @@ template&lt;int reduced_dim, int dim, int spacedim = dim, int n_components = 1&g
   </dd>
 </dl>
 
-<p class="reference">References <a class="el" href="reduced__coupling_8h_source.html#l00218">background_tria</a>, and <a class="el" href="reduced__coupling_8h_source.html#l00213">par</a>.</p>
+<p class="reference">References <a class="el" href="reduced__coupling_8h_source.html#l00223">background_tria</a>, and <a class="el" href="reduced__coupling_8h_source.html#l00218">par</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a id="a0bc7c1d58f6ef401ff171e9ea85da542" name="a0bc7c1d58f6ef401ff171e9ea85da542"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bc7c1d58f6ef401ff171e9ea85da542">&#9670;&#160;</a></span>assemble_coupling_mass_matrix()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
+<div class="memtemplate">
+template&lt;typename MatrixType&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void <a class="el" href="struct_reduced_coupling.html">ReducedCoupling</a>&lt; reduced_dim, dim, spacedim, n_components &gt;::assemble_coupling_mass_matrix </td>
+          <td>(</td>
+          <td class="paramtype">MatrixType &amp;</td>          <td class="paramname"><span class="paramname"><em>mass_matrix</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00343">343</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
+
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/structVectorOperation.html#a40c50779cd14ba89bbf0bd9b4561964cae1077e8dbf4afea5d2df8c8b723c0708">VectorOperation::add</a>, <a class="el" href="reduced__coupling_8h_source.html#l00228">coupling_constraints</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a882d88a0ec136a41cdcb553dbd67f85c">FEValues&lt; int dim, int spacedim &gt;::dof_indices()</a>, <a class="el" href="tensor__product__space_8h_source.html#l00362">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::fe</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00156">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::get_dof_handler()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#ae7c646a73ec8ee15d1378ac8b89afa9a">FEValues&lt; int dim, int spacedim &gt;::get_fe()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a33e437195106aee8e3ad88b2dd40d223">FEValues&lt; int dim, int spacedim &gt;::get_function_values()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a12f35f70a163d65a9ac381a73d3b909e">FEValues&lt; int dim, int spacedim &gt;::get_JxW_values()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00386">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::get_quadrature()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00087">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::get_reference_cross_section()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacenumbers.html#a467f5cb204969e195914273bd5a84e33">numbers::invalid_unsigned_int</a>, <a class="el" href="reduced__coupling_8h_source.html#l00218">par</a>, <a class="el" href="tensor__product__space_8h_source.html#l00392">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::properties</a>, <a class="el" href="tensor__product__space_8h_source.html#l00397">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::properties_dh</a>, <a class="el" href="tensor__product__space_8h_source.html#l00402">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::properties_names</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a8c564784dcd8d2f2a3e2f2fb19553721">FEValues&lt; int dim, int spacedim &gt;::quadrature_point_indices()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValues.html#acc8fe9d042c6b5e5da89858400feb24f">FEValues&lt; int dim, int spacedim &gt;::reinit()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aeb39cbae775d47d3267af71434f68510">FEValues&lt; int dim, int spacedim &gt;::shape_value()</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFiniteElement.html#a86644fe67824373cd51e9ff7fca94f8c">FiniteElement&lt; int dim, int spacedim &gt;::system_to_component_index()</a>.</p>
+
+</div>
+</div>
 <a id="a134df09d3c251c94d48c420cdfed516d" name="a134df09d3c251c94d48c420cdfed516d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a134df09d3c251c94d48c420cdfed516d">&#9670;&#160;</a></span>assemble_coupling_matrix()</h2>
 
@@ -337,9 +441,9 @@ template&lt;typename MatrixType&gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00237">237</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00248">248</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/structVectorOperation.html#a40c50779cd14ba89bbf0bd9b4561964cae1077e8dbf4afea5d2df8c8b723c0708">VectorOperation::add</a>, <a class="el" href="reduced__coupling_8h_source.html#l00223">coupling_constraints</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classAffineConstraints.html#a373fbdacd8c486e675b8d2bff8943192">AffineConstraints&lt; typename number &gt;::distribute_local_to_global()</a>, <a class="el" href="tensor__product__space_8h_source.html#l00323">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::fe</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00095">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::get_dof_handler()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00199">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::get_dof_indices()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDoFHandler.html#a4743f2b575dd746192be844d5238fa45">DoFHandler&lt; int dim, int spacedim &gt;::get_fe()</a>, <a class="el" href="particle__coupling_8cc_source.html#l00091">ParticleCoupling&lt; dim &gt;::get_particles()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00325">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::get_quadrature()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00088">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::get_reference_cross_section()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacenumbers.html#a467f5cb204969e195914273bd5a84e33">numbers::invalid_unsigned_int</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00213">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::particle_id_to_cell_and_qpoint_indices()</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/structVectorOperation.html#a40c50779cd14ba89bbf0bd9b4561964cae1077e8dbf4afea5d2df8c8b723c0708">VectorOperation::add</a>, <a class="el" href="reduced__coupling_8h_source.html#l00228">coupling_constraints</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classAffineConstraints.html#a373fbdacd8c486e675b8d2bff8943192">AffineConstraints&lt; typename number &gt;::distribute_local_to_global()</a>, <a class="el" href="tensor__product__space_8h_source.html#l00362">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::fe</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00156">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::get_dof_handler()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00260">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::get_dof_indices()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDoFHandler.html#a4743f2b575dd746192be844d5238fa45">DoFHandler&lt; int dim, int spacedim &gt;::get_fe()</a>, <a class="el" href="particle__coupling_8cc_source.html#l00091">ParticleCoupling&lt; dim &gt;::get_particles()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00386">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::get_quadrature()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00087">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::get_reference_cross_section()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacenumbers.html#a467f5cb204969e195914273bd5a84e33">numbers::invalid_unsigned_int</a>, and <a class="el" href="tensor__product__space_8cc_source.html#l00274">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::particle_id_to_cell_and_qpoint_indices()</a>.</p>
 
 </div>
 </div>
@@ -411,7 +515,7 @@ template&lt;typename VectorType&gt; </div>
 <p>Assemble the right-hand side vector for the reduced space. </p>
 <p>Computes the right-hand side vector for the reduced space based on the following assumption: we would like to assemble the following $&lt;Rg, w&gt; = \sum_i \int_Gamma \phi_i\cdot g w_i \circ \Pi$ for a function $g$ defined on the full domain $\Gamma$.</p>
 <p>Our assumption here is that the user does not provide $g$, but rather a function $\bar g$ defined on the reduced domain $\gamma$, such that $g = R^T \bar g$. With such a construction, we can specify, for example, a constant expression on the reduced domain by saying $g_0 = 1$, and we'd get $g = 1$ on the full domain. What we are actually assembling here is then $&lt;R R^T \bar g, w&gt; = &lt;R^T \bar g, R^T w&gt; = \sum_i \int_gamma \bar g_i \cdot w_i \int_D \phi_i^2 dD d\gamma$.</p>
-<p>We know that $\int_D \phi_i^2 dD = \int_{\hat D} \hat{\phi}_i^2 J d\hat{D} = |\hat{D}| a^d = |D|$ is the scaling factor of the basis functions, where $a$ is the scaling of the cross-section.</p>
+<p>We know that $\int_D \phi_i^2 dD = \int_{\hat D} \hat{\phi}_i^2 J d\hat{D} = |\hat{D}| a^d = |D|$ is the scaling factor of the basis functions, where $a$ is the scaling of the cross-section. Notice that this means, in particular, that $||\phi_i||^2 = |D|$, and that this is the scaling that should be used in the mass matrix.</p>
 <dl class="tparams"><dt>Template Parameters</dt><dd>
   <table class="tparams">
     <tr><td class="paramname">VectorType</td><td>The vector type (e.g., <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classVector.html">Vector&lt;double&gt;</a>). </td></tr>
@@ -425,9 +529,9 @@ template&lt;typename VectorType&gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00333">333</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00433">433</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/structVectorOperation.html#a40c50779cd14ba89bbf0bd9b4561964cae1077e8dbf4afea5d2df8c8b723c0708">VectorOperation::add</a>, <a class="el" href="reduced__coupling_8h_source.html#l00223">coupling_constraints</a>, <a class="el" href="reduced__coupling_8h_source.html#l00228">coupling_rhs</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a882d88a0ec136a41cdcb553dbd67f85c">FEValues&lt; int dim, int spacedim &gt;::dof_indices()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00095">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::get_dof_handler()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#ae7c646a73ec8ee15d1378ac8b89afa9a">FEValues&lt; int dim, int spacedim &gt;::get_fe()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a12f35f70a163d65a9ac381a73d3b909e">FEValues&lt; int dim, int spacedim &gt;::get_JxW_values()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00325">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::get_quadrature()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a351e7a77fe4323c4bda53a55dba12233">FEValues&lt; int dim, int spacedim &gt;::get_quadrature_points()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00088">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::get_reference_cross_section()</a>, <a class="el" href="reduced__coupling_8h_source.html#l00213">par</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a8c564784dcd8d2f2a3e2f2fb19553721">FEValues&lt; int dim, int spacedim &gt;::quadrature_point_indices()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValues.html#acc8fe9d042c6b5e5da89858400feb24f">FEValues&lt; int dim, int spacedim &gt;::reinit()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aeb39cbae775d47d3267af71434f68510">FEValues&lt; int dim, int spacedim &gt;::shape_value()</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFiniteElement.html#a86644fe67824373cd51e9ff7fca94f8c">FiniteElement&lt; int dim, int spacedim &gt;::system_to_component_index()</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/structVectorOperation.html#a40c50779cd14ba89bbf0bd9b4561964cae1077e8dbf4afea5d2df8c8b723c0708">VectorOperation::add</a>, <a class="el" href="reduced__coupling_8h_source.html#l00228">coupling_constraints</a>, <a class="el" href="reduced__coupling_8h_source.html#l00233">coupling_rhs</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a882d88a0ec136a41cdcb553dbd67f85c">FEValues&lt; int dim, int spacedim &gt;::dof_indices()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00156">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::get_dof_handler()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#ae7c646a73ec8ee15d1378ac8b89afa9a">FEValues&lt; int dim, int spacedim &gt;::get_fe()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a33e437195106aee8e3ad88b2dd40d223">FEValues&lt; int dim, int spacedim &gt;::get_function_values()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a12f35f70a163d65a9ac381a73d3b909e">FEValues&lt; int dim, int spacedim &gt;::get_JxW_values()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00386">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::get_quadrature()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a351e7a77fe4323c4bda53a55dba12233">FEValues&lt; int dim, int spacedim &gt;::get_quadrature_points()</a>, <a class="el" href="tensor__product__space_8cc_source.html#l00087">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::get_reference_cross_section()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacenumbers.html#a467f5cb204969e195914273bd5a84e33">numbers::invalid_unsigned_int</a>, <a class="el" href="reduced__coupling_8h_source.html#l00218">par</a>, <a class="el" href="tensor__product__space_8h_source.html#l00392">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::properties</a>, <a class="el" href="tensor__product__space_8h_source.html#l00397">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::properties_dh</a>, <a class="el" href="tensor__product__space_8h_source.html#l00402">TensorProductSpace&lt; reduced_dim, dim, dim, 1 &gt;::properties_names</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a8c564784dcd8d2f2a3e2f2fb19553721">FEValues&lt; int dim, int spacedim &gt;::quadrature_point_indices()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValues.html#acc8fe9d042c6b5e5da89858400feb24f">FEValues&lt; int dim, int spacedim &gt;::reinit()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aeb39cbae775d47d3267af71434f68510">FEValues&lt; int dim, int spacedim &gt;::shape_value()</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFiniteElement.html#a86644fe67824373cd51e9ff7fca94f8c">FiniteElement&lt; int dim, int spacedim &gt;::system_to_component_index()</a>.</p>
 
 </div>
 </div>
@@ -507,7 +611,7 @@ template&lt;int reduced_dim, int dim, int spacedim = dim, int n_components = 1&g
 
 <p>The triangulation of the background domain. </p>
 
-<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00218">218</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00223">223</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="#a7af034f810c9b639400fc88eceffb638">ReducedCoupling()</a>.</p>
 
@@ -537,9 +641,9 @@ template&lt;int reduced_dim, int dim, int spacedim = dim, int n_components = 1&g
 
 <p>Affine constraints for the coupling. </p>
 
-<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00223">223</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00228">228</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="reduced__coupling_8h_source.html#l00238">assemble_coupling_matrix()</a>, and <a class="el" href="reduced__coupling_8h_source.html#l00333">assemble_reduced_rhs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="reduced__coupling_8h_source.html#l00344">assemble_coupling_mass_matrix()</a>, <a class="el" href="reduced__coupling_8h_source.html#l00249">assemble_coupling_matrix()</a>, and <a class="el" href="reduced__coupling_8h_source.html#l00433">assemble_reduced_rhs()</a>.</p>
 
 </div>
 </div>
@@ -567,9 +671,36 @@ template&lt;int reduced_dim, int dim, int spacedim = dim, int n_components = 1&g
 
 <p>The right-hand side function for the coupling. </p>
 
-<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00228">228</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00233">233</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="reduced__coupling_8h_source.html#l00333">assemble_reduced_rhs()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="reduced__coupling_8h_source.html#l00433">assemble_reduced_rhs()</a>.</p>
+
+</div>
+</div>
+<a id="a0a2dac7df818128b87814e73c94bee93" name="a0a2dac7df818128b87814e73c94bee93"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0a2dac7df818128b87814e73c94bee93">&#9670;&#160;</a></span>immersed_partitioner</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int reduced_dim, int dim, int spacedim = dim, int n_components = 1&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_immersed_repartitioner.html">ImmersedRepartitioner</a>&lt;reduced_dim, spacedim&gt; <a class="el" href="struct_reduced_coupling.html">ReducedCoupling</a>&lt; reduced_dim, dim, spacedim, n_components &gt;::immersed_partitioner</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>An <a class="el" href="class_immersed_repartitioner.html" title="A class implementing a repartitioning policy for immersed triangulations.">ImmersedRepartitioner</a> object that handles the repartitioning of the triangulation. </p>
+
+<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00239">239</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
 
 </div>
 </div>
@@ -597,7 +728,7 @@ template&lt;int reduced_dim, int dim, int spacedim = dim, int n_components = 1&g
 
 <p>The MPI communicator used for parallel operations. </p>
 
-<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00207">207</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00212">212</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
 
 </div>
 </div>
@@ -625,9 +756,9 @@ template&lt;int reduced_dim, int dim, int spacedim = dim, int n_components = 1&g
 
 <p>Reference to the parameters used for this coupling. </p>
 
-<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00213">213</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="reduced__coupling_8h_source.html#l00218">218</a> of file <a class="el" href="reduced__coupling_8h_source.html">reduced_coupling.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="reduced__coupling_8h_source.html#l00333">assemble_reduced_rhs()</a>, and <a class="el" href="#a7af034f810c9b639400fc88eceffb638">ReducedCoupling()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="reduced__coupling_8h_source.html#l00344">assemble_coupling_mass_matrix()</a>, <a class="el" href="reduced__coupling_8h_source.html#l00433">assemble_reduced_rhs()</a>, and <a class="el" href="#a7af034f810c9b639400fc88eceffb638">ReducedCoupling()</a>.</p>
 
 </div>
 </div>
@@ -640,7 +771,7 @@ template&lt;int reduced_dim, int dim, int spacedim = dim, int n_components = 1&g
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="struct_reduced_coupling.html">ReducedCoupling</a></li>
-    <li class="footer">Generated on Mon May 12 2025 14:12:46 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Sun May 18 2025 21:39:32 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

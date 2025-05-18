@@ -209,8 +209,13 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a6932cbae4c1adf139da3219114239b4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0b5b4584e5baf037f8f01cc85b333192" id="r_a0b5b4584e5baf037f8f01cc85b333192"><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0b5b4584e5baf037f8f01cc85b333192">n_q_points</a> = 0</td></tr>
 <tr class="separator:a0b5b4584e5baf037f8f01cc85b333192"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af81d11a8e4e96ef5c7bf07da742671d1" id="r_af81d11a8e4e96ef5c7bf07da742671d1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af81d11a8e4e96ef5c7bf07da742671d1">radius</a> = 0.01</td></tr>
-<tr class="separator:af81d11a8e4e96ef5c7bf07da742671d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac186f20d54068f5f7207613fe6536a1d" id="r_ac186f20d54068f5f7207613fe6536a1d"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac186f20d54068f5f7207613fe6536a1d">thickness</a> = 0.01</td></tr>
+<tr class="separator:ac186f20d54068f5f7207613fe6536a1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23249b301de97573795b5b6633174620" id="r_a23249b301de97573795b5b6633174620"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a23249b301de97573795b5b6633174620">thickness_field_name</a> = &quot;&quot;</td></tr>
+<tr class="separator:a23249b301de97573795b5b6633174620"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73e569783c882d0e1613f27adae687d8" id="r_a73e569783c882d0e1613f27adae687d8"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a73e569783c882d0e1613f27adae687d8">reduced_grid_name</a> = &quot;&quot;</td></tr>
+<tr class="memdesc:a73e569783c882d0e1613f27adae687d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Name of the grid to read from a file.  <br /></td></tr>
+<tr class="separator:a73e569783c882d0e1613f27adae687d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_classParameterAcceptor"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classParameterAcceptor')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el"  href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html">ParameterAcceptor</a></td></tr>
 <tr class="memitem:a1704a7098e692599c254a14c15ab05d2 inherit pub_attribs_classParameterAcceptor" id="r_a1704a7098e692599c254a14c15ab05d2"><td class="memItemLeft" align="right" valign="top">boost::signals2::signal&lt; void()&gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#a1704a7098e692599c254a14c15ab05d2">declare_parameters_call_back</a></td></tr>
 <tr class="separator:a1704a7098e692599c254a14c15ab05d2 inherit pub_attribs_classParameterAcceptor"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -267,7 +272,7 @@ struct TensorProductSpaceParameters&lt; reduced_dim, dim, spacedim, n_components
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00053">53</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00057">57</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a4499874681baaa4c99f21f09f23aa0ba" name="a4499874681baaa4c99f21f09f23aa0ba"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4499874681baaa4c99f21f09f23aa0ba">&#9670;&#160;</a></span>TensorProductSpaceParameters()</h2>
@@ -288,9 +293,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>Default constructor.</p>
 <p>Initializes the parameters for the tensor product space with default values. </p>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00028">28</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8cc_source.html#l00033">33</a> of file <a class="el" href="tensor__product__space_8cc_source.html">tensor_product_space.cc</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#af2a534c7f1ea5bfa165fa8a469744a5d">ParameterAcceptor::add_parameter()</a>, <a class="el" href="tensor__product__space_8h_source.html#l00087">fe_degree</a>, <a class="el" href="tensor__product__space_8h_source.html#l00097">n_q_points</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#a7bf9ccbc4d618a248324748a41f625cf">ParameterAcceptor::ParameterAcceptor()</a>, and <a class="el" href="tensor__product__space_8h_source.html#l00102">radius</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#af2a534c7f1ea5bfa165fa8a469744a5d">ParameterAcceptor::add_parameter()</a>, <a class="el" href="tensor__product__space_8h_source.html#l00091">fe_degree</a>, <a class="el" href="tensor__product__space_8h_source.html#l00101">n_q_points</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#a7bf9ccbc4d618a248324748a41f625cf">ParameterAcceptor::ParameterAcceptor()</a>, <a class="el" href="tensor__product__space_8h_source.html#l00119">reduced_grid_name</a>, <a class="el" href="tensor__product__space_8h_source.html#l00106">thickness</a>, and <a class="el" href="tensor__product__space_8h_source.html#l00114">thickness_field_name</a>.</p>
 
 </div>
 </div>
@@ -319,7 +324,7 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>The dimensionality of the cross-section.</p>
 <p>This is computed as the difference between the full dimensionality (<code>dim</code>) and the reduced dimensionality (<code>reduced_dim</code>). </p>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00069">69</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00073">73</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
 
 </div>
 </div>
@@ -339,9 +344,9 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>The degree of the finite element basis functions.</p>
 <p>Specifies the polynomial degree of the finite element basis functions used in the tensor product space. Default value is 1. </p>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00087">87</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00091">91</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00029">TensorProductSpaceParameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00034">TensorProductSpaceParameters()</a>.</p>
 
 </div>
 </div>
@@ -361,14 +366,14 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>Number of quadrature points to be used in the reduced domain.</p>
 <p>This parameter controls the accuracy of the numerical integration in the reduced domain. If left to zero, the number of quadrature points will be set to the minimum required for the finite element degree. </p>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00097">97</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00101">101</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00029">TensorProductSpaceParameters()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00034">TensorProductSpaceParameters()</a>.</p>
 
 </div>
 </div>
-<a id="af81d11a8e4e96ef5c7bf07da742671d1" name="af81d11a8e4e96ef5c7bf07da742671d1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af81d11a8e4e96ef5c7bf07da742671d1">&#9670;&#160;</a></span>radius</h2>
+<a id="a73e569783c882d0e1613f27adae687d8" name="a73e569783c882d0e1613f27adae687d8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a73e569783c882d0e1613f27adae687d8">&#9670;&#160;</a></span>reduced_grid_name</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -376,15 +381,16 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">double <a class="el" href="struct_tensor_product_space_parameters.html">TensorProductSpaceParameters</a>&lt; reduced_dim, dim, spacedim, n_components &gt;::radius = 0.01</td>
+          <td class="memname">std::string <a class="el" href="struct_tensor_product_space_parameters.html">TensorProductSpaceParameters</a>&lt; reduced_dim, dim, spacedim, n_components &gt;::reduced_grid_name = &quot;&quot;</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Radius of the inclusion. </p>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00102">102</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p>Name of the grid to read from a file. </p>
 
-<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00029">TensorProductSpaceParameters()</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00119">119</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00034">TensorProductSpaceParameters()</a>.</p>
 
 </div>
 </div>
@@ -404,7 +410,49 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <p>Parameters for the reference cross-section.</p>
 <p>This member holds the parameters for the reference cross-section of the tensor product space. The cross-section is defined in a space of dimensionality <code>cross_section_dim</code>. </p>
 
-<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00079">79</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00083">83</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+
+</div>
+</div>
+<a id="ac186f20d54068f5f7207613fe6536a1d" name="ac186f20d54068f5f7207613fe6536a1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac186f20d54068f5f7207613fe6536a1d">&#9670;&#160;</a></span>thickness</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">double <a class="el" href="struct_tensor_product_space_parameters.html">TensorProductSpaceParameters</a>&lt; reduced_dim, dim, spacedim, n_components &gt;::thickness = 0.01</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Thickness of the inclusion. </p>
+
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00106">106</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00034">TensorProductSpaceParameters()</a>.</p>
+
+</div>
+</div>
+<a id="a23249b301de97573795b5b6633174620" name="a23249b301de97573795b5b6633174620"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23249b301de97573795b5b6633174620">&#9670;&#160;</a></span>thickness_field_name</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string <a class="el" href="struct_tensor_product_space_parameters.html">TensorProductSpaceParameters</a>&lt; reduced_dim, dim, spacedim, n_components &gt;::thickness_field_name = &quot;&quot;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Name of the field name to use for the thickness of the inclusion. This is read from the reduced_grid_name file. If empty, the thickness is assumed to be constant, and taken from the tensor_product_space_parameters.thickness argument. </p>
+
+<p class="definition">Definition at line <a class="el" href="tensor__product__space_8h_source.html#l00114">114</a> of file <a class="el" href="tensor__product__space_8h_source.html">tensor_product_space.h</a>.</p>
+
+<p class="reference">Referenced by <a class="el" href="tensor__product__space_8cc_source.html#l00034">TensorProductSpaceParameters()</a>.</p>
 
 </div>
 </div>
@@ -418,7 +466,7 @@ template&lt;int reduced_dim, int dim, int spacedim, int n_components&gt; </div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="struct_tensor_product_space_parameters.html">TensorProductSpaceParameters</a></li>
-    <li class="footer">Generated on Mon May 12 2025 14:12:46 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Sun May 18 2025 21:39:32 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>
