@@ -31,7 +31,6 @@
 #include <cmath>
 
 // BloodFlowParameters implementation
-// Python equivalent: modelBloodFlow.py::model.__init__ (line 33)
 BloodFlowParameters::BloodFlowParameters()
   : ParameterAcceptor("Blood Flow Parameters")
 {
@@ -95,7 +94,6 @@ BloodFlow1D<spacedim>::BloodFlow1D(BloodFlowParameters &parameters_)
 {}
 
 template <int spacedim>
-// Python equivalent: main_bfe_network.py::main time loop (lines 234-327)
 void
 BloodFlow1D<spacedim>::run()
 {
@@ -107,12 +105,6 @@ BloodFlow1D<spacedim>::run()
     read_mesh_and_data();
     setup_system();
     setup_boundary_conditions();
-
-    // Use new initial condition function
-    // Python equivalent: vessel.setInitialCondition(pIni, uIni)
-    const double initial_pressure = parameters.reference_pressure;
-    const double initial_velocity = 10.0; // cm/s - typical resting velocity
-    set_initial_conditions(initial_pressure, initial_velocity);
   }
 
   output_results();
@@ -128,12 +120,22 @@ BloodFlow1D<spacedim>::run()
             << " with dt=" << time_step << std::endl;
 
       {
-        TimerOutput::Scope t(computing_timer, "time step update");
-        update_solution_time_step();
+        TimerOutput::Scope t(computing_timer, "assembly");
+        assemble_system();
       }
+
+      {
+        TimerOutput::Scope t(computing_timer, "solve");
+        solve_time_step();
+      }
+
+      current_time += time_step;
+      ++timestep_number;
 
       if (timestep_number % parameters.output_frequency == 0)
         output_results();
+
+      check_physical_constraints();
     }
 
   computing_timer.print_summary();
@@ -141,7 +143,6 @@ BloodFlow1D<spacedim>::run()
 }
 
 template <int spacedim>
-// Python equivalent: scripts/convert_net_to_vtk.py::read_net_file (line 19)
 void
 BloodFlow1D<spacedim>::read_mesh_and_data()
 {
@@ -232,18 +233,16 @@ BloodFlow1D<spacedim>::read_mesh_and_data()
       compliances.reinit(n_cells);
 
       // Fill with default values
-      for (const auto &cell : triangulation.active_cell_iterators())
-        if (cell->is_locally_owned())
-          {
-            const unsigned int i = cell->global_active_cell_index();
-            vessel_ids[i]        = i;
-            lengths[i]     = cell->diameter(); // Use cell diameter as length
-            inlet_radii[i] = outlet_radii[i] = parameters.default_radius;
-            wave_speeds[i]                   = parameters.default_wave_speed;
-            inlet_bc_types[i] = outlet_bc_types[i] = 0;
-            resistances1[i] = resistances2[i] = 1000.0;
-            compliances[i]                    = 1e-6;
-          }
+      for (unsigned int i = 0; i < n_cells; ++i)
+        {
+          vessel_ids[i]  = i;
+          lengths[i]     = 1.0;
+          inlet_radii[i] = outlet_radii[i] = parameters.default_radius;
+          wave_speeds[i]                   = parameters.default_wave_speed;
+          inlet_bc_types[i] = outlet_bc_types[i] = 0;
+          resistances1[i] = resistances2[i] = 1000.0;
+          compliances[i]                    = 1e-6;
+        }
     }
 
   // Create vessel data structures
@@ -286,7 +285,6 @@ BloodFlow1D<spacedim>::read_mesh_and_data()
 }
 
 template <int spacedim>
-// Python equivalent: main_bfe_network.py::vessel setup (lines 129-135)
 void
 BloodFlow1D<spacedim>::setup_system()
 {
@@ -347,7 +345,6 @@ BloodFlow1D<spacedim>::setup_system()
 }
 
 template <int spacedim>
-// Python equivalent: boundary condition setup in vessel.py (lines 35-40)
 void
 BloodFlow1D<spacedim>::setup_boundary_conditions()
 {
@@ -356,7 +353,6 @@ BloodFlow1D<spacedim>::setup_boundary_conditions()
 }
 
 template <int spacedim>
-// Python equivalent: numerics.py::computeTimeStep (line 78)
 void
 BloodFlow1D<spacedim>::compute_time_step()
 {
@@ -392,8 +388,6 @@ BloodFlow1D<spacedim>::compute_time_step()
 }
 
 template <int spacedim>
-// Python equivalent: numerics.py::computeNewSolution assembly phase (lines
-// 115-200)
 void
 BloodFlow1D<spacedim>::assemble_system()
 {
@@ -617,8 +611,6 @@ BloodFlow1D<spacedim>::assemble_system()
 }
 
 template <int spacedim>
-// Python equivalent: numerics.py::computeNewSolution solve phase (lines
-// 260-280)
 void
 BloodFlow1D<spacedim>::solve_time_step()
 {
@@ -646,7 +638,6 @@ BloodFlow1D<spacedim>::solve_time_step()
 }
 
 template <int spacedim>
-// Python equivalent: vessel.py::dQ slope limiting (line 27)
 void
 BloodFlow1D<spacedim>::apply_slope_limiting()
 {
@@ -689,7 +680,6 @@ BloodFlow1D<spacedim>::apply_slope_limiting()
   solution.compress(VectorOperation::insert);
 }
 
-// Python equivalent: modelBloodFlow.py::model.physicalFlux (line 140)
 template <int spacedim>
 Vector<double>
 BloodFlow1D<spacedim>::compute_flux_function(const Vector<double> &state,
@@ -729,7 +719,6 @@ BloodFlow1D<spacedim>::compute_flux_function(const Vector<double> &state,
   return flux;
 }
 
-// Python equivalent: modelBloodFlow.py::model.pFa (line 95)
 template <int spacedim>
 double
 BloodFlow1D<spacedim>::compute_pressure(const double      area,
@@ -750,7 +739,6 @@ BloodFlow1D<spacedim>::compute_pressure(const double      area,
   return pressure;
 }
 
-// Python equivalent: modelBloodFlow.py::model.waveSpeed (line 117)
 template <int spacedim>
 double
 BloodFlow1D<spacedim>::compute_wave_speed_at_state(
@@ -764,8 +752,8 @@ BloodFlow1D<spacedim>::compute_wave_speed_at_state(
   // Wave speed from Python: c = sqrt(a/rho * dpda)
   // where dpda = K*(m*a^(m-1)/a0^m - n*a^(n-1)/a0^n)
   const double K = vessel_data.elastic_modulus;
-  const double m = parameters.tube_law_m;
-  const double n = parameters.tube_law_n;
+  const double m = 0.5; // Assuming simplified case
+  const double n = 0.0; // Assuming simplified case
 
   // dpda = K*(m*(A/A0)^(m-1)/A0 - n*(A/A0)^(n-1)/A0)
   const double dpda =
@@ -776,7 +764,6 @@ BloodFlow1D<spacedim>::compute_wave_speed_at_state(
   return c;
 }
 
-// Python equivalent: modelBloodFlow.py::model.riemannInvariants (line 578)
 template <int spacedim>
 std::pair<double, double>
 BloodFlow1D<spacedim>::compute_riemann_invariants(
@@ -791,7 +778,7 @@ BloodFlow1D<spacedim>::compute_riemann_invariants(
   //                   gri2= u-gamma*2./m*a**(m/2.)
   const double A0    = vessel_data.reference_area;
   const double K     = vessel_data.elastic_modulus;
-  const double m     = parameters.tube_law_m;
+  const double m     = 0.5; // Assuming simplified case
   const double gamma = std::sqrt(K * m / parameters.rho / std::pow(A0, m));
 
   const double riemann_term = gamma * 2.0 / m * std::pow(A, m / 2.0);
@@ -802,8 +789,6 @@ BloodFlow1D<spacedim>::compute_riemann_invariants(
   return std::make_pair(gri1, gri2);
 }
 
-// Python equivalent: modelBloodFlow.py::model.riemannInvariantIntegral (line
-// 267)
 template <int spacedim>
 double
 BloodFlow1D<spacedim>::riemann_invariant_integral(
@@ -815,7 +800,7 @@ BloodFlow1D<spacedim>::riemann_invariant_integral(
   // Integral: ∫[area_left to area_right] 2*c(A)/m * dA
   // where c(A) = sqrt(A/rho * K*m*(A/A0)^(m-1)/A0)
 
-  const double m = parameters.tube_law_m;
+  const double m = 0.5; // Parameter from constitutive law
   // const double n = 0.0; // Parameter from constitutive law (not used in
   // integration)
 
@@ -862,7 +847,6 @@ BloodFlow1D<spacedim>::riemann_invariant_integral(
 }
 
 template <int spacedim>
-// Python equivalent: modelBloodFlow.py primitive variables setup (line 145)
 void
 BloodFlow1D<spacedim>::compute_primitive_variables()
 {
@@ -916,8 +900,6 @@ BloodFlow1D<spacedim>::compute_primitive_variables()
 }
 
 template <int spacedim>
-// Python equivalent: Physical constraints checking (implicit in Python
-// numerics)
 void
 BloodFlow1D<spacedim>::check_physical_constraints()
 {
@@ -963,8 +945,6 @@ BloodFlow1D<spacedim>::check_physical_constraints()
 }
 
 template <int spacedim>
-// Python equivalent: Output function (implicit in main_bfe_network.py plotting,
-// line 875)
 void
 BloodFlow1D<spacedim>::output_results() const
 {
@@ -1055,7 +1035,6 @@ BloodFlow1D<spacedim>::output_results() const
   ++output_number;
 }
 
-// Python equivalent: modelBloodFlow.py::model.prescribeInletFlow (line 769)
 template <int spacedim>
 std::pair<double, double>
 BloodFlow1D<spacedim>::prescribe_inlet_flow(const double      area_1d,
@@ -1106,7 +1085,6 @@ BloodFlow1D<spacedim>::prescribe_inlet_flow(const double      area_1d,
   return std::make_pair(aBC, flow_bc);
 }
 
-// Python equivalent: modelBloodFlow.py::model.prescribeInletPressure (line 793)
 template <int spacedim>
 std::pair<double, double>
 BloodFlow1D<spacedim>::prescribe_inlet_pressure(
@@ -1139,7 +1117,6 @@ BloodFlow1D<spacedim>::prescribe_inlet_pressure(
   return std::make_pair(aBC, qBC);
 }
 
-// Python equivalent: modelBloodFlow.py::model.inflowAorta (line 743)
 template <int spacedim>
 double
 BloodFlow1D<spacedim>::compute_inflow_function(const double time,
@@ -1180,7 +1157,6 @@ BloodFlow1D<spacedim>::compute_inflow_function(const double time,
   return 0.0;
 }
 
-// Python equivalent: modelBloodFlow.py::model.getkfromc0 (line 736)
 template <int spacedim>
 double
 BloodFlow1D<spacedim>::compute_elastic_modulus_from_wave_speed(
@@ -1195,7 +1171,6 @@ BloodFlow1D<spacedim>::compute_elastic_modulus_from_wave_speed(
   return k;
 }
 
-// Python equivalent: modelBloodFlow.py::model.aFp (line 719) - inverse of pFa
 // Add function to compute area from pressure (inverse tube law)
 template <int spacedim>
 double
@@ -1222,7 +1197,6 @@ BloodFlow1D<spacedim>::compute_area_from_pressure(
 }
 
 template <int spacedim>
-// Python equivalent: numerics.py::numFluxLF and numFluxRoe (lines 85-110)
 Vector<double>
 BloodFlow1D<spacedim>::compute_hll_flux_vector(
   const Vector<double> &state_left,
@@ -1286,7 +1260,6 @@ BloodFlow1D<spacedim>::compute_hll_flux_vector(
 }
 
 template <int spacedim>
-// Python equivalent: numerics.py::numFluxLF scalar component (lines 85-110)
 double
 BloodFlow1D<spacedim>::compute_hll_flux(const Vector<double> &state_left,
                                         const Vector<double> &state_right,
@@ -1301,8 +1274,6 @@ BloodFlow1D<spacedim>::compute_hll_flux(const Vector<double> &state_left,
 
 // Helper functions for boundary conditions
 template <int spacedim>
-// Python equivalent: modelBloodFlow.py boundary condition functions (lines
-// 769-850)
 Vector<double>
 BloodFlow1D<spacedim>::apply_inlet_bc(const Vector<double> &state_interior,
                                       const VesselData     &vessel_data,
@@ -1336,7 +1307,6 @@ BloodFlow1D<spacedim>::apply_inlet_bc(const Vector<double> &state_interior,
 }
 
 template <int spacedim>
-// Python equivalent: modelBloodFlow.py outlet boundary conditions (implicit)
 Vector<double>
 BloodFlow1D<spacedim>::apply_outlet_bc(const Vector<double> &state_interior,
                                        const VesselData     &vessel_data,
@@ -1364,8 +1334,6 @@ BloodFlow1D<spacedim>::apply_outlet_bc(const Vector<double> &state_interior,
 }
 
 template <int spacedim>
-// Python equivalent: modelBloodFlow.py::inflowAorta inlet flow computation
-// (line 743)
 double
 BloodFlow1D<spacedim>::compute_inlet_flow_rate(const double time) const
 {
@@ -1376,8 +1344,6 @@ BloodFlow1D<spacedim>::compute_inlet_flow_rate(const double time) const
 }
 
 template <int spacedim>
-// Python equivalent: Mesh connectivity (implicit in main_bfe_network.py vessel
-// network setup)
 void
 BloodFlow1D<spacedim>::create_face_connectivity_map()
 {
@@ -1404,578 +1370,6 @@ BloodFlow1D<spacedim>::create_face_connectivity_map()
 
   pcout << "  Face connectivity map created with " << face_to_cells_map.size()
         << " unique faces." << std::endl;
-}
-
-// Missing function implementations
-
-template <int spacedim>
-// Python equivalent: modelBloodFlow.py::model.dpda (line 106)
-double
-BloodFlow1D<spacedim>::compute_pressure_derivative(
-  const double      area,
-  const VesselData &vessel_data) const
-{
-  // Python: k*(m*a**(m-1.)/a0**m-n*a**(n-1.)/a0**n)
-  const double k  = vessel_data.elastic_modulus;
-  const double a0 = vessel_data.reference_area;
-  const double m  = parameters.tube_law_m;
-  const double n  = parameters.tube_law_n;
-
-  const double a_over_a0 = area / a0;
-  return k * (m * std::pow(a_over_a0, m - 1.0) / a0 -
-              n * std::pow(a_over_a0, n - 1.0) / a0);
-}
-
-template <int spacedim>
-// Python equivalent: modelBloodFlow.py::model.lambdaMatrix (line 219)
-FullMatrix<double>
-BloodFlow1D<spacedim>::compute_eigenvalue_matrix(
-  const Vector<double> &state,
-  const VesselData     &vessel_data) const
-{
-  // Python: lambdaMat[0,0] = u-c; lambdaMat[1,1] = u+c
-  const double area     = state[0];
-  const double velocity = state[1] / state[0];
-  const double c        = compute_wave_speed_at_state(state, vessel_data);
-
-  FullMatrix<double> lambda_matrix(2, 2);
-  lambda_matrix[0][0] = velocity - c;
-  lambda_matrix[1][1] = velocity + c;
-  // Off-diagonal elements remain zero
-  (void)area; // Suppress unused warning - area might be used in more complex
-              // tube laws
-
-  return lambda_matrix;
-}
-
-template <int spacedim>
-// Python equivalent: vessel.py::vessel.setInitialCondition (line 98)
-void
-BloodFlow1D<spacedim>::set_initial_conditions(const double initial_pressure,
-                                              const double initial_velocity)
-{
-  // Python: for i in range(self.nCells):
-  //           self.Q[i,0] = self.mod.aFp(pIni,self.xC[i])
-  //           self.Q[i,1] = uIni*self.Q[i,0]
-
-  for (const auto &cell : dof_handler.active_cell_iterators())
-    {
-      if (!cell->is_locally_owned())
-        continue;
-
-      const unsigned int vessel_id =
-        cell_to_vessel_map[cell->global_active_cell_index()];
-      const VesselData &vessel = vessel_data[vessel_id];
-
-      // Compute area from pressure using inverse tube law
-      const double area = compute_area_from_pressure(initial_pressure, vessel);
-      const double flow = initial_velocity * area;
-
-      std::vector<types::global_dof_index> dof_indices(fe.dofs_per_cell);
-      cell->get_dof_indices(dof_indices);
-
-      for (unsigned int i = 0; i < fe.dofs_per_cell; ++i)
-        {
-          const unsigned int component = fe.system_to_component_index(i).first;
-          if (component == 0) // Area component
-            solution[dof_indices[i]] = area;
-          else if (component == 1) // Flow component
-            solution[dof_indices[i]] = flow;
-        }
-    }
-
-  solution.compress(VectorOperation::insert);
-}
-
-template <int spacedim>
-// Python equivalent: numerics.py::numericalMethod.update (line 208)
-void
-BloodFlow1D<spacedim>::update_solution_time_step()
-{
-  // Python: Main time stepping update with flux integration
-  // This replaces/extends the existing assemble_system functionality
-
-  // Store old solution
-  old_solution = solution;
-
-  // Reset system
-  system_rhs = 0;
-
-  // Update boundary conditions
-  // (simplified - full implementation would iterate over vessels)
-
-  // Assemble the time update
-  assemble_system();
-
-  // Apply time step update (explicit Euler for now)
-  for (unsigned int i = 0; i < solution.size(); ++i)
-    {
-      if (solution.locally_owned_elements().is_element(i))
-        solution[i] = old_solution[i] + time_step * system_rhs[i];
-    }
-
-  solution.compress(VectorOperation::insert);
-}
-
-template <int spacedim>
-// Python equivalent: modelBloodFlow.py::model.prescribeRCR (referenced in
-// vessel.py:203)
-Vector<double>
-BloodFlow1D<spacedim>::prescribe_rcr_boundary_condition(
-  const Vector<double> &interior_state,
-  const double          rcr_pressure,
-  const double          rcr_resistance,
-  const VesselData     &vessel_data) const
-{
-  // Python: aBC, qBC =
-  // self.mod.prescribeRCR(Q1D[0],Q1D[1],self.pRCR,self.r1,self.length) This is
-  // a simplified implementation - full RCR requires more complex boundary
-  // treatment
-
-  Vector<double> boundary_state(2);
-
-  // Extract interior state
-  const double A_interior = interior_state[0];
-  const double Q_interior = interior_state[1];
-
-  // Apply RCR boundary condition
-  // Simplified: use pressure matching with resistance
-  const double pressure_interior   = compute_pressure(A_interior, vessel_data);
-  const double pressure_difference = pressure_interior - rcr_pressure;
-  const double Q_boundary          = pressure_difference / rcr_resistance;
-
-  // Area boundary condition from characteristic analysis
-  const double c = compute_wave_speed_at_state(interior_state, vessel_data);
-  const double u_interior = Q_interior / A_interior;
-
-  // Characteristic: W2 = u + 2*c is constant across boundary
-  const double W2         = u_interior + 2.0 * c;
-  const double u_boundary = Q_boundary / A_interior; // Approximate
-  const double A_boundary = A_interior;              // Simplified
-
-  // TODO: Implement full characteristic analysis using W2 and u_boundary
-  (void)W2;
-  (void)u_boundary; // Suppress unused warnings for placeholder implementation
-
-  boundary_state[0] = A_boundary;
-  boundary_state[1] = Q_boundary;
-
-  return boundary_state;
-}
-
-template <int spacedim>
-// Python equivalent: vessel.py::vessel.setBoundaryConditions (line 188)
-void
-BloodFlow1D<spacedim>::set_boundary_conditions_for_vessel(
-  const unsigned int vessel_id,
-  const double       time)
-{
-  // Python: Complex boundary condition handling with multiple types
-  // This is a simplified implementation focusing on essential BC types
-
-  (void)vessel_id; // Suppress unused parameter warning
-  (void)time;      // Suppress unused parameter warning
-
-  // TODO: Implement full boundary condition handling
-  // For now, this is a placeholder that can be extended
-}
-
-template <int spacedim>
-// Python equivalent: numerics.py::numericalMethod.reconstructionENO (line 302)
-void
-BloodFlow1D<spacedim>::apply_eno_reconstruction()
-{
-  // Python: High-order ENO reconstruction for improved accuracy
-  // This is a placeholder for the complex ENO algorithm
-
-  // TODO: Implement ENO reconstruction
-  // For now, this is a no-op - can be extended with proper ENO stencils
-}
-
-template <int spacedim>
-// Python equivalent: vessel.py::vessel.getMusclHancockEvolveState (line 170)
-void
-BloodFlow1D<spacedim>::apply_muscl_reconstruction()
-{
-  // Python: MUSCL-Hancock reconstruction for higher-order accuracy
-  // This is a placeholder for MUSCL reconstruction
-
-  // TODO: Implement MUSCL reconstruction with slope limiters
-  // For now, this is a no-op - can be extended with proper MUSCL stencils
-}
-
-template <int spacedim>
-// Python equivalent: modelBloodFlow.py::model.source (referenced in vessel.py)
-Vector<double>
-BloodFlow1D<spacedim>::compute_source_term(const Vector<double> &state,
-                                           const VesselData     &vessel_data,
-                                           const double /*time*/) const
-{
-  // Python: Source terms including friction and geometric effects
-  Vector<double> source(2);
-
-  const double area     = state[0];
-  const double flow     = state[1];
-  const double velocity = flow / area;
-
-  // Friction source term: -f*Q*|Q|/(2*A*rho) where f is friction factor
-  const double friction_factor = parameters.vel_profile_coeff * parameters.mu /
-                                 (parameters.rho * vessel_data.reference_area);
-
-  source[0] = 0.0; // No source for area equation
-  source[1] = -friction_factor * flow * std::abs(flow) /
-              (2.0 * area); // Friction for momentum
-
-  // TODO: Add geometric source terms based on vessel curvature/tapering if
-  // needed
-  (void)velocity; // Suppress unused warning - velocity may be used in future
-                  // extensions
-
-  return source;
-}
-
-template <int spacedim>
-// Python equivalent: numerics.py::numericalMethod.numFluxLW (line 97)
-Vector<double>
-BloodFlow1D<spacedim>::compute_lax_wendroff_flux(
-  const Vector<double> &state_left,
-  const Vector<double> &state_right,
-  const VesselData     &vessel_data,
-  const double          dx,
-  const double          dt) const
-{
-  // Python: FL = self.mod.physicalFlux(QL,x)
-  //         FR = self.mod.physicalFlux(QR,x)
-  //         QLW = 0.5 * (QL + QR) - 0.5 * dt/dx * (FR-FL)
-  //         fLW = self.mod.physicalFlux(QLW,x)
-
-  const Vector<double> F_L =
-    compute_flux_function(state_left, vessel_data, 0.0);
-  const Vector<double> F_R =
-    compute_flux_function(state_right, vessel_data, 0.0);
-
-  Vector<double> state_lw(2);
-  for (unsigned int comp = 0; comp < 2; ++comp)
-    {
-      state_lw[comp] = 0.5 * (state_left[comp] + state_right[comp]) -
-                       0.5 * dt / dx * (F_R[comp] - F_L[comp]);
-    }
-
-  return compute_flux_function(state_lw, vessel_data, 0.0);
-}
-
-template <int spacedim>
-// Python equivalent: numerics.py::numericalMethod.numFluxFORCE (line 108)
-Vector<double>
-BloodFlow1D<spacedim>::compute_force_flux(const Vector<double> &state_left,
-                                          const Vector<double> &state_right,
-                                          const VesselData     &vessel_data,
-                                          const double          dx,
-                                          const double          dt) const
-{
-  // Python: fLF = self.numFluxLF(dx,dt,QL,QR,x)
-  //         fLW = self.numFluxLW(dx,dt,QL,QR,x)
-  //         fFORCE = 0.5 * (fLF + fLW)
-
-  // Lax-Friedrichs flux
-  const Vector<double> F_L =
-    compute_flux_function(state_left, vessel_data, 0.0);
-  const Vector<double> F_R =
-    compute_flux_function(state_right, vessel_data, 0.0);
-
-  Vector<double> flux_lf(2);
-  for (unsigned int comp = 0; comp < 2; ++comp)
-    {
-      flux_lf[comp] = 0.5 * (F_L[comp] + F_R[comp]) -
-                      0.5 * dx / dt * (state_right[comp] - state_left[comp]);
-    }
-
-  // Lax-Wendroff flux
-  const Vector<double> flux_lw =
-    compute_lax_wendroff_flux(state_left, state_right, vessel_data, dx, dt);
-
-  // FORCE flux (average)
-  Vector<double> flux_force(2);
-  for (unsigned int comp = 0; comp < 2; ++comp)
-    {
-      flux_force[comp] = 0.5 * (flux_lf[comp] + flux_lw[comp]);
-    }
-
-  return flux_force;
-}
-
-template <int spacedim>
-// Python equivalent: vessel.py::vessel.evolveRCR (line 155)
-void
-BloodFlow1D<spacedim>::evolve_rcr_boundary_condition(
-  const double flow_rate,
-  const double time_step,
-  double      &rcr_pressure,
-  const double rcr_capacitance,
-  const double rcr_distal_resistance,
-  const double rcr_distal_pressure) const
-{
-  // Python: self.qinRCR = qin
-  //         self.qoutRCR = (self.pRCR-self.pRCRdistal)/self.r2
-  //         self.pRCR += self.dt/self.c*(self.qinRCR-self.qoutRCR)
-
-  const double q_in = flow_rate;
-  const double q_out =
-    (rcr_pressure - rcr_distal_pressure) / rcr_distal_resistance;
-
-  rcr_pressure += time_step / rcr_capacitance * (q_in - q_out);
-}
-
-template <int spacedim>
-// Python equivalent: Used in numerics.py::numericalMethod.numFluxHLL (line 145)
-std::pair<double, double>
-BloodFlow1D<spacedim>::estimate_wave_speeds_for_hll(
-  const Vector<double> &state_left,
-  const Vector<double> &state_right,
-  const VesselData     &vessel_data) const
-{
-  // Python: Estimates used in HLL solver for wave speeds
-  const double u_L = state_left[1] / state_left[0];
-  const double u_R = state_right[1] / state_right[0];
-
-  const double c_L = compute_wave_speed_at_state(state_left, vessel_data);
-  const double c_R = compute_wave_speed_at_state(state_right, vessel_data);
-
-  // Toro's estimates
-  const double S_L = std::min(u_L - c_L, u_R - c_R);
-  const double S_R = std::max(u_L + c_L, u_R + c_R);
-
-  return std::make_pair(S_L, S_R);
-}
-
-template <int spacedim>
-// Python equivalent: vessel.py::vessel.getSolution (line 115)
-Vector<double>
-BloodFlow1D<spacedim>::get_cell_average_state(
-  const typename DoFHandler<1, spacedim>::active_cell_iterator &cell) const
-{
-  // Python: linear interpolation of state vector at x
-  Vector<double> cell_state(2);
-
-  std::vector<types::global_dof_index> dof_indices(fe.dofs_per_cell);
-  cell->get_dof_indices(dof_indices);
-
-  // Get cell average (assuming DG0 or taking first DoF for DG1)
-  cell_state[0] = solution[dof_indices[0]]; // Area
-  cell_state[1] = solution[dof_indices[1]]; // Flow
-
-  return cell_state;
-}
-
-// Python equivalent: modelBloodFlow.py::model.exactSolution (line 658)
-template <int spacedim>
-Vector<double>
-BloodFlow1D<spacedim>::compute_exact_solution(const Point<spacedim> &point,
-                                              const double           time) const
-{
-  // Python: Exact solution for convergence test with sinusoidal wave
-  // r0 = 9.99e-3; a0 = np.pi*r0**2; Atilde = a0; L = 1.; T0 = 1.0
-  // atilde = 0.1*Atilde; qtilde = 0.
-  // exact[:,0] = Atilde + atilde * np.sin(2*np.pi/L*x)*np.cos(2*np.pi/T0*t)
-  // exact[:,1] = qtilde - atilde*L/T0 *
-  // np.cos(2*np.pi/L*x)*np.sin(2*np.pi/T0*t)
-
-  const double r0      = 9.99e-3;        // Reference radius [m]
-  const double a0      = M_PI * r0 * r0; // Reference area [m²]
-  const double A_tilde = a0;             // Base area
-  const double L       = 1.0;            // Domain length [m]
-  const double T0      = 1.0;            // Time period [s]
-  const double a_tilde = 0.1 * A_tilde;  // Area amplitude
-  const double q_tilde = 0.0;            // Base flow rate
-
-  const double x = point[0]; // Position along vessel
-
-  Vector<double> exact_solution(2);
-  exact_solution[0] = A_tilde + a_tilde * std::sin(2.0 * M_PI / L * x) *
-                                  std::cos(2.0 * M_PI / T0 * time);
-  exact_solution[1] = q_tilde - a_tilde * L / T0 *
-                                  std::cos(2.0 * M_PI / L * x) *
-                                  std::sin(2.0 * M_PI / T0 * time);
-
-  return exact_solution;
-}
-
-template <int spacedim>
-// Python equivalent: modelBloodFlow.py::model.source with convergence flag
-// (line 691)
-Vector<double>
-BloodFlow1D<spacedim>::compute_exact_source_term(const Point<spacedim> &point,
-                                                 const double time) const
-{
-  // Python: Source term for convergence test that makes exact solution satisfy
-  // PDE
-  const double r0      = 9.99e-3;
-  const double a0      = M_PI * r0 * r0;
-  const double A_tilde = a0;
-  const double L       = 1.0;
-  const double T0      = 1.0;
-  const double a_tilde = 0.1 * A_tilde;
-
-  // Get vessel parameters (assuming first vessel for simplicity)
-  const VesselData &vessel = vessel_data[0];
-  const double      k      = vessel.elastic_modulus;
-  const double      m      = parameters.tube_law_m;
-
-  // Python: gamma = m*k/self.rho/(m+1)/a0**m
-  const double gamma = m * k / parameters.rho / (m + 1.0) / std::pow(a0, m);
-
-  const double x = point[0];
-
-  // Exact solution at this point and time
-  const Vector<double> exact = compute_exact_solution(point, time);
-  const double         A     = exact[0];
-  const double         Q     = exact[1];
-
-  Vector<double> source(2);
-
-  // Time derivatives
-  const double dAdt = -a_tilde * (2.0 * M_PI / T0) *
-                      std::sin(2.0 * M_PI / L * x) *
-                      std::sin(2.0 * M_PI / T0 * time);
-  const double dQdt = -a_tilde * L / T0 * (2.0 * M_PI / T0) *
-                      std::cos(2.0 * M_PI / L * x) *
-                      std::cos(2.0 * M_PI / T0 * time);
-
-  // Spatial derivatives
-  const double dAdx = a_tilde * (2.0 * M_PI / L) *
-                      std::cos(2.0 * M_PI / L * x) *
-                      std::cos(2.0 * M_PI / T0 * time);
-  const double dQdx = a_tilde * L / T0 * (2.0 * M_PI / L) *
-                      std::sin(2.0 * M_PI / L * x) *
-                      std::sin(2.0 * M_PI / T0 * time);
-
-  // Pressure derivative with respect to area
-  const double dPdA = gamma * std::pow(A / a0, m);
-
-  // Source terms to make exact solution satisfy the PDE
-  source[0] = dAdt + dQdx; // Continuity equation residual
-
-
-  source[1] =
-    dQdt + dQdx * Q / A + A * dPdA * dAdx; // Momentum equation residual
-
-  return source;
-}
-
-template <int spacedim>
-// Python equivalent: modelBloodFlow.py::model.source with convergence flag
-// (line 691)
-Vector<double>
-BloodFlow1D<spacedim>::compute_exact_source_term(const Point<spacedim> &point,
-                                                 const double           time,
-                                                 const double elastic_modulus,
-                                                 const double tube_law_m) const
-{
-  // Python: Source term for convergence test that makes exact solution satisfy
-  // PDE
-  const double r0      = 9.99e-3;
-  const double a0      = M_PI * r0 * r0;
-  const double A_tilde = a0;
-  const double L       = 1.0;
-  const double T0      = 1.0;
-  const double a_tilde = 0.1 * A_tilde;
-
-  // Use provided vessel parameters
-  const double k = elastic_modulus;
-  const double m = tube_law_m;
-
-  const double gamma = m * k / parameters.rho / (m + 1.0) / std::pow(a0, m);
-
-  const double x = point[0];
-
-  // Exact solution at this point and time
-  const Vector<double> exact = compute_exact_solution(point, time);
-  const double         A     = exact[0];
-  const double         Q     = exact[1];
-
-  Vector<double> source(2);
-
-  // Time derivatives
-  const double dAdt = -a_tilde * (2.0 * M_PI / T0) *
-                      std::sin(2.0 * M_PI / L * x) *
-                      std::sin(2.0 * M_PI / T0 * time);
-  const double dQdt = -a_tilde * L / T0 * (2.0 * M_PI / T0) *
-                      std::cos(2.0 * M_PI / L * x) *
-                      std::cos(2.0 * M_PI / T0 * time);
-
-  // Spatial derivatives
-  const double dAdx = a_tilde * (2.0 * M_PI / L) *
-                      std::cos(2.0 * M_PI / L * x) *
-                      std::cos(2.0 * M_PI / T0 * time);
-  const double dQdx = a_tilde * L / T0 * (2.0 * M_PI / L) *
-                      std::sin(2.0 * M_PI / L * x) *
-                      std::sin(2.0 * M_PI / T0 * time);
-
-  // Pressure derivative with respect to area
-  const double dPdA = gamma * std::pow(A / a0, m);
-
-  // Source terms to make exact solution satisfy the PDE
-  source[0] = dAdt + dQdx; // Continuity equation residual
-
-  source[1] =
-    dQdt + dQdx * Q / A + A * dPdA * dAdx; // Momentum equation residual
-
-  return source;
-}
-
-template <int spacedim>
-// For testing convergence
-double
-BloodFlow1D<spacedim>::compute_l2_error_against_exact_solution(
-  const double time) const
-{
-  double l2_error_squared = 0.0;
-  double area_sum         = 0.0;
-
-  // Loop over all locally owned cells
-  for (const auto &cell : dof_handler.active_cell_iterators())
-    {
-      if (!cell->is_locally_owned())
-        continue;
-
-      // Get quadrature rule for integration
-      const QGauss<1>       quadrature_formula(fe.degree + 1);
-      FEValues<1, spacedim> fe_values(fe,
-                                      quadrature_formula,
-                                      update_values | update_quadrature_points |
-                                        update_JxW_values);
-      fe_values.reinit(cell);
-
-      std::vector<types::global_dof_index> dof_indices(fe.dofs_per_cell);
-      cell->get_dof_indices(dof_indices);
-
-      // Extract cell solution
-      std::vector<Vector<double>> solution_values(quadrature_formula.size(),
-                                                  Vector<double>(2));
-      fe_values.get_function_values(solution, solution_values);
-
-      // Compute error at quadrature points
-      for (unsigned int q = 0; q < quadrature_formula.size(); ++q)
-        {
-          const Point<spacedim> &point    = fe_values.quadrature_point(q);
-          const Vector<double>   exact    = compute_exact_solution(point, time);
-          const Vector<double>  &computed = solution_values[q];
-
-          const double area_error = computed[0] - exact[0];
-          const double flow_error = computed[1] - exact[1];
-
-          l2_error_squared +=
-            (area_error * area_error + flow_error * flow_error) *
-            fe_values.JxW(q);
-          area_sum += fe_values.JxW(q);
-        }
-    }
-
-  // Sum over all MPI processes
-  l2_error_squared = Utilities::MPI::sum(l2_error_squared, mpi_communicator);
-  area_sum         = Utilities::MPI::sum(area_sum, mpi_communicator);
-
-  return std::sqrt(l2_error_squared / area_sum);
 }
 
 // Explicit instantiations
