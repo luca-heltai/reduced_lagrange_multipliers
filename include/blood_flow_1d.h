@@ -34,6 +34,7 @@
 
 #include <deal.II/grid/tria.h>
 
+#include <deal.II/lac/full_matrix.h>
 #include <deal.II/lac/la_parallel_vector.h>
 #include <deal.II/lac/petsc_vector.h>
 #include <deal.II/lac/vector.h>
@@ -81,6 +82,19 @@ public:
 
   // Vessel parameters (will be read from VTK data)
   double reference_pressure = 94666.66; // Reference pressure [g/(cm·s²)]
+  
+  // Constitutive law parameters 
+  double tube_law_m = 0.5; // Constitutive law exponent m
+  double tube_law_n = 0.0; // Constitutive law exponent n
+  
+  // Inflow parameters
+  double inlet_flow_amplitude = 500.0; // Inlet flow amplitude scale factor [cm³/s]
+  double cardiac_cycle_period = 1.0;   // Cardiac cycle period [s]
+  
+  // Default vessel parameters (used when data is missing from mesh)
+  double default_radius = 0.5;      // Default vessel radius [cm]
+  double default_wave_speed = 500.0; // Default wave speed [cm/s]
+  double default_wall_thickness = 0.1; // Default wall thickness [cm]
 };
 
 /**
@@ -134,6 +148,8 @@ private:
   void
   setup_boundary_conditions();
   void
+  create_face_connectivity_map();
+  void
   compute_time_step();
   void
   assemble_system();
@@ -147,6 +163,11 @@ private:
   apply_slope_limiting();
   void
   compute_numerical_flux(const unsigned int face_index);
+  Vector<double>
+  compute_hll_flux_vector(const Vector<double> &state_left,
+                          const Vector<double> &state_right,
+                          const VesselData     &vessel_data,
+                          const double          x_position) const;
   double
   compute_hll_flux(const Vector<double> &state_left,
                    const Vector<double> &state_right,
@@ -177,18 +198,66 @@ private:
   double
   compute_inlet_flow_rate(const double time) const;
 
+  // Helper functions for boundary conditions in face integration
+  Vector<double>
+  apply_inlet_bc(const Vector<double> &state_interior,
+                 const VesselData     &vessel_data,
+                 const double          time) const;
+  Vector<double>
+  apply_outlet_bc(const Vector<double> &state_interior,
+                  const VesselData     &vessel_data,
+                  const double          time) const;
+
   // Utility functions
   void
   compute_primitive_variables();
   void
   check_physical_constraints();
 
+  // Additional physics functions from Python model
+  std::pair<double, double>
+  compute_riemann_invariants(const Vector<double> &state,
+                             const VesselData     &vessel_data) const;
+  double
+  riemann_invariant_integral(const double      area_left,
+                             const double      area_right,
+                             const VesselData &vessel_data) const;
+  std::pair<double, double>
+  prescribe_inlet_flow(const double      area_1d,
+                       const double      flow_1d,
+                       const double      flow_bc,
+                       const VesselData &vessel_data) const;
+  std::pair<double, double>
+  prescribe_inlet_pressure(const double      area_1d,
+                           const double      flow_1d,
+                           const double      pressure_bc,
+                           const VesselData &vessel_data) const;
+  double
+  compute_inflow_function(const double time, const int flow_type) const;
+  double
+  compute_elastic_modulus_from_wave_speed(const double wave_speed,
+                                          const double reference_area) const;
+  double
+  compute_area_from_pressure(const double      pressure,
+                             const VesselData &vessel_data) const;
+
+  // Matrix computation functions
+  FullMatrix<double>
+  compute_jacobian(const Vector<double> &state,
+                   const VesselData     &vessel_data) const;
+  FullMatrix<double>
+  compute_right_eigenvector_matrix(const Vector<double> &state,
+                                   const VesselData     &vessel_data) const;
+  FullMatrix<double>
+  compute_right_eigenvector_inverse_matrix(const Vector<double> &state,
+                                           const VesselData &vessel_data) const;
+
   // MPI and parallel data structures
-  MPI_Comm           mpi_communicator;
-  const unsigned int n_mpi_processes;
-  const unsigned int this_mpi_process;
-  ConditionalOStream pcout;
-  TimerOutput        computing_timer;
+  MPI_Comm            mpi_communicator;
+  const unsigned int  n_mpi_processes;
+  const unsigned int  this_mpi_process;
+  ConditionalOStream  pcout;
+  mutable TimerOutput computing_timer;
 
   // Problem parameters
   BloodFlowParameters &parameters;
@@ -201,6 +270,10 @@ private:
   // Vessel network data
   std::vector<VesselData>                         vessel_data;
   std::map<types::global_dof_index, unsigned int> cell_to_vessel_map;
+
+  // Face connectivity map for DG integration
+  std::map<typename DoFHandler<1, spacedim>::face_iterator, 
+           std::vector<typename DoFHandler<1, spacedim>::active_cell_iterator>> face_to_cells_map;
 
   // Solution vectors
   LinearAlgebra::distributed::Vector<double> solution;
