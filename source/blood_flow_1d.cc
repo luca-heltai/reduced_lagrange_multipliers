@@ -233,10 +233,12 @@ BloodFlow1D<spacedim>::read_mesh_and_data()
       compliances.reinit(n_cells);
 
       // Fill with default values
-      for (unsigned int i = 0; i < n_cells; ++i)
+      for (const auto &cell : triangulation.active_cell_iterators())
+        if (cell->is_locally_owned())
         {
-          vessel_ids[i]  = i;
-          lengths[i]     = 1.0;
+            const unsigned int i = cell->global_active_cell_index();
+            vessel_ids[i]        = i;
+            lengths[i]     = cell->diameter(); // Use cell diameter as length
           inlet_radii[i] = outlet_radii[i] = parameters.default_radius;
           wave_speeds[i]                   = parameters.default_wave_speed;
           inlet_bc_types[i] = outlet_bc_types[i] = 0;
