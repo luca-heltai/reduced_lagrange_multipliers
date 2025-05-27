@@ -49,6 +49,27 @@ BloodFlowParameters::BloodFlowParameters()
   add_parameter("flux_type", flux_type, "Numerical flux type");
   add_parameter("limiter_type", limiter_type, "Slope limiter type");
   add_parameter("reference_pressure", reference_pressure, "Reference pressure");
+
+  // Constitutive law parameters
+  add_parameter("tube_law_m", tube_law_m, "Constitutive law exponent m");
+  add_parameter("tube_law_n", tube_law_n, "Constitutive law exponent n");
+
+  // Inflow parameters
+  add_parameter("inlet_flow_amplitude",
+                inlet_flow_amplitude,
+                "Inlet flow amplitude scale factor");
+  add_parameter("cardiac_cycle_period",
+                cardiac_cycle_period,
+                "Cardiac cycle period [s]");
+
+  // Default vessel parameters (used when data is missing from mesh)
+  add_parameter("default_radius", default_radius, "Default vessel radius [cm]");
+  add_parameter("default_wave_speed",
+                default_wave_speed,
+                "Default wave speed [cm/s]");
+  add_parameter("default_wall_thickness",
+                default_wall_thickness,
+                "Default wall thickness [cm]");
 }
 
 // BloodFlow1D implementation
@@ -216,8 +237,8 @@ BloodFlow1D<spacedim>::read_mesh_and_data()
         {
           vessel_ids[i]  = i;
           lengths[i]     = 1.0;
-          inlet_radii[i] = outlet_radii[i] = 0.5;
-          wave_speeds[i]                   = 500.0;
+          inlet_radii[i] = outlet_radii[i] = parameters.default_radius;
+          wave_speeds[i]                   = parameters.default_wave_speed;
           inlet_bc_types[i] = outlet_bc_types[i] = 0;
           resistances1[i] = resistances2[i] = 1000.0;
           compliances[i]                    = 1e-6;
@@ -318,6 +339,9 @@ BloodFlow1D<spacedim>::setup_system()
 
   solution.compress(VectorOperation::insert);
   old_solution = solution;
+
+  // Create face-to-cells connectivity map for DG integration
+  create_face_connectivity_map();
 }
 
 template <int spacedim>
@@ -385,9 +409,9 @@ BloodFlow1D<spacedim>::assemble_system()
                                              update_quadrature_points |
                                              update_JxW_values);
 
-  const unsigned int dofs_per_cell = fe.dofs_per_cell;
-  const unsigned int n_q_points    = quadrature_formula.size();
-
+  const unsigned int dofs_per_cell   = fe.dofs_per_cell;
+  const unsigned int n_q_points      = quadrature_formula.size();
+  const unsigned int n_face_q_points = face_quadrature_formula.size();
 
   Vector<double>                       cell_rhs(dofs_per_cell);
   std::vector<types::global_dof_index> local_dof_indices(dofs_per_cell);
@@ -396,6 +420,10 @@ BloodFlow1D<spacedim>::assemble_system()
   std::vector<Vector<double>> solution_values(n_q_points, Vector<double>(2));
   std::vector<Vector<double>> old_solution_values(n_q_points,
                                                   Vector<double>(2));
+
+  // Face solution values
+  std::vector<Vector<double>> solution_values_face(n_face_q_points,
+                                                   Vector<double>(2));
 
   for (const auto &cell : dof_handler.active_cell_iterators())
     {
@@ -411,16 +439,11 @@ BloodFlow1D<spacedim>::assemble_system()
           fe_values.get_function_values(solution, solution_values);
           fe_values.get_function_values(old_solution, old_solution_values);
 
-          // Volume integral (time derivative + flux divergence)
+          // Volume integral (time derivative + source terms)
           for (unsigned int q = 0; q < n_q_points; ++q)
             {
-              const Vector<double>  &U     = solution_values[q];
-              const Vector<double>  &U_old = old_solution_values[q];
-              const Point<spacedim> &x_q   = fe_values.quadrature_point(q);
-
-              // Compute flux
-              const Vector<double> flux =
-                compute_flux_function(U, vessel, x_q[0]);
+              const Vector<double> &U     = solution_values[q];
+              const Vector<double> &U_old = old_solution_values[q];
 
               // Compute source terms (friction)
               Vector<double> source(2);
@@ -429,9 +452,8 @@ BloodFlow1D<spacedim>::assemble_system()
               // Momentum equation friction term
               if (U[0] > 1e-12) // Avoid division by zero
                 {
-                  const double radius = std::sqrt(U[0] / M_PI);
-                  source[1] = -2.0 * M_PI * radius * parameters.mu * U[1] /
-                              (parameters.vel_profile_coeff * U[0]);
+                  source[1] = -parameters.vel_profile_coeff * M_PI *
+                              parameters.mu / parameters.rho * U[1] / U[0];
                 }
               else
                 {
@@ -443,17 +465,10 @@ BloodFlow1D<spacedim>::assemble_system()
                   const unsigned int component_i =
                     fe.system_to_component_index(i).first;
 
-                  // Time derivative term
+                  // Time derivative term (explicit time stepping)
                   cell_rhs[i] +=
                     ((U[component_i] - U_old[component_i]) / time_step) *
                     fe_values.shape_value(i, q) * fe_values.JxW(q);
-
-                  // Flux divergence term (using simple finite difference for
-                  // now) This should be replaced with proper flux computation
-                  // at faces
-                  cell_rhs[i] += flux[component_i] *
-                                 fe_values.shape_grad(i, q)[0] *
-                                 fe_values.JxW(q);
 
                   // Source term
                   cell_rhs[i] -= source[component_i] *
@@ -461,8 +476,123 @@ BloodFlow1D<spacedim>::assemble_system()
                 }
             }
 
-          // Face integrals (numerical fluxes) - simplified for now
-          // This should include proper HLL/Roe flux computation
+          // Face integrals (numerical fluxes) - Transform to proper deal.II
+          // integration
+          for (const auto face_number : cell->face_indices())
+            {
+              fe_face_values.reinit(cell, face_number);
+              fe_face_values.get_function_values(solution,
+                                                 solution_values_face);
+
+              for (unsigned int q = 0; q < n_face_q_points; ++q)
+                {
+                  const Vector<double>      &U_face = solution_values_face[q];
+                  const Tensor<1, spacedim> &normal =
+                    fe_face_values.normal_vector(q);
+
+                  // Get states for numerical flux computation
+                  Vector<double> state_left = U_face;
+                  Vector<double> state_right =
+                    U_face; // For interior faces, would need neighbor
+
+                  // For boundary faces, apply boundary conditions
+                  if (cell->face(face_number)->at_boundary())
+                    {
+                      // Apply boundary conditions to get right state
+                      if (face_number == 0) // Left boundary (inlet)
+                        {
+                          // Apply inlet boundary condition
+                          const auto bc_state =
+                            apply_inlet_bc(state_left, vessel, current_time);
+                          state_right = bc_state;
+                        }
+                      else // Right boundary (outlet)
+                        {
+                          // Apply outlet boundary condition
+                          const auto bc_state =
+                            apply_outlet_bc(state_left, vessel, current_time);
+                          state_right = bc_state;
+                        }
+                    }
+                  else
+                    {
+                      // For interior faces, get neighbor state using
+                      // connectivity map
+                      const auto  face            = cell->face(face_number);
+                      const auto &connected_cells = face_to_cells_map[face];
+
+                      // Find the neighbor cell (the other cell that shares this
+                      // face)
+                      typename DoFHandler<1, spacedim>::active_cell_iterator
+                           neighbor_cell;
+                      bool neighbor_found = false;
+                      for (const auto &connected_cell : connected_cells)
+                        {
+                          if (connected_cell->global_active_cell_index() !=
+                              cell->global_active_cell_index())
+                            {
+                              neighbor_cell  = connected_cell;
+                              neighbor_found = true;
+                              break;
+                            }
+                        }
+
+                      if (neighbor_found)
+                        {
+                          // Get neighbor's state at the quadrature point
+                          // For simplicity, use cell average (could be improved
+                          // with face interpolation)
+                          Vector<double> neighbor_state(2);
+                          for (unsigned int comp = 0; comp < 2; ++comp)
+                            {
+                              // Simple cell average - could be improved
+                              neighbor_state[comp]           = 0.0;
+                              unsigned int dofs_in_component = 0;
+                              for (unsigned int i = 0; i < fe.dofs_per_cell;
+                                   ++i)
+                                {
+                                  if (fe.system_to_component_index(i).first ==
+                                      comp)
+                                    {
+                                      neighbor_state[comp] +=
+                                        solution[neighbor_cell->dof_index(i)];
+                                      ++dofs_in_component;
+                                    }
+                                }
+                              if (dofs_in_component > 0)
+                                neighbor_state[comp] /= dofs_in_component;
+                            }
+                          state_right = neighbor_state;
+                        }
+                      else
+                        {
+                          // Fallback if no neighbor found (shouldn't happen for
+                          // well-formed mesh)
+                          state_right = state_left;
+                        }
+                    }
+
+                  // Compute numerical flux using deal.II integration
+                  const Vector<double> numerical_flux = compute_hll_flux_vector(
+                    state_left, state_right, vessel, 0.0);
+
+                  // Apply flux to degrees of freedom
+                  for (unsigned int i = 0; i < dofs_per_cell; ++i)
+                    {
+                      const unsigned int component_i =
+                        fe.system_to_component_index(i).first;
+
+                      // DG flux integral: ∫_face flux * v * dS
+                      // Sign depends on face orientation (outward normal)
+                      const double flux_contribution =
+                        numerical_flux[component_i] * normal[0];
+
+                      cell_rhs[i] += flux_contribution *
+                                     fe_face_values.shape_value(i, q) *
+                                     fe_face_values.JxW(q);
+                    }
+                }
+            }
 
           cell->get_dof_indices(local_dof_indices);
 
@@ -554,7 +684,7 @@ template <int spacedim>
 Vector<double>
 BloodFlow1D<spacedim>::compute_flux_function(const Vector<double> &state,
                                              const VesselData     &vessel_data,
-                                             const double x_position) const
+                                             const double /*x_position*/) const
 {
   Vector<double> flux(2);
 
@@ -565,12 +695,21 @@ BloodFlow1D<spacedim>::compute_flux_function(const Vector<double> &state,
   flux[0] = Q;
 
   // Momentum equation flux: F₂ = Q²/A + ∫p dA
+  // Following Python implementation: F[1] =
+  // a*u*u+k*a/rho*(m/(m+1.)*(a/a0)**m-n/(n+1.)*(a/a0)**n)
   if (A > 1e-12)
     {
-      const double u = Q / A; // Average velocity
-      const double p = compute_pressure(A, vessel_data);
+      const double u     = Q / A; // Average velocity
+      const double A0    = vessel_data.reference_area;
+      const double K     = vessel_data.elastic_modulus;
+      const double m     = parameters.tube_law_m;
+      const double n     = parameters.tube_law_n;
+      const double ratio = A / A0;
 
-      flux[1] = Q * u + p * A; // Simplified pressure integral
+      // Momentum flux from Python model
+      flux[1] = A * u * u + K * A / parameters.rho *
+                              (m / (m + 1.0) * std::pow(ratio, m) -
+                               n / (n + 1.0) * std::pow(ratio, n));
     }
   else
     {
@@ -588,10 +727,14 @@ BloodFlow1D<spacedim>::compute_pressure(const double      area,
   const double A0    = vessel_data.reference_area;
   const double ratio = area / A0;
 
-  // Simplified tube law: p = K * (sqrt(A/A0) - 1) + p0
+  // Tube law from Python: p = K * ( (a/a0)^m - (a/a0)^n ) + p0 + pe
+  // For simplified case with n=0, m=0.5: p = K * (sqrt(A/A0) - 1) + p0
   const double K = vessel_data.elastic_modulus;
-  const double pressure =
-    K * (std::sqrt(ratio) - 1.0) + parameters.reference_pressure;
+  const double m = parameters.tube_law_m;
+  const double n = parameters.tube_law_n;
+
+  const double pressure = K * (std::pow(ratio, m) - std::pow(ratio, n)) +
+                          parameters.reference_pressure;
 
   return pressure;
 }
@@ -602,14 +745,105 @@ BloodFlow1D<spacedim>::compute_wave_speed_at_state(
   const Vector<double> &state,
   const VesselData     &vessel_data) const
 {
-  const double A  = state[0];
-  const double A0 = vessel_data.reference_area;
+  const double A     = state[0];
+  const double A0    = vessel_data.reference_area;
+  const double ratio = A / A0;
 
-  // Wave speed: c = sqrt(K/(2ρ) * sqrt(A0/A))
+  // Wave speed from Python: c = sqrt(a/rho * dpda)
+  // where dpda = K*(m*a^(m-1)/a0^m - n*a^(n-1)/a0^n)
   const double K = vessel_data.elastic_modulus;
-  const double c = std::sqrt(K / (2.0 * parameters.rho) * std::sqrt(A0 / A));
+  const double m = 0.5; // Assuming simplified case
+  const double n = 0.0; // Assuming simplified case
+
+  // dpda = K*(m*(A/A0)^(m-1)/A0 - n*(A/A0)^(n-1)/A0)
+  const double dpda =
+    K * (m * std::pow(ratio, m - 1.0) / A0 - n * std::pow(ratio, n - 1.0) / A0);
+
+  const double c = std::sqrt(A / parameters.rho * dpda);
 
   return c;
+}
+
+template <int spacedim>
+std::pair<double, double>
+BloodFlow1D<spacedim>::compute_riemann_invariants(
+  const Vector<double> &state,
+  const VesselData     &vessel_data) const
+{
+  const double A = state[0];
+  const double Q = state[1];
+  const double u = Q / A;
+
+  // Following Python: gri1= u+gamma*2./m*a**(m/2.)
+  //                   gri2= u-gamma*2./m*a**(m/2.)
+  const double A0    = vessel_data.reference_area;
+  const double K     = vessel_data.elastic_modulus;
+  const double m     = 0.5; // Assuming simplified case
+  const double gamma = std::sqrt(K * m / parameters.rho / std::pow(A0, m));
+
+  const double riemann_term = gamma * 2.0 / m * std::pow(A, m / 2.0);
+
+  const double gri1 = u + riemann_term;
+  const double gri2 = u - riemann_term;
+
+  return std::make_pair(gri1, gri2);
+}
+
+template <int spacedim>
+double
+BloodFlow1D<spacedim>::riemann_invariant_integral(
+  const double      area_left,
+  const double      area_right,
+  const VesselData &vessel_data) const
+{
+  // Transform to proper deal.II integration using quadrature
+  // Integral: ∫[area_left to area_right] 2*c(A)/m * dA
+  // where c(A) = sqrt(A/rho * K*m*(A/A0)^(m-1)/A0)
+
+  const double m = 0.5; // Parameter from constitutive law
+  // const double n = 0.0; // Parameter from constitutive law (not used in
+  // integration)
+
+  // Use deal.II quadrature for numerical integration
+  const QGauss<1>    quadrature(fe.degree + 2); // Higher order for accuracy
+  const unsigned int n_q_points = quadrature.size();
+
+  double integral_result = 0.0;
+
+  // Map integration interval [area_left, area_right] to [0,1]
+  const double interval_length = area_right - area_left;
+
+  // Handle the case where areas are equal
+  if (std::abs(interval_length) < 1e-12)
+    return 0.0;
+
+  for (unsigned int q = 0; q < n_q_points; ++q)
+    {
+      // Map quadrature point from [0,1] to [area_left, area_right]
+      const double xi     = quadrature.point(q)[0]; // Quadrature point in [0,1]
+      const double area   = area_left + xi * interval_length;
+      const double weight = quadrature.weight(q);
+
+      // Ensure area is positive
+      if (area <= 1e-12)
+        continue;
+
+      // Create state vector for wave speed computation
+      Vector<double> state(2);
+      state[0] = area;
+      state[1] = 0.0; // Flow rate doesn't affect wave speed calculation
+
+      // Compute wave speed at this area
+      const double c = compute_wave_speed_at_state(state, vessel_data);
+
+      // Integrand: 2*c(A)/m
+      const double integrand = 2.0 * c / m;
+
+      // Add contribution to integral (including Jacobian of transformation)
+      integral_result += integrand * weight * interval_length;
+    }
+
+  return integral_result;
 }
 
 template <int spacedim>
@@ -714,7 +948,7 @@ template <int spacedim>
 void
 BloodFlow1D<spacedim>::output_results() const
 {
-  TimerOutput::Scope t(const_cast<TimerOutput &>(computing_timer), "output");
+  TimerOutput::Scope t(computing_timer, "output");
 
   static std::vector<std::pair<double, std::string>> time_and_solutions;
 
@@ -801,6 +1035,344 @@ BloodFlow1D<spacedim>::output_results() const
   ++output_number;
 }
 
+template <int spacedim>
+std::pair<double, double>
+BloodFlow1D<spacedim>::prescribe_inlet_flow(const double      area_1d,
+                                            const double      flow_1d,
+                                            const double      flow_bc,
+                                            const VesselData &vessel_data) const
+{
+  // Following Python prescribeInletFlow function
+  const double   m = 0.5; // Assuming simplified case
+  Vector<double> state_1d(2);
+  state_1d[0]      = area_1d;
+  state_1d[1]      = flow_1d;
+  const double c1D = compute_wave_speed_at_state(state_1d, vessel_data);
+
+  // Function to solve for prescribing inlet flow
+  // qBC/aBC - q1D/a1D + 2./m*c1D - 2./m*cBC = 0
+  // Solve iteratively for aBC
+  double       aBC      = area_1d; // Initial guess
+  const double tol      = 1e-12;
+  const int    max_iter = 100;
+
+  for (int i = 0; i < max_iter; ++i)
+    {
+      Vector<double> state_bc(2);
+      state_bc[0]      = aBC;
+      state_bc[1]      = 0.0;
+      const double cBC = compute_wave_speed_at_state(state_bc, vessel_data);
+      const double f =
+        flow_bc / aBC - flow_1d / area_1d + 2.0 / m * c1D - 2.0 / m * cBC;
+
+      if (std::abs(f) < tol)
+        break;
+
+      // Simple Newton iteration (simplified)
+      const double   eps = 1e-10;
+      Vector<double> state_bc_plus(2);
+      state_bc_plus[0] = aBC + eps;
+      state_bc_plus[1] = 0.0;
+      const double cBC_plus =
+        compute_wave_speed_at_state(state_bc_plus, vessel_data);
+      const double f_plus = flow_bc / (aBC + eps) - flow_1d / area_1d +
+                            2.0 / m * c1D - 2.0 / m * cBC_plus;
+      const double df = (f_plus - f) / eps;
+
+      aBC = aBC - f / df;
+    }
+
+  return std::make_pair(aBC, flow_bc);
+}
+
+template <int spacedim>
+std::pair<double, double>
+BloodFlow1D<spacedim>::prescribe_inlet_pressure(
+  const double      area_1d,
+  const double      flow_1d,
+  const double      pressure_bc,
+  const VesselData &vessel_data) const
+{
+  // Following Python prescribeInletPressure function
+  const double m = 0.5; // Assuming simplified case
+
+  // Compute area from pressure using inverse of tube law
+  const double A0    = vessel_data.reference_area;
+  const double K     = vessel_data.elastic_modulus;
+  const double ratio = (pressure_bc - parameters.reference_pressure) / K + 1.0;
+  const double aBC   = A0 * std::pow(ratio, 1.0 / m);
+
+  // Compute corresponding flow
+  Vector<double> state_1d(2);
+  state_1d[0]      = area_1d;
+  state_1d[1]      = flow_1d;
+  const double c1D = compute_wave_speed_at_state(state_1d, vessel_data);
+
+  Vector<double> state_bc(2);
+  state_bc[0]      = aBC;
+  state_bc[1]      = 0.0;
+  const double cBC = compute_wave_speed_at_state(state_bc, vessel_data);
+  const double qBC = (flow_1d / area_1d - 2.0 / m * c1D + 2.0 / m * cBC) * aBC;
+
+  return std::make_pair(aBC, qBC);
+}
+
+template <int spacedim>
+double
+BloodFlow1D<spacedim>::compute_inflow_function(const double time,
+                                               const int    flow_type) const
+{
+  // Following Python inflowAorta function
+  if (flow_type == 1)
+    {
+      // Boileau et al benchmark paper, aortic bifurcation flow
+      const double T = 1.1;
+      const double q =
+        10e5 *
+        (7.9853e-06 + 2.6617e-05 * std::sin(2 * M_PI * time / T + 0.29498) +
+         2.3616e-05 * std::sin(4 * M_PI * time / T - 1.1403) -
+         1.9016e-05 * std::sin(6 * M_PI * time / T + 0.40435) -
+         8.5899e-06 * std::sin(8 * M_PI * time / T - 1.1892) -
+         2.436e-06 * std::sin(10 * M_PI * time / T - 1.4918) +
+         1.4905e-06 * std::sin(12 * M_PI * time / T + 1.0536) +
+         1.3581e-06 * std::sin(14 * M_PI * time / T - 0.47666) -
+         6.3031e-07 * std::sin(16 * M_PI * time / T + 0.93768));
+      return q;
+    }
+  else if (flow_type == 0)
+    {
+      // Boileau et al benchmark paper, thoracic aorta flow
+      const double T = 0.9550;
+      const double q =
+        500 * (0.20617 + 0.37759 * std::sin(2 * M_PI * time / T + 0.59605) +
+               0.2804 * std::sin(4 * M_PI * time / T - 0.35859) +
+               0.15337 * std::sin(6 * M_PI * time / T - 1.2509) -
+               0.049889 * std::sin(8 * M_PI * time / T + 1.3921) +
+               0.038107 * std::sin(10 * M_PI * time / T - 1.1068) -
+               0.041699 * std::sin(12 * M_PI * time / T + 1.3985));
+      return q;
+    }
+
+  // Default case - steady flow
+  return 0.0;
+}
+
+template <int spacedim>
+double
+BloodFlow1D<spacedim>::compute_elastic_modulus_from_wave_speed(
+  const double wave_speed,
+  const double /*reference_area*/) const
+{
+  // Following Python getkfromc0 function: k = c^2*rho/(m-n)
+  const double m  = 0.5; // Assuming simplified case
+  const double n  = 0.0; // Assuming simplified case
+  const double c2 = wave_speed * wave_speed;
+  const double k  = c2 * parameters.rho / (m - n);
+  return k;
+}
+
+// Add function to compute area from pressure (inverse tube law)
+template <int spacedim>
+double
+BloodFlow1D<spacedim>::compute_area_from_pressure(
+  const double      pressure,
+  const VesselData &vessel_data) const
+{
+  // Following Python aFp function: a = ((p-p0-pe)/k+1.)**(1./m)*a0
+  const double A0 = vessel_data.reference_area;
+  const double K  = vessel_data.elastic_modulus;
+  const double m  = 0.5; // Assuming simplified case
+  const double n  = 0.0; // Assuming simplified case
+
+  if (std::abs(n) > 1e-8)
+    {
+      // Not implemented for n!=0 case
+      return A0;
+    }
+
+  const double ratio = (pressure - parameters.reference_pressure) / K + 1.0;
+  const double area  = A0 * std::pow(ratio, 1.0 / m);
+
+  return area;
+}
+
+template <int spacedim>
+Vector<double>
+BloodFlow1D<spacedim>::compute_hll_flux_vector(
+  const Vector<double> &state_left,
+  const Vector<double> &state_right,
+  const VesselData     &vessel_data,
+  const double /*x_position*/) const
+{
+  // Implement HLL numerical flux vector using proper deal.II integration
+  const double A_L = state_left[0];
+  const double Q_L = state_left[1];
+  const double A_R = state_right[0];
+  const double Q_R = state_right[1];
+
+  Vector<double> F_HLL(2);
+
+  // Avoid division by zero
+  if (A_L <= 1e-12 || A_R <= 1e-12)
+    {
+      F_HLL[0] = 0.0;
+      F_HLL[1] = 0.0;
+      return F_HLL;
+    }
+
+  const double u_L = Q_L / A_L;
+  const double u_R = Q_R / A_R;
+
+  // Compute wave speeds using proper deal.II approach
+  const double c_L = compute_wave_speed_at_state(state_left, vessel_data);
+  const double c_R = compute_wave_speed_at_state(state_right, vessel_data);
+
+  // Toro's wave speed estimates for HLL solver
+  const double S_L = std::min(u_L - c_L, u_R - c_R);
+  const double S_R = std::max(u_L + c_L, u_R + c_R);
+
+  // Compute physical fluxes
+  const Vector<double> F_L =
+    compute_flux_function(state_left, vessel_data, 0.0);
+  const Vector<double> F_R =
+    compute_flux_function(state_right, vessel_data, 0.0);
+
+  for (unsigned int comp = 0; comp < 2; ++comp)
+    {
+      if (S_L >= 0.0)
+        {
+          F_HLL[comp] = F_L[comp];
+        }
+      else if (S_R <= 0.0)
+        {
+          F_HLL[comp] = F_R[comp];
+        }
+      else
+        {
+          // HLL flux formula
+          F_HLL[comp] = (S_R * F_L[comp] - S_L * F_R[comp] +
+                         S_L * S_R * (state_right[comp] - state_left[comp])) /
+                        (S_R - S_L);
+        }
+    }
+
+  return F_HLL;
+}
+
+template <int spacedim>
+double
+BloodFlow1D<spacedim>::compute_hll_flux(const Vector<double> &state_left,
+                                        const Vector<double> &state_right,
+                                        const VesselData     &vessel_data,
+                                        const double /*x_position*/) const
+{
+  // Return scalar flux for specific component (kept for compatibility)
+  const Vector<double> flux_vector =
+    compute_hll_flux_vector(state_left, state_right, vessel_data, 0.0);
+  return flux_vector[0]; // Return first component
+}
+
+// Helper functions for boundary conditions
+template <int spacedim>
+Vector<double>
+BloodFlow1D<spacedim>::apply_inlet_bc(const Vector<double> &state_interior,
+                                      const VesselData     &vessel_data,
+                                      const double          time) const
+{
+  Vector<double> state_bc(2);
+
+  // Apply inlet boundary condition (flow or pressure)
+  if (vessel_data.inlet_bc_type == 0) // Prescribed flow
+    {
+      const double flow_bc   = compute_inlet_flow_rate(time);
+      const auto   bc_result = prescribe_inlet_flow(state_interior[0],
+                                                  state_interior[1],
+                                                  flow_bc,
+                                                  vessel_data);
+      state_bc[0]            = bc_result.first;  // area
+      state_bc[1]            = bc_result.second; // flow
+    }
+  else // Prescribed pressure
+    {
+      const double pressure_bc = parameters.reference_pressure; // Simplified
+      const auto   bc_result   = prescribe_inlet_pressure(state_interior[0],
+                                                      state_interior[1],
+                                                      pressure_bc,
+                                                      vessel_data);
+      state_bc[0]              = bc_result.first;  // area
+      state_bc[1]              = bc_result.second; // flow
+    }
+
+  return state_bc;
+}
+
+template <int spacedim>
+Vector<double>
+BloodFlow1D<spacedim>::apply_outlet_bc(const Vector<double> &state_interior,
+                                       const VesselData     &vessel_data,
+                                       const double /*time*/) const
+{
+  Vector<double> state_bc(2);
+
+  // Apply outlet boundary condition (typically pressure or resistance)
+  if (vessel_data.outlet_bc_type == 0) // Prescribed pressure
+    {
+      const double pressure_bc = parameters.reference_pressure; // Simplified
+      const auto   bc_result   = prescribe_inlet_pressure(state_interior[0],
+                                                      state_interior[1],
+                                                      pressure_bc,
+                                                      vessel_data);
+      state_bc[0]              = bc_result.first;  // area
+      state_bc[1]              = bc_result.second; // flow
+    }
+  else // No boundary condition (copy interior state)
+    {
+      state_bc = state_interior;
+    }
+
+  return state_bc;
+}
+
+template <int spacedim>
+double
+BloodFlow1D<spacedim>::compute_inlet_flow_rate(const double time) const
+{
+  // Use the inflow function to compute time-dependent inlet flow rate
+  // Default to flow_type = 1 (aortic bifurcation) for now
+  // This could be made configurable via parameters in the future
+  return compute_inflow_function(time, 1);
+}
+
+template <int spacedim>
+void
+BloodFlow1D<spacedim>::create_face_connectivity_map()
+{
+  // Clear any existing connectivity map
+  face_to_cells_map.clear();
+
+  pcout << "  Creating face-to-cells connectivity map..." << std::endl;
+
+  // Iterate over all locally owned cells
+  for (const auto &cell : dof_handler.active_cell_iterators())
+    {
+      if (cell->is_locally_owned())
+        {
+          // Iterate over all faces of this cell
+          for (const auto face_number : cell->face_indices())
+            {
+              const auto face = cell->face(face_number);
+
+              // Add this cell to the face's connectivity list
+              face_to_cells_map[face].push_back(cell);
+            }
+        }
+    }
+
+  pcout << "  Face connectivity map created with " << face_to_cells_map.size()
+        << " unique faces." << std::endl;
+}
+
 // Explicit instantiations
 template class BloodFlow1D<1>;
+template class BloodFlow1D<2>;
 template class BloodFlow1D<3>;
