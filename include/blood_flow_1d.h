@@ -88,13 +88,14 @@ public:
   double tube_law_n = 0.0; // Constitutive law exponent n
   
   // Inflow parameters
-  double inlet_flow_amplitude = 500.0; // Inlet flow amplitude scale factor [cm³/s]
-  double cardiac_cycle_period = 1.0;   // Cardiac cycle period [s]
+  double inlet_flow_amplitude =
+    500.0; // Inlet flow amplitude scale factor [cm³/s]
+  double cardiac_cycle_period = 1.0; // Cardiac cycle period [s]
   
   // Default vessel parameters (used when data is missing from mesh)
-  double default_radius = 0.5;      // Default vessel radius [cm]
-  double default_wave_speed = 500.0; // Default wave speed [cm/s]
-  double default_wall_thickness = 0.1; // Default wall thickness [cm]
+  double default_radius         = 0.5;   // Default vessel radius [cm]
+  double default_wave_speed     = 500.0; // Default wave speed [cm/s]
+  double default_wall_thickness = 0.1;   // Default wall thickness [cm]
 };
 
 /**
@@ -273,7 +274,8 @@ private:
 
   // Face connectivity map for DG integration
   std::map<typename DoFHandler<1, spacedim>::face_iterator, 
-           std::vector<typename DoFHandler<1, spacedim>::active_cell_iterator>> face_to_cells_map;
+           std::vector<typename DoFHandler<1, spacedim>::active_cell_iterator>>
+    face_to_cells_map;
 
   // Solution vectors
   LinearAlgebra::distributed::Vector<double> solution;
