@@ -1,0 +1,27 @@
+# Parameter file for 1D Blood Flow simulation
+# Units: g, cm, s
+
+subsection Blood Flow Parameters
+  # Physical parameters
+  set rho                   = 1.06      # Blood density [g/cm³]
+  set mu                    = 0.04      # Blood dynamic viscosity [g/(cm·s)]
+  set vel_profile_coeff     = 22.0      # Velocity profile coefficient (Womersley)
+  set reference_pressure    = 94666.66  # Reference pressure [g/(cm·s²)]
+  
+  # Simulation parameters
+  set final_time           = 1.0        # Final simulation time [s]
+  set cfl_number           = 0.9        # CFL number for time stepping
+  set output_frequency     = 10         # Output frequency (every N time steps)
+  
+  # Mesh and discretization parameters
+  set mesh_filename        = ../aortic_bifurcation.vtk  # Input VTK mesh file
+  set fe_degree           = 1           # Finite element degree
+  
+  # Output parameters
+  set output_directory     = blood_flow_output/
+  set output_basename      = solution
+  
+  # Numerical scheme parameters
+  set flux_type           = hll         # Numerical flux type (hll, roe, lax_friedrichs)
+  set limiter_type        = minmod      # Slope limiter (minmod, superbee, none)
+end
