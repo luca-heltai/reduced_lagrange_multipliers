@@ -1767,6 +1767,217 @@ BloodFlow1D<spacedim>::get_cell_average_state(
   return cell_state;
 }
 
+// Python equivalent: modelBloodFlow.py::model.exactSolution (line 658)
+template <int spacedim>
+Vector<double>
+BloodFlow1D<spacedim>::compute_exact_solution(const Point<spacedim> &point,
+                                              const double           time) const
+{
+  // Python: Exact solution for convergence test with sinusoidal wave
+  // r0 = 9.99e-3; a0 = np.pi*r0**2; Atilde = a0; L = 1.; T0 = 1.0
+  // atilde = 0.1*Atilde; qtilde = 0.
+  // exact[:,0] = Atilde + atilde * np.sin(2*np.pi/L*x)*np.cos(2*np.pi/T0*t)
+  // exact[:,1] = qtilde - atilde*L/T0 *
+  // np.cos(2*np.pi/L*x)*np.sin(2*np.pi/T0*t)
+
+  const double r0      = 9.99e-3;        // Reference radius [m]
+  const double a0      = M_PI * r0 * r0; // Reference area [m²]
+  const double A_tilde = a0;             // Base area
+  const double L       = 1.0;            // Domain length [m]
+  const double T0      = 1.0;            // Time period [s]
+  const double a_tilde = 0.1 * A_tilde;  // Area amplitude
+  const double q_tilde = 0.0;            // Base flow rate
+
+  const double x = point[0]; // Position along vessel
+
+  Vector<double> exact_solution(2);
+  exact_solution[0] = A_tilde + a_tilde * std::sin(2.0 * M_PI / L * x) *
+                                  std::cos(2.0 * M_PI / T0 * time);
+  exact_solution[1] = q_tilde - a_tilde * L / T0 *
+                                  std::cos(2.0 * M_PI / L * x) *
+                                  std::sin(2.0 * M_PI / T0 * time);
+
+  return exact_solution;
+}
+
+template <int spacedim>
+// Python equivalent: modelBloodFlow.py::model.source with convergence flag
+// (line 691)
+Vector<double>
+BloodFlow1D<spacedim>::compute_exact_source_term(const Point<spacedim> &point,
+                                                 const double time) const
+{
+  // Python: Source term for convergence test that makes exact solution satisfy
+  // PDE
+  const double r0      = 9.99e-3;
+  const double a0      = M_PI * r0 * r0;
+  const double A_tilde = a0;
+  const double L       = 1.0;
+  const double T0      = 1.0;
+  const double a_tilde = 0.1 * A_tilde;
+
+  // Get vessel parameters (assuming first vessel for simplicity)
+  const VesselData &vessel = vessel_data[0];
+  const double      k      = vessel.elastic_modulus;
+  const double      m      = parameters.tube_law_m;
+
+  // Python: gamma = m*k/self.rho/(m+1)/a0**m
+  const double gamma = m * k / parameters.rho / (m + 1.0) / std::pow(a0, m);
+
+  const double x = point[0];
+
+  // Exact solution at this point and time
+  const Vector<double> exact = compute_exact_solution(point, time);
+  const double         A     = exact[0];
+  const double         Q     = exact[1];
+
+  Vector<double> source(2);
+
+  // Time derivatives
+  const double dAdt = -a_tilde * (2.0 * M_PI / T0) *
+                      std::sin(2.0 * M_PI / L * x) *
+                      std::sin(2.0 * M_PI / T0 * time);
+  const double dQdt = -a_tilde * L / T0 * (2.0 * M_PI / T0) *
+                      std::cos(2.0 * M_PI / L * x) *
+                      std::cos(2.0 * M_PI / T0 * time);
+
+  // Spatial derivatives
+  const double dAdx = a_tilde * (2.0 * M_PI / L) *
+                      std::cos(2.0 * M_PI / L * x) *
+                      std::cos(2.0 * M_PI / T0 * time);
+  const double dQdx = a_tilde * L / T0 * (2.0 * M_PI / L) *
+                      std::sin(2.0 * M_PI / L * x) *
+                      std::sin(2.0 * M_PI / T0 * time);
+
+  // Pressure derivative with respect to area
+  const double dPdA = gamma * std::pow(A / a0, m);
+
+  // Source terms to make exact solution satisfy the PDE
+  source[0] = dAdt + dQdx; // Continuity equation residual
+
+
+  source[1] =
+    dQdt + dQdx * Q / A + A * dPdA * dAdx; // Momentum equation residual
+
+  return source;
+}
+
+template <int spacedim>
+// Python equivalent: modelBloodFlow.py::model.source with convergence flag
+// (line 691)
+Vector<double>
+BloodFlow1D<spacedim>::compute_exact_source_term(const Point<spacedim> &point,
+                                                 const double           time,
+                                                 const double elastic_modulus,
+                                                 const double tube_law_m) const
+{
+  // Python: Source term for convergence test that makes exact solution satisfy
+  // PDE
+  const double r0      = 9.99e-3;
+  const double a0      = M_PI * r0 * r0;
+  const double A_tilde = a0;
+  const double L       = 1.0;
+  const double T0      = 1.0;
+  const double a_tilde = 0.1 * A_tilde;
+
+  // Use provided vessel parameters
+  const double k = elastic_modulus;
+  const double m = tube_law_m;
+
+  const double gamma = m * k / parameters.rho / (m + 1.0) / std::pow(a0, m);
+
+  const double x = point[0];
+
+  // Exact solution at this point and time
+  const Vector<double> exact = compute_exact_solution(point, time);
+  const double         A     = exact[0];
+  const double         Q     = exact[1];
+
+  Vector<double> source(2);
+
+  // Time derivatives
+  const double dAdt = -a_tilde * (2.0 * M_PI / T0) *
+                      std::sin(2.0 * M_PI / L * x) *
+                      std::sin(2.0 * M_PI / T0 * time);
+  const double dQdt = -a_tilde * L / T0 * (2.0 * M_PI / T0) *
+                      std::cos(2.0 * M_PI / L * x) *
+                      std::cos(2.0 * M_PI / T0 * time);
+
+  // Spatial derivatives
+  const double dAdx = a_tilde * (2.0 * M_PI / L) *
+                      std::cos(2.0 * M_PI / L * x) *
+                      std::cos(2.0 * M_PI / T0 * time);
+  const double dQdx = a_tilde * L / T0 * (2.0 * M_PI / L) *
+                      std::sin(2.0 * M_PI / L * x) *
+                      std::sin(2.0 * M_PI / T0 * time);
+
+  // Pressure derivative with respect to area
+  const double dPdA = gamma * std::pow(A / a0, m);
+
+  // Source terms to make exact solution satisfy the PDE
+  source[0] = dAdt + dQdx; // Continuity equation residual
+
+  source[1] =
+    dQdt + dQdx * Q / A + A * dPdA * dAdx; // Momentum equation residual
+
+  return source;
+}
+
+template <int spacedim>
+// For testing convergence
+double
+BloodFlow1D<spacedim>::compute_l2_error_against_exact_solution(
+  const double time) const
+{
+  double l2_error_squared = 0.0;
+  double area_sum         = 0.0;
+
+  // Loop over all locally owned cells
+  for (const auto &cell : dof_handler.active_cell_iterators())
+    {
+      if (!cell->is_locally_owned())
+        continue;
+
+      // Get quadrature rule for integration
+      const QGauss<1>       quadrature_formula(fe.degree + 1);
+      FEValues<1, spacedim> fe_values(fe,
+                                      quadrature_formula,
+                                      update_values | update_quadrature_points |
+                                        update_JxW_values);
+      fe_values.reinit(cell);
+
+      std::vector<types::global_dof_index> dof_indices(fe.dofs_per_cell);
+      cell->get_dof_indices(dof_indices);
+
+      // Extract cell solution
+      std::vector<Vector<double>> solution_values(quadrature_formula.size(),
+                                                  Vector<double>(2));
+      fe_values.get_function_values(solution, solution_values);
+
+      // Compute error at quadrature points
+      for (unsigned int q = 0; q < quadrature_formula.size(); ++q)
+        {
+          const Point<spacedim> &point    = fe_values.quadrature_point(q);
+          const Vector<double>   exact    = compute_exact_solution(point, time);
+          const Vector<double>  &computed = solution_values[q];
+
+          const double area_error = computed[0] - exact[0];
+          const double flow_error = computed[1] - exact[1];
+
+          l2_error_squared +=
+            (area_error * area_error + flow_error * flow_error) *
+            fe_values.JxW(q);
+          area_sum += fe_values.JxW(q);
+        }
+    }
+
+  // Sum over all MPI processes
+  l2_error_squared = Utilities::MPI::sum(l2_error_squared, mpi_communicator);
+  area_sum         = Utilities::MPI::sum(area_sum, mpi_communicator);
+
+  return std::sqrt(l2_error_squared / area_sum);
+}
+
 // Explicit instantiations
 template class BloodFlow1D<1>;
 template class BloodFlow1D<2>;
