@@ -307,22 +307,134 @@ private:
   compute_area_from_pressure(const double      pressure,
                              const VesselData &vessel_data) const;
 
+  // Additional essential functions
+  /**
+   * @brief Compute pressure derivative with respect to area
+   * Python equivalent: modelBloodFlow.py::model.dpda (line 106)
+   */
+  double
+  compute_pressure_derivative(const double      area,
+                              const VesselData &vessel_data) const;
 
-  // Matrix computation functions
-  // Python: modelBloodFlow.py::model.jacobian (line 159)
+  /**
+   * @brief Compute eigenvalue matrix (diagonal matrix of eigenvalues)
+   * Python equivalent: modelBloodFlow.py::model.lambdaMatrix (line 219)
+   */
   FullMatrix<double>
-  compute_jacobian(const Vector<double> &state,
-                   const VesselData     &vessel_data) const;
+  compute_eigenvalue_matrix(const Vector<double> &state,
+                            const VesselData     &vessel_data) const;
 
-  // Python: modelBloodFlow.py::model.revMatrix (line 180)
-  FullMatrix<double>
-  compute_right_eigenvector_matrix(const Vector<double> &state,
+  /**
+   * @brief Set initial conditions for vessel
+   * Python equivalent: vessel.py::vessel.setInitialCondition (line 98)
+   */
+  void
+  set_initial_conditions(const double initial_pressure,
+                         const double initial_velocity);
+
+  /**
+   * @brief Prescribe RCR boundary condition
+   * Python equivalent: modelBloodFlow.py::model.prescribeRCR (referenced in
+   * vessel.py:203)
+   */
+  Vector<double>
+  prescribe_rcr_boundary_condition(const Vector<double> &interior_state,
+                                   const double          rcr_pressure,
+                                   const double          rcr_resistance,
                                    const VesselData     &vessel_data) const;
 
-  // Python: modelBloodFlow.py::model.revInvMatrix (line 198)
-  FullMatrix<double>
-  compute_right_eigenvector_inverse_matrix(const Vector<double> &state,
-                                           const VesselData &vessel_data) const;
+  /**
+   * @brief Set boundary conditions for vessel
+   * Python equivalent: vessel.py::vessel.setBoundaryConditions (line 188)
+   */
+  void
+  set_boundary_conditions_for_vessel(const unsigned int vessel_id,
+                                     const double       time);
+
+  /**
+   * @brief Update solution for one time step
+   * Python equivalent: numerics.py::numericalMethod.update (line 208)
+   */
+  void
+  update_solution_time_step();
+
+  /**
+   * @brief Apply ENO reconstruction (placeholder)
+   * Python equivalent: numerics.py::numericalMethod.reconstructionENO (line
+   * 302)
+   */
+  void
+  apply_eno_reconstruction();
+
+  /**
+   * @brief Apply MUSCL reconstruction (placeholder)
+   * Python equivalent: Used in vessel.py::vessel.getMusclHancockEvolveState
+   * (line 170)
+   */
+  void
+  apply_muscl_reconstruction();
+
+  /**
+   * @brief Compute source term (friction)
+   * Python equivalent: modelBloodFlow.py::model.source (referenced in
+   * vessel.py)
+   */
+  Vector<double>
+  compute_source_term(const Vector<double> &state,
+                      const VesselData     &vessel_data,
+                      const double          time) const;
+
+  /**
+   * @brief Compute Lax-Wendroff numerical flux
+   * Python equivalent: numerics.py::numericalMethod.numFluxLW (line 97)
+   */
+  Vector<double>
+  compute_lax_wendroff_flux(const Vector<double> &state_left,
+                            const Vector<double> &state_right,
+                            const VesselData     &vessel_data,
+                            const double          dx,
+                            const double          dt) const;
+
+  /**
+   * @brief Compute FORCE numerical flux
+   * Python equivalent: numerics.py::numericalMethod.numFluxFORCE (line 108)
+   */
+  Vector<double>
+  compute_force_flux(const Vector<double> &state_left,
+                     const Vector<double> &state_right,
+                     const VesselData     &vessel_data,
+                     const double          dx,
+                     const double          dt) const;
+
+  /**
+   * @brief Evolve RCR boundary condition
+   * Python equivalent: vessel.py::vessel.evolveRCR (line 155)
+   */
+  void
+  evolve_rcr_boundary_condition(const double flow_rate,
+                                const double time_step,
+                                double      &rcr_pressure,
+                                const double rcr_capacitance,
+                                const double rcr_distal_resistance,
+                                const double rcr_distal_pressure) const;
+
+  /**
+   * @brief Estimate wave speeds for HLL solver
+   * Python equivalent: Used in numerics.py::numericalMethod.numFluxHLL (line
+   * 145)
+   */
+  std::pair<double, double>
+  estimate_wave_speeds_for_hll(const Vector<double> &state_left,
+                               const Vector<double> &state_right,
+                               const VesselData     &vessel_data) const;
+
+  /**
+   * @brief Get cell average state for boundary conditions
+   * Python equivalent: vessel.py::vessel.getSolution (line 115)
+   */
+  Vector<double>
+  get_cell_average_state(
+    const typename DoFHandler<1, spacedim>::active_cell_iterator &cell) const;
 
   // MPI and parallel data structures
   MPI_Comm            mpi_communicator;
