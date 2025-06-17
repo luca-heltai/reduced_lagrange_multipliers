@@ -31,6 +31,7 @@
 #include <cmath>
 
 // BloodFlowParameters implementation
+// Python equivalent: modelBloodFlow.py::model.__init__ (line 33)
 BloodFlowParameters::BloodFlowParameters()
   : ParameterAcceptor("Blood Flow Parameters")
 {
@@ -94,6 +95,7 @@ BloodFlow1D<spacedim>::BloodFlow1D(BloodFlowParameters &parameters_)
 {}
 
 template <int spacedim>
+// Python equivalent: main_bfe_network.py::main time loop (lines 234-327)
 void
 BloodFlow1D<spacedim>::run()
 {
@@ -143,6 +145,7 @@ BloodFlow1D<spacedim>::run()
 }
 
 template <int spacedim>
+// Python equivalent: scripts/convert_net_to_vtk.py::read_net_file (line 19)
 void
 BloodFlow1D<spacedim>::read_mesh_and_data()
 {
@@ -235,16 +238,16 @@ BloodFlow1D<spacedim>::read_mesh_and_data()
       // Fill with default values
       for (const auto &cell : triangulation.active_cell_iterators())
         if (cell->is_locally_owned())
-        {
+          {
             const unsigned int i = cell->global_active_cell_index();
             vessel_ids[i]        = i;
             lengths[i]     = cell->diameter(); // Use cell diameter as length
-          inlet_radii[i] = outlet_radii[i] = parameters.default_radius;
-          wave_speeds[i]                   = parameters.default_wave_speed;
-          inlet_bc_types[i] = outlet_bc_types[i] = 0;
-          resistances1[i] = resistances2[i] = 1000.0;
-          compliances[i]                    = 1e-6;
-        }
+            inlet_radii[i] = outlet_radii[i] = parameters.default_radius;
+            wave_speeds[i]                   = parameters.default_wave_speed;
+            inlet_bc_types[i] = outlet_bc_types[i] = 0;
+            resistances1[i] = resistances2[i] = 1000.0;
+            compliances[i]                    = 1e-6;
+          }
     }
 
   // Create vessel data structures
@@ -287,6 +290,7 @@ BloodFlow1D<spacedim>::read_mesh_and_data()
 }
 
 template <int spacedim>
+// Python equivalent: main_bfe_network.py::vessel setup (lines 129-135)
 void
 BloodFlow1D<spacedim>::setup_system()
 {
@@ -347,6 +351,7 @@ BloodFlow1D<spacedim>::setup_system()
 }
 
 template <int spacedim>
+// Python equivalent: boundary condition setup in vessel.py (lines 35-40)
 void
 BloodFlow1D<spacedim>::setup_boundary_conditions()
 {
@@ -355,6 +360,7 @@ BloodFlow1D<spacedim>::setup_boundary_conditions()
 }
 
 template <int spacedim>
+// Python equivalent: numerics.py::computeTimeStep (line 78)
 void
 BloodFlow1D<spacedim>::compute_time_step()
 {
@@ -390,6 +396,8 @@ BloodFlow1D<spacedim>::compute_time_step()
 }
 
 template <int spacedim>
+// Python equivalent: numerics.py::computeNewSolution assembly phase (lines
+// 115-200)
 void
 BloodFlow1D<spacedim>::assemble_system()
 {
@@ -613,6 +621,8 @@ BloodFlow1D<spacedim>::assemble_system()
 }
 
 template <int spacedim>
+// Python equivalent: numerics.py::computeNewSolution solve phase (lines
+// 260-280)
 void
 BloodFlow1D<spacedim>::solve_time_step()
 {
@@ -640,6 +650,7 @@ BloodFlow1D<spacedim>::solve_time_step()
 }
 
 template <int spacedim>
+// Python equivalent: vessel.py::dQ slope limiting (line 27)
 void
 BloodFlow1D<spacedim>::apply_slope_limiting()
 {
@@ -682,6 +693,7 @@ BloodFlow1D<spacedim>::apply_slope_limiting()
   solution.compress(VectorOperation::insert);
 }
 
+// Python equivalent: modelBloodFlow.py::model.physicalFlux (line 140)
 template <int spacedim>
 Vector<double>
 BloodFlow1D<spacedim>::compute_flux_function(const Vector<double> &state,
@@ -721,6 +733,7 @@ BloodFlow1D<spacedim>::compute_flux_function(const Vector<double> &state,
   return flux;
 }
 
+// Python equivalent: modelBloodFlow.py::model.pFa (line 95)
 template <int spacedim>
 double
 BloodFlow1D<spacedim>::compute_pressure(const double      area,
@@ -741,6 +754,7 @@ BloodFlow1D<spacedim>::compute_pressure(const double      area,
   return pressure;
 }
 
+// Python equivalent: modelBloodFlow.py::model.waveSpeed (line 117)
 template <int spacedim>
 double
 BloodFlow1D<spacedim>::compute_wave_speed_at_state(
@@ -754,8 +768,8 @@ BloodFlow1D<spacedim>::compute_wave_speed_at_state(
   // Wave speed from Python: c = sqrt(a/rho * dpda)
   // where dpda = K*(m*a^(m-1)/a0^m - n*a^(n-1)/a0^n)
   const double K = vessel_data.elastic_modulus;
-  const double m = 0.5; // Assuming simplified case
-  const double n = 0.0; // Assuming simplified case
+  const double m = parameters.tube_law_m;
+  const double n = parameters.tube_law_n;
 
   // dpda = K*(m*(A/A0)^(m-1)/A0 - n*(A/A0)^(n-1)/A0)
   const double dpda =
@@ -766,6 +780,7 @@ BloodFlow1D<spacedim>::compute_wave_speed_at_state(
   return c;
 }
 
+// Python equivalent: modelBloodFlow.py::model.riemannInvariants (line 578)
 template <int spacedim>
 std::pair<double, double>
 BloodFlow1D<spacedim>::compute_riemann_invariants(
@@ -780,7 +795,7 @@ BloodFlow1D<spacedim>::compute_riemann_invariants(
   //                   gri2= u-gamma*2./m*a**(m/2.)
   const double A0    = vessel_data.reference_area;
   const double K     = vessel_data.elastic_modulus;
-  const double m     = 0.5; // Assuming simplified case
+  const double m     = parameters.tube_law_m;
   const double gamma = std::sqrt(K * m / parameters.rho / std::pow(A0, m));
 
   const double riemann_term = gamma * 2.0 / m * std::pow(A, m / 2.0);
@@ -791,6 +806,8 @@ BloodFlow1D<spacedim>::compute_riemann_invariants(
   return std::make_pair(gri1, gri2);
 }
 
+// Python equivalent: modelBloodFlow.py::model.riemannInvariantIntegral (line
+// 267)
 template <int spacedim>
 double
 BloodFlow1D<spacedim>::riemann_invariant_integral(
@@ -802,7 +819,7 @@ BloodFlow1D<spacedim>::riemann_invariant_integral(
   // Integral: ∫[area_left to area_right] 2*c(A)/m * dA
   // where c(A) = sqrt(A/rho * K*m*(A/A0)^(m-1)/A0)
 
-  const double m = 0.5; // Parameter from constitutive law
+  const double m = parameters.tube_law_m;
   // const double n = 0.0; // Parameter from constitutive law (not used in
   // integration)
 
@@ -849,6 +866,7 @@ BloodFlow1D<spacedim>::riemann_invariant_integral(
 }
 
 template <int spacedim>
+// Python equivalent: modelBloodFlow.py primitive variables setup (line 145)
 void
 BloodFlow1D<spacedim>::compute_primitive_variables()
 {
@@ -902,6 +920,8 @@ BloodFlow1D<spacedim>::compute_primitive_variables()
 }
 
 template <int spacedim>
+// Python equivalent: Physical constraints checking (implicit in Python
+// numerics)
 void
 BloodFlow1D<spacedim>::check_physical_constraints()
 {
@@ -947,6 +967,8 @@ BloodFlow1D<spacedim>::check_physical_constraints()
 }
 
 template <int spacedim>
+// Python equivalent: Output function (implicit in main_bfe_network.py plotting,
+// line 875)
 void
 BloodFlow1D<spacedim>::output_results() const
 {
@@ -1037,6 +1059,7 @@ BloodFlow1D<spacedim>::output_results() const
   ++output_number;
 }
 
+// Python equivalent: modelBloodFlow.py::model.prescribeInletFlow (line 769)
 template <int spacedim>
 std::pair<double, double>
 BloodFlow1D<spacedim>::prescribe_inlet_flow(const double      area_1d,
@@ -1087,6 +1110,7 @@ BloodFlow1D<spacedim>::prescribe_inlet_flow(const double      area_1d,
   return std::make_pair(aBC, flow_bc);
 }
 
+// Python equivalent: modelBloodFlow.py::model.prescribeInletPressure (line 793)
 template <int spacedim>
 std::pair<double, double>
 BloodFlow1D<spacedim>::prescribe_inlet_pressure(
@@ -1119,6 +1143,7 @@ BloodFlow1D<spacedim>::prescribe_inlet_pressure(
   return std::make_pair(aBC, qBC);
 }
 
+// Python equivalent: modelBloodFlow.py::model.inflowAorta (line 743)
 template <int spacedim>
 double
 BloodFlow1D<spacedim>::compute_inflow_function(const double time,
@@ -1159,6 +1184,7 @@ BloodFlow1D<spacedim>::compute_inflow_function(const double time,
   return 0.0;
 }
 
+// Python equivalent: modelBloodFlow.py::model.getkfromc0 (line 736)
 template <int spacedim>
 double
 BloodFlow1D<spacedim>::compute_elastic_modulus_from_wave_speed(
@@ -1173,6 +1199,7 @@ BloodFlow1D<spacedim>::compute_elastic_modulus_from_wave_speed(
   return k;
 }
 
+// Python equivalent: modelBloodFlow.py::model.aFp (line 719) - inverse of pFa
 // Add function to compute area from pressure (inverse tube law)
 template <int spacedim>
 double
@@ -1199,6 +1226,7 @@ BloodFlow1D<spacedim>::compute_area_from_pressure(
 }
 
 template <int spacedim>
+// Python equivalent: numerics.py::numFluxLF and numFluxRoe (lines 85-110)
 Vector<double>
 BloodFlow1D<spacedim>::compute_hll_flux_vector(
   const Vector<double> &state_left,
@@ -1262,6 +1290,7 @@ BloodFlow1D<spacedim>::compute_hll_flux_vector(
 }
 
 template <int spacedim>
+// Python equivalent: numerics.py::numFluxLF scalar component (lines 85-110)
 double
 BloodFlow1D<spacedim>::compute_hll_flux(const Vector<double> &state_left,
                                         const Vector<double> &state_right,
@@ -1276,6 +1305,8 @@ BloodFlow1D<spacedim>::compute_hll_flux(const Vector<double> &state_left,
 
 // Helper functions for boundary conditions
 template <int spacedim>
+// Python equivalent: modelBloodFlow.py boundary condition functions (lines
+// 769-850)
 Vector<double>
 BloodFlow1D<spacedim>::apply_inlet_bc(const Vector<double> &state_interior,
                                       const VesselData     &vessel_data,
@@ -1309,6 +1340,7 @@ BloodFlow1D<spacedim>::apply_inlet_bc(const Vector<double> &state_interior,
 }
 
 template <int spacedim>
+// Python equivalent: modelBloodFlow.py outlet boundary conditions (implicit)
 Vector<double>
 BloodFlow1D<spacedim>::apply_outlet_bc(const Vector<double> &state_interior,
                                        const VesselData     &vessel_data,
@@ -1336,6 +1368,8 @@ BloodFlow1D<spacedim>::apply_outlet_bc(const Vector<double> &state_interior,
 }
 
 template <int spacedim>
+// Python equivalent: modelBloodFlow.py::inflowAorta inlet flow computation
+// (line 743)
 double
 BloodFlow1D<spacedim>::compute_inlet_flow_rate(const double time) const
 {
@@ -1346,6 +1380,8 @@ BloodFlow1D<spacedim>::compute_inlet_flow_rate(const double time) const
 }
 
 template <int spacedim>
+// Python equivalent: Mesh connectivity (implicit in main_bfe_network.py vessel
+// network setup)
 void
 BloodFlow1D<spacedim>::create_face_connectivity_map()
 {
