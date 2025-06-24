@@ -163,6 +163,39 @@ public:
   void
   run();
 
+  /**
+   * @brief Compute exact solution for convergence testing
+   * Python equivalent: modelBloodFlow.py::model.exactSolution (line 658)
+   */
+  Vector<double>
+  compute_exact_solution(const Point<spacedim> &point, const double time) const;
+
+  /**
+   * @brief Compute exact source term for convergence testing
+   * Python equivalent: modelBloodFlow.py::model.source with convergence flag
+   * (line 691)
+   */
+  Vector<double>
+  compute_exact_source_term(const Point<spacedim> &point,
+                            const double           time) const;
+
+  /**
+   * @brief Compute exact source term with explicit vessel parameters
+   * For testing when vessel_data is not initialized
+   */
+  Vector<double>
+  compute_exact_source_term(const Point<spacedim> &point,
+                            const double           time,
+                            const double           elastic_modulus,
+                            const double           tube_law_m) const;
+
+  /**
+   * @brief Check convergence against exact solution
+   * For testing purposes
+   */
+  double
+  compute_l2_error_against_exact_solution(const double time) const;
+
 private:
   // Python equivalent: scripts/convert_net_to_vtk.py::read_net_file (line 19)
   void
