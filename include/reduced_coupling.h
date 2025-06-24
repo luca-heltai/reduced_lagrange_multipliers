@@ -259,9 +259,6 @@ ReducedCoupling<reduced_dim, dim, spacedim, n_components>::
   FullMatrix<double> local_coupling_matrix(fe.n_dofs_per_cell(),
                                            immersed_fe.n_dofs_per_cell());
 
-  FullMatrix<double> local_coupling_matrix_transpose(
-    immersed_fe.n_dofs_per_cell(), fe.n_dofs_per_cell());
-
   auto particle = this->get_particles().begin();
   while (particle != this->get_particles().end())
     {
