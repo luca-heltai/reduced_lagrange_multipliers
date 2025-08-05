@@ -34,6 +34,7 @@ var class_tensor_product_space =
     [ "global_cell_to_dof_indices", "class_tensor_product_space.html#a6fb71975c9bde50d7445a3a89f4243ad", null ],
     [ "mpi_communicator", "class_tensor_product_space.html#a088de87c814c2260ab72908eee858405", null ],
     [ "par", "class_tensor_product_space.html#aeac8fc62e7461ad1b78cf990bfb6aaa4", null ],
+    [ "preprocess_serial_triangulation", "class_tensor_product_space.html#aee11b6ad10fd67a18ac9ee628758afe8", null ],
     [ "properties", "class_tensor_product_space.html#ae671f1945bf823050d7ea2a16d99dafc", null ],
     [ "properties_dh", "class_tensor_product_space.html#a3252be08d0cb9ba5ac5096880c29433f", null ],
     [ "properties_names", "class_tensor_product_space.html#ac0493045e956d52005396b66fe25fbbc", null ],

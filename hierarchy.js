@@ -34,6 +34,7 @@ var hierarchy =
         [ "ReducedCouplingParameters< reduced_dim, dim, spacedim, n_components >", "struct_reduced_coupling_parameters.html", null ],
         [ "ReducedPoissonParameters< spacedim >", "class_reduced_poisson_parameters.html", null ],
         [ "ReferenceCrossSectionParameters< dim, spacedim, n_components >", "struct_reference_cross_section_parameters.html", null ],
+        [ "RefinementParameters", "struct_refinement_parameters.html", null ],
         [ "TensorProductSpaceParameters< reduced_dim, dim, spacedim, n_components >", "struct_tensor_product_space_parameters.html", null ]
       ] ],
       [ "PoissonProblem< dim, spacedim >", "class_poisson_problem.html", null ],

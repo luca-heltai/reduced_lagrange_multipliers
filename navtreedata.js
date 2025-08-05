@@ -60,17 +60,17 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"class_poisson_problem.html#af19b3bb2762dec0942e1772e6ad33e5e",
-"group__Exceptions.html#ga215c112ff92f6625e662447d0e52c3a9",
-"namespaceCGALWrappers.html#a9a4b77bb490d8969d970b6b6ab4b10f2",
-"namespaceDoFTools_1_1internal.html#a4e398e8e5c2769fc839aaee77e78b557",
-"namespaceGridTools.html#a6ea9a503f365395ed24460cb489d7f0e",
-"namespaceMatrixCreator.html#a35973e42cee9bedbbfce9603f4529223",
-"namespaceSparsityTools.html#a34d8cbf5559e454001e512c4368c2c3e",
-"namespaceUtilities_1_1MPI_1_1LargeCount.html#acb6ac3ea891da90f3f52def463989034",
-"namespaceinternal.html#a08fc24beed29d07ddf8e7669873e4a88",
-"namespaceinternal_1_1MatrixFreeFunctions_1_1internal.html",
-"namespacetypes.html#a88f8129eb3e40ecc8022e92a1e15d70e"
+"class_poisson_problem.html#aec5418239033b3c703d69b5f0c36b5bc",
+"group__Exceptions.html#ga1af054329605166c3f8c8cb15ee13d93",
+"namespaceCGALWrappers.html#a815534f25385f41d00730b80484cd982",
+"namespaceDoFTools.html#af778defeb024f32c1e3500963936639f",
+"namespaceGridTools.html#a59993de21dfa666c8fea8d254feb765a",
+"namespaceMGTransferGlobalCoarseningTools.html#a8afd0a089666d167af4dd9a7cafe916f",
+"namespaceSparseMatrixIterators.html",
+"namespaceUtilities_1_1MPI_1_1ConsensusAlgorithms.html#ad3bf6e85b24c8e9796ac784b4b0df2bf",
+"namespacehp_1_1Refinement.html#a98a9d9d1450456815b8ed4892041065c",
+"namespaceinternal_1_1MatrixFreeFunctions.html#a4d00c0d5884021f25691d6be7b4d6d21",
+"namespacestd__cxx20_1_1ranges.html"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

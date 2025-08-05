@@ -2,12 +2,12 @@ var class_reduced_poisson_parameters =
 [
     [ "ReducedPoissonParameters", "class_reduced_poisson_parameters.html#a5f3b01b67d443819cee4822eee1ec394", null ],
     [ "arguments_for_grid", "class_reduced_poisson_parameters.html#a8631fc939a63d3b7a1941e0aeca010f9", null ],
+    [ "assemble_full_AL_system", "class_reduced_poisson_parameters.html#a31af3c6e7e972b8f054b37bc047c8627", null ],
     [ "bc", "class_reduced_poisson_parameters.html#a1be71a97775326b5ac007d32c6f5869f", null ],
     [ "coarsening_fraction", "class_reduced_poisson_parameters.html#af702bc96d1b643935b4a52465237ebc4", null ],
     [ "convergence_table", "class_reduced_poisson_parameters.html#a25a248e05ee8964d72ee04aff2809e74", null ],
     [ "dirichlet_ids", "class_reduced_poisson_parameters.html#a6fa591075d15326534ce3332cd94702b", null ],
     [ "fe_degree", "class_reduced_poisson_parameters.html#a9bde0e6a0ee63af75265f3aac1e207d8", null ],
-    [ "initial_refinement", "class_reduced_poisson_parameters.html#aece97ae0f8f36539c5be0d381fde46ff", null ],
     [ "inner_control", "class_reduced_poisson_parameters.html#ad35f11a7c493cee2f3cd23af80269e8e", null ],
     [ "max_cells", "class_reduced_poisson_parameters.html#a9db6d0dd01c00a4b9454f7b421833b7c", null ],
     [ "n_refinement_cycles", "class_reduced_poisson_parameters.html#af9fb2e1f6d1da22df823fcdedb34359f", null ],

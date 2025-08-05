@@ -11,5 +11,6 @@ var searchData=
   ['9_2e3_2e3_2dvs_2d9_2e4_2e0_2eh_8',['9.3.3-vs-9.4.0.h',['http://www.dealii.org/developer/doxygen/deal.II/9_83_83-vs-9_84_80_8h.html',1,'']]],
   ['9_2e4_2e0_2dvs_2d9_2e5_2e0_2eh_9',['9.4.0-vs-9.5.0.h',['http://www.dealii.org/developer/doxygen/deal.II/9_84_80-vs-9_85_80_8h.html',1,'']]],
   ['9_2e5_2e0_2dvs_2d9_2e5_2e2_2eh_10',['9.5.0-vs-9.5.2.h',['http://www.dealii.org/developer/doxygen/deal.II/9_85_80-vs-9_85_82_8h.html',1,'']]],
-  ['9_2e5_2e2_2dvs_2d9_2e6_2e0_2eh_11',['9.5.2-vs-9.6.0.h',['http://www.dealii.org/developer/doxygen/deal.II/9_85_82-vs-9_86_80_8h.html',1,'']]]
+  ['9_2e5_2e2_2dvs_2d9_2e6_2e0_2eh_11',['9.5.2-vs-9.6.0.h',['http://www.dealii.org/developer/doxygen/deal.II/9_85_82-vs-9_86_80_8h.html',1,'']]],
+  ['9_2e6_2e0_2dvs_2d9_2e7_2e0_2eh_12',['9.6.0-vs-9.7.0.h',['http://www.dealii.org/developer/doxygen/deal.II/9_86_80-vs-9_87_80_8h.html',1,'']]]
 ];

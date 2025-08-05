@@ -1086,9 +1086,9 @@ $(function(){initNavTree('elasticity_8cc_source.html',''); initResizable(true); 
 <div class="line"><a id="l00953" name="l00953"></a><span class="lineno">  953</span>  <span class="comment">//   // std::vector&lt;types::global_dof_index&gt; local_dof_indices(dofs_per_cell);</span></div>
 <div class="line"><a id="l00954" name="l00954"></a><span class="lineno">  954</span>  <span class="comment">//   // Tensor&lt;2, spacedim&gt;                  grad_phi_u;</span></div>
 <div class="line"><a id="l00955" name="l00955"></a><span class="lineno">  955</span>  <span class="comment">//   // double                               div_phi_u;</span></div>
-<div class="line"><a id="l00956" name="l00956"></a><span class="lineno">  956</span>  <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html">Tensor&lt;2, spacedim&gt;</a> <a class="code hl_typedefRef" href="http://www.dealii.org/developer/doxygen/deal.II/template__constraints_8h.html#a3fd91e488bca71874e5b40b2b0844216">identity</a>;</div>
+<div class="line"><a id="l00956" name="l00956"></a><span class="lineno">  956</span>  <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTensor.html">Tensor&lt;2, spacedim&gt;</a> identity;</div>
 <div class="line"><a id="l00957" name="l00957"></a><span class="lineno">  957</span>  <span class="keywordflow">for</span> (<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> ix = 0; ix &lt; spacedim; ++ix)</div>
-<div class="line"><a id="l00958" name="l00958"></a><span class="lineno">  958</span>    <a class="code hl_typedefRef" href="http://www.dealii.org/developer/doxygen/deal.II/template__constraints_8h.html#a3fd91e488bca71874e5b40b2b0844216">identity</a>[ix][ix] = 1;</div>
+<div class="line"><a id="l00958" name="l00958"></a><span class="lineno">  958</span>    identity[ix][ix] = 1;</div>
 <div class="line"><a id="l00959" name="l00959"></a><span class="lineno">  959</span> </div>
 <div class="line"><a id="l00960" name="l00960"></a><span class="lineno">  960</span>  <span class="comment">//   // std::vector&lt;std::vector&lt;Tensor&lt;1,spacedim&gt;&gt;&gt;</span></div>
 <div class="line"><a id="l00961" name="l00961"></a><span class="lineno">  961</span>  <span class="comment">//   // solution_gradient(face_quadrature_formula-&gt;size(),</span></div>
@@ -1157,7 +1157,7 @@ $(function(){initNavTree('elasticity_8cc_source.html',''); initResizable(true); 
 <div class="line"><a id="l01024" name="l01024"></a><span class="lineno"> 1024</span>                    boundary_stress[boundary_index] +=</div>
 <div class="line"><a id="l01025" name="l01025"></a><span class="lineno"> 1025</span>                      (2 * <a class="code hl_variable" href="class_elasticity_problem.html#a627bc82d83f53785f7c0636e9c5b62f6">par</a>.Lame_mu * displacement_gradient[q] +</div>
 <div class="line"><a id="l01026" name="l01026"></a><span class="lineno"> 1026</span>                       <a class="code hl_variable" href="class_elasticity_problem.html#a627bc82d83f53785f7c0636e9c5b62f6">par</a>.Lame_lambda * displacement_divergence[q] *</div>
-<div class="line"><a id="l01027" name="l01027"></a><span class="lineno"> 1027</span>                         <a class="code hl_typedefRef" href="http://www.dealii.org/developer/doxygen/deal.II/template__constraints_8h.html#a3fd91e488bca71874e5b40b2b0844216">identity</a>) *</div>
+<div class="line"><a id="l01027" name="l01027"></a><span class="lineno"> 1027</span>                         identity) *</div>
 <div class="line"><a id="l01028" name="l01028"></a><span class="lineno"> 1028</span>                      fe_face_values.<a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aeb33b877f81e2143752dda2c14a0029d">JxW</a>(q) * fe_face_values.<a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a5efdeca6c8f0cbdd671c7e2573d4c708">normal_vector</a>(q);</div>
 <div class="line"><a id="l01029" name="l01029"></a><span class="lineno"> 1029</span>                    u_dot_n[boundary_index] +=</div>
 <div class="line"><a id="l01030" name="l01030"></a><span class="lineno"> 1030</span>                      (displacement_values[q] *</div>
@@ -1700,14 +1700,13 @@ $(function(){initNavTree('elasticity_8cc_source.html',''); initResizable(true); 
 <div class="ttc" id="astructTriangulation_1_1CellWeightSum_html"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/structTriangulation_1_1CellWeightSum.html">Triangulation</a></div></div>
 <div class="ttc" id="astructTrilinosWrappers_1_1PreconditionAMG_1_1AdditionalData_html"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/structTrilinosWrappers_1_1PreconditionAMG_1_1AdditionalData.html">TrilinosWrappers::PreconditionAMG::AdditionalData</a></div></div>
 <div class="ttc" id="astructVectorOperation_html_a40c50779cd14ba89bbf0bd9b4561964cae1077e8dbf4afea5d2df8c8b723c0708"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/structVectorOperation.html#a40c50779cd14ba89bbf0bd9b4561964cae1077e8dbf4afea5d2df8c8b723c0708">VectorOperation::add</a></div><div class="ttdeci">add</div></div>
-<div class="ttc" id="atemplate__constraints_8h_html_a3fd91e488bca71874e5b40b2b0844216"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/template__constraints_8h.html#a3fd91e488bca71874e5b40b2b0844216">identity</a></div><div class="ttdeci">std_cxx20::type_identity&lt; T &gt; identity</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_aa394cd1d9abb8ffe941d9aaafca8d03.html">github</a></li><li class="navelem"><a class="el" href="dir_c52569aa89a7adbb6029022c2fa60a11.html">workspace</a></li><li class="navelem"><a class="el" href="dir_37bdb9d2191b5493db509660c6a8c15a.html">source</a></li><li class="navelem"><a class="el" href="elasticity_8cc.html">elasticity.cc</a></li>
-    <li class="footer">Generated on Sun May 18 2025 21:39:32 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Tue Aug 5 2025 16:40:52 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

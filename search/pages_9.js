@@ -25,7 +25,11 @@ var searchData=
   ['9_205_202_22',['Changes between Version 9.5.0 and 9.5.2',['http://www.dealii.org/developer/doxygen/deal.II/changes_between_9_5_0_and_9_5_2.html',1,'']]],
   ['9_205_202_20and_209_206_200_23',['Changes between Version 9.5.2 and 9.6.0',['http://www.dealii.org/developer/doxygen/deal.II/changes_between_9_5_2_and_9_6_0.html',1,'']]],
   ['9_206_200_24',['Changes between Version 9.5.2 and 9.6.0',['http://www.dealii.org/developer/doxygen/deal.II/changes_between_9_5_2_and_9_6_0.html',1,'']]],
-  ['9_20tutorial_20program_25',['The step-9 tutorial program',['http://www.dealii.org/developer/doxygen/deal.II/step_9.html',1,'']]],
-  ['90_20tutorial_20program_26',['The step-90 tutorial program',['http://www.dealii.org/developer/doxygen/deal.II/step_90.html',1,'']]],
-  ['93_20tutorial_20program_27',['The step-93 tutorial program',['http://www.dealii.org/developer/doxygen/deal.II/step_93.html',1,'']]]
+  ['9_206_200_20and_209_207_200_25',['Changes between Version 9.6.0 and 9.7.0',['http://www.dealii.org/developer/doxygen/deal.II/changes_between_9_6_0_and_9_7_0.html',1,'']]],
+  ['9_207_200_26',['Changes between Version 9.6.0 and 9.7.0',['http://www.dealii.org/developer/doxygen/deal.II/changes_between_9_6_0_and_9_7_0.html',1,'']]],
+  ['9_20tutorial_20program_27',['The step-9 tutorial program',['http://www.dealii.org/developer/doxygen/deal.II/step_9.html',1,'']]],
+  ['90_20tutorial_20program_28',['The step-90 tutorial program',['http://www.dealii.org/developer/doxygen/deal.II/step_90.html',1,'']]],
+  ['93_20tutorial_20program_29',['The step-93 tutorial program',['http://www.dealii.org/developer/doxygen/deal.II/step_93.html',1,'']]],
+  ['95_20tutorial_20program_30',['The step-95 tutorial program',['http://www.dealii.org/developer/doxygen/deal.II/step_95.html',1,'']]],
+  ['97_20tutorial_20program_31',['The step-97 tutorial program',['http://www.dealii.org/developer/doxygen/deal.II/step_97.html',1,'']]]
 ];
