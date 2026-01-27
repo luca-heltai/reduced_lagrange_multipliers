@@ -1000,7 +1000,7 @@ public:
     return inclusions_data[inclusion_id];
 
     // if constexpr (spacedim == 3)
-    return rotated_inclusion_data[inclusion_id];
+    // return rotated_inclusion_data[inclusion_id];
   }
 
   void
