@@ -25,9 +25,9 @@
 
 #include <deal.II/grid/grid_tools_cache.h>
 
+#include <boost/geometry/index/adaptors/query.hpp>
 #include <boost/geometry/index/predicates.hpp>
 #include <boost/geometry/index/rtree.hpp>
-#include <boost/range/adaptor/queried.hpp>
 
 #include <algorithm>
 #include <cstring>
