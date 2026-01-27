@@ -23,6 +23,17 @@
 #include <deal.II/distributed/fully_distributed_tria.h>
 #include <deal.II/distributed/tria.h>
 
+#include <deal.II/grid/grid_tools_cache.h>
+
+#include <boost/geometry/index/predicates.hpp>
+#include <boost/geometry/index/rtree.hpp>
+#include <boost/range/adaptor/queried.hpp>
+
+#include <algorithm>
+#include <cstring>
+#include <iostream>
+#include <map>
+#include <vector>
 
 using namespace dealii;
 
