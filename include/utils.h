@@ -380,4 +380,11 @@ adjust_grids(Triangulation<spacedim, spacedim>    &space_triangulation,
   GridUtils::adjust_grids(space_triangulation, embedded_triangulation, parameters);
 }
 
+template <typename CellContainer>
+inline auto
+get_non_manifold_faces(const CellContainer &cell_container)
+{
+  return GridUtils::get_non_manifold_faces(cell_container);
+}
+
 #endif
