@@ -19,6 +19,8 @@
 
 #include <deal.II/base/exception_macros.h>
 #include <deal.II/base/mpi.h>
+#include <deal.II/base/parameter_acceptor.h>
+#include <deal.II/base/patterns.h>
 
 #include <deal.II/distributed/fully_distributed_tria.h>
 #include <deal.II/distributed/tria.h>
@@ -37,22 +39,35 @@
 
 using namespace dealii;
 
-struct RefinementParameters
+struct RefinementParameters : public ParameterAcceptor
 {
   RefinementParameters()
+    : ParameterAcceptor("Local refinement parameters")
   {
-    use_space                       = false;
-    use_embedded                    = false;
-    apply_delta_refinements         = false;
-    space_pre_refinement_cycles     = 1;
-    embedded_post_refinement_cycles = 1;
+    this->add_parameter("Refinement strategy",
+                        refinement_strategy,
+                        "",
+                        this->prm,
+                        Patterns::Selection("space|embedded"));
+    this->add_parameter("Space post-refinement cycles",
+                        space_post_refinement_cycles);
+    this->add_parameter("Embedded post-refinement cycles",
+                        embedded_post_refinement_cycles);
+    this->add_parameter("Space pre-refinement cycles",
+                        space_pre_refinement_cycles);
+    this->add_parameter("Embedded pre-refinement cycles",
+                        embedded_pre_refinement_cycles);
+    this->add_parameter("Refinement factor", refinement_factor);
+    this->add_parameter("Max refinement level", max_refinement_level);
   }
 
-  bool         use_space                       = false;
-  bool         use_embedded                    = false;
-  bool         apply_delta_refinements         = false;
-  unsigned int space_pre_refinement_cycles     = 1;
-  int          embedded_post_refinement_cycles = 0;
+  std::string  refinement_strategy             = "space";
+  unsigned int space_post_refinement_cycles    = 0;
+  unsigned int embedded_post_refinement_cycles = 0;
+  unsigned int space_pre_refinement_cycles     = 0;
+  unsigned int embedded_pre_refinement_cycles  = 0;
+  double       refinement_factor               = 1.0;
+  int          max_refinement_level            = 10;
 };
 
 
@@ -60,22 +75,26 @@ namespace GridUtils
 {
   template <int reduced_dim, int spacedim>
   void
-  adjust_grids(Triangulation<spacedim, spacedim>    &space_triangulation,
-               Triangulation<reduced_dim, spacedim> &embedded_triangulation,
-               const RefinementParameters &parameters = RefinementParameters())
-  {
+	  adjust_grids(Triangulation<spacedim, spacedim>    &space_triangulation,
+	               Triangulation<reduced_dim, spacedim> &embedded_triangulation,
+	               const RefinementParameters &parameters = RefinementParameters())
+	  {
     Assert(
       (dynamic_cast<parallel::TriangulationBase<reduced_dim, spacedim> *>(
          &embedded_triangulation) == nullptr),
       ExcMessage(
         "The embedded triangulation must not be distributed. It will be partitioned later."));
 
-    namespace bgi = boost::geometry::index;
+	    namespace bgi = boost::geometry::index;
 
-    // build caches so that we can get local trees
-    GridTools::Cache<spacedim, spacedim>    space_cache{space_triangulation};
-    GridTools::Cache<reduced_dim, spacedim> embedded_cache{
-      embedded_triangulation};
+	    space_triangulation.refine_global(parameters.space_pre_refinement_cycles);
+	    embedded_triangulation.refine_global(
+	      parameters.embedded_pre_refinement_cycles);
+
+	    // build caches so that we can get local trees
+	    GridTools::Cache<spacedim, spacedim>    space_cache{space_triangulation};
+	    GridTools::Cache<reduced_dim, spacedim> embedded_cache{
+	      embedded_triangulation};
 
     auto refine = [&]() {
       bool done        = false;
@@ -100,15 +119,15 @@ namespace GridUtils
 
           // Let's check all cells whose bounding box contains an embedded
           // bounding box
-          const bool use_space    = parameters.use_space;
-          const bool use_embedded = parameters.use_embedded;
+	          const bool use_space    = parameters.refinement_strategy == "space";
+	          const bool use_embedded =
+	            parameters.refinement_strategy == "embedded";
 
-          AssertThrow(!(use_embedded && use_space),
-                      ExcMessage("You can't refine both the embedded and "
-                                 "the space grid at the same time."));
+	          AssertThrow(use_embedded || use_space,
+	                      ExcMessage("One of the two must be true"));
 
-          for (const auto &[embedded_box, embedded_cell] : embedded_tree)
-            {
+	          for (const auto &[embedded_box, embedded_cell] : embedded_tree)
+	            {
               const auto &[p1, p2] = embedded_box.get_boundary_points();
               const auto diameter  = p1.distance(p2);
               min_embedded         = std::min(min_embedded, diameter);
@@ -122,16 +141,20 @@ namespace GridUtils
                   min_space = std::min(min_space, space_diameter);
                   max_space = std::max(max_space, space_diameter);
 
-                  if (use_embedded && space_diameter < diameter)
-                    {
-                      embedded_cell->set_refine_flag();
-                      done = false;
-                    }
-                  if (use_space && diameter < space_diameter)
-                    {
-                      space_cell->set_refine_flag();
-                      done = false;
-                    }
+	                  if (use_embedded &&
+	                      embedded_cell->level() < parameters.max_refinement_level &&
+	                      parameters.refinement_factor * space_diameter < diameter)
+	                    {
+	                      embedded_cell->set_refine_flag();
+	                      done = false;
+	                    }
+	                  if (use_space &&
+	                      space_cell->level() < parameters.max_refinement_level &&
+	                      parameters.refinement_factor * diameter < space_diameter)
+	                    {
+	                      space_cell->set_refine_flag();
+	                      done = false;
+	                    }
                 }
             }
 
@@ -158,42 +181,15 @@ namespace GridUtils
       return std::make_tuple(min_space, max_space, min_embedded, max_embedded);
     };
 
-    // Do the refinement loop once, to make sure we satisfy our criterions
-    refine();
+	    // Do the refinement loop once, to make sure we satisfy our criterions
+	    refine();
 
+	    space_triangulation.refine_global(parameters.space_post_refinement_cycles);
+	    embedded_triangulation.refine_global(
+	      parameters.embedded_post_refinement_cycles);
 
-    // Pre refine the space grid according to the delta refinement
-    if (parameters.apply_delta_refinements &&
-        parameters.space_pre_refinement_cycles != 0)
-      for (unsigned int i = 0; i < parameters.space_pre_refinement_cycles; ++i)
-        {
-          const auto &tree =
-            space_cache.get_locally_owned_cell_bounding_boxes_rtree();
-
-          const auto &embedded_tree =
-            embedded_cache.get_cell_bounding_boxes_rtree();
-
-          for (const auto &[embedded_box, embedded_cell] : embedded_tree)
-            for (const auto &[space_box, space_cell] :
-                 tree | bgi::adaptors::queried(bgi::intersects(embedded_box)))
-              space_cell->set_refine_flag();
-          space_triangulation.execute_coarsening_and_refinement();
-
-          // Make sure again we satisfy our criterion after the space
-          // refinement
-          refine();
-        }
-
-    // Post refinement on embedded grid is easy
-    if (parameters.apply_delta_refinements &&
-        parameters.embedded_post_refinement_cycles != 0)
-      {
-        embedded_triangulation.refine_global(
-          parameters.embedded_post_refinement_cycles);
-      }
-
-    // Check once again we satisfy our criterion, and record min/max
-    const auto [sm, sM, em, eM] = refine();
+	    // Check once again we satisfy our criterion, and record min/max
+	    const auto [sm, sM, em, eM] = refine();
 
 
     if (Utilities::MPI::this_mpi_process(
