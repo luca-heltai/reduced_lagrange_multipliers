@@ -162,15 +162,8 @@ ElasticityProblem<dim, spacedim>::setup_dofs()
     constraints.reinit(relevant_dofs[0]);
     DoFTools::make_hanging_node_constraints(dh, constraints);
 
-    // for (const auto id : par.dirichlet_ids)
-    //   {
-    //     VectorTools::interpolate_boundary_values(dh, id, par.bc,
-    //     constraints);
-    //     //VectorTools::interpolate_boundary_values(dh, id, par.bc,
-    //     velocity_constraints);
-    //     //std::cout << "" << constraints.get_constraint_entries() <<
-    //     std::endl;
-    //   }
+    for (const auto id : par.dirichlet_ids)
+      VectorTools::interpolate_boundary_values(dh, id, par.bc, constraints);
 
     std::map<types::boundary_id, const Function<spacedim, double> *>
       function_map;

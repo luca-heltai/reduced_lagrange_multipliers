@@ -42,6 +42,7 @@ get_default_test_parameters(ElasticityProblemParameters<dim> &par)
 
   par.Lame_mu     = 1;
   par.Lame_lambda = 1;
+  par.linear_elasticity = true;
 
   par.inner_control.set_reduction(1e-12);
   par.inner_control.set_tolerance(1e-12);

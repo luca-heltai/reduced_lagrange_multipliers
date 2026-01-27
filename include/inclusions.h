@@ -501,8 +501,7 @@ public:
     const auto r = get_radius(id);
     (void)r;
     const auto s0 = 1.0;
-    // const auto s1 = std::sqrt(2);
-    const auto s1 = 1;
+    const auto s1 = std::sqrt(2);
 
     unsigned int basis_local_id = 0;
     for (unsigned int basis :
