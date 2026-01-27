@@ -127,5 +127,7 @@ var searchData=
   ['process_5fgrid_2ecc_124',['process_grid.cc',['http://www.dealii.org/developer/doxygen/deal.II/process__grid_8cc.html',1,'']]],
   ['process_5fgrid_2eh_125',['process_grid.h',['http://www.dealii.org/developer/doxygen/deal.II/process__grid_8h.html',1,'']]],
   ['property_5fpool_2ecc_126',['property_pool.cc',['http://www.dealii.org/developer/doxygen/deal.II/property__pool_8cc.html',1,'']]],
-  ['property_5fpool_2eh_127',['property_pool.h',['http://www.dealii.org/developer/doxygen/deal.II/property__pool_8h.html',1,'']]]
+  ['property_5fpool_2eh_127',['property_pool.h',['http://www.dealii.org/developer/doxygen/deal.II/property__pool_8h.html',1,'']]],
+  ['psblas_5fvector_2ecc_128',['psblas_vector.cc',['http://www.dealii.org/developer/doxygen/deal.II/psblas__vector_8cc.html',1,'']]],
+  ['psblas_5fvector_2eh_129',['psblas_vector.h',['http://www.dealii.org/developer/doxygen/deal.II/psblas__vector_8h.html',1,'']]]
 ];

@@ -1,7 +1,7 @@
 var searchData=
 [
   ['geometric_5fentity_5ftype_0',['geometric_entity_type',['http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#a3488a37f8b9d4cec5bfa723dddf7256e',1,'types']]],
-  ['geometric_5forientation_1',['geometric_orientation',['http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#a754c7ecb569c3fab01d825f6b740bfe7',1,'types']]],
+  ['geometric_5forientation_1',['geometric_orientation',['http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#afdf353ae56560c65a05a22f98c7aea9b',1,'types']]],
   ['get_5fmpi_5fcommunicator_5ft_2',['get_mpi_communicator_t',['http://www.dealii.org/developer/doxygen/deal.II/classinternal_1_1LinearOperatorImplementation_1_1ReinitHelper_3_01LinearAlgebra_1_1distributed_1_1Vector_3_01Number_01_4_01_4.html#a315b86a703f914f8250742ce4768c153',1,'internal::LinearOperatorImplementation::ReinitHelper&lt; LinearAlgebra::distributed::Vector&lt; Number &gt; &gt;']]],
   ['ghost_3',['ghost',['http://www.dealii.org/developer/doxygen/deal.II/structinternal_1_1p4est_1_1types_3_012_01_4.html#a7a3ed841515b06c9838db7371a1e35fc',1,'internal::p4est::types&lt; 2 &gt;::ghost'],['http://www.dealii.org/developer/doxygen/deal.II/structinternal_1_1p4est_1_1types_3_013_01_4.html#ac4250749e17d17206819b5733a058633',1,'internal::p4est::types&lt; 3 &gt;::ghost']]],
   ['global_5fcell_5findex_4',['global_cell_index',['http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#a88f8129eb3e40ecc8022e92a1e15d70e',1,'types']]],

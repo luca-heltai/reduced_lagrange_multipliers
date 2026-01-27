@@ -174,12 +174,12 @@ $(function(){initNavTree('vtk__utils_8h_source.html',''); initResizable(true); }
 <div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>           <span class="keyword">const</span> <span class="keywordtype">bool</span>                    cleanup = <span class="keyword">true</span>);</div>
 <div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span></div>
 <div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>  <span class="keywordtype">void</span></div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>  read_cell_data(<span class="keyword">const</span> std::string &amp;vtk_filename,</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>  <a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceVTKWrappers.html#a1f6f750d1746a3932e6f14d41010c303">read_cell_data</a>(<span class="keyword">const</span> std::string &amp;vtk_filename,</div>
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                 <span class="keyword">const</span> std::string &amp;cell_data_name,</div>
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                 Vector&lt;double&gt;    &amp;output_vector);</div>
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span></div>
 <div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>  <span class="keywordtype">void</span></div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>  read_vertex_data(<span class="keyword">const</span> std::string &amp;vtk_filename,</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>  <a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceVTKWrappers.html#ab3f2f78117bdedee8b96635ed7386893">read_vertex_data</a>(<span class="keyword">const</span> std::string &amp;vtk_filename,</div>
 <div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                   <span class="keyword">const</span> std::string &amp;vertex_data_name,</div>
 <div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                   Vector&lt;double&gt;    &amp;output_vector);</div>
 <div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span> </div>
@@ -190,7 +190,7 @@ $(function(){initNavTree('vtk__utils_8h_source.html',''); initResizable(true); }
 <div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>  <span class="keyword">template</span> &lt;<span class="keywordtype">int</span> dim, <span class="keywordtype">int</span> spacedim&gt;</div>
 <div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>  std::pair&lt;std::unique_ptr&lt;FiniteElement&lt;dim, spacedim&gt;&gt;,</div>
 <div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>            std::vector&lt;std::string&gt;&gt;</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>  vtk_to_finite_element(<span class="keyword">const</span> std::string &amp;vtk_filename);</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>  <a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceVTKWrappers.html#af770b0cc678a0224408391989995ff66">vtk_to_finite_element</a>(<span class="keyword">const</span> std::string &amp;vtk_filename);</div>
 <div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span></div>
 <div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>  <span class="keyword">template</span> &lt;<span class="keywordtype">int</span> dim, <span class="keywordtype">int</span> spacedim&gt;</div>
 <div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>  BlockIndices</div>
@@ -358,6 +358,9 @@ $(function(){initNavTree('vtk__utils_8h_source.html',''); initResizable(true); }
 <div class="ttc" id="amapping__q1_8h_html"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/mapping__q1_8h.html">mapping_q1.h</a></div></div>
 <div class="ttc" id="ampi_8cc_html_a1107289b8de31b9956418416df5d2efb"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/mpi_8cc.html#a1107289b8de31b9956418416df5d2efb">data</a></div><div class="ttdeci">std::vector&lt; index_type &gt; data</div></div>
 <div class="ttc" id="ampi_8h_html"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/mpi_8h.html">mpi.h</a></div></div>
+<div class="ttc" id="anamespaceVTKWrappers_html_a1f6f750d1746a3932e6f14d41010c303"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/namespaceVTKWrappers.html#a1f6f750d1746a3932e6f14d41010c303">VTKWrappers::read_cell_data</a></div><div class="ttdeci">void read_cell_data(const std::string &amp;vtk_filename, const std::string &amp;cell_data_name, Vector&lt; double &gt; &amp;output_vector)</div></div>
+<div class="ttc" id="anamespaceVTKWrappers_html_ab3f2f78117bdedee8b96635ed7386893"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/namespaceVTKWrappers.html#ab3f2f78117bdedee8b96635ed7386893">VTKWrappers::read_vertex_data</a></div><div class="ttdeci">void read_vertex_data(const std::string &amp;vtk_filename, const std::string &amp;vertex_data_name, Vector&lt; double &gt; &amp;output_vector)</div></div>
+<div class="ttc" id="anamespaceVTKWrappers_html_af770b0cc678a0224408391989995ff66"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/namespaceVTKWrappers.html#af770b0cc678a0224408391989995ff66">VTKWrappers::vtk_to_finite_element</a></div><div class="ttdeci">std::pair&lt; std::unique_ptr&lt; FiniteElement&lt; dim, spacedim &gt; &gt;, std::vector&lt; std::string &gt; &gt; vtk_to_finite_element(const std::string &amp;vtk_filename)</div></div>
 <div class="ttc" id="anamespacedealii_html"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/namespacedealii.html">dealii</a></div></div>
 <div class="ttc" id="anamespacenumbers_html_a467f5cb204969e195914273bd5a84e33"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/namespacenumbers.html#a467f5cb204969e195914273bd5a84e33">numbers::invalid_unsigned_int</a></div><div class="ttdeci">constexpr unsigned int invalid_unsigned_int</div></div>
 <div class="ttc" id="anamespacetypes_html_a3543786f7dc7c57385fc923a6afd5917"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/namespacetypes.html#a3543786f7dc7c57385fc923a6afd5917">types::global_dof_index</a></div><div class="ttdeci">unsigned int global_dof_index</div></div>
@@ -368,7 +371,7 @@ $(function(){initNavTree('vtk__utils_8h_source.html',''); initResizable(true); }
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_aa394cd1d9abb8ffe941d9aaafca8d03.html">github</a></li><li class="navelem"><a class="el" href="dir_c52569aa89a7adbb6029022c2fa60a11.html">workspace</a></li><li class="navelem"><a class="el" href="dir_7a95a9cc00fcc7af5a429eec361b64d1.html">include</a></li><li class="navelem"><a class="el" href="vtk__utils_8h.html">vtk_utils.h</a></li>
-    <li class="footer">Generated on Tue Aug 5 2025 16:40:52 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Tue Jan 27 2026 13:12:48 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>
