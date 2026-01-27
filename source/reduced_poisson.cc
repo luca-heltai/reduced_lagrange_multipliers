@@ -101,7 +101,6 @@ ReducedPoisson<dim, spacedim>::ReducedPoisson(
            spacedim>::construct_multigrid_hierarchy)
   , dh(tria)
   , reduced_coupling(tria, par.reduced_coupling_parameters)
-  , reduced_dh(reduced_coupling.get_triangulation())
   , mapping(1)
 {}
 
@@ -186,9 +185,6 @@ ReducedPoisson<dim, spacedim>::setup_fe()
   TimerOutput::Scope t(computing_timer, "Initial setup");
   fe = std::make_unique<FESystem<spacedim>>(FE_Q<spacedim>(par.fe_degree), 1);
   quadrature = std::make_unique<QGauss<spacedim>>(par.fe_degree + 1);
-
-  reduced_fe = std::make_unique<FE_Q<1, spacedim>>(
-    par.reduced_coupling_parameters.tensor_product_space_parameters.fe_degree);
 }
 
 
@@ -201,15 +197,15 @@ ReducedPoisson<dim, spacedim>::setup_dofs()
   reduced_coupling.initialize(mapping);
 
   dh.distribute_dofs(*fe);
-  reduced_dh.distribute_dofs(*reduced_fe);
 #ifdef MATRIX_FREE_PATH
   dh.distribute_mg_dofs();
 #endif
 
-  owned_dofs.resize(3);
+  owned_dofs.resize(2);
   owned_dofs[0] = dh.locally_owned_dofs();
-  owned_dofs[1] = reduced_dh.locally_owned_dofs();
-  relevant_dofs.resize(3);
+  const auto &reduced_dh = reduced_coupling.get_dof_handler();
+  owned_dofs[1]          = reduced_dh.locally_owned_dofs();
+  relevant_dofs.resize(2);
   DoFTools::extract_locally_relevant_dofs(dh, relevant_dofs[0]);
   DoFTools::extract_locally_relevant_dofs(reduced_dh, relevant_dofs[1]);
   {
@@ -218,16 +214,6 @@ ReducedPoisson<dim, spacedim>::setup_dofs()
     for (const auto id : par.dirichlet_ids)
       VectorTools::interpolate_boundary_values(dh, id, par.bc, constraints);
     constraints.close();
-  }
-  {
-    reduced_constraints.reinit(owned_dofs[1], relevant_dofs[1]);
-    DoFTools::make_hanging_node_constraints(reduced_dh, reduced_constraints);
-    for (const auto id : par.dirichlet_ids)
-      VectorTools::interpolate_boundary_values(reduced_dh,
-                                               id,
-                                               par.bc,
-                                               reduced_constraints);
-    reduced_constraints.close();
   }
   {
 #ifdef MATRIX_FREE_PATH
@@ -299,9 +285,6 @@ ReducedPoisson<dim, spacedim>::setup_dofs()
 
 #endif
   }
-  const auto &reduced_dh = reduced_coupling.get_dof_handler();
-  owned_dofs[1]          = reduced_dh.locally_owned_dofs();
-  DoFTools::extract_locally_relevant_dofs(reduced_dh, relevant_dofs[1]);
 
   coupling_matrix.clear();
 

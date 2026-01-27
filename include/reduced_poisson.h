@@ -193,15 +193,12 @@ private:
   mutable TimerOutput                            computing_timer;
   parallel::distributed::Triangulation<spacedim> tria;
   std::unique_ptr<FiniteElement<spacedim>>       fe;
-  std::unique_ptr<FiniteElement<1, spacedim>>    reduced_fe;
 
   std::unique_ptr<Quadrature<spacedim>> quadrature;
 
-  DoFHandler<spacedim>    dh;
-  DoFHandler<1, spacedim> reduced_dh;
+  DoFHandler<spacedim> dh;
 
   AffineConstraints<double> constraints;
-  AffineConstraints<double> reduced_constraints;
 
   ReducedCoupling<1, 2, spacedim, 1> reduced_coupling;
 
@@ -211,7 +208,6 @@ private:
 
   LA::MPI::SparseMatrix coupling_matrix;
   LA::MPI::SparseMatrix inclusion_matrix;
-  LA::MPI::SparseMatrix reduced_matrix;
   MappingQ<spacedim>    mapping;
 #ifdef MATRIX_FREE_PATH
   using VectorType      = LinearAlgebra::distributed::Vector<double>;
