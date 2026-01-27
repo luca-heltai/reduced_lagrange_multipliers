@@ -370,4 +370,14 @@ namespace GridUtils
 
 } // namespace GridUtils
 
+// Backward-compatible wrapper (other code calls `adjust_grids(...)` directly).
+template <int reduced_dim, int spacedim>
+inline void
+adjust_grids(Triangulation<spacedim, spacedim>    &space_triangulation,
+             Triangulation<reduced_dim, spacedim> &embedded_triangulation,
+             const RefinementParameters &parameters = RefinementParameters())
+{
+  GridUtils::adjust_grids(space_triangulation, embedded_triangulation, parameters);
+}
+
 #endif
