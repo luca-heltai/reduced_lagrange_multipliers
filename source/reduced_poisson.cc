@@ -202,9 +202,12 @@ ReducedPoisson<dim, spacedim>::setup_dofs()
 #endif
 
   owned_dofs.resize(2);
-  owned_dofs[0] = dh.locally_owned_dofs();
+  owned_dofs[0]          = dh.locally_owned_dofs();
+  const auto &reduced_dh = reduced_coupling.get_dof_handler();
+  owned_dofs[1]          = reduced_dh.locally_owned_dofs();
   relevant_dofs.resize(2);
   DoFTools::extract_locally_relevant_dofs(dh, relevant_dofs[0]);
+  DoFTools::extract_locally_relevant_dofs(reduced_dh, relevant_dofs[1]);
   {
     constraints.reinit(owned_dofs[0], relevant_dofs[0]);
     DoFTools::make_hanging_node_constraints(dh, constraints);
@@ -282,9 +285,6 @@ ReducedPoisson<dim, spacedim>::setup_dofs()
 
 #endif
   }
-  const auto &reduced_dh = reduced_coupling.get_dof_handler();
-  owned_dofs[1]          = reduced_dh.locally_owned_dofs();
-  DoFTools::extract_locally_relevant_dofs(reduced_dh, relevant_dofs[1]);
 
   coupling_matrix.clear();
 
@@ -655,9 +655,7 @@ ReducedPoisson<dim, spacedim>::solve()
 #else
       const auto Bt =
         linear_operator<VectorType, VectorType, Payload>(coupling_matrix);
-      const auto B = transpose_operator<VectorType, VectorType, Payload>(Bt);
-      // const auto B = linear_operator<VectorType, VectorType, Payload>(
-      //   coupling_matrix_transpose);
+      const auto B = transpose_operator(Bt);
 #endif
 
       if (par.solver_name == "Schur")

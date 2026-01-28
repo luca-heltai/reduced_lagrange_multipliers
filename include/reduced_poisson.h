@@ -198,15 +198,15 @@ private:
 
   DoFHandler<spacedim> dh;
 
+  AffineConstraints<double> constraints;
+
   ReducedCoupling<1, 2, spacedim, 1> reduced_coupling;
 
   std::vector<IndexSet> owned_dofs;
   std::vector<IndexSet> relevant_dofs;
 
-  AffineConstraints<double> constraints;
 
   LA::MPI::SparseMatrix coupling_matrix;
-  LA::MPI::SparseMatrix coupling_matrix_transpose;
   LA::MPI::SparseMatrix inclusion_matrix;
   MappingQ<spacedim>    mapping;
 #ifdef MATRIX_FREE_PATH

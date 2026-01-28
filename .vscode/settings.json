@@ -113,5 +113,6 @@
             "pattern": "build/gtests/gtests",
             "framework": "googleTest"
         },
-    ]
+    ],
+    "git.ignoreLimitWarning": true
 }
