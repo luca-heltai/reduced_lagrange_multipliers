@@ -40,8 +40,8 @@ get_default_test_parameters(ElasticityProblemParameters<dim> &par)
   par.n_refinement_cycles = 1;
   par.max_cells           = 20000;
 
-  par.Lame_mu     = 1;
-  par.Lame_lambda = 1;
+  par.Lame_mu           = 1;
+  par.Lame_lambda       = 1;
   par.linear_elasticity = true;
 
   par.inner_control.set_reduction(1e-12);
