@@ -202,7 +202,7 @@ ReducedPoisson<dim, spacedim>::setup_dofs()
 #endif
 
   owned_dofs.resize(2);
-  owned_dofs[0] = dh.locally_owned_dofs();
+  owned_dofs[0]          = dh.locally_owned_dofs();
   const auto &reduced_dh = reduced_coupling.get_dof_handler();
   owned_dofs[1]          = reduced_dh.locally_owned_dofs();
   relevant_dofs.resize(2);
