@@ -27,6 +27,7 @@ var class_poisson_problem =
     [ "inclusions", "class_poisson_problem.html#a09d6e46dd864cd1d3b3308283f002ff2", null ],
     [ "locally_relevant_solution", "class_poisson_problem.html#a8454ca90f631efd821543ba891030271", null ],
     [ "mapping", "class_poisson_problem.html#ab7cd921fb4ef12370d26aadeaf553a83", null ],
+    [ "mass_matrix", "class_poisson_problem.html#a7b36073db0b46a29e690fe82b6949908", null ],
     [ "mpi_communicator", "class_poisson_problem.html#a9f6883e75bcff4f788e96792704e4208", null ],
     [ "owned_dofs", "class_poisson_problem.html#abcb253fcf63e359b0776e3bce6200eff", null ],
     [ "par", "class_poisson_problem.html#a3421481d4ec4d3ed901f67066325f6c6", null ],

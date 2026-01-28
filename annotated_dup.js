@@ -3,6 +3,7 @@ var annotated_dup =
     [ "UtilitiesAL", "namespace_utilities_a_l.html", [
       [ "BlockPreconditionerAugmentedLagrangian", "class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html", "class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian" ]
     ] ],
+    [ "BlockPreconditionerAugmentedLagrangian", "class_block_preconditioner_augmented_lagrangian.html", "class_block_preconditioner_augmented_lagrangian" ],
     [ "CouplingOperator", "class_coupling_operator.html", "class_coupling_operator" ],
     [ "ElasticityProblem", "class_elasticity_problem.html", "class_elasticity_problem" ],
     [ "ElasticityProblemParameters", "class_elasticity_problem_parameters.html", "class_elasticity_problem_parameters" ],

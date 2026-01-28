@@ -953,7 +953,7 @@ $(function(){initNavTree('reduced__poisson_8cc_source.html',''); initResizable(t
 <div class="line"><a id="l00824" name="l00824"></a><span class="lineno">  824</span><span class="preprocessor">#ifdef DEBUG</span></div>
 <div class="line"><a id="l00825" name="l00825"></a><span class="lineno">  825</span>          <span class="comment">// Estimate condition number of BBt using CG</span></div>
 <div class="line"><a id="l00826" name="l00826"></a><span class="lineno">  826</span>          {</div>
-<div class="line"><a id="l00827" name="l00827"></a><span class="lineno">  827</span>            <span class="keyword">auto</span> output_double_number = [<span class="keyword">this</span>](<span class="keywordtype">double</span>             input,</div>
+<div class="line"><a id="l00827" name="l00827"></a><span class="lineno">  827</span>            <span class="keyword">auto</span> <a class="code hl_function" href="elasticity_8cc.html#ab25309a48ddc069f0ccabd157a0c5061">output_double_number</a> = [<span class="keyword">this</span>](<span class="keywordtype">double</span>             input,</div>
 <div class="line"><a id="l00828" name="l00828"></a><span class="lineno">  828</span>                                               <span class="keyword">const</span> std::string &amp;text) {</div>
 <div class="line"><a id="l00829" name="l00829"></a><span class="lineno">  829</span>              <span class="keywordflow">if</span> (<a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a7ebd336c94126a6ab230f766f8f25ff7">Utilities::MPI::this_mpi_process</a>(<a class="code hl_variable" href="class_reduced_poisson.html#aa5e2499d0a53a134a02d2729e6cb14e4">mpi_communicator</a>) == 0)</div>
 <div class="line"><a id="l00830" name="l00830"></a><span class="lineno">  830</span>                std::cout &lt;&lt; text &lt;&lt; input &lt;&lt; std::endl;</div>
@@ -967,7 +967,7 @@ $(function(){initNavTree('reduced__poisson_8cc_source.html',''); initResizable(t
 <div class="line"><a id="l00838" name="l00838"></a><span class="lineno">  838</span>            <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classSolverCG.html">SolverCG&lt;TrilinosWrappers::MPI::Vector&gt;</a> solver_cg(solver_control);</div>
 <div class="line"><a id="l00839" name="l00839"></a><span class="lineno">  839</span> </div>
 <div class="line"><a id="l00840" name="l00840"></a><span class="lineno">  840</span>            solver_cg.<a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/classSolverCG.html#a52f1fd3d41765ec06d2d0add1a74a37c">connect_condition_number_slot</a>(</div>
-<div class="line"><a id="l00841" name="l00841"></a><span class="lineno">  841</span>              std::bind(output_double_number,</div>
+<div class="line"><a id="l00841" name="l00841"></a><span class="lineno">  841</span>              std::bind(<a class="code hl_function" href="elasticity_8cc.html#ab25309a48ddc069f0ccabd157a0c5061">output_double_number</a>,</div>
 <div class="line"><a id="l00842" name="l00842"></a><span class="lineno">  842</span>                        std::placeholders::_1,</div>
 <div class="line"><a id="l00843" name="l00843"></a><span class="lineno">  843</span>                        <span class="stringliteral">&quot;Condition number estimate: &quot;</span>));</div>
 <div class="line"><a id="l00844" name="l00844"></a><span class="lineno">  844</span>            <span class="keyword">using </span>PayloadType = dealii::TrilinosWrappers::internal::</div>
@@ -1302,6 +1302,7 @@ $(function(){initNavTree('reduced__poisson_8cc_source.html',''); initResizable(t
 <div class="ttc" id="aclass_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian_html"><div class="ttname"><a href="class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html">UtilitiesAL::BlockPreconditionerAugmentedLagrangian</a></div><div class="ttdef"><b>Definition</b> <a href="augmented__lagrangian__preconditioner_8h_source.html#l00035">augmented_lagrangian_preconditioner.h:36</a></div></div>
 <div class="ttc" id="aclassmg_1_1Matrix_html"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/classmg_1_1Matrix.html">mg::Matrix</a></div></div>
 <div class="ttc" id="aclassmg_1_1SmootherRelaxation_html"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/classmg_1_1SmootherRelaxation.html">mg::SmootherRelaxation</a></div></div>
+<div class="ttc" id="aelasticity_8cc_html_ab25309a48ddc069f0ccabd157a0c5061"><div class="ttname"><a href="elasticity_8cc.html#ab25309a48ddc069f0ccabd157a0c5061">output_double_number</a></div><div class="ttdeci">void output_double_number(double input, const std::string &amp;text)</div><div class="ttdef"><b>Definition</b> <a href="elasticity_8cc_source.html#l00600">elasticity.cc:600</a></div></div>
 <div class="ttc" id="aexception__macros_8h_html_add1c2e9e4cff4e550fcc5b63dfb479c5"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/exception__macros_8h.html#add1c2e9e4cff4e550fcc5b63dfb479c5">DEAL_II_NOT_IMPLEMENTED</a></div><div class="ttdeci">#define DEAL_II_NOT_IMPLEMENTED()</div></div>
 <div class="ttc" id="agrid__out_8cc_html_a9082f945c1d289684d0bcd51ee08e11e"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/grid__out_8cc.html#a9082f945c1d289684d0bcd51ee08e11e">level</a></div><div class="ttdeci">unsigned int level</div></div>
 <div class="ttc" id="agroup__Exceptions_html_ga70a0bb353656e704acf927945277bbc6"><div class="ttname"><a href="http://www.dealii.org/developer/doxygen/deal.II/group__Exceptions.html#ga70a0bb353656e704acf927945277bbc6">Assert</a></div><div class="ttdeci">#define Assert(cond, exc)</div></div>
@@ -1369,7 +1370,7 @@ $(function(){initNavTree('reduced__poisson_8cc_source.html',''); initResizable(t
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_aa394cd1d9abb8ffe941d9aaafca8d03.html">github</a></li><li class="navelem"><a class="el" href="dir_c52569aa89a7adbb6029022c2fa60a11.html">workspace</a></li><li class="navelem"><a class="el" href="dir_37bdb9d2191b5493db509660c6a8c15a.html">source</a></li><li class="navelem"><a class="el" href="reduced__poisson_8cc.html">reduced_poisson.cc</a></li>
-    <li class="footer">Generated on Wed Jan 28 2026 10:46:28 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Wed Jan 28 2026 12:53:19 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

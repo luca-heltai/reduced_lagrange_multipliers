@@ -1,5 +1,6 @@
 var hierarchy =
 [
+    [ "BlockPreconditionerAugmentedLagrangian< VectorType, BlockVectorType >", "class_block_preconditioner_augmented_lagrangian.html", null ],
     [ "UtilitiesAL::BlockPreconditionerAugmentedLagrangian< VectorType, BlockVectorType >", "class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html", null ],
     [ "CouplingOperator< dim, number, n_components >", "class_coupling_operator.html", null ],
     [ "EnableObserverPointer", "http://www.dealii.org/developer/doxygen/deal.II/classEnableObserverPointer.html", [

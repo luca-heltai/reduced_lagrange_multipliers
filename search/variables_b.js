@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['k_0',['K',['../class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#ae5e2740ed8393ff6883477340645d141',1,'UtilitiesAL::BlockPreconditionerAugmentedLagrangian']]],
+  ['k_0',['K',['../class_block_preconditioner_augmented_lagrangian.html#aff51dc2723e2ecc42310554712e88a89',1,'BlockPreconditionerAugmentedLagrangian::K'],['../class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html#ae5e2740ed8393ff6883477340645d141',1,'UtilitiesAL::BlockPreconditionerAugmentedLagrangian::K']]],
   ['k_5fvectors_1',['k_vectors',['http://www.dealii.org/developer/doxygen/deal.II/classFESeries_1_1Fourier.html#a251febced13f3f0eab81105d370c023c',1,'FESeries::Fourier']]],
   ['keepdeclarationorder_2',['KeepDeclarationOrder',['http://www.dealii.org/developer/doxygen/deal.II/classParameterHandler.html#a8364dda711b93753c6809eefe2a8e827a50ae66aa378db81bb360ce7cdf96e3e1',1,'MultipleParameterLoop::KeepDeclarationOrder'],['http://www.dealii.org/developer/doxygen/deal.II/classParameterHandler.html#a8364dda711b93753c6809eefe2a8e827a50ae66aa378db81bb360ce7cdf96e3e1',1,'ParameterHandler::KeepDeclarationOrder']]],
   ['keeponlychanged_3',['KeepOnlyChanged',['http://www.dealii.org/developer/doxygen/deal.II/classParameterHandler.html#a8364dda711b93753c6809eefe2a8e827a723575ded7412b7a0fbd26420288ec5a',1,'MultipleParameterLoop::KeepOnlyChanged'],['http://www.dealii.org/developer/doxygen/deal.II/classParameterHandler.html#a8364dda711b93753c6809eefe2a8e827a723575ded7412b7a0fbd26420288ec5a',1,'ParameterHandler::KeepOnlyChanged']]],

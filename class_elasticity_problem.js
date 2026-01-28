@@ -36,6 +36,7 @@ var class_elasticity_problem =
     [ "inclusion_matrix", "class_elasticity_problem.html#ab50436f4cce605fb2b7e5ed1c82e7177", null ],
     [ "inclusions", "class_elasticity_problem.html#a866e956272e9ea02febd7a23dce5ad3f", null ],
     [ "locally_relevant_solution", "class_elasticity_problem.html#a71e66b09db4a7e584d0bc582a887dd68", null ],
+    [ "mass_matrix", "class_elasticity_problem.html#af40f2deacd0dd34aa877d9d1371046fa", null ],
     [ "mean_value_constraints", "class_elasticity_problem.html#ac1a015336f92fd8cc187ba97935c6a97", null ],
     [ "mpi_communicator", "class_elasticity_problem.html#a7e3a9c63104152d6ab9b84b83cb6cb76", null ],
     [ "owned_dofs", "class_elasticity_problem.html#a836685c9a7022550081c32bf875bb71c", null ],
