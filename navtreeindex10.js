@@ -1,6 +1,5 @@
 var NAVTREEINDEX10 =
 {
-"namespaceinternal_1_1MatrixFreeFunctions.html#adab4328a83184fb44323924e0794c09f":[1,0,57,33,17],
 "namespaceinternal_1_1MatrixFreeFunctions.html#ae40e60719dc874fa3a92a227ba7a4ad3":[1,0,57,33,50],
 "namespaceinternal_1_1MatrixFreeFunctions.html#af8ebe1b0a37b010ba0aad6ae220fd665":[1,0,57,33,20],
 "namespaceinternal_1_1MatrixFreeFunctions_1_1VectorDataExchange.html":[1,0,57,33,1],
@@ -249,5 +248,6 @@ var NAVTREEINDEX10 =
 "namespacetypes.html#a201d9c6aae26c90eb0ac68fc712b6011":[1,0,164,14],
 "namespacetypes.html#a24c02646474836ad4f37ca167e191276":[1,0,164,9],
 "namespacetypes.html#a2510b6835b1ec4a277ef342b5db6aee0":[1,0,164,8],
-"namespacetypes.html#a3488a37f8b9d4cec5bfa723dddf7256e":[1,0,164,4]
+"namespacetypes.html#a3488a37f8b9d4cec5bfa723dddf7256e":[1,0,164,4],
+"namespacetypes.html#a3543786f7dc7c57385fc923a6afd5917":[1,0,164,7]
 };

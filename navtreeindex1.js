@@ -1,6 +1,5 @@
 var NAVTREEINDEX1 =
 {
-"class_poisson_problem.html#a87cd5be5d0e3be1a3f10c0ddf99d0809":[2,0,9,15],
 "class_poisson_problem.html#a884238511d4ad76388deb04fd50ce7cd":[2,0,9,11],
 "class_poisson_problem.html#a9ad35422d0b0a390b408f2fc5e02ac58":[2,0,9,31],
 "class_poisson_problem.html#a9f6883e75bcff4f788e96792704e4208":[2,0,9,28],
@@ -249,5 +248,6 @@ var NAVTREEINDEX1 =
 "group__Exceptions.html#ga69bb1c2cb3ae208e50764f726d1432aa":[1,0,53,48],
 "group__Exceptions.html#ga6a56eade5bfd7e06b0075f9deba90b31":[1,0,160,1],
 "group__Exceptions.html#ga6b350b16646689fed9813ea3e7227fa1":[1,0,55,2],
-"group__Exceptions.html#ga6d87f84cf00391a4c2494e8542a0fbd4":[1,0,85,7]
+"group__Exceptions.html#ga6d87f84cf00391a4c2494e8542a0fbd4":[1,0,85,7],
+"group__Exceptions.html#ga70cce8e37a99bb7b71d0e5c83b094471":[1,0,145,42]
 };

@@ -1,6 +1,5 @@
 var NAVTREEINDEX5 =
 {
-"namespaceGridTools.html#a995b90803c22dbe67fc6d510494b2e51aee229c003fc7a805bbf17dcdb74e6267":[1,0,53,128],
 "namespaceGridTools.html#a99eba8e3b388258eda37a2724579dd1d":[1,0,53,111],
 "namespaceGridTools.html#a9b0cf2feadb3374ed24f70d99e6e7740":[1,0,53,17],
 "namespaceGridTools.html#a9b7e2ca8ecd26a472e5225ba91a58acb":[1,0,53,125],
@@ -249,5 +248,6 @@ var NAVTREEINDEX5 =
 "namespaceMatrixFreeTools_1_1internal.html#acb78c45fcc59ccad0f4f9e46940e1d67":[1,0,82,1,1],
 "namespaceMatrixTableIterators.html":[1,0,84],
 "namespaceMatrixTableIterators.html#a071affcab0c2e4302df96f2d1540bd08":[1,0,84,0],
-"namespaceMatrixTools.html":[1,0,85]
+"namespaceMatrixTools.html":[1,0,85],
+"namespaceMatrixTools.html#a61c1220276dc006f61cca2f166861b40":[1,0,85,5]
 };

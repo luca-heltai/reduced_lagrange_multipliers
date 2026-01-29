@@ -1,6 +1,5 @@
 var NAVTREEINDEX3 =
 {
-"namespaceCellSimilarity.html#abbf8aa4eab099bd2356cb51200494c13ae9f6ab1203106b0a76aa144e907cab85":[1,0,8,3],
 "namespaceChunkSparseMatrixIterators.html":[1,0,10],
 "namespaceChunkSparsityPatternIterators.html":[1,0,11],
 "namespaceColorEnriched.html":[1,0,12],
@@ -249,5 +248,6 @@ var NAVTREEINDEX3 =
 "namespaceFEInterfaceViews.html#a34b39fb2a59e0e984081d3bc6f09d4a7":[1,0,34,0],
 "namespaceFESeries.html":[1,0,36],
 "namespaceFESeries.html#a967eb320eb9e183aa761f234917832cb":[1,0,36,1],
-"namespaceFESeries.html#afa42058db3555536415fae91822d27e3":[1,0,36,0]
+"namespaceFESeries.html#afa42058db3555536415fae91822d27e3":[1,0,36,0],
+"namespaceFETools.html":[1,0,38]
 };

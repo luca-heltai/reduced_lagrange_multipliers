@@ -1,6 +1,5 @@
 var NAVTREEINDEX2 =
 {
-"group__Exceptions.html#ga70cce8e37a99bb7b71d0e5c83b094471":[1,0,145,42],
 "group__Exceptions.html#ga71145e70fe6c819f9f65f089d42a0b78":[1,0,38,31],
 "group__Exceptions.html#ga74546ec71d90ad7b0f170c153c30a9c0":[1,0,145,40],
 "group__Exceptions.html#ga75563ae7c1ca17ecccae579b93a9385f":[1,0,62,6],
@@ -249,5 +248,6 @@ var NAVTREEINDEX2 =
 "namespaceCellSimilarity.html#abbf8aa4eab099bd2356cb51200494c13":[1,0,8,0],
 "namespaceCellSimilarity.html#abbf8aa4eab099bd2356cb51200494c13a3999e5cabc1dc989f1e32e042ca3e456":[1,0,8,2],
 "namespaceCellSimilarity.html#abbf8aa4eab099bd2356cb51200494c13a4f8507015c458575753e0a45e0c3544a":[1,0,8,4],
-"namespaceCellSimilarity.html#abbf8aa4eab099bd2356cb51200494c13a7f198f2b5a71e522022c13ddf9fe2e70":[1,0,8,1]
+"namespaceCellSimilarity.html#abbf8aa4eab099bd2356cb51200494c13a7f198f2b5a71e522022c13ddf9fe2e70":[1,0,8,1],
+"namespaceCellSimilarity.html#abbf8aa4eab099bd2356cb51200494c13ae9f6ab1203106b0a76aa144e907cab85":[1,0,8,3]
 };
