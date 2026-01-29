@@ -353,7 +353,7 @@ $(function(){initNavTree('coupled__elasticity_8cc_source.html',''); initResizabl
 <div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>  owned_dofs.resize(2);</div>
 <div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>  owned_dofs[0] = dh.locally_owned_dofs();</div>
 <div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>  relevant_dofs.resize(2);</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>  <a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceDoFTools.html#a2c4c8d504c52cd1569b6455533c6c587">DoFTools::extract_locally_relevant_dofs</a>(dh, relevant_dofs[0]);</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>  relevant_dofs[0] = <a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceDoFTools.html#a2c4c8d504c52cd1569b6455533c6c587">DoFTools::extract_locally_relevant_dofs</a>(dh);</div>
 <div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span> </div>
 <div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>  <a class="code hl_classRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEFaceValues.html">FEFaceValues&lt;spacedim&gt;</a> fe_face_values(*fe,</div>
 <div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>                                        *face_quadrature_formula,</div>
@@ -362,7 +362,7 @@ $(function(){initNavTree('coupled__elasticity_8cc_source.html',''); initResizabl
 <div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>                                          <a class="code hl_variableRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__feaccess.html#ggaa94b67d2fdcc390690c523f28019e52fa5e7366a91c84a50ca4e7dbd43ca6369f">update_normal_vectors</a>);</div>
 <div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span> </div>
 <div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>  {</div>
-<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    constraints.reinit(relevant_dofs[0]);</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    constraints.reinit(owned_dofs[0], relevant_dofs[0]);</div>
 <div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>    <a class="code hl_functionRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__constraints.html#ga3b4ea7dfd313e388d868c4e4aa685799">DoFTools::make_hanging_node_constraints</a>(dh, constraints);</div>
 <div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> <span class="keywordtype">id</span> : par.dirichlet_ids)</div>
 <div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>      {</div>
@@ -2145,7 +2145,7 @@ $(function(){initNavTree('coupled__elasticity_8cc_source.html',''); initResizabl
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_aa394cd1d9abb8ffe941d9aaafca8d03.html">github</a></li><li class="navelem"><a class="el" href="dir_c52569aa89a7adbb6029022c2fa60a11.html">workspace</a></li><li class="navelem"><a class="el" href="dir_37bdb9d2191b5493db509660c6a8c15a.html">source</a></li><li class="navelem"><a class="el" href="coupled__elasticity_8cc.html">coupled_elasticity.cc</a></li>
-    <li class="footer">Generated on Thu Jan 29 2026 14:48:41 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Thu Jan 29 2026 14:59:18 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>
