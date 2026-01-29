@@ -133,8 +133,8 @@ $(function(){initNavTree('elasticity_8cc_source.html',''); initResizable(true); 
 <div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;boost/algorithm/string.hpp&gt;</span></div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;<a class="code" href="augmented__lagrangian__preconditioner_8h.html">augmented_lagrangian_preconditioner.h</a>&quot;</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;<a class="code" href="augmented__lagrangian_8h.html">augmented_lagrangian.h</a>&quot;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;<a class="code" href="augmented__lagrangian_8h.html">augmented_lagrangian.h</a>&quot;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;<a class="code" href="augmented__lagrangian__preconditioner_8h.html">augmented_lagrangian_preconditioner.h</a>&quot;</span></div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="keyword">template</span> &lt;<span class="keywordtype">int</span> dim, <span class="keywordtype">int</span> spacedim&gt;</div>
 <div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
@@ -828,8 +828,8 @@ $(function(){initNavTree('elasticity_8cc_source.html',''); initResizable(true); 
 <div class="line"><a id="l00695" name="l00695"></a><span class="lineno">  695</span> </div>
 <div class="line"><a id="l00696" name="l00696"></a><span class="lineno">  696</span>        <span class="keyword">auto</span> CCt = B * Bt;</div>
 <div class="line"><a id="l00697" name="l00697"></a><span class="lineno">  697</span> </div>
-<div class="line"><a id="l00698" name="l00698"></a><span class="lineno">  698</span>      <a class="code hl_variable" href="class_elasticity_problem.html#a57d9b4d56fb513bd65b7bfc68e73c3dc">pcout</a> &lt;&lt; <span class="stringliteral">&quot;   f norm: &quot;</span> &lt;&lt; f.l2_norm() &lt;&lt; <span class="stringliteral">&quot;, g norm: &quot;</span> &lt;&lt; g.l2_norm()</div>
-<div class="line"><a id="l00699" name="l00699"></a><span class="lineno">  699</span>            &lt;&lt; std::endl;</div>
+<div class="line"><a id="l00698" name="l00698"></a><span class="lineno">  698</span>        <a class="code hl_variable" href="class_elasticity_problem.html#a57d9b4d56fb513bd65b7bfc68e73c3dc">pcout</a> &lt;&lt; <span class="stringliteral">&quot;   f norm: &quot;</span> &lt;&lt; f.l2_norm() &lt;&lt; <span class="stringliteral">&quot;, g norm: &quot;</span> &lt;&lt; g.l2_norm()</div>
+<div class="line"><a id="l00699" name="l00699"></a><span class="lineno">  699</span>              &lt;&lt; std::endl;</div>
 <div class="line"><a id="l00700" name="l00700"></a><span class="lineno">  700</span>        LA::MPI::Vector u;</div>
 <div class="line"><a id="l00701" name="l00701"></a><span class="lineno">  701</span>        u.reinit(<a class="code hl_variable" href="class_elasticity_problem.html#ad3de1bfecda5884ec0fac83d5a468ba0">system_rhs</a>.block(1));</div>
 <div class="line"><a id="l00702" name="l00702"></a><span class="lineno">  702</span>        u = 0.;</div>
@@ -1852,7 +1852,7 @@ $(function(){initNavTree('elasticity_8cc_source.html',''); initResizable(true); 
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_aa394cd1d9abb8ffe941d9aaafca8d03.html">github</a></li><li class="navelem"><a class="el" href="dir_c52569aa89a7adbb6029022c2fa60a11.html">workspace</a></li><li class="navelem"><a class="el" href="dir_37bdb9d2191b5493db509660c6a8c15a.html">source</a></li><li class="navelem"><a class="el" href="elasticity_8cc.html">elasticity.cc</a></li>
-    <li class="footer">Generated on Wed Jan 28 2026 12:53:18 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Thu Jan 29 2026 11:44:18 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

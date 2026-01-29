@@ -61,16 +61,16 @@ var NAVTREEINDEX =
 [
 "annotated.html",
 "class_poisson_problem.html#a87cd5be5d0e3be1a3f10c0ddf99d0809",
-"functions_w.html",
-"namespaceCGALWrappers.html#a2eafd2b439d788b151d5e7bb078451d9",
-"namespaceDoFTools.html#acad7e0841b9046eaafddc4c617ab1d9d",
-"namespaceGridTools.html#a212e99cf0d923cebfa04f1d23fa60b04",
-"namespaceMGTools.html#ad2aa31b874f0a8a59cb4c6802521e62c",
-"namespaceRepartitioningPolicyTools.html",
-"namespaceUtilities_1_1MPI.html#ae34c12b7f8c2f96e1e61618a466a36b6",
-"namespacedeal__II__exceptions_1_1internals.html#a5dabff80d05c3f98e8e46f1068348d77",
-"namespaceinternal_1_1LinearOperatorImplementation.html#a57b5abe16e045d935c60397f830f065c",
-"namespacenumbers_1_1internal.html"
+"group__Exceptions.html#ga70cce8e37a99bb7b71d0e5c83b094471",
+"namespaceCellSimilarity.html#abbf8aa4eab099bd2356cb51200494c13ae9f6ab1203106b0a76aa144e907cab85",
+"namespaceFETools.html",
+"namespaceGridTools.html#a995b90803c22dbe67fc6d510494b2e51aee229c003fc7a805bbf17dcdb74e6267",
+"namespaceMatrixTools.html#a61c1220276dc006f61cca2f166861b40",
+"namespaceTensorProductMatrixCreator_1_1internal.html#a43ab426153d9e6f340a4e7d034f6b78e",
+"namespaceUtilities_1_1MPI_1_1internal_1_1Tags.html#a1c190e50dabbd9b60e230b843c6caa44a02255196be6ec15f40bc69d6f8249c2b",
+"namespaceinternal.html#a0621da6ae34683342f6ec3adbbf281f9",
+"namespaceinternal_1_1MatrixFreeFunctions.html#adab4328a83184fb44323924e0794c09f",
+"namespacetypes.html#a3543786f7dc7c57385fc923a6afd5917"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

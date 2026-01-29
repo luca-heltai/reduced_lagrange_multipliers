@@ -121,15 +121,6 @@ $(function(){initNavTree('class_particle_coupling.html',''); initResizable(true)
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="particle__coupling_8h_source.html">particle_coupling.h</a>&gt;</code></p>
-<div class="dynheader">
-Inheritance diagram for ParticleCoupling&lt; dim &gt;:</div>
-<div class="dyncontent">
- <div class="center">
-  <img src="class_particle_coupling.png" usemap="#ParticleCoupling_3C_20dim_20_3E_map" alt=""/>
-  <map id="ParticleCoupling_3C_20dim_20_3E_map" name="ParticleCoupling_3C_20dim_20_3E_map">
-<area href="struct_reduced_coupling.html" title="Combines tensor product space and particle coupling for reduced Lagrange multipliers." alt="ReducedCoupling&lt; reduced_dim, dim, spacedim, n_components &gt;" shape="rect" coords="0,56,389,80"/>
-  </map>
-</div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -257,7 +248,7 @@ template&lt;int dim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="particle__coupling_8cc_source.html#l00091">91</a> of file <a class="el" href="particle__coupling_8cc_source.html">particle_coupling.cc</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="reduced__coupling_8h_source.html#l00250">ReducedCoupling&lt; reduced_dim, dim, spacedim, n_components &gt;::assemble_coupling_matrix()</a>.</p>
+<p class="reference">References <a class="el" href="particle__coupling_8h_source.html#l00161">particles</a>.</p>
 
 </div>
 </div>
@@ -292,7 +283,7 @@ template&lt;int dim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="particle__coupling_8cc_source.html#l00047">47</a> of file <a class="el" href="particle__coupling_8cc_source.html">particle_coupling.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="particle__coupling_8h_source.html#l00151">mapping</a>, <a class="el" href="particle__coupling_8h_source.html#l00141">mpi_communicator</a>, <a class="el" href="particle__coupling_8h_source.html#l00161">particles</a>, and <a class="el" href="particle__coupling_8h_source.html#l00146">tria_background</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__CPP11.html#ga9bd9f259f5b6c617c9ed88aa8b140ee8">parallel::TriangulationBase&lt; int dim, int spacedim &gt;::active_cell_iterators()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a69d12772ff67523f52e380d516c329bb">Utilities::MPI::all_gather()</a>, <a class="el" href="particle__coupling_8h_source.html#l00156">global_bounding_boxes</a>, <a class="el" href="particle__coupling_8h_source.html#l00151">mapping</a>, <a class="el" href="particle__coupling_8h_source.html#l00141">mpi_communicator</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classparallel_1_1TriangulationBase.html#a74e904416671ca175093274144e49439">parallel::TriangulationBase&lt; int dim, int spacedim &gt;::n_locally_owned_active_cells()</a>, <a class="el" href="particle__coupling_8h_source.html#l00135">par</a>, <a class="el" href="particle__coupling_8h_source.html#l00161">particles</a>, and <a class="el" href="particle__coupling_8h_source.html#l00146">tria_background</a>.</p>
 
 </div>
 </div>
@@ -325,6 +316,8 @@ template&lt;int dim&gt; </div>
 <dl class="section return"><dt>Returns</dt><dd>A map of processor to local indices corresponding to the processor where the local qpoints ended up being locate w.r.t. the background grid. </dd></dl>
 
 <p class="definition">Definition at line <a class="el" href="particle__coupling_8cc_source.html#l00100">100</a> of file <a class="el" href="particle__coupling_8cc_source.html">particle_coupling.cc</a>.</p>
+
+<p class="reference">References <a class="el" href="particle__coupling_8h_source.html#l00156">global_bounding_boxes</a>, <a class="el" href="particle__coupling_8h_source.html#l00161">particles</a>, and <a class="el" href="particle__coupling_8h_source.html#l00146">tria_background</a>.</p>
 
 </div>
 </div>
@@ -385,7 +378,7 @@ template&lt;int dim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="particle__coupling_8h_source.html#l00156">156</a> of file <a class="el" href="particle__coupling_8h_source.html">particle_coupling.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="particle__coupling_8cc_source.html#l00082">get_global_bounding_boxes()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="particle__coupling_8cc_source.html#l00082">get_global_bounding_boxes()</a>, <a class="el" href="particle__coupling_8cc_source.html#l00047">initialize_particle_handler()</a>, and <a class="el" href="particle__coupling_8cc_source.html#l00100">insert_points()</a>.</p>
 
 </div>
 </div>
@@ -415,7 +408,7 @@ template&lt;int dim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="particle__coupling_8h_source.html#l00151">151</a> of file <a class="el" href="particle__coupling_8h_source.html">particle_coupling.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="struct_reduced_coupling.html#a08b4187f7f0ff9958a9da77e3da428aa">ReducedCoupling&lt; reduced_dim, dim, spacedim, n_components &gt;::initialize()</a>, and <a class="el" href="particle__coupling_8cc_source.html#l00047">initialize_particle_handler()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="particle__coupling_8cc_source.html#l00047">initialize_particle_handler()</a>.</p>
 
 </div>
 </div>
@@ -477,7 +470,7 @@ template&lt;int dim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="particle__coupling_8h_source.html#l00135">135</a> of file <a class="el" href="particle__coupling_8h_source.html">particle_coupling.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="particle__coupling_8cc_source.html#l00026">ParticleCoupling()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="particle__coupling_8cc_source.html#l00047">initialize_particle_handler()</a>, and <a class="el" href="particle__coupling_8cc_source.html#l00026">ParticleCoupling()</a>.</p>
 
 </div>
 </div>
@@ -507,7 +500,7 @@ template&lt;int dim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="particle__coupling_8h_source.html#l00161">161</a> of file <a class="el" href="particle__coupling_8h_source.html">particle_coupling.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="particle__coupling_8cc_source.html#l00047">initialize_particle_handler()</a>, and <a class="el" href="particle__coupling_8cc_source.html#l00036">output_particles()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="particle__coupling_8cc_source.html#l00091">get_particles()</a>, <a class="el" href="particle__coupling_8cc_source.html#l00047">initialize_particle_handler()</a>, <a class="el" href="particle__coupling_8cc_source.html#l00100">insert_points()</a>, and <a class="el" href="particle__coupling_8cc_source.html#l00036">output_particles()</a>.</p>
 
 </div>
 </div>
@@ -537,7 +530,7 @@ template&lt;int dim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="particle__coupling_8h_source.html#l00146">146</a> of file <a class="el" href="particle__coupling_8h_source.html">particle_coupling.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="particle__coupling_8cc_source.html#l00047">initialize_particle_handler()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="particle__coupling_8cc_source.html#l00047">initialize_particle_handler()</a>, and <a class="el" href="particle__coupling_8cc_source.html#l00100">insert_points()</a>.</p>
 
 </div>
 </div>
@@ -551,7 +544,7 @@ template&lt;int dim&gt; </div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="class_particle_coupling.html">ParticleCoupling</a></li>
-    <li class="footer">Generated on Wed Jan 28 2026 12:53:19 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Thu Jan 29 2026 11:44:18 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

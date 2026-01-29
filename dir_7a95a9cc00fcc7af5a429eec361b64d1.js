@@ -9,7 +9,7 @@ var dir_7a95a9cc00fcc7af5a429eec361b64d1 =
     [ "laplacian.h", "laplacian_8h.html", "laplacian_8h" ],
     [ "matrix_free_utils.h", "matrix__free__utils_8h.html", "matrix__free__utils_8h" ],
     [ "particle_coupling.h", "particle__coupling_8h.html", "particle__coupling_8h" ],
-    [ "reduced_coupling.h", "reduced__coupling_8h.html", "reduced__coupling_8h" ],
+    [ "reduced_coupling.h", "reduced__coupling_8h.html", null ],
     [ "reduced_poisson.h", "reduced__poisson_8h.html", "reduced__poisson_8h" ],
     [ "reference_cross_section.h", "reference__cross__section_8h.html", "reference__cross__section_8h" ],
     [ "tensor_product_space.h", "tensor__product__space_8h.html", "tensor__product__space_8h" ],
