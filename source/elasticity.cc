@@ -583,6 +583,9 @@ ElasticityProblem<dim, spacedim>::assemble_coupling()
           local_inclusion_matrix  = 0;
           local_rhs               = 0;
 
+          const auto section_measure =
+            inclusions.get_section_measure(inclusion_id);
+
           auto Rotation = inclusions.get_rotation(inclusion_id);
 
           // Extract all points that refer to the same inclusion
@@ -616,7 +619,7 @@ ElasticityProblem<dim, spacedim>::assemble_coupling()
                       {
                         local_coupling_matrix(i, j) +=
                           ((fev.shape_value(i, q)) * inclusion_fe_values[j] /
-                           inclusions.get_section_measure(inclusion_id) * ds) *
+                           section_measure * ds) *
                           (Rotation[comp_i][inclusions.get_component(j)]);
                       }
                     }
@@ -642,6 +645,7 @@ ElasticityProblem<dim, spacedim>::assemble_coupling()
                               temp *= inclusions.inclusions_rhs.value(
                                 real_q, inclusions.get_component(j));
                             }
+                          temp /= section_measure;
                           local_rhs(j) += temp;
                         }
                     }
@@ -653,7 +657,7 @@ ElasticityProblem<dim, spacedim>::assemble_coupling()
                         inclusions.inclusions_rhs.value(
                           real_q, inclusions.get_component(j)) // /
                         // inclusions.get_radius(inclusion_id)
-                        * ds;
+                        * ds / section_measure;
                     }
                   local_inclusion_matrix(j, j) +=
                     (inclusion_fe_values[j] * inclusion_fe_values[j] * ds); // /
