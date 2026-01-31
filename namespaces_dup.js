@@ -2080,6 +2080,7 @@ var namespaces_dup =
     [ "ReferenceCells", "http://www.dealii.org/developer/doxygen/deal.II/namespaceReferenceCells.html", [
       [ "get_hypercube", "http://www.dealii.org/developer/doxygen/deal.II/namespaceReferenceCells.html#a6dcaf877381d5bc2639da69a586ee9d4", null ],
       [ "get_simplex", "http://www.dealii.org/developer/doxygen/deal.II/namespaceReferenceCells.html#ace7fb0fa0c1a98b17ae9c6f6d2eaa650", null ],
+      [ "max_n_children", "http://www.dealii.org/developer/doxygen/deal.II/namespaceReferenceCells.html#a0232558ae3183dbccd4bb032f2906ac9", null ],
       [ "max_n_faces", "http://www.dealii.org/developer/doxygen/deal.II/namespaceReferenceCells.html#a872b21cb45b09532ed8a4fde9326cb0f", null ],
       [ "max_n_lines", "http://www.dealii.org/developer/doxygen/deal.II/namespaceReferenceCells.html#a657dc95a28b4fe17a8357d955ef67234", null ],
       [ "max_n_vertices", "http://www.dealii.org/developer/doxygen/deal.II/namespaceReferenceCells.html#a78f7fa1cec8060181ba13f46abde2009", null ],
