@@ -85,6 +85,11 @@ namespace LA
 #include <deal.II/lac/solver_gmres.h>
 #include <deal.II/lac/solver_minres.h>
 #include <deal.II/lac/sparsity_tools.h>
+#include <deal.II/lac/trilinos_solver.h>
+#include <deal.II/lac/trilinos_sparse_matrix.h>
+#include <deal.II/lac/trilinos_vector.h>
+
+// #include <deal.II/trilinos/parameter_acceptor.h>
 #include <deal.II/lac/vector.h>
 
 #include <deal.II/meshworker/dof_info.h>
@@ -97,6 +102,7 @@ namespace LA
 #include <deal.II/numerics/data_out_faces.h>
 #include <deal.II/numerics/error_estimator.h>
 #include <deal.II/numerics/vector_tools.h>
+// #include <deal.II/numerics/matrix_tools.h>
 
 #include <deal.II/opencascade/manifold_lib.h>
 #include <deal.II/opencascade/utilities.h>
@@ -113,8 +119,12 @@ namespace LA
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <map>
 #include <memory>
+#include <set>
+#include <string>
 
+#include "material_properties.h"
 
 /**
  * Definition of the Rigid body motions for linear elasticity.
@@ -187,25 +197,41 @@ class ElasticityProblemParameters : public ParameterAcceptor
 public:
   ElasticityProblemParameters();
 
-  std::string                   output_directory   = ".";
-  std::string                   output_name        = "solution";
-  unsigned int                  fe_degree          = 1;
-  unsigned int                  initial_refinement = 5;
-  std::list<types::boundary_id> dirichlet_ids{0};
-  std::list<types::boundary_id> neumann_ids{};
-  std::set<types::boundary_id>  normal_flux_ids{};
-  std::string                   domain_type         = "generate";
-  std::string                   name_of_grid        = "hyper_cube";
-  std::string                   arguments_for_grid  = "-1: 1: false";
-  std::string                   refinement_strategy = "fixed_fraction";
-  double                        coarsening_fraction = 0.0;
-  double                        refinement_fraction = 0.3;
-  unsigned int                  n_refinement_cycles = 1;
-  unsigned int                  max_cells           = 20000;
-  bool                          output_pressure     = false;
+  const MaterialProperties &
+  get_material_properties(const types::material_id material_id) const;
 
-  double Lame_mu     = 1;
-  double Lame_lambda = 1;
+  std::string                  output_directory   = ".";
+  std::string                  output_name        = "solution";
+  unsigned int                 fe_degree          = 1;
+  unsigned int                 initial_refinement = 5;
+  std::set<types::boundary_id> dirichlet_ids{0};
+  std::set<types::boundary_id> weak_dirichlet_ids{};
+  std::set<types::boundary_id> neumann_ids{};
+  std::set<types::boundary_id> normal_flux_ids{};
+
+  MaterialProperties default_material_properties{"default"};
+  std::map<types::material_id, std::string> material_tags_by_material_id;
+
+  std::map<types::material_id, std::unique_ptr<MaterialProperties>>
+    material_properties_by_id;
+
+  std::string  domain_type         = "generate";
+  std::string  name_of_grid        = "hyper_cube";
+  std::string  arguments_for_grid  = "-1: 1: false";
+  std::string  refinement_strategy = "fixed_fraction";
+  double       coarsening_fraction = 0.0;
+  double       refinement_fraction = 0.3;
+  unsigned int n_refinement_cycles = 1;
+  unsigned int max_cells           = 20000;
+  bool         output_pressure     = false;
+  double       penalty_term        = 1.0e4;
+  double       wave_ampltiude      = 0.01;
+
+  bool pressure_coupling = false;
+  bool linear_elasticity = false;
+  bool rayleigh_damping  = false;
+  bool kelvin_voigt      = false;
+  bool maxwell           = false;
 
   mutable ParameterAcceptorProxy<Functions::ParsedFunction<spacedim>> rhs;
   mutable ParameterAcceptorProxy<Functions::ParsedFunction<spacedim>>
@@ -227,6 +253,8 @@ public:
   double initial_time = 0.0;
   double final_time   = 0.0;
   double dt           = 5e-3;
+  double beta         = 0.25;
+  double gamma        = 0.5;
 };
 
 
@@ -249,9 +277,16 @@ ElasticityProblemParameters<dim, spacedim>::ElasticityProblemParameters()
                 output_results_before_solving);
   add_parameter("Initial refinement", initial_refinement);
   add_parameter("Dirichlet boundary ids", dirichlet_ids);
+  add_parameter("Weak Dirichlet boundary ids", weak_dirichlet_ids);
   add_parameter("Neumann boundary ids", neumann_ids);
   add_parameter("Normal flux boundary ids", normal_flux_ids);
   add_parameter("Output pressure", output_pressure);
+  add_parameter(
+    "Pressure coupling",
+    pressure_coupling,
+    "If this is true, then we do NOT solve a saddle point problem, but we use the "
+    "input data as a pressure field on the vasculature network, and we solve for "
+    "the displacement field directly.");
   enter_subsection("Grid generation");
   {
     add_parameter("Domain type",
@@ -278,9 +313,36 @@ ElasticityProblemParameters<dim, spacedim>::ElasticityProblemParameters()
   leave_subsection();
   enter_subsection("Physical constants");
   {
-    add_parameter("Lame mu", Lame_mu);
-    add_parameter("Lame lambda", Lame_lambda);
+    enter_subsection("Weak Boundary");
+    {
+      add_parameter("Penalty term", penalty_term);
+      add_parameter("Wave amplitude", wave_ampltiude);
+    }
+    leave_subsection();
+    enter_subsection("Linear elasticity");
+    {
+      add_parameter("linear elasticity", linear_elasticity);
+    }
+    leave_subsection();
+    enter_subsection("Rayleigh damping");
+    {
+      add_parameter("rayleigh damping", rayleigh_damping);
+    }
+    leave_subsection();
+    enter_subsection("Kelvin Voigt");
+    {
+      add_parameter("kelvin voigt", kelvin_voigt);
+    }
+    leave_subsection();
+    enter_subsection("Maxwell");
+    {
+      add_parameter("maxwell", maxwell);
+    }
+    leave_subsection();
   }
+  leave_subsection();
+  enter_subsection("Material properties");
+  add_parameter("Material tags by material id", material_tags_by_material_id);
   leave_subsection();
   enter_subsection("Exact solution");
   {
@@ -292,6 +354,8 @@ ElasticityProblemParameters<dim, spacedim>::ElasticityProblemParameters()
     add_parameter("Initial time", initial_time);
     add_parameter("Final time", final_time);
     add_parameter("Time step", dt);
+    add_parameter("Newmark beta", beta);
+    add_parameter("Newmark gamma", gamma);
   }
   leave_subsection();
 
@@ -306,6 +370,27 @@ ElasticityProblemParameters<dim, spacedim>::ElasticityProblemParameters()
   exact_solution.declare_parameters_call_back.connect(reset_function);
   Neumann_bc.declare_parameters_call_back.connect(reset_function);
   bc.declare_parameters_call_back.connect(reset_function);
+
+  this->parse_parameters_call_back.connect([this]() {
+    if (!material_properties_by_id.empty() ||
+        material_tags_by_material_id.empty())
+      {
+        // Already initialized. Just check consistency.
+        AssertDimension(material_properties_by_id.size(),
+                        material_tags_by_material_id.size());
+        return;
+      }
+    // Make sure we exit our subsection first, so that registration of the new
+    // classes works properly.
+    this->leave_my_subsection(this->prm);
+    for (const auto &[material_id, tag] : material_tags_by_material_id)
+      {
+        material_properties_by_id[material_id] =
+          std::make_unique<MaterialProperties>(tag);
+      }
+    // Go back to our subsection, so we can continue parsing parameters.
+    this->enter_my_subsection(this->prm);
+  });
 }
 
 
@@ -385,12 +470,22 @@ public:
   AffineConstraints<double> inclusion_constraints;
   AffineConstraints<double> mean_value_constraints;
 
-  LA::MPI::SparseMatrix                           stiffness_matrix;
-  LA::MPI::SparseMatrix                           coupling_matrix;
+  LA::MPI::SparseMatrix stiffness_matrix;
+  LA::MPI::SparseMatrix mass_matrix;
+  LA::MPI::SparseMatrix force_matrix;
+  LA::MPI::SparseMatrix coupling_matrix;
+  LA::MPI::SparseMatrix damping_term;
+
   LA::MPI::SparseMatrix                           inclusion_matrix;
   LA::MPI::BlockVector                            solution;
+  LA::MPI::BlockVector                            velocity;
+  LA::MPI::BlockVector                            acceleration;
+  LA::MPI::BlockVector                            predictor;
+  LA::MPI::BlockVector                            corrector;
   LA::MPI::BlockVector                            locally_relevant_solution;
   LA::MPI::BlockVector                            system_rhs;
+  LA::MPI::BlockVector                            system_lhs;
+  LA::MPI::BlockVector                            system_rhs_f;
   std::vector<std::vector<BoundingBox<spacedim>>> global_bounding_boxes;
   unsigned int                                    cycle = 0;
 

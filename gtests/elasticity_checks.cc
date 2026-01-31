@@ -22,6 +22,7 @@
 #include <gtest/gtest.h>
 
 #include "elasticity.h"
+#include "utils.h"
 
 using namespace dealii;
 
@@ -42,8 +43,9 @@ get_default_test_parameters(ElasticityProblemParameters<dim> &par)
   par.n_refinement_cycles = 1;
   par.max_cells           = 20000;
 
-  par.Lame_mu     = 1;
-  par.Lame_lambda = 1;
+  par.default_material_properties.Lame_mu     = 1;
+  par.default_material_properties.Lame_lambda = 1;
+  par.linear_elasticity = true;
 
   par.inner_control.set_reduction(1e-12);
   par.inner_control.set_tolerance(1e-12);
@@ -60,7 +62,7 @@ TEST(ElasticityTest, DisplacementX)
   ElasticityProblemParameters<dim> par;
   get_default_test_parameters(par);
   ElasticityProblem<dim> problem(par);
-  ParameterAcceptor::initialize();
+  initialize_parameters();
 
   ParameterAcceptor::prm.parse_input_from_string(
     R"(
@@ -98,7 +100,7 @@ TEST(ElasticityTest, DisplacementY)
   ElasticityProblemParameters<dim> par;
   get_default_test_parameters(par);
   ElasticityProblem<dim> problem(par);
-  ParameterAcceptor::initialize();
+  initialize_parameters();
 
   ParameterAcceptor::prm.parse_input_from_string(
     R"(
@@ -136,7 +138,7 @@ TEST(ElasticityTest, DisplacementXScaled)
   ElasticityProblemParameters<dim> par;
   get_default_test_parameters(par);
   ElasticityProblem<dim> problem(par);
-  ParameterAcceptor::initialize();
+  initialize_parameters();
 
   ParameterAcceptor::prm.parse_input_from_string(
     R"(
@@ -174,7 +176,7 @@ TEST(ElasticityTest, DisplacementYScaled)
   ElasticityProblemParameters<dim> par;
   get_default_test_parameters(par);
   ElasticityProblem<dim> problem(par);
-  ParameterAcceptor::initialize();
+  initialize_parameters();
 
   ParameterAcceptor::prm.parse_input_from_string(
     R"(
@@ -214,7 +216,7 @@ TEST(ElasticityTest, DISABLED_CheckInclusionMatrix)
   ElasticityProblemParameters<dim> par;
   get_default_test_parameters(par);
   ElasticityProblem<dim> problem(par);
-  ParameterAcceptor::initialize();
+  initialize_parameters();
 
   ParameterAcceptor::prm.parse_input_from_string(
     R"(
@@ -254,7 +256,7 @@ TEST(ElasticityTest, DISABLED_CheckInclusionMatrix)
   auto                      invM = inverse_operator(M, cg_M);
 
 
-  inclusions = B * displacement;
+  inclusions = invM * B * displacement;
 
   inclusions.print(std::cout);
 }
@@ -267,7 +269,7 @@ TEST(ElasticityTest3, Displacement3D)
   get_default_test_parameters(parX);
   ElasticityProblem<dim> problemX(parX);
 
-  ParameterAcceptor::initialize();
+  initialize_parameters();
   ParameterAcceptor::prm.parse_input_from_string(
     R"(
       subsection Immersed Problem
@@ -293,7 +295,7 @@ TEST(ElasticityTest3, Displacement3D)
   get_default_test_parameters(parZ);
   ElasticityProblem<dim> problemZ(parZ);
 
-  ParameterAcceptor::initialize();
+  initialize_parameters();
   ParameterAcceptor::prm.parse_input_from_string(
     R"(
       subsection Immersed Problem
