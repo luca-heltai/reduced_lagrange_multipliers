@@ -121,6 +121,7 @@ namespace LA
 #include <iostream>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 
 #include "material_properties.h"
@@ -199,14 +200,14 @@ public:
   const MaterialProperties &
   get_material_properties(const types::material_id material_id) const;
 
-  std::string                   output_directory   = ".";
-  std::string                   output_name        = "solution";
-  unsigned int                  fe_degree          = 1;
-  unsigned int                  initial_refinement = 5;
-  std::list<types::boundary_id> dirichlet_ids{0};
-  std::list<types::boundary_id> weak_dirichlet_ids{};
-  std::list<types::boundary_id> neumann_ids{};
-  std::set<types::boundary_id>  normal_flux_ids{};
+  std::string                  output_directory   = ".";
+  std::string                  output_name        = "solution";
+  unsigned int                 fe_degree          = 1;
+  unsigned int                 initial_refinement = 5;
+  std::set<types::boundary_id> dirichlet_ids{0};
+  std::set<types::boundary_id> weak_dirichlet_ids{};
+  std::set<types::boundary_id> neumann_ids{};
+  std::set<types::boundary_id> normal_flux_ids{};
 
   MaterialProperties default_material_properties{"default"};
   std::map<types::material_id, std::string> material_tags_by_material_id;
