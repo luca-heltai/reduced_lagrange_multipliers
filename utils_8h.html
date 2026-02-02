@@ -133,6 +133,10 @@ Functions</h2></td></tr>
 <tr class="memitem:a9a7e5341b84e35df0de1f50f7d082604" id="r_a9a7e5341b84e35df0de1f50f7d082604"><td class="memTemplParams" colspan="2">template&lt;int reduced_dim, int spacedim&gt; </td></tr>
 <tr class="memitem:a9a7e5341b84e35df0de1f50f7d082604"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a9a7e5341b84e35df0de1f50f7d082604">adjust_grids</a> (<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTriangulation.html">Triangulation</a>&lt; spacedim, spacedim &gt; &amp;space_triangulation, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTriangulation.html">Triangulation</a>&lt; reduced_dim, spacedim &gt; &amp;embedded_triangulation, const <a class="el" href="struct_refinement_parameters.html">RefinementParameters</a> &amp;parameters=<a class="el" href="struct_refinement_parameters.html">RefinementParameters</a>())</td></tr>
 <tr class="separator:a9a7e5341b84e35df0de1f50f7d082604"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a117d451c7e5a9b210eb27399a74a82" id="r_a5a117d451c7e5a9b210eb27399a74a82"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a117d451c7e5a9b210eb27399a74a82">initialize_parameters</a> (const std::string &amp;filename=&quot;&quot;, const std::string &amp;output_filename=&quot;&quot;)</td></tr>
+<tr class="separator:a5a117d451c7e5a9b210eb27399a74a82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90b3b77a684a1fd8735ce926442e6471" id="r_a90b3b77a684a1fd8735ce926442e6471"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a90b3b77a684a1fd8735ce926442e6471">initialize_parameters_from_string</a> (const std::string &amp;prm_content, const std::string &amp;output_filename=&quot;&quot;)</td></tr>
+<tr class="separator:a90b3b77a684a1fd8735ce926442e6471"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="a9a7e5341b84e35df0de1f50f7d082604" name="a9a7e5341b84e35df0de1f50f7d082604"></a>
@@ -167,13 +171,79 @@ template&lt;int reduced_dim, int spacedim&gt; </div>
 
 </div>
 </div>
+<a id="a5a117d451c7e5a9b210eb27399a74a82" name="a5a117d451c7e5a9b210eb27399a74a82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5a117d451c7e5a9b210eb27399a74a82">&#9670;&#160;</a></span>initialize_parameters()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void initialize_parameters </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>filename</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;&quot;</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>output_filename</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;&quot;</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="utils_8h_source.html#l00235">235</a> of file <a class="el" href="utils_8h_source.html">utils.h</a>.</p>
+
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#a3775ed960cf63c9ae88613925d226b11">ParameterAcceptor::declare_all_parameters()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterHandler.html#a8364dda711b93753c6809eefe2a8e827aea377cb78fede823d8857c58bca5fd48">ParameterHandler::DefaultStyle</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#ac4b7044a9e1d53c401a50565d8996022">ParameterAcceptor::parse_all_parameters()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#a96081d4cc985b722c9841fcf0c0e54ec">ParameterAcceptor::prm</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterHandler.html#a8364dda711b93753c6809eefe2a8e827a3c8ad66ea26104112458e2ce35b5028f">ParameterHandler::Short</a>.</p>
+
+</div>
+</div>
+<a id="a90b3b77a684a1fd8735ce926442e6471" name="a90b3b77a684a1fd8735ce926442e6471"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90b3b77a684a1fd8735ce926442e6471">&#9670;&#160;</a></span>initialize_parameters_from_string()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void initialize_parameters_from_string </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>prm_content</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>output_filename</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;&quot;</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="utils_8h_source.html#l00275">275</a> of file <a class="el" href="utils_8h_source.html">utils.h</a>.</p>
+
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#a3775ed960cf63c9ae88613925d226b11">ParameterAcceptor::declare_all_parameters()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#ac4b7044a9e1d53c401a50565d8996022">ParameterAcceptor::parse_all_parameters()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterAcceptor.html#a96081d4cc985b722c9841fcf0c0e54ec">ParameterAcceptor::prm</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterHandler.html#a8364dda711b93753c6809eefe2a8e827a3c8ad66ea26104112458e2ce35b5028f">ParameterHandler::Short</a>.</p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_aa394cd1d9abb8ffe941d9aaafca8d03.html">github</a></li><li class="navelem"><a class="el" href="dir_c52569aa89a7adbb6029022c2fa60a11.html">workspace</a></li><li class="navelem"><a class="el" href="dir_7a95a9cc00fcc7af5a429eec361b64d1.html">include</a></li><li class="navelem"><a class="el" href="utils_8h.html">utils.h</a></li>
-    <li class="footer">Generated on Sat Jan 31 2026 21:03:20 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Mon Feb 2 2026 17:10:27 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

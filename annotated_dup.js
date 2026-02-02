@@ -9,6 +9,7 @@ var annotated_dup =
     [ "ElasticityProblemParameters", "class_elasticity_problem_parameters.html", "class_elasticity_problem_parameters" ],
     [ "ImmersedRepartitioner", "class_immersed_repartitioner.html", "class_immersed_repartitioner" ],
     [ "Inclusions", "class_inclusions.html", "class_inclusions" ],
+    [ "MaterialProperties", "struct_material_properties.html", "struct_material_properties" ],
     [ "ParticleCoupling", "class_particle_coupling.html", "class_particle_coupling" ],
     [ "ParticleCouplingParameters", "class_particle_coupling_parameters.html", "class_particle_coupling_parameters" ],
     [ "PoissonProblem", "class_poisson_problem.html", "class_poisson_problem" ],

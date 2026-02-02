@@ -7,6 +7,7 @@ var dir_7a95a9cc00fcc7af5a429eec361b64d1 =
     [ "immersed_repartitioner.h", "immersed__repartitioner_8h.html", "immersed__repartitioner_8h" ],
     [ "inclusions.h", "inclusions_8h.html", "inclusions_8h" ],
     [ "laplacian.h", "laplacian_8h.html", "laplacian_8h" ],
+    [ "material_properties.h", "material__properties_8h.html", "material__properties_8h" ],
     [ "matrix_free_utils.h", "matrix__free__utils_8h.html", "matrix__free__utils_8h" ],
     [ "particle_coupling.h", "particle__coupling_8h.html", "particle__coupling_8h" ],
     [ "reduced_coupling.h", "reduced__coupling_8h.html", null ],

@@ -1,5 +1,12 @@
 var NAVTREEINDEX9 =
 {
+"namespacehp_1_1Refinement.html#aefd3adee5f867c94814028c0949da9de":[1,0,55,1,7],
+"namespaceinternal.html":[1,0,57],
+"namespaceinternal.html#a027905f2066254c4933b3788268d0352":[1,0,57,179],
+"namespaceinternal.html#a02b92582ed5b262bc32c217b0814c52d":[1,0,57,189],
+"namespaceinternal.html#a0304c503bc10483cc71058b77bc60183":[1,0,57,114],
+"namespaceinternal.html#a030d3248e2433948453eeee9d6f5e186":[1,0,57,170],
+"namespaceinternal.html#a05be67d301ecc2ec20a1a13bc501fd14":[1,0,57,108],
 "namespaceinternal.html#a0621da6ae34683342f6ec3adbbf281f9":[1,0,57,92],
 "namespaceinternal.html#a08f21fb8e3509ecdc2d01955772bbd30":[1,0,57,182],
 "namespaceinternal.html#a08fc24beed29d07ddf8e7669873e4a88":[1,0,57,174],
@@ -242,12 +249,5 @@ var NAVTREEINDEX9 =
 "namespaceinternal_1_1MatrixFreeFunctions.html#a4d00c0d5884021f25691d6be7b4d6d21":[1,0,57,33,11],
 "namespaceinternal_1_1MatrixFreeFunctions.html#a62b375322271de5ebfd1b4b3bf7f0a04":[1,0,57,33,8],
 "namespaceinternal_1_1MatrixFreeFunctions.html#a68668cfda2d59bbd9de38470602ff469":[1,0,57,33,10],
-"namespaceinternal_1_1MatrixFreeFunctions.html#a6996a5a2494d6330aac07caa02f9c33e":[1,0,57,33,21],
-"namespaceinternal_1_1MatrixFreeFunctions.html#a749b41ef8580e352fd73fc0f89f7753c":[1,0,57,33,12],
-"namespaceinternal_1_1MatrixFreeFunctions.html#a8d579e4b2deb17048b90dcf5677ff1d2":[1,0,57,33,14],
-"namespaceinternal_1_1MatrixFreeFunctions.html#a96472c3db6d5463f2ac3a59574dce264":[1,0,57,33,3],
-"namespaceinternal_1_1MatrixFreeFunctions.html#ab81b762e6779bbe3e2f477fc43132efa":[1,0,57,33,16],
-"namespaceinternal_1_1MatrixFreeFunctions.html#ad303beab8ba2349e4a92bc743d3f3cbc":[1,0,57,33,13],
-"namespaceinternal_1_1MatrixFreeFunctions.html#ad4f45b97d337745885b8b8b5118c42a3":[1,0,57,33,2],
-"namespaceinternal_1_1MatrixFreeFunctions.html#ada241d98b4eff9004c8a5a6372deb8a7":[1,0,57,33,18]
+"namespaceinternal_1_1MatrixFreeFunctions.html#a6996a5a2494d6330aac07caa02f9c33e":[1,0,57,33,21]
 };

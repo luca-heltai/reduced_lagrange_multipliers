@@ -1,5 +1,10 @@
 var NAVTREEINDEX2 =
 {
+"group__Exceptions.html#ga69bb1c2cb3ae208e50764f726d1432aa":[1,0,53,48],
+"group__Exceptions.html#ga6a56eade5bfd7e06b0075f9deba90b31":[1,0,160,1],
+"group__Exceptions.html#ga6b350b16646689fed9813ea3e7227fa1":[1,0,55,2],
+"group__Exceptions.html#ga6d87f84cf00391a4c2494e8542a0fbd4":[1,0,85,7],
+"group__Exceptions.html#ga70cce8e37a99bb7b71d0e5c83b094471":[1,0,145,42],
 "group__Exceptions.html#ga71145e70fe6c819f9f65f089d42a0b78":[1,0,38,31],
 "group__Exceptions.html#ga74546ec71d90ad7b0f170c153c30a9c0":[1,0,145,40],
 "group__Exceptions.html#ga75563ae7c1ca17ecccae579b93a9385f":[1,0,62,6],
@@ -164,11 +169,13 @@ var NAVTREEINDEX2 =
 "laplacian_8h.html":[3,0,0,0,0,6],
 "laplacian_8h.html#a68c9ebb48889d54523bff3c6dc3870c4":[3,0,0,0,0,6,2],
 "laplacian_8h_source.html":[3,0,0,0,0,6],
+"material__properties_8h.html":[3,0,0,0,0,7],
+"material__properties_8h_source.html":[3,0,0,0,0,7],
 "matrix__free__utils_8cc.html":[3,0,0,0,1,4],
 "matrix__free__utils_8cc_source.html":[3,0,0,0,1,4],
-"matrix__free__utils_8h.html":[3,0,0,0,0,7],
-"matrix__free__utils_8h.html#aee11d56092e5096cef1afe37587611d8":[3,0,0,0,0,7,1],
-"matrix__free__utils_8h_source.html":[3,0,0,0,0,7],
+"matrix__free__utils_8h.html":[3,0,0,0,0,8],
+"matrix__free__utils_8h.html#aee11d56092e5096cef1afe37587611d8":[3,0,0,0,0,8,1],
+"matrix__free__utils_8h_source.html":[3,0,0,0,0,8],
 "namespaceAdaptationStrategies.html":[1,0,0],
 "namespaceAlgorithms.html":[1,0,2],
 "namespaceAlgorithms.html#a65de55666348d122ce948f4e11c41567":[1,0,2,1],
@@ -242,12 +249,5 @@ var NAVTREEINDEX2 =
 "namespaceCGALWrappers_1_1internal.html#ab0549d42a5dbde33821f2c2b2e863b11":[1,0,9,0,1],
 "namespaceCGALWrappers_1_1internal.html#ab4ab37aaf93aea4a89f181356e125880":[1,0,9,0,7],
 "namespaceCGALWrappers_1_1internal.html#ab9fe120fe99eb1b3caa6251a7d670dd2":[1,0,9,0,8],
-"namespaceCGALWrappers_1_1internal.html#ae322050f6faf22b1bfcfb788acfe5f57":[1,0,9,0,9],
-"namespaceCGALWrappers_1_1internal.html#aea3a96dd6dd285f16911f04d97537381":[1,0,9,0,4],
-"namespaceCellSimilarity.html":[1,0,8],
-"namespaceCellSimilarity.html#abbf8aa4eab099bd2356cb51200494c13":[1,0,8,0],
-"namespaceCellSimilarity.html#abbf8aa4eab099bd2356cb51200494c13a3999e5cabc1dc989f1e32e042ca3e456":[1,0,8,2],
-"namespaceCellSimilarity.html#abbf8aa4eab099bd2356cb51200494c13a4f8507015c458575753e0a45e0c3544a":[1,0,8,4],
-"namespaceCellSimilarity.html#abbf8aa4eab099bd2356cb51200494c13a7f198f2b5a71e522022c13ddf9fe2e70":[1,0,8,1],
-"namespaceCellSimilarity.html#abbf8aa4eab099bd2356cb51200494c13ae9f6ab1203106b0a76aa144e907cab85":[1,0,8,3]
+"namespaceCGALWrappers_1_1internal.html#ae322050f6faf22b1bfcfb788acfe5f57":[1,0,9,0,9]
 };

@@ -20,6 +20,7 @@ var hierarchy =
         [ "ReferenceCrossSectionParameters< cross_section_dim, spacedim, n_components >", "struct_reference_cross_section_parameters.html", null ],
         [ "ElasticityProblemParameters< dim, spacedim >", "class_elasticity_problem_parameters.html", null ],
         [ "Inclusions< spacedim >", "class_inclusions.html", null ],
+        [ "MaterialProperties", "struct_material_properties.html", null ],
         [ "ParticleCouplingParameters< dim >", "class_particle_coupling_parameters.html", null ],
         [ "ProblemParameters< dim, spacedim >", "class_problem_parameters.html", null ],
         [ "ReferenceCrossSectionParameters< dim, spacedim, n_components >", "struct_reference_cross_section_parameters.html", null ],
