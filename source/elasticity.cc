@@ -602,7 +602,18 @@ ElasticityProblem<dim, spacedim>::solve()
     data.symmetric_operator = true;
 #endif
 
+if (true) // schur complement
+{
+  std::vector<std::vector<bool>>   constant_modes;
+    const FEValuesExtractors::Vector displacement_components(0); // gia in .h
+    DoFTools::extract_constant_modes(
+      dh, fe->component_mask(displacement_components), constant_modes);
+    data.constant_modes = constant_modes;
 
+    prec_A.initialize(stiffness_matrix, data);
+}
+else // preconditioner
+{
     Teuchos::ParameterList              parameter_list;
     std::unique_ptr<Epetra_MultiVector> ptr_operator_modes;
     parameter_list.set("smoother: type", "Chebyshev");
@@ -637,6 +648,7 @@ ElasticityProblem<dim, spacedim>::solve()
       rigid_body_modes);
     prec_A.initialize(stiffness_matrix, parameter_list);
   }
+  }
 
   const auto A    = linear_operator<LA::MPI::Vector>(stiffness_matrix);
   auto       invA = A;
@@ -665,7 +677,60 @@ ElasticityProblem<dim, spacedim>::solve()
       const auto B  = transpose_operator(Bt);
       const auto M  = linear_operator<LA::MPI::Vector>(inclusion_matrix);
 
+if (true)
+      { // auto interp_g = g;
+        // interp_g      = 0.1;
+        // g             = C * interp_g;
+
+        // Schur complement
+        const auto S = B * invA * Bt;
+
+        // Schur complement preconditioner
+        // VERSION 1
+        // auto                          invS = S;
+        // SolverFGMRES<LA::MPI::Vector> cg_schur(par.outer_control);
+        SolverMinRes<LA::MPI::Vector> cg_schur(par.outer_control);
+        // invS = inverse_operator(S, cg_schur);
+        // VERSION2
+        auto invS       = S;
+        // auto S_inv_prec = B * invA * Bt + M;
+        // // auto S_inv_prec = B * invA * Bt;
+        // // SolverCG<Vector<double>> cg_schur(par.outer_control);
+        // // PrimitiveVectorMemory<Vector<double>> mem;
+        // // SolverGMRES<Vector<double>> solver_gmres(
+        // //                     par.outer_control, mem,
+        // //                     SolverGMRES<Vector<double>>::AdditionalData(20));
+
+          TrilinosWrappers::PreconditionILU M_inv_ilu;
+          M_inv_ilu.initialize(inclusion_matrix);
+
+          SolverControl solver_control(100, 1e-12, false, false);
+          SolverCG<TrilinosWrappers::MPI::Vector> solver_CG_M(solver_control);
+          auto invM = inverse_operator(M, solver_CG_M, M_inv_ilu);
+          auto S_inv_prec = invM * invM;
+
+
+        invS = inverse_operator(S, cg_schur, S_inv_prec);
+
+        pcout << "   f norm: " << f.l2_norm() << ", g norm: " << g.l2_norm()
+              << std::endl;
+
+        // Compute Lambda first
+        lambda = invS * (B * invA * f - g);
+        pcout << "   Solved for lambda in " << par.outer_control.last_step()
+              << " iterations." << std::endl;
+
+        // Then compute u
+        u = invA * (f - Bt * lambda);
+        pcout << "   u norm: " << u.l2_norm()
+              << ", lambda norm: " << lambda.l2_norm() << std::endl;
+        // std::cout << "   lambda: ";
+        // lambda.print(std::cout);
+      }
+else
       {
+
+        {
         // Estimate condition number:
         std::cout << "- - - - - - - - - - - - - - - - - - - - - - - -"
                   << std::endl;
@@ -701,52 +766,6 @@ ElasticityProblem<dim, spacedim>::solve()
               << std::endl;
           }
       }
-
-#ifdef FALSE
-      { // auto interp_g = g;
-        // interp_g      = 0.1;
-        // g             = C * interp_g;
-
-        // Schur complement
-        const auto S = B * invA * Bt;
-
-        // Schur complement preconditioner
-        // VERSION 1
-        // auto                          invS = S;
-        // SolverFGMRES<LA::MPI::Vector> cg_schur(par.outer_control);
-        SolverMinRes<LA::MPI::Vector> cg_schur(par.outer_control);
-        // invS = inverse_operator(S, cg_schur);
-        // VERSION2
-        auto invS       = S;
-        auto S_inv_prec = B * invA * Bt + M;
-        // auto S_inv_prec = B * invA * Bt;
-        // SolverCG<Vector<double>> cg_schur(par.outer_control);
-        // PrimitiveVectorMemory<Vector<double>> mem;
-        // SolverGMRES<Vector<double>> solver_gmres(
-        //                     par.outer_control, mem,
-        //                     SolverGMRES<Vector<double>>::AdditionalData(20));
-        invS = inverse_operator(S, cg_schur, S_inv_prec);
-
-        pcout << "   f norm: " << f.l2_norm() << ", g norm: " << g.l2_norm()
-              << std::endl;
-        // pcout << "   g: ";
-        // g.print(std::cout);
-
-        // Compute Lambda first
-        lambda = invS * (B * invA * f - g);
-        pcout << "   Solved for lambda in " << par.outer_control.last_step()
-              << " iterations." << std::endl;
-
-        // Then compute u
-        u = invA * (f - Bt * lambda);
-        pcout << "   u norm: " << u.l2_norm()
-              << ", lambda norm: " << lambda.l2_norm() << std::endl;
-        // std::cout << "   lambda: ";
-        // lambda.print(std::cout);
-      }
-#endif
-      {
-        const auto M = linear_operator<LA::MPI::Vector>(inclusion_matrix);
 
         TrilinosWrappers::PreconditionILU M_inv_ilu;
         M_inv_ilu.initialize(inclusion_matrix);
