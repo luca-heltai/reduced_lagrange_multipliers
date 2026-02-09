@@ -1,5 +1,6 @@
 var NAVTREEINDEX6 =
 {
+"namespaceMatrixFreeTools.html#ae034b98c0db11285fae23a08ef3f197f":[1,0,82,2],
 "namespaceMatrixFreeTools_1_1internal.html":[1,0,82,1],
 "namespaceMatrixFreeTools_1_1internal.html#a85753f2bb2be6aec0ea16a6dc02af2a4":[1,0,82,1,0],
 "namespaceMatrixFreeTools_1_1internal.html#acb78c45fcc59ccad0f4f9e46940e1d67":[1,0,82,1,1],
@@ -248,6 +249,5 @@ var NAVTREEINDEX6 =
 "namespaceTensorProductMatrixCreator.html#a72a28b171c4f7a7e3c6fcf1145bf0f4f":[1,0,152,3],
 "namespaceTensorProductMatrixCreator.html#aa2d3de7eafde69e6dbbce59ff62d35bc":[1,0,152,1],
 "namespaceTensorProductMatrixCreator.html#aa2d3de7eafde69e6dbbce59ff62d35bca102747263147bd6e19c3d7ac38293a08":[1,0,152,10],
-"namespaceTensorProductMatrixCreator.html#aa2d3de7eafde69e6dbbce59ff62d35bca306e85378afdc813b8cb9832d91146d3":[1,0,152,11],
-"namespaceTensorProductMatrixCreator.html#aa2d3de7eafde69e6dbbce59ff62d35bca81ab7f61d5ef4107fec34ed5f3580775":[1,0,152,9]
+"namespaceTensorProductMatrixCreator.html#aa2d3de7eafde69e6dbbce59ff62d35bca306e85378afdc813b8cb9832d91146d3":[1,0,152,11]
 };

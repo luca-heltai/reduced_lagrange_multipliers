@@ -2,7 +2,6 @@ var class_inclusions =
 [
     [ "Inclusions", "class_inclusions.html#a55fe8a6d375ddbc2f5621c21d7ca149d", null ],
     [ "check_vessels", "class_inclusions.html#aa8626e28c16a2f5f26c2c689bb61e8f3", null ],
-    [ "compute_rotated_inclusion_data", "class_inclusions.html#aa18673f64d938a52b919939048608199", null ],
     [ "get_center", "class_inclusions.html#ac2677741f77e3e03f562849c11e88974", null ],
     [ "get_component", "class_inclusions.html#a5cc8694e9ab6e5b4aa81aa1e7ad87e30", null ],
     [ "get_current_support_points", "class_inclusions.html#af09de1f02f56635cb666a9e5ab2b4401", null ],
@@ -20,7 +19,6 @@ var class_inclusions =
     [ "get_normal", "class_inclusions.html#ac147dae3f7a1e6d074173da1cb613f45", null ],
     [ "get_offset_coefficients", "class_inclusions.html#ab08b123ef627c261ea06571d86dd9b10", null ],
     [ "get_radius", "class_inclusions.html#ae553d2932cc5f7ee315a56b99acf366f", null ],
-    [ "get_rotated_inclusion_data", "class_inclusions.html#a9f38fa4ec2defc3bcea2f7e958c4399e", null ],
     [ "get_rotation", "class_inclusions.html#af70ea0aa1f0428ebb718d6fc68b19dd7", null ],
     [ "get_section_measure", "class_inclusions.html#a6c96ccc465632610714092fcd805d70e", null ],
     [ "get_vesselID", "class_inclusions.html#ab36c7fda75807df6e3ca7e83620aa327", null ],
@@ -56,7 +54,6 @@ var class_inclusions =
     [ "normals", "class_inclusions.html#a15536b60fd2017e71ac89e5ddf4ffe44", null ],
     [ "offset_coefficients", "class_inclusions.html#aacbcacdfd82ca2e9fea6654d59773786", null ],
     [ "reference_inclusion_data", "class_inclusions.html#a91daf04d31555aa4d81fa50ec5352b8f", null ],
-    [ "rotated_inclusion_data", "class_inclusions.html#a771d84e2323ac16d6eb098150719712e", null ],
     [ "rtree_extraction_level", "class_inclusions.html#a41bcd6d5727087f4522033a6a487354c", null ],
     [ "selected_coefficients", "class_inclusions.html#a0e5baf3eff655c343303b8d47d2cd317", null ],
     [ "support_points", "class_inclusions.html#aa57d1e9be466ba3a8124b2867dffe74c", null ],

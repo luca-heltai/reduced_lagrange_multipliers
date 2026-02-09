@@ -69,9 +69,10 @@ var searchData=
   ['hyper_5fcube_66',['hyper_cube',['http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#acea0cbcd68e52ce8113d1134b87de403',1,'GridGenerator']]],
   ['hyper_5fcube_5fslit_67',['hyper_cube_slit',['http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a5114625911496e4f51758fe00562a14a',1,'GridGenerator']]],
   ['hyper_5fcube_5fwith_5fcylindrical_5fhole_68',['hyper_cube_with_cylindrical_hole',['http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a17568b9552c9b4f28c7345ad5431fece',1,'GridGenerator']]],
-  ['hyper_5fl_69',['hyper_L',['http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a3b2a4ad8296c2b72a11d23b5969e8cc0',1,'GridGenerator']]],
-  ['hyper_5frectangle_70',['hyper_rectangle',['http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a56019d263ae45708302d5d7599f0d458',1,'GridGenerator']]],
-  ['hyper_5fshell_71',['hyper_shell',['http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a36a5f3b1be1d673f50d01a51a6aba6c3',1,'GridGenerator']]],
-  ['hyper_5fsphere_72',['hyper_sphere',['http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#ab2dc2f16fc52cf1e51b9afdc4264ac70',1,'GridGenerator']]],
-  ['hyperbolic_5frotation_73',['hyperbolic_rotation',['http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1LinearAlgebra.html#a69997c210f5555324bfa16cf09edf389',1,'Utilities::LinearAlgebra']]]
+  ['hyper_5fcube_5fwith_5fspherical_5fhole_69',['hyper_cube_with_spherical_hole',['http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a54702f2ced395fdc9d27534631341037',1,'GridGenerator']]],
+  ['hyper_5fl_70',['hyper_L',['http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a3b2a4ad8296c2b72a11d23b5969e8cc0',1,'GridGenerator']]],
+  ['hyper_5frectangle_71',['hyper_rectangle',['http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a56019d263ae45708302d5d7599f0d458',1,'GridGenerator']]],
+  ['hyper_5fshell_72',['hyper_shell',['http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a36a5f3b1be1d673f50d01a51a6aba6c3',1,'GridGenerator']]],
+  ['hyper_5fsphere_73',['hyper_sphere',['http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#ab2dc2f16fc52cf1e51b9afdc4264ac70',1,'GridGenerator']]],
+  ['hyperbolic_5frotation_74',['hyperbolic_rotation',['http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1LinearAlgebra.html#a69997c210f5555324bfa16cf09edf389',1,'Utilities::LinearAlgebra']]]
 ];

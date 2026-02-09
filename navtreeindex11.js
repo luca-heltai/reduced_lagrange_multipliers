@@ -1,5 +1,6 @@
 var NAVTREEINDEX11 =
 {
+"namespacestd__cxx20_1_1ranges.html#a109956a09689ca9e1379724719a2c4c4":[1,0,148,0,0],
 "namespacetf.html":[1,0,154],
 "namespacetypes.html":[1,0,164],
 "namespacetypes.html#a1f06a488f925973eb8dabd447ddb3d84":[1,0,164,11],
