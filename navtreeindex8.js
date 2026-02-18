@@ -1,6 +1,5 @@
 var NAVTREEINDEX8 =
 {
-"namespaceUtilities_1_1MPI_1_1internal_1_1MPIDataTypes.html#ac982299e4faaa4cae7d3756ad105504f":[1,0,165,2,2,1,7],
 "namespaceUtilities_1_1MPI_1_1internal_1_1MPIDataTypes.html#adb1a0b21354abf5f92f46e1ca312c92e":[1,0,165,2,2,1,1],
 "namespaceUtilities_1_1MPI_1_1internal_1_1MPIDataTypes.html#adda6d309f05338498477fb88e5605e1c":[1,0,165,2,2,1,15],
 "namespaceUtilities_1_1MPI_1_1internal_1_1MPIDataTypes.html#af0b231fd34075be932dda78d4f1e52a2":[1,0,165,2,2,1,3],
@@ -249,5 +248,6 @@ var NAVTREEINDEX8 =
 "namespacehp_1_1Refinement.html#a8d1c7911e81d777123483a83b2fe1eda":[1,0,55,1,6],
 "namespacehp_1_1Refinement.html#a98a9d9d1450456815b8ed4892041065c":[1,0,55,1,1],
 "namespacehp_1_1Refinement.html#aa51769e5a5752781cd5aa9ec00b82a5c":[1,0,55,1,5],
-"namespacehp_1_1Refinement.html#ad0ca178ceaa3fbd70627d23d2adabeeb":[1,0,55,1,0]
+"namespacehp_1_1Refinement.html#ad0ca178ceaa3fbd70627d23d2adabeeb":[1,0,55,1,0],
+"namespacehp_1_1Refinement.html#adbb65ed7b6a97961a69967eaa0bb170b":[1,0,55,1,10]
 };

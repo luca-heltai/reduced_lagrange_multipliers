@@ -1,6 +1,5 @@
 var NAVTREEINDEX2 =
 {
-"group__Exceptions.html#ga6a56eade5bfd7e06b0075f9deba90b31":[1,0,160,1],
 "group__Exceptions.html#ga6b350b16646689fed9813ea3e7227fa1":[1,0,55,2],
 "group__Exceptions.html#ga6d87f84cf00391a4c2494e8542a0fbd4":[1,0,85,7],
 "group__Exceptions.html#ga70cce8e37a99bb7b71d0e5c83b094471":[1,0,145,42],
@@ -249,5 +248,6 @@ var NAVTREEINDEX2 =
 "namespaceCGALWrappers_1_1internal.html#ab4ab37aaf93aea4a89f181356e125880":[1,0,9,0,7],
 "namespaceCGALWrappers_1_1internal.html#ab9fe120fe99eb1b3caa6251a7d670dd2":[1,0,9,0,8],
 "namespaceCGALWrappers_1_1internal.html#ae322050f6faf22b1bfcfb788acfe5f57":[1,0,9,0,9],
-"namespaceCGALWrappers_1_1internal.html#aea3a96dd6dd285f16911f04d97537381":[1,0,9,0,4]
+"namespaceCGALWrappers_1_1internal.html#aea3a96dd6dd285f16911f04d97537381":[1,0,9,0,4],
+"namespaceCellSimilarity.html":[1,0,8]
 };

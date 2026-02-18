@@ -1286,8 +1286,7 @@ var namespaces_dup =
         [ "n_cells", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1TriangulationImplementation.html#af7741abe7d6d11f56b29a555f1afb2d5", null ],
         [ "n_cells", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1TriangulationImplementation.html#a26bf383b0f54799d7882a2867add1f02", null ],
         [ "reserve_space", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1TriangulationImplementation.html#ab1f99b23dabaeff541204830564738e5", null ],
-        [ "reserve_space", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1TriangulationImplementation.html#a2766aebb7b6dade91477e908faa01aac", null ],
-        [ "reserve_space", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1TriangulationImplementation.html#ab213fce4d07ee17bf0f964fc8b631e4b", null ]
+        [ "reserve_space", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1TriangulationImplementation.html#a2766aebb7b6dade91477e908faa01aac", null ]
       ] ],
       [ "UtilitiesImplementation", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1UtilitiesImplementation.html", [
         [ "call_stev", "http://www.dealii.org/developer/doxygen/deal.II/namespaceinternal_1_1UtilitiesImplementation.html#a028c87b984cced289275582efedbdca3", null ],

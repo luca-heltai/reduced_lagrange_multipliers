@@ -167,9 +167,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aad7fd15c48c7fc1ef676b207bbc9be4f" id="r_aad7fd15c48c7fc1ef676b207bbc9be4f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aad7fd15c48c7fc1ef676b207bbc9be4f">compute_internal_and_boundary_stress</a> (bool) const</td></tr>
 <tr class="memdesc:aad7fd15c48c7fc1ef676b207bbc9be4f"><td class="mdescLeft">&#160;</td><td class="mdescRight">compute stresses on boundaries (2D and 3D) and internal (2D) this function makes use of boundary id, so make sure that the ifd starts from 0 and are sequential when importing a mesh, this is automatically taken care of for meshes generated with <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceGridTools.html">GridTools</a> output is a txt file containing stresses at each cycle/time  <br /></td></tr>
 <tr class="separator:aad7fd15c48c7fc1ef676b207bbc9be4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c22b232642fd9c4009c1e2cf32bdf21" id="r_a0c22b232642fd9c4009c1e2cf32bdf21"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0c22b232642fd9c4009c1e2cf32bdf21">output_pressure</a> (bool openfilefirsttime) const</td></tr>
-<tr class="memdesc:a0c22b232642fd9c4009c1e2cf32bdf21"><td class="mdescLeft">&#160;</td><td class="mdescRight">compute tissue pressure ($\Lambda$) over the vessels and output to a .txt file (sequential) or .h5 file (mpi)  <br /></td></tr>
-<tr class="separator:a0c22b232642fd9c4009c1e2cf32bdf21"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1d4f753324a3ff3f7c3105fc22fd1abb" id="r_a1d4f753324a3ff3f7c3105fc22fd1abb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1d4f753324a3ff3f7c3105fc22fd1abb">output_lambda</a> () const</td></tr>
 <tr class="separator:a1d4f753324a3ff3f7c3105fc22fd1abb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a670b1a20b449de1e4360710420641727" id="r_a670b1a20b449de1e4360710420641727"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a670b1a20b449de1e4360710420641727">output_stresses</a> () const</td></tr>
@@ -276,7 +273,7 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;int dim, int spacedim = dim&gt;<br />
 class ElasticityProblem&lt; dim, spacedim &gt;</div>
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00353">353</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00354">354</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a0f0785681c524a7e8c9b3ca5e3b5f66d" name="a0f0785681c524a7e8c9b3ca5e3b5f66d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0f0785681c524a7e8c9b3ca5e3b5f66d">&#9670;&#160;</a></span>ElasticityProblem()</h2>
@@ -297,7 +294,7 @@ template&lt;int dim, int spacedim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l00026">26</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="elasticity_8h_source.html#l00418">computing_timer</a>, <a class="el" href="elasticity_8h_source.html#l00424">dh</a>, <a class="el" href="elasticity_8h_source.html#l00441">displacement</a>, <a class="el" href="elasticity_8h_source.html#l00421">inclusions</a>, <a class="el" href="elasticity_8h_source.html#l00416">mpi_communicator</a>, <a class="el" href="elasticity_8h_source.html#l00415">par</a>, <a class="el" href="elasticity_8h_source.html#l00417">pcout</a>, and <a class="el" href="elasticity_8h_source.html#l00419">tria</a>.</p>
+<p class="reference">References <a class="el" href="elasticity_8h_source.html#l00416">computing_timer</a>, <a class="el" href="elasticity_8h_source.html#l00422">dh</a>, <a class="el" href="elasticity_8h_source.html#l00439">displacement</a>, <a class="el" href="elasticity_8h_source.html#l00419">inclusions</a>, <a class="el" href="elasticity_8h_source.html#l00414">mpi_communicator</a>, <a class="el" href="elasticity_8h_source.html#l00413">par</a>, <a class="el" href="elasticity_8h_source.html#l00415">pcout</a>, and <a class="el" href="elasticity_8h_source.html#l00417">tria</a>.</p>
 
 </div>
 </div>
@@ -321,9 +318,9 @@ template&lt;int dim, int spacedim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l00464">464</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/structVectorOperation.html#a40c50779cd14ba89bbf0bd9b4561964cae1077e8dbf4afea5d2df8c8b723c0708">VectorOperation::add</a>, <a class="el" href="elasticity_8h_source.html#l00418">computing_timer</a>, <a class="el" href="elasticity_8h_source.html#l00428">constraints</a>, <a class="el" href="elasticity_8h_source.html#l00433">coupling_matrix</a>, <a class="el" href="elasticity_8h_source.html#l00424">dh</a>, <a class="el" href="elasticity_8h_source.html#l00420">fe</a>, <a class="el" href="elasticity_8h_source.html#l00429">inclusion_constraints</a>, <a class="el" href="elasticity_8h_source.html#l00434">inclusion_matrix</a>, <a class="el" href="elasticity_8h_source.html#l00421">inclusions</a>, <a class="el" href="elasticity_8h_source.html#l00415">par</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValues.html#acc8fe9d042c6b5e5da89858400feb24f">FEValues&lt; int dim, int spacedim &gt;::reinit()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aeb39cbae775d47d3267af71434f68510">FEValues&lt; int dim, int spacedim &gt;::shape_value()</a>, and <a class="el" href="elasticity_8h_source.html#l00437">system_rhs</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/structVectorOperation.html#a40c50779cd14ba89bbf0bd9b4561964cae1077e8dbf4afea5d2df8c8b723c0708">VectorOperation::add</a>, <a class="el" href="elasticity_8h_source.html#l00416">computing_timer</a>, <a class="el" href="elasticity_8h_source.html#l00426">constraints</a>, <a class="el" href="elasticity_8h_source.html#l00431">coupling_matrix</a>, <a class="el" href="elasticity_8h_source.html#l00422">dh</a>, <a class="el" href="elasticity_8h_source.html#l00418">fe</a>, <a class="el" href="elasticity_8h_source.html#l00427">inclusion_constraints</a>, <a class="el" href="elasticity_8h_source.html#l00432">inclusion_matrix</a>, <a class="el" href="elasticity_8h_source.html#l00419">inclusions</a>, <a class="el" href="elasticity_8h_source.html#l00413">par</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValues.html#acc8fe9d042c6b5e5da89858400feb24f">FEValues&lt; int dim, int spacedim &gt;::reinit()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aeb39cbae775d47d3267af71434f68510">FEValues&lt; int dim, int spacedim &gt;::shape_value()</a>, and <a class="el" href="elasticity_8h_source.html#l00435">system_rhs</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01303">run()</a>.</p>
 
 </div>
 </div>
@@ -347,7 +344,7 @@ template&lt;int dim, int spacedim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l00418">418</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classIndexSet.html#afd3cb227b79aee79b10da86b6841399d">IndexSet::add_indices()</a>, <a class="el" href="elasticity_8h_source.html#l00418">computing_timer</a>, <a class="el" href="elasticity_8h_source.html#l00428">constraints</a>, <a class="el" href="elasticity_8h_source.html#l00424">dh</a>, <a class="el" href="elasticity_8h_source.html#l00420">fe</a>, <a class="el" href="elasticity_8h_source.html#l00429">inclusion_constraints</a>, and <a class="el" href="elasticity_8h_source.html#l00421">inclusions</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classIndexSet.html#afd3cb227b79aee79b10da86b6841399d">IndexSet::add_indices()</a>, <a class="el" href="elasticity_8h_source.html#l00416">computing_timer</a>, <a class="el" href="elasticity_8h_source.html#l00426">constraints</a>, <a class="el" href="elasticity_8h_source.html#l00422">dh</a>, <a class="el" href="elasticity_8h_source.html#l00418">fe</a>, <a class="el" href="elasticity_8h_source.html#l00427">inclusion_constraints</a>, and <a class="el" href="elasticity_8h_source.html#l00419">inclusions</a>.</p>
 
 </div>
 </div>
@@ -370,9 +367,9 @@ template&lt;int dim, int spacedim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l00310">310</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/structVectorOperation.html#a40c50779cd14ba89bbf0bd9b4561964cae1077e8dbf4afea5d2df8c8b723c0708">VectorOperation::add</a>, <a class="el" href="elasticity_8h_source.html#l00418">computing_timer</a>, <a class="el" href="elasticity_8h_source.html#l00428">constraints</a>, <a class="el" href="elasticity_8h_source.html#l00433">coupling_matrix</a>, <a class="el" href="elasticity_8h_source.html#l00424">dh</a>, <a class="el" href="elasticity_8h_source.html#l00441">displacement</a>, <a class="el" href="elasticity_8h_source.html#l00423">face_quadrature_formula</a>, <a class="el" href="elasticity_8h_source.html#l00420">fe</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a351e7a77fe4323c4bda53a55dba12233">FEValues&lt; int dim, int spacedim &gt;::get_quadrature_points()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aeb33b877f81e2143752dda2c14a0029d">FEFaceValues&lt; int dim, int spacedim &gt;::JxW()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aeb33b877f81e2143752dda2c14a0029d">FEValues&lt; int dim, int spacedim &gt;::JxW()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a807c3049bfe81743fc0f237dfc2fbdea">FEFaceValues&lt; int dim, int spacedim &gt;::n_quadrature_points</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a5efdeca6c8f0cbdd671c7e2573d4c708">FEFaceValues&lt; int dim, int spacedim &gt;::normal_vector()</a>, <a class="el" href="elasticity_8h_source.html#l00415">par</a>, <a class="el" href="elasticity_8h_source.html#l00422">quadrature</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a7671e35e7a87a395dc9fdee0f5a7650f">FEFaceValues&lt; int dim, int spacedim &gt;::quadrature_point()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEFaceValues.html#aa66e147c5458a49b637dbcfae40e1b9b">FEFaceValues&lt; int dim, int spacedim &gt;::reinit()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValues.html#acc8fe9d042c6b5e5da89858400feb24f">FEValues&lt; int dim, int spacedim &gt;::reinit()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aeb39cbae775d47d3267af71434f68510">FEFaceValues&lt; int dim, int spacedim &gt;::shape_value()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aeb39cbae775d47d3267af71434f68510">FEValues&lt; int dim, int spacedim &gt;::shape_value()</a>, <a class="el" href="elasticity_8h_source.html#l00432">stiffness_matrix</a>, and <a class="el" href="elasticity_8h_source.html#l00437">system_rhs</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/structVectorOperation.html#a40c50779cd14ba89bbf0bd9b4561964cae1077e8dbf4afea5d2df8c8b723c0708">VectorOperation::add</a>, <a class="el" href="elasticity_8h_source.html#l00416">computing_timer</a>, <a class="el" href="elasticity_8h_source.html#l00426">constraints</a>, <a class="el" href="elasticity_8h_source.html#l00431">coupling_matrix</a>, <a class="el" href="elasticity_8h_source.html#l00422">dh</a>, <a class="el" href="elasticity_8h_source.html#l00439">displacement</a>, <a class="el" href="elasticity_8h_source.html#l00421">face_quadrature_formula</a>, <a class="el" href="elasticity_8h_source.html#l00418">fe</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a351e7a77fe4323c4bda53a55dba12233">FEValues&lt; int dim, int spacedim &gt;::get_quadrature_points()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aeb33b877f81e2143752dda2c14a0029d">FEFaceValues&lt; int dim, int spacedim &gt;::JxW()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aeb33b877f81e2143752dda2c14a0029d">FEValues&lt; int dim, int spacedim &gt;::JxW()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a807c3049bfe81743fc0f237dfc2fbdea">FEFaceValues&lt; int dim, int spacedim &gt;::n_quadrature_points</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a5efdeca6c8f0cbdd671c7e2573d4c708">FEFaceValues&lt; int dim, int spacedim &gt;::normal_vector()</a>, <a class="el" href="elasticity_8h_source.html#l00413">par</a>, <a class="el" href="elasticity_8h_source.html#l00420">quadrature</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a7671e35e7a87a395dc9fdee0f5a7650f">FEFaceValues&lt; int dim, int spacedim &gt;::quadrature_point()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEFaceValues.html#aa66e147c5458a49b637dbcfae40e1b9b">FEFaceValues&lt; int dim, int spacedim &gt;::reinit()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValues.html#acc8fe9d042c6b5e5da89858400feb24f">FEValues&lt; int dim, int spacedim &gt;::reinit()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aeb39cbae775d47d3267af71434f68510">FEFaceValues&lt; int dim, int spacedim &gt;::shape_value()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aeb39cbae775d47d3267af71434f68510">FEValues&lt; int dim, int spacedim &gt;::shape_value()</a>, <a class="el" href="elasticity_8h_source.html#l00430">stiffness_matrix</a>, and <a class="el" href="elasticity_8h_source.html#l00435">system_rhs</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01303">run()</a>.</p>
 
 </div>
 </div>
@@ -397,9 +394,9 @@ template&lt;int dim, int spacedim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l01027">1027</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="elasticity_8h_source.html#l00415">par</a>.</p>
+<p class="reference">References <a class="el" href="elasticity_8h_source.html#l00413">par</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01303">run()</a>.</p>
 
 </div>
 </div>
@@ -424,9 +421,9 @@ template&lt;int dim, int spacedim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l01052">1052</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="elasticity_8h_source.html#l00418">computing_timer</a>, <a class="el" href="elasticity_8h_source.html#l00439">cycle</a>, <a class="el" href="elasticity_8h_source.html#l00424">dh</a>, <a class="el" href="elasticity_8h_source.html#l00441">displacement</a>, <a class="el" href="elasticity_8h_source.html#l00423">face_quadrature_formula</a>, <a class="el" href="elasticity_8h_source.html#l00420">fe</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aa41921ba94d62a91fff93f3dfd51bb5a">FEFaceValues&lt; int dim, int spacedim &gt;::get_function_gradients()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a33e437195106aee8e3ad88b2dd40d223">FEFaceValues&lt; int dim, int spacedim &gt;::get_function_values()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aeb33b877f81e2143752dda2c14a0029d">FEFaceValues&lt; int dim, int spacedim &gt;::JxW()</a>, <a class="el" href="elasticity_8h_source.html#l00436">locally_relevant_solution</a>, <a class="el" href="elasticity_8h_source.html#l00416">mpi_communicator</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a807c3049bfe81743fc0f237dfc2fbdea">FEFaceValues&lt; int dim, int spacedim &gt;::n_quadrature_points</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a5efdeca6c8f0cbdd671c7e2573d4c708">FEFaceValues&lt; int dim, int spacedim &gt;::normal_vector()</a>, <a class="el" href="elasticity_8h_source.html#l00415">par</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEFaceValues.html#aa66e147c5458a49b637dbcfae40e1b9b">FEFaceValues&lt; int dim, int spacedim &gt;::reinit()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a2d0b85e7f2c375999968a0f438174e0c">Utilities::MPI::sum()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a7ebd336c94126a6ab230f766f8f25ff7">Utilities::MPI::this_mpi_process()</a>, and <a class="el" href="elasticity_8h_source.html#l00419">tria</a>.</p>
+<p class="reference">References <a class="el" href="elasticity_8h_source.html#l00416">computing_timer</a>, <a class="el" href="elasticity_8h_source.html#l00437">cycle</a>, <a class="el" href="elasticity_8h_source.html#l00422">dh</a>, <a class="el" href="elasticity_8h_source.html#l00439">displacement</a>, <a class="el" href="elasticity_8h_source.html#l00421">face_quadrature_formula</a>, <a class="el" href="elasticity_8h_source.html#l00418">fe</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aa41921ba94d62a91fff93f3dfd51bb5a">FEFaceValues&lt; int dim, int spacedim &gt;::get_function_gradients()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a33e437195106aee8e3ad88b2dd40d223">FEFaceValues&lt; int dim, int spacedim &gt;::get_function_values()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#aeb33b877f81e2143752dda2c14a0029d">FEFaceValues&lt; int dim, int spacedim &gt;::JxW()</a>, <a class="el" href="elasticity_8h_source.html#l00434">locally_relevant_solution</a>, <a class="el" href="elasticity_8h_source.html#l00414">mpi_communicator</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a807c3049bfe81743fc0f237dfc2fbdea">FEFaceValues&lt; int dim, int spacedim &gt;::n_quadrature_points</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEValuesBase.html#a5efdeca6c8f0cbdd671c7e2573d4c708">FEFaceValues&lt; int dim, int spacedim &gt;::normal_vector()</a>, <a class="el" href="elasticity_8h_source.html#l00413">par</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classFEFaceValues.html#aa66e147c5458a49b637dbcfae40e1b9b">FEFaceValues&lt; int dim, int spacedim &gt;::reinit()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a2d0b85e7f2c375999968a0f438174e0c">Utilities::MPI::sum()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a7ebd336c94126a6ab230f766f8f25ff7">Utilities::MPI::this_mpi_process()</a>, and <a class="el" href="elasticity_8h_source.html#l00417">tria</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01303">run()</a>.</p>
 
 </div>
 </div>
@@ -449,7 +446,7 @@ template&lt;int dim, int spacedim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l00869">869</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="elasticity_8h_source.html#l00428">constraints</a>, <a class="el" href="elasticity_8h_source.html#l00424">dh</a>, <a class="el" href="elasticity_8h_source.html#l00421">inclusions</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classSolutionTransfer.html#ad987a4f47805b271e882ca4533348f8c">SolutionTransfer&lt; int dim, typename VectorType, int spacedim &gt;::interpolate()</a>, <a class="el" href="elasticity_8h_source.html#l00436">locally_relevant_solution</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classSolutionTransfer.html#aaa83417b3e0ae25fcb3f03a4dbf081ec">SolutionTransfer&lt; int dim, typename VectorType, int spacedim &gt;::prepare_for_coarsening_and_refinement()</a>, <a class="el" href="elasticity_8cc_source.html#l00181">setup_dofs()</a>, <a class="el" href="elasticity_8h_source.html#l00435">solution</a>, and <a class="el" href="elasticity_8h_source.html#l00419">tria</a>.</p>
+<p class="reference">References <a class="el" href="elasticity_8h_source.html#l00426">constraints</a>, <a class="el" href="elasticity_8h_source.html#l00422">dh</a>, <a class="el" href="elasticity_8h_source.html#l00419">inclusions</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classSolutionTransfer.html#ad987a4f47805b271e882ca4533348f8c">SolutionTransfer&lt; int dim, typename VectorType, int spacedim &gt;::interpolate()</a>, <a class="el" href="elasticity_8h_source.html#l00434">locally_relevant_solution</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classSolutionTransfer.html#aaa83417b3e0ae25fcb3f03a4dbf081ec">SolutionTransfer&lt; int dim, typename VectorType, int spacedim &gt;::prepare_for_coarsening_and_refinement()</a>, <a class="el" href="elasticity_8cc_source.html#l00181">setup_dofs()</a>, <a class="el" href="elasticity_8h_source.html#l00433">solution</a>, and <a class="el" href="elasticity_8h_source.html#l00417">tria</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00837">refine_and_transfer()</a>.</p>
 
@@ -474,9 +471,9 @@ template&lt;int dim, int spacedim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l00111">111</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classGridIn.html#a82ac1c03b0efe87204ad45d2f1d87f7e">GridIn&lt; int dim, int spacedim &gt;::attach_triangulation()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a76c54698f4666a44ac3982ee62f87ee9">GridGenerator::cheese()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a1e6c4dcc63863449f08a78a22ec73747">GridGenerator::generate_from_name_and_arguments()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a85407673a122b94c34cb520c9a591c56">GridGenerator::hyper_ball()</a>, <a class="el" href="elasticity_8h_source.html#l00415">par</a>, <a class="el" href="elasticity_8h_source.html#l00417">pcout</a>, <a class="el" href="elasticity_8cc_source.html#l00047">read_grid_and_cad_files()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classGridIn.html#a83872db02e04f52ac52d578912f6da5e">GridIn&lt; int dim, int spacedim &gt;::read_msh()</a>, and <a class="el" href="elasticity_8h_source.html#l00419">tria</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classGridIn.html#a82ac1c03b0efe87204ad45d2f1d87f7e">GridIn&lt; int dim, int spacedim &gt;::attach_triangulation()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a76c54698f4666a44ac3982ee62f87ee9">GridGenerator::cheese()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a1e6c4dcc63863449f08a78a22ec73747">GridGenerator::generate_from_name_and_arguments()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceGridGenerator.html#a85407673a122b94c34cb520c9a591c56">GridGenerator::hyper_ball()</a>, <a class="el" href="elasticity_8h_source.html#l00413">par</a>, <a class="el" href="elasticity_8h_source.html#l00415">pcout</a>, <a class="el" href="elasticity_8cc_source.html#l00047">read_grid_and_cad_files()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classGridIn.html#a83872db02e04f52ac52d578912f6da5e">GridIn&lt; int dim, int spacedim &gt;::read_msh()</a>, and <a class="el" href="elasticity_8h_source.html#l00417">tria</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01303">run()</a>.</p>
 
 </div>
 </div>
@@ -497,44 +494,11 @@ template&lt;int dim, int spacedim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l01412">1412</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l01253">1253</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="elasticity_8h_source.html#l00421">inclusions</a>, <a class="el" href="elasticity_8h_source.html#l00436">locally_relevant_solution</a>, and <a class="el" href="elasticity_8h_source.html#l00415">par</a>.</p>
+<p class="reference">References <a class="el" href="elasticity_8h_source.html#l00419">inclusions</a>, <a class="el" href="elasticity_8h_source.html#l00434">locally_relevant_solution</a>, and <a class="el" href="elasticity_8h_source.html#l00413">par</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>.</p>
-
-</div>
-</div>
-<a id="a0c22b232642fd9c4009c1e2cf32bdf21" name="a0c22b232642fd9c4009c1e2cf32bdf21"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0c22b232642fd9c4009c1e2cf32bdf21">&#9670;&#160;</a></span>output_pressure()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;int dim, int spacedim&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void <a class="el" href="class_elasticity_problem.html">ElasticityProblem</a>&lt; dim, spacedim &gt;::output_pressure </td>
-          <td>(</td>
-          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>openfilefirsttime</em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>compute tissue pressure ($\Lambda$) over the vessels and output to a .txt file (sequential) or .h5 file (mpi) </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">openfilefisrttime</td><td>internal variable to open file </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l01259">1259</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
-
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/structVectorOperation.html#a40c50779cd14ba89bbf0bd9b4561964cae1077e8dbf4afea5d2df8c8b723c0708">VectorOperation::add</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTrilinosWrappers_1_1MPI_1_1Vector.html#a0de878d802788221ace9618ae608a76a">TrilinosWrappers::MPI::Vector::compress()</a>, <a class="el" href="elasticity_8h_source.html#l00418">computing_timer</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classHDF5_1_1Group.html#a9bcee0e38d7889620776c0ed25628e58">HDF5::File::create_dataset()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a850d6df5f523ab38a24229d021de3f1a">Utilities::MPI::create_evenly_distributed_partitioning()</a>, <a class="el" href="elasticity_8h_source.html#l00439">cycle</a>, <a class="el" href="elasticity_8h_source.html#l00421">inclusions</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTrilinosWrappers_1_1MPI_1_1Vector.html#abc37c8685838f91d6104373d292d0348">TrilinosWrappers::MPI::Vector::locally_owned_size()</a>, <a class="el" href="elasticity_8h_source.html#l00436">locally_relevant_solution</a>, <a class="el" href="elasticity_8h_source.html#l00416">mpi_communicator</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities_1_1MPI.html#a4d61730f9aceb5a4ce86f90712262c46">Utilities::MPI::n_mpi_processes()</a>, <a class="el" href="elasticity_8h_source.html#l00415">par</a>, <a class="el" href="elasticity_8h_source.html#l00417">pcout</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTrilinosWrappers_1_1MPI_1_1Vector.html#a4d43302d459c7cb6ae4b5bad13d31507">TrilinosWrappers::MPI::Vector::print()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTrilinosWrappers_1_1MPI_1_1Vector.html#a47ca72d63604df744564458ae67f3fe1">TrilinosWrappers::MPI::Vector::size()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classHDF5_1_1DataSet.html#a5e262c54c334a1788c209f4a5366369d">HDF5::DataSet::write_hyperslab()</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classHDF5_1_1DataSet.html#a9ca9525c41fe37c9c64f2b41ad0b871e">HDF5::DataSet::write_none()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01303">run()</a>.</p>
 
 </div>
 </div>
@@ -557,9 +521,9 @@ template&lt;int dim, int spacedim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l00975">975</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="elasticity_8h_source.html#l00418">computing_timer</a>, <a class="el" href="elasticity_8h_source.html#l00439">cycle</a>, <a class="el" href="elasticity_8h_source.html#l00421">inclusions</a>, <a class="el" href="elasticity_8cc_source.html#l00892">output_solution()</a>, <a class="el" href="elasticity_8h_source.html#l00415">par</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceDataOutBase.html#a9bcaee76160be3f2cee5c15ca7976a26">DataOutBase::write_pvd_record()</a>.</p>
+<p class="reference">References <a class="el" href="elasticity_8h_source.html#l00416">computing_timer</a>, <a class="el" href="elasticity_8h_source.html#l00437">cycle</a>, <a class="el" href="elasticity_8h_source.html#l00419">inclusions</a>, <a class="el" href="elasticity_8cc_source.html#l00892">output_solution()</a>, <a class="el" href="elasticity_8h_source.html#l00413">par</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceDataOutBase.html#a9bcaee76160be3f2cee5c15ca7976a26">DataOutBase::write_pvd_record()</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01303">run()</a>.</p>
 
 </div>
 </div>
@@ -582,7 +546,7 @@ template&lt;int dim, int spacedim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l00892">892</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDataOut__DoFData.html#ac43d3b1f6e67424f36e474627fe8e401">DataOut&lt; int dim, int spacedim &gt;::add_data_vector()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDataOut__DoFData.html#a6ed7c846331069f406b8c9933c37fda4">DataOut&lt; int dim, int spacedim &gt;::attach_dof_handler()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDataOut.html#a087f63e22f0614bca326dbdca288c646">DataOut&lt; int dim, int spacedim &gt;::build_patches()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0aa783915dbc182d5a49e111815fd23fe0">DataComponentInterpretation::component_is_part_of_vector</a>, <a class="el" href="elasticity_8h_source.html#l00439">cycle</a>, <a class="el" href="elasticity_8h_source.html#l00424">dh</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceVectorTools.html#a3bf66912f4871c9e1fcf32b87553f3dc">VectorTools::interpolate()</a>, <a class="el" href="elasticity_8h_source.html#l00436">locally_relevant_solution</a>, <a class="el" href="elasticity_8h_source.html#l00416">mpi_communicator</a>, <a class="el" href="elasticity_8h_source.html#l00415">par</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classVector.html#a5fcfee8e4ef95ce89536453f01816bd0">Vector&lt; typename Number &gt;::size()</a>, <a class="el" href="elasticity_8h_source.html#l00435">solution</a>, <a class="el" href="elasticity_8h_source.html#l00419">tria</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDataOut__DoFData.html#a062005bfe37e877e1f44e1c3e8e6cb27a346ed8834d890734537f4dd6dd016ef8">DataOut&lt; int dim, int spacedim &gt;::type_dof_data</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDataOutInterface.html#ab7eae1ac0db6ce4c76851fa6fe0f9519">DataOut&lt; int dim, int spacedim &gt;::write_vtu_in_parallel()</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDataOut__DoFData.html#ac43d3b1f6e67424f36e474627fe8e401">DataOut&lt; int dim, int spacedim &gt;::add_data_vector()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDataOut__DoFData.html#a6ed7c846331069f406b8c9933c37fda4">DataOut&lt; int dim, int spacedim &gt;::attach_dof_handler()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDataOut.html#a087f63e22f0614bca326dbdca288c646">DataOut&lt; int dim, int spacedim &gt;::build_patches()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceDataComponentInterpretation.html#a0cd2da3afe902f9004c23a73dbcc8ab0aa783915dbc182d5a49e111815fd23fe0">DataComponentInterpretation::component_is_part_of_vector</a>, <a class="el" href="elasticity_8h_source.html#l00437">cycle</a>, <a class="el" href="elasticity_8h_source.html#l00422">dh</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceVectorTools.html#a3bf66912f4871c9e1fcf32b87553f3dc">VectorTools::interpolate()</a>, <a class="el" href="elasticity_8h_source.html#l00434">locally_relevant_solution</a>, <a class="el" href="elasticity_8h_source.html#l00414">mpi_communicator</a>, <a class="el" href="elasticity_8h_source.html#l00413">par</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classVector.html#a5fcfee8e4ef95ce89536453f01816bd0">Vector&lt; typename Number &gt;::size()</a>, <a class="el" href="elasticity_8h_source.html#l00433">solution</a>, <a class="el" href="elasticity_8h_source.html#l00417">tria</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDataOut__DoFData.html#a062005bfe37e877e1f44e1c3e8e6cb27a346ed8834d890734537f4dd6dd016ef8">DataOut&lt; int dim, int spacedim &gt;::type_dof_data</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classDataOutInterface.html#ab7eae1ac0db6ce4c76851fa6fe0f9519">DataOut&lt; int dim, int spacedim &gt;::write_vtu_in_parallel()</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00975">output_results()</a>.</p>
 
@@ -626,9 +590,9 @@ template&lt;int dim, int spacedim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l01007">1007</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
 
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities.html#a21aa22d290ce783e37587b6c879b926c">Utilities::dim_string()</a>, <a class="el" href="elasticity_8h_source.html#l00415">par</a>, <a class="el" href="elasticity_8h_source.html#l00417">pcout</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterHandler.html#a8364dda711b93753c6809eefe2a8e827a3c8ad66ea26104112458e2ce35b5028f">ParameterHandler::Short</a>.</p>
+<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceUtilities.html#a21aa22d290ce783e37587b6c879b926c">Utilities::dim_string()</a>, <a class="el" href="elasticity_8h_source.html#l00413">par</a>, <a class="el" href="elasticity_8h_source.html#l00415">pcout</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classParameterHandler.html#a8364dda711b93753c6809eefe2a8e827a3c8ad66ea26104112458e2ce35b5028f">ParameterHandler::Short</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01303">run()</a>.</p>
 
 </div>
 </div>
@@ -651,9 +615,9 @@ template&lt;int dim, int spacedim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l00837">837</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="elasticity_8h_source.html#l00418">computing_timer</a>, <a class="el" href="elasticity_8h_source.html#l00424">dh</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classKellyErrorEstimator.html#a216266ef766cfb22c92f3e289ee189e7">KellyErrorEstimator&lt; int dim, int spacedim &gt;::estimate()</a>, <a class="el" href="elasticity_8cc_source.html#l00869">execute_actual_refine_and_transfer()</a>, <a class="el" href="elasticity_8h_source.html#l00436">locally_relevant_solution</a>, <a class="el" href="elasticity_8h_source.html#l00415">par</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceparallel_1_1distributed_1_1GridRefinement.html#a98de9824ad02293140c1c93b691c6d20">parallel::distributed::GridRefinement::refine_and_coarsen_fixed_fraction()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceparallel_1_1distributed_1_1GridRefinement.html#abe1418c8074bc0ddc959a256343f2b27">parallel::distributed::GridRefinement::refine_and_coarsen_fixed_number()</a>, and <a class="el" href="elasticity_8h_source.html#l00419">tria</a>.</p>
+<p class="reference">References <a class="el" href="elasticity_8h_source.html#l00416">computing_timer</a>, <a class="el" href="elasticity_8h_source.html#l00422">dh</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classKellyErrorEstimator.html#a216266ef766cfb22c92f3e289ee189e7">KellyErrorEstimator&lt; int dim, int spacedim &gt;::estimate()</a>, <a class="el" href="elasticity_8cc_source.html#l00869">execute_actual_refine_and_transfer()</a>, <a class="el" href="elasticity_8h_source.html#l00434">locally_relevant_solution</a>, <a class="el" href="elasticity_8h_source.html#l00413">par</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceparallel_1_1distributed_1_1GridRefinement.html#a98de9824ad02293140c1c93b691c6d20">parallel::distributed::GridRefinement::refine_and_coarsen_fixed_fraction()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceparallel_1_1distributed_1_1GridRefinement.html#abe1418c8074bc0ddc959a256343f2b27">parallel::distributed::GridRefinement::refine_and_coarsen_fixed_number()</a>, and <a class="el" href="elasticity_8h_source.html#l00417">tria</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01303">run()</a>.</p>
 
 </div>
 </div>
@@ -695,9 +659,9 @@ template&lt;int dim, int spacedim&gt; </div>
 
 <p>set up, assemble and run the problem </p>
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l01462">1462</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l01303">1303</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="elasticity_8cc_source.html#l00464">assemble_coupling()</a>, <a class="el" href="elasticity_8cc_source.html#l00310">assemble_elasticity_system()</a>, <a class="el" href="elasticity_8cc_source.html#l01027">check_boundary_ids()</a>, <a class="el" href="elasticity_8cc_source.html#l01052">compute_internal_and_boundary_stress()</a>, <a class="el" href="elasticity_8h_source.html#l00418">computing_timer</a>, <a class="el" href="elasticity_8h_source.html#l00452">current_time</a>, <a class="el" href="elasticity_8h_source.html#l00439">cycle</a>, <a class="el" href="elasticity_8h_source.html#l00424">dh</a>, <a class="el" href="elasticity_8h_source.html#l00421">inclusions</a>, <a class="el" href="elasticity_8h_source.html#l00436">locally_relevant_solution</a>, <a class="el" href="elasticity_8cc_source.html#l00111">make_grid()</a>, <a class="el" href="elasticity_8cc_source.html#l01412">output_lambda()</a>, <a class="el" href="elasticity_8cc_source.html#l01259">output_pressure()</a>, <a class="el" href="elasticity_8cc_source.html#l00975">output_results()</a>, <a class="el" href="elasticity_8h_source.html#l00415">par</a>, <a class="el" href="elasticity_8h_source.html#l00417">pcout</a>, <a class="el" href="elasticity_8cc_source.html#l01007">print_parameters()</a>, <a class="el" href="elasticity_8cc_source.html#l00837">refine_and_transfer()</a>, <a class="el" href="elasticity_8cc_source.html#l00181">setup_dofs()</a>, <a class="el" href="elasticity_8cc_source.html#l00168">setup_fe()</a>, <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>, and <a class="el" href="elasticity_8h_source.html#l00419">tria</a>.</p>
+<p class="reference">References <a class="el" href="elasticity_8cc_source.html#l00464">assemble_coupling()</a>, <a class="el" href="elasticity_8cc_source.html#l00310">assemble_elasticity_system()</a>, <a class="el" href="elasticity_8cc_source.html#l01027">check_boundary_ids()</a>, <a class="el" href="elasticity_8cc_source.html#l01052">compute_internal_and_boundary_stress()</a>, <a class="el" href="elasticity_8h_source.html#l00416">computing_timer</a>, <a class="el" href="elasticity_8h_source.html#l00450">current_time</a>, <a class="el" href="elasticity_8h_source.html#l00437">cycle</a>, <a class="el" href="elasticity_8h_source.html#l00422">dh</a>, <a class="el" href="elasticity_8h_source.html#l00419">inclusions</a>, <a class="el" href="elasticity_8h_source.html#l00434">locally_relevant_solution</a>, <a class="el" href="elasticity_8cc_source.html#l00111">make_grid()</a>, <a class="el" href="elasticity_8cc_source.html#l01253">output_lambda()</a>, <a class="el" href="elasticity_8cc_source.html#l00975">output_results()</a>, <a class="el" href="elasticity_8h_source.html#l00413">par</a>, <a class="el" href="elasticity_8h_source.html#l00415">pcout</a>, <a class="el" href="elasticity_8cc_source.html#l01007">print_parameters()</a>, <a class="el" href="elasticity_8cc_source.html#l00837">refine_and_transfer()</a>, <a class="el" href="elasticity_8cc_source.html#l00181">setup_dofs()</a>, <a class="el" href="elasticity_8cc_source.html#l00168">setup_fe()</a>, <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>, and <a class="el" href="elasticity_8h_source.html#l00417">tria</a>.</p>
 
 </div>
 </div>
@@ -720,9 +684,9 @@ template&lt;int dim, int spacedim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l00181">181</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="elasticity_8h_source.html#l00418">computing_timer</a>, <a class="el" href="elasticity_8h_source.html#l00424">dh</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceDoFTools.html#a2c4c8d504c52cd1569b6455533c6c587">DoFTools::extract_locally_relevant_dofs()</a>, <a class="el" href="elasticity_8h_source.html#l00423">face_quadrature_formula</a>, <a class="el" href="elasticity_8h_source.html#l00420">fe</a>, <a class="el" href="elasticity_8h_source.html#l00425">owned_dofs</a>, and <a class="el" href="elasticity_8h_source.html#l00426">relevant_dofs</a>.</p>
+<p class="reference">References <a class="el" href="elasticity_8h_source.html#l00416">computing_timer</a>, <a class="el" href="elasticity_8h_source.html#l00422">dh</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceDoFTools.html#a2c4c8d504c52cd1569b6455533c6c587">DoFTools::extract_locally_relevant_dofs()</a>, <a class="el" href="elasticity_8h_source.html#l00421">face_quadrature_formula</a>, <a class="el" href="elasticity_8h_source.html#l00418">fe</a>, <a class="el" href="elasticity_8h_source.html#l00423">owned_dofs</a>, and <a class="el" href="elasticity_8h_source.html#l00424">relevant_dofs</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00869">execute_actual_refine_and_transfer()</a>, and <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00869">execute_actual_refine_and_transfer()</a>, and <a class="el" href="elasticity_8cc_source.html#l01303">run()</a>.</p>
 
 </div>
 </div>
@@ -745,9 +709,9 @@ template&lt;int dim, int spacedim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l00168">168</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="elasticity_8h_source.html#l00418">computing_timer</a>, <a class="el" href="elasticity_8h_source.html#l00423">face_quadrature_formula</a>, <a class="el" href="elasticity_8h_source.html#l00420">fe</a>, <a class="el" href="elasticity_8h_source.html#l00415">par</a>, and <a class="el" href="elasticity_8h_source.html#l00422">quadrature</a>.</p>
+<p class="reference">References <a class="el" href="elasticity_8h_source.html#l00416">computing_timer</a>, <a class="el" href="elasticity_8h_source.html#l00421">face_quadrature_formula</a>, <a class="el" href="elasticity_8h_source.html#l00418">fe</a>, <a class="el" href="elasticity_8h_source.html#l00413">par</a>, and <a class="el" href="elasticity_8h_source.html#l00420">quadrature</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01303">run()</a>.</p>
 
 </div>
 </div>
@@ -772,9 +736,9 @@ template&lt;int dim, int spacedim&gt; </div>
 
 <p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l00606">606</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
 
-<p class="reference">References <a class="el" href="elasticity_8h_source.html#l00418">computing_timer</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classSolverCG.html#a52f1fd3d41765ec06d2d0add1a74a37c">SolverCG&lt; typename VectorType &gt;::connect_condition_number_slot()</a>, <a class="el" href="elasticity_8h_source.html#l00428">constraints</a>, <a class="el" href="elasticity_8h_source.html#l00433">coupling_matrix</a>, <a class="el" href="elasticity_8h_source.html#l00424">dh</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceDoFTools.html#a5292102792fdad774ad7be1a54afb7eb">DoFTools::extract_rigid_body_modes()</a>, <a class="el" href="elasticity_8h_source.html#l00429">inclusion_constraints</a>, <a class="el" href="elasticity_8h_source.html#l00434">inclusion_matrix</a>, <a class="el" href="elasticity_8h_source.html#l00421">inclusions</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTrilinosWrappers_1_1PreconditionILU.html#a1e182920c772f56bf308b2c844b8da0c">TrilinosWrappers::PreconditionILU::initialize()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceVectorTools.html#a3bf66912f4871c9e1fcf32b87553f3dc">VectorTools::interpolate()</a>, <a class="el" href="elasticity_8h_source.html#l00436">locally_relevant_solution</a>, <a class="el" href="elasticity_8h_source.html#l00416">mpi_communicator</a>, <a class="el" href="elasticity_8cc_source.html#l00597">output_double_number()</a>, <a class="el" href="elasticity_8h_source.html#l00415">par</a>, <a class="el" href="elasticity_8h_source.html#l00417">pcout</a>, <a class="el" href="augmented__lagrangian__preconditioner_8h_source.html#l00186">UtilitiesAL::set_null_space()</a>, <a class="el" href="elasticity_8h_source.html#l00435">solution</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classSolverCG.html#aa52469650d9b9ef2f4cb4884caeb0723">SolverCG&lt; typename VectorType &gt;::solve()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classSolverFGMRES.html#a6b197820eda53075ce9ef78a58ea7bdf">SolverFGMRES&lt; typename VectorType &gt;::solve()</a>, <a class="el" href="elasticity_8h_source.html#l00432">stiffness_matrix</a>, and <a class="el" href="elasticity_8h_source.html#l00437">system_rhs</a>.</p>
+<p class="reference">References <a class="el" href="elasticity_8h_source.html#l00416">computing_timer</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classSolverCG.html#a52f1fd3d41765ec06d2d0add1a74a37c">SolverCG&lt; typename VectorType &gt;::connect_condition_number_slot()</a>, <a class="el" href="elasticity_8h_source.html#l00426">constraints</a>, <a class="el" href="elasticity_8h_source.html#l00431">coupling_matrix</a>, <a class="el" href="elasticity_8h_source.html#l00422">dh</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceDoFTools.html#a5292102792fdad774ad7be1a54afb7eb">DoFTools::extract_rigid_body_modes()</a>, <a class="el" href="elasticity_8h_source.html#l00427">inclusion_constraints</a>, <a class="el" href="elasticity_8h_source.html#l00432">inclusion_matrix</a>, <a class="el" href="elasticity_8h_source.html#l00419">inclusions</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTrilinosWrappers_1_1PreconditionILU.html#a1e182920c772f56bf308b2c844b8da0c">TrilinosWrappers::PreconditionILU::initialize()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceVectorTools.html#a3bf66912f4871c9e1fcf32b87553f3dc">VectorTools::interpolate()</a>, <a class="el" href="elasticity_8h_source.html#l00434">locally_relevant_solution</a>, <a class="el" href="elasticity_8h_source.html#l00414">mpi_communicator</a>, <a class="el" href="elasticity_8cc_source.html#l00597">output_double_number()</a>, <a class="el" href="elasticity_8h_source.html#l00413">par</a>, <a class="el" href="elasticity_8h_source.html#l00415">pcout</a>, <a class="el" href="augmented__lagrangian__preconditioner_8h_source.html#l00186">UtilitiesAL::set_null_space()</a>, <a class="el" href="elasticity_8h_source.html#l00433">solution</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classSolverCG.html#aa52469650d9b9ef2f4cb4884caeb0723">SolverCG&lt; typename VectorType &gt;::solve()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classSolverFGMRES.html#a6b197820eda53075ce9ef78a58ea7bdf">SolverFGMRES&lt; typename VectorType &gt;::solve()</a>, <a class="el" href="elasticity_8h_source.html#l00430">stiffness_matrix</a>, and <a class="el" href="elasticity_8h_source.html#l00435">system_rhs</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01303">run()</a>.</p>
 
 </div>
 </div>
@@ -793,7 +757,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00447">447</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00445">445</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
 </div>
 </div>
@@ -811,7 +775,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00445">445</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00443">443</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
 </div>
 </div>
@@ -829,7 +793,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00446">446</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00444">444</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
 </div>
 </div>
@@ -855,9 +819,9 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00418">418</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00416">416</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00464">assemble_coupling()</a>, <a class="el" href="elasticity_8cc_source.html#l00418">assemble_coupling_sparsity()</a>, <a class="el" href="elasticity_8cc_source.html#l00310">assemble_elasticity_system()</a>, <a class="el" href="elasticity_8cc_source.html#l01052">compute_internal_and_boundary_stress()</a>, <a class="el" href="elasticity_8cc_source.html#l00026">ElasticityProblem()</a>, <a class="el" href="elasticity_8cc_source.html#l01259">output_pressure()</a>, <a class="el" href="elasticity_8cc_source.html#l00975">output_results()</a>, <a class="el" href="elasticity_8cc_source.html#l00837">refine_and_transfer()</a>, <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>, <a class="el" href="elasticity_8cc_source.html#l00181">setup_dofs()</a>, <a class="el" href="elasticity_8cc_source.html#l00168">setup_fe()</a>, and <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00464">assemble_coupling()</a>, <a class="el" href="elasticity_8cc_source.html#l00418">assemble_coupling_sparsity()</a>, <a class="el" href="elasticity_8cc_source.html#l00310">assemble_elasticity_system()</a>, <a class="el" href="elasticity_8cc_source.html#l01052">compute_internal_and_boundary_stress()</a>, <a class="el" href="elasticity_8cc_source.html#l00026">ElasticityProblem()</a>, <a class="el" href="elasticity_8cc_source.html#l00975">output_results()</a>, <a class="el" href="elasticity_8cc_source.html#l00837">refine_and_transfer()</a>, <a class="el" href="elasticity_8cc_source.html#l01303">run()</a>, <a class="el" href="elasticity_8cc_source.html#l00181">setup_dofs()</a>, <a class="el" href="elasticity_8cc_source.html#l00168">setup_fe()</a>, and <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>.</p>
 
 </div>
 </div>
@@ -875,7 +839,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00428">428</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00426">426</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00464">assemble_coupling()</a>, <a class="el" href="elasticity_8cc_source.html#l00418">assemble_coupling_sparsity()</a>, <a class="el" href="elasticity_8cc_source.html#l00310">assemble_elasticity_system()</a>, <a class="el" href="elasticity_8cc_source.html#l00869">execute_actual_refine_and_transfer()</a>, and <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>.</p>
 
@@ -895,7 +859,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00433">433</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00431">431</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00464">assemble_coupling()</a>, <a class="el" href="elasticity_8cc_source.html#l00310">assemble_elasticity_system()</a>, and <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>.</p>
 
@@ -915,9 +879,9 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00452">452</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00450">450</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01303">run()</a>.</p>
 
 </div>
 </div>
@@ -935,9 +899,9 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00439">439</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00437">437</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01052">compute_internal_and_boundary_stress()</a>, <a class="el" href="elasticity_8cc_source.html#l01259">output_pressure()</a>, <a class="el" href="elasticity_8cc_source.html#l00975">output_results()</a>, <a class="el" href="elasticity_8cc_source.html#l00892">output_solution()</a>, and <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01052">compute_internal_and_boundary_stress()</a>, <a class="el" href="elasticity_8cc_source.html#l00975">output_results()</a>, <a class="el" href="elasticity_8cc_source.html#l00892">output_solution()</a>, and <a class="el" href="elasticity_8cc_source.html#l01303">run()</a>.</p>
 
 </div>
 </div>
@@ -955,9 +919,9 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00424">424</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00422">422</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00464">assemble_coupling()</a>, <a class="el" href="elasticity_8cc_source.html#l00418">assemble_coupling_sparsity()</a>, <a class="el" href="elasticity_8cc_source.html#l00310">assemble_elasticity_system()</a>, <a class="el" href="elasticity_8cc_source.html#l01052">compute_internal_and_boundary_stress()</a>, <a class="el" href="elasticity_8cc_source.html#l00026">ElasticityProblem()</a>, <a class="el" href="elasticity_8cc_source.html#l00869">execute_actual_refine_and_transfer()</a>, <a class="el" href="elasticity_8cc_source.html#l00892">output_solution()</a>, <a class="el" href="elasticity_8cc_source.html#l00837">refine_and_transfer()</a>, <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>, <a class="el" href="elasticity_8cc_source.html#l00181">setup_dofs()</a>, and <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00464">assemble_coupling()</a>, <a class="el" href="elasticity_8cc_source.html#l00418">assemble_coupling_sparsity()</a>, <a class="el" href="elasticity_8cc_source.html#l00310">assemble_elasticity_system()</a>, <a class="el" href="elasticity_8cc_source.html#l01052">compute_internal_and_boundary_stress()</a>, <a class="el" href="elasticity_8cc_source.html#l00026">ElasticityProblem()</a>, <a class="el" href="elasticity_8cc_source.html#l00869">execute_actual_refine_and_transfer()</a>, <a class="el" href="elasticity_8cc_source.html#l00892">output_solution()</a>, <a class="el" href="elasticity_8cc_source.html#l00837">refine_and_transfer()</a>, <a class="el" href="elasticity_8cc_source.html#l01303">run()</a>, <a class="el" href="elasticity_8cc_source.html#l00181">setup_dofs()</a>, and <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>.</p>
 
 </div>
 </div>
@@ -975,7 +939,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00441">441</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00439">439</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00310">assemble_elasticity_system()</a>, <a class="el" href="elasticity_8cc_source.html#l01052">compute_internal_and_boundary_stress()</a>, and <a class="el" href="elasticity_8cc_source.html#l00026">ElasticityProblem()</a>.</p>
 
@@ -995,7 +959,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00423">423</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00421">421</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00310">assemble_elasticity_system()</a>, <a class="el" href="elasticity_8cc_source.html#l01052">compute_internal_and_boundary_stress()</a>, <a class="el" href="elasticity_8cc_source.html#l00181">setup_dofs()</a>, and <a class="el" href="elasticity_8cc_source.html#l00168">setup_fe()</a>.</p>
 
@@ -1015,7 +979,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00420">420</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00418">418</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00464">assemble_coupling()</a>, <a class="el" href="elasticity_8cc_source.html#l00418">assemble_coupling_sparsity()</a>, <a class="el" href="elasticity_8cc_source.html#l00310">assemble_elasticity_system()</a>, <a class="el" href="elasticity_8cc_source.html#l01052">compute_internal_and_boundary_stress()</a>, <a class="el" href="elasticity_8cc_source.html#l00181">setup_dofs()</a>, and <a class="el" href="elasticity_8cc_source.html#l00168">setup_fe()</a>.</p>
 
@@ -1035,7 +999,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00444">444</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00442">442</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
 </div>
 </div>
@@ -1053,7 +1017,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00438">438</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00436">436</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
 </div>
 </div>
@@ -1071,7 +1035,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00429">429</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00427">427</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00464">assemble_coupling()</a>, <a class="el" href="elasticity_8cc_source.html#l00418">assemble_coupling_sparsity()</a>, and <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>.</p>
 
@@ -1091,7 +1055,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00434">434</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00432">432</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00464">assemble_coupling()</a>, and <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>.</p>
 
@@ -1111,9 +1075,9 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00421">421</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00419">419</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00464">assemble_coupling()</a>, <a class="el" href="elasticity_8cc_source.html#l00418">assemble_coupling_sparsity()</a>, <a class="el" href="elasticity_8cc_source.html#l00026">ElasticityProblem()</a>, <a class="el" href="elasticity_8cc_source.html#l00869">execute_actual_refine_and_transfer()</a>, <a class="el" href="elasticity_8cc_source.html#l01412">output_lambda()</a>, <a class="el" href="elasticity_8cc_source.html#l01259">output_pressure()</a>, <a class="el" href="elasticity_8cc_source.html#l00975">output_results()</a>, <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>, and <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00464">assemble_coupling()</a>, <a class="el" href="elasticity_8cc_source.html#l00418">assemble_coupling_sparsity()</a>, <a class="el" href="elasticity_8cc_source.html#l00026">ElasticityProblem()</a>, <a class="el" href="elasticity_8cc_source.html#l00869">execute_actual_refine_and_transfer()</a>, <a class="el" href="elasticity_8cc_source.html#l01253">output_lambda()</a>, <a class="el" href="elasticity_8cc_source.html#l00975">output_results()</a>, <a class="el" href="elasticity_8cc_source.html#l01303">run()</a>, and <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>.</p>
 
 </div>
 </div>
@@ -1131,9 +1095,9 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00436">436</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00434">434</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01052">compute_internal_and_boundary_stress()</a>, <a class="el" href="elasticity_8cc_source.html#l00869">execute_actual_refine_and_transfer()</a>, <a class="el" href="elasticity_8cc_source.html#l01412">output_lambda()</a>, <a class="el" href="elasticity_8cc_source.html#l01259">output_pressure()</a>, <a class="el" href="elasticity_8cc_source.html#l00892">output_solution()</a>, <a class="el" href="elasticity_8cc_source.html#l00837">refine_and_transfer()</a>, <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>, and <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01052">compute_internal_and_boundary_stress()</a>, <a class="el" href="elasticity_8cc_source.html#l00869">execute_actual_refine_and_transfer()</a>, <a class="el" href="elasticity_8cc_source.html#l01253">output_lambda()</a>, <a class="el" href="elasticity_8cc_source.html#l00892">output_solution()</a>, <a class="el" href="elasticity_8cc_source.html#l00837">refine_and_transfer()</a>, <a class="el" href="elasticity_8cc_source.html#l01303">run()</a>, and <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>.</p>
 
 </div>
 </div>
@@ -1151,7 +1115,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00430">430</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00428">428</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
 </div>
 </div>
@@ -1169,9 +1133,9 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00416">416</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00414">414</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01052">compute_internal_and_boundary_stress()</a>, <a class="el" href="elasticity_8cc_source.html#l00026">ElasticityProblem()</a>, <a class="el" href="elasticity_8cc_source.html#l01259">output_pressure()</a>, <a class="el" href="elasticity_8cc_source.html#l00892">output_solution()</a>, and <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01052">compute_internal_and_boundary_stress()</a>, <a class="el" href="elasticity_8cc_source.html#l00026">ElasticityProblem()</a>, <a class="el" href="elasticity_8cc_source.html#l00892">output_solution()</a>, and <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>.</p>
 
 </div>
 </div>
@@ -1189,7 +1153,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00425">425</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00423">423</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00181">setup_dofs()</a>.</p>
 
@@ -1209,9 +1173,9 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00415">415</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00413">413</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00464">assemble_coupling()</a>, <a class="el" href="elasticity_8cc_source.html#l00310">assemble_elasticity_system()</a>, <a class="el" href="elasticity_8cc_source.html#l01027">check_boundary_ids()</a>, <a class="el" href="elasticity_8cc_source.html#l01052">compute_internal_and_boundary_stress()</a>, <a class="el" href="elasticity_8cc_source.html#l00026">ElasticityProblem()</a>, <a class="el" href="elasticity_8cc_source.html#l00111">make_grid()</a>, <a class="el" href="elasticity_8cc_source.html#l01412">output_lambda()</a>, <a class="el" href="elasticity_8cc_source.html#l01259">output_pressure()</a>, <a class="el" href="elasticity_8cc_source.html#l00975">output_results()</a>, <a class="el" href="elasticity_8cc_source.html#l00892">output_solution()</a>, <a class="el" href="elasticity_8cc_source.html#l01007">print_parameters()</a>, <a class="el" href="elasticity_8cc_source.html#l00837">refine_and_transfer()</a>, <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>, <a class="el" href="elasticity_8cc_source.html#l00168">setup_fe()</a>, and <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00464">assemble_coupling()</a>, <a class="el" href="elasticity_8cc_source.html#l00310">assemble_elasticity_system()</a>, <a class="el" href="elasticity_8cc_source.html#l01027">check_boundary_ids()</a>, <a class="el" href="elasticity_8cc_source.html#l01052">compute_internal_and_boundary_stress()</a>, <a class="el" href="elasticity_8cc_source.html#l00026">ElasticityProblem()</a>, <a class="el" href="elasticity_8cc_source.html#l00111">make_grid()</a>, <a class="el" href="elasticity_8cc_source.html#l01253">output_lambda()</a>, <a class="el" href="elasticity_8cc_source.html#l00975">output_results()</a>, <a class="el" href="elasticity_8cc_source.html#l00892">output_solution()</a>, <a class="el" href="elasticity_8cc_source.html#l01007">print_parameters()</a>, <a class="el" href="elasticity_8cc_source.html#l00837">refine_and_transfer()</a>, <a class="el" href="elasticity_8cc_source.html#l01303">run()</a>, <a class="el" href="elasticity_8cc_source.html#l00168">setup_fe()</a>, and <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>.</p>
 
 </div>
 </div>
@@ -1229,9 +1193,9 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00417">417</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00415">415</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00026">ElasticityProblem()</a>, <a class="el" href="elasticity_8cc_source.html#l00111">make_grid()</a>, <a class="el" href="elasticity_8cc_source.html#l01259">output_pressure()</a>, <a class="el" href="elasticity_8cc_source.html#l01007">print_parameters()</a>, <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>, and <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00026">ElasticityProblem()</a>, <a class="el" href="elasticity_8cc_source.html#l00111">make_grid()</a>, <a class="el" href="elasticity_8cc_source.html#l01007">print_parameters()</a>, <a class="el" href="elasticity_8cc_source.html#l01303">run()</a>, and <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>.</p>
 
 </div>
 </div>
@@ -1249,7 +1213,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00422">422</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00420">420</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00310">assemble_elasticity_system()</a>, and <a class="el" href="elasticity_8cc_source.html#l00168">setup_fe()</a>.</p>
 
@@ -1269,7 +1233,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00426">426</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00424">424</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00181">setup_dofs()</a>.</p>
 
@@ -1289,7 +1253,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00448">448</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00446">446</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
 </div>
 </div>
@@ -1307,7 +1271,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00435">435</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00433">433</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00869">execute_actual_refine_and_transfer()</a>, <a class="el" href="elasticity_8cc_source.html#l00892">output_solution()</a>, and <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>.</p>
 
@@ -1327,7 +1291,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00432">432</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00430">430</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00310">assemble_elasticity_system()</a>, and <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>.</p>
 
@@ -1347,7 +1311,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00437">437</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00435">435</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
 <p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00464">assemble_coupling()</a>, <a class="el" href="elasticity_8cc_source.html#l00310">assemble_elasticity_system()</a>, and <a class="el" href="elasticity_8cc_source.html#l00606">solve()</a>.</p>
 
@@ -1367,9 +1331,9 @@ template&lt;int dim, int spacedim = dim&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00419">419</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8h_source.html#l00417">417</a> of file <a class="el" href="elasticity_8h_source.html">elasticity.h</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01052">compute_internal_and_boundary_stress()</a>, <a class="el" href="elasticity_8cc_source.html#l00026">ElasticityProblem()</a>, <a class="el" href="elasticity_8cc_source.html#l00869">execute_actual_refine_and_transfer()</a>, <a class="el" href="elasticity_8cc_source.html#l00111">make_grid()</a>, <a class="el" href="elasticity_8cc_source.html#l00892">output_solution()</a>, <a class="el" href="elasticity_8cc_source.html#l00837">refine_and_transfer()</a>, and <a class="el" href="elasticity_8cc_source.html#l01462">run()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l01052">compute_internal_and_boundary_stress()</a>, <a class="el" href="elasticity_8cc_source.html#l00026">ElasticityProblem()</a>, <a class="el" href="elasticity_8cc_source.html#l00869">execute_actual_refine_and_transfer()</a>, <a class="el" href="elasticity_8cc_source.html#l00111">make_grid()</a>, <a class="el" href="elasticity_8cc_source.html#l00892">output_solution()</a>, <a class="el" href="elasticity_8cc_source.html#l00837">refine_and_transfer()</a>, and <a class="el" href="elasticity_8cc_source.html#l01303">run()</a>.</p>
 
 </div>
 </div>
@@ -1383,7 +1347,7 @@ template&lt;int dim, int spacedim = dim&gt; </div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="class_elasticity_problem.html">ElasticityProblem</a></li>
-    <li class="footer">Generated on Mon Feb 9 2026 15:39:33 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Wed Feb 18 2026 13:16:26 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

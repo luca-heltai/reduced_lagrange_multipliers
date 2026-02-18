@@ -1,6 +1,5 @@
 var NAVTREEINDEX9 =
 {
-"namespacehp_1_1Refinement.html#adbb65ed7b6a97961a69967eaa0bb170b":[1,0,55,1,10],
 "namespacehp_1_1Refinement.html#aefd3adee5f867c94814028c0949da9de":[1,0,55,1,7],
 "namespaceinternal.html":[1,0,57],
 "namespaceinternal.html#a027905f2066254c4933b3788268d0352":[1,0,57,179],
@@ -249,5 +248,6 @@ var NAVTREEINDEX9 =
 "namespaceinternal_1_1MatrixFreeFunctions.html#a3327f271325e5e1ec60e0799daa1c0a8":[1,0,57,33,15],
 "namespaceinternal_1_1MatrixFreeFunctions.html#a4d00c0d5884021f25691d6be7b4d6d21":[1,0,57,33,11],
 "namespaceinternal_1_1MatrixFreeFunctions.html#a62b375322271de5ebfd1b4b3bf7f0a04":[1,0,57,33,8],
-"namespaceinternal_1_1MatrixFreeFunctions.html#a68668cfda2d59bbd9de38470602ff469":[1,0,57,33,10]
+"namespaceinternal_1_1MatrixFreeFunctions.html#a68668cfda2d59bbd9de38470602ff469":[1,0,57,33,10],
+"namespaceinternal_1_1MatrixFreeFunctions.html#a6996a5a2494d6330aac07caa02f9c33e":[1,0,57,33,21]
 };

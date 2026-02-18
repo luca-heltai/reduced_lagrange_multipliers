@@ -9,7 +9,6 @@ var class_elasticity_problem =
     [ "execute_actual_refine_and_transfer", "class_elasticity_problem.html#a237bfcd693bb53437b8344d090e9fa82", null ],
     [ "make_grid", "class_elasticity_problem.html#afa140c84e0f366c5737ba99d0a634ea1", null ],
     [ "output_lambda", "class_elasticity_problem.html#a1d4f753324a3ff3f7c3105fc22fd1abb", null ],
-    [ "output_pressure", "class_elasticity_problem.html#a0c22b232642fd9c4009c1e2cf32bdf21", null ],
     [ "output_results", "class_elasticity_problem.html#add27fe4bfbb9686baa08b3b35f2294ed", null ],
     [ "output_solution", "class_elasticity_problem.html#a6f5b19f4f6c8a7b53e32f5ff62ad13d3", null ],
     [ "output_stresses", "class_elasticity_problem.html#a670b1a20b449de1e4360710420641727", null ],
