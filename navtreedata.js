@@ -51,6 +51,7 @@ var NAVTREE =
         [ "All", "globals.html", null ],
         [ "Functions", "globals_func.html", null ],
         [ "Typedefs", "globals_type.html", null ],
+        [ "Enumerations", "globals_enum.html", null ],
         [ "Macros", "globals_defs.html", null ]
       ] ]
     ] ]
@@ -60,17 +61,17 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"class_poisson_problem.html#a80ef0a51944345de623b6ea6a7314743",
-"group__Exceptions.html#ga6b350b16646689fed9813ea3e7227fa1",
-"namespaceCellSimilarity.html#abbf8aa4eab099bd2356cb51200494c13",
-"namespaceFEInterfaceViews.html#a34b39fb2a59e0e984081d3bc6f09d4a7",
-"namespaceGridTools.html#a995b90803c22dbe67fc6d510494b2e51a5f2ef9bfe103e3cd81f9d695f02b3af4",
-"namespaceMatrixFreeTools_1_1internal.html",
-"namespaceTensorProductMatrixCreator.html#aa832ced3e7ff4dac9882afc3f66cd797",
-"namespaceUtilities_1_1MPI_1_1internal_1_1MPIDataTypes.html#adb1a0b21354abf5f92f46e1ca312c92e",
-"namespacehp_1_1Refinement.html#aefd3adee5f867c94814028c0949da9de",
-"namespaceinternal_1_1MatrixFreeFunctions.html#a749b41ef8580e352fd73fc0f89f7753c",
-"namespacetypes.html"
+"class_particle_coupling.html#a35437acd2153c4069277f2a5efc57501",
+"group__Exceptions.html#ga0bf8c42f88f5dc5ea35e4802171b811a",
+"namespaceCGALWrappers.html#a4a0671b58da8b709c344ee2442fe2831",
+"namespaceDoFTools.html#ad31df71a29dd76de9b4ab241b2527160a193fa079dee88a75524f669136d6faba",
+"namespaceGridTools.html#a30077cfce9e6234e386fbd4286bc2dd7",
+"namespaceMGTools.html#af8f0bd2b7617aaaa4df227e86178c196",
+"namespaceSUNDIALS.html#a4c1be173b7d012aea503b4641dde5353",
+"namespaceUtilities_1_1MPI.html#af3926727fde51870fc52ea3509d10b9c",
+"namespacedeal__II__exceptions_1_1internals.html#ab2077cadd140a086651e0ebc84a5d779",
+"namespaceinternal_1_1MGTransfer.html#a0f9bb2221d9ecfdac8cea4ffe3500605",
+"namespaceparallel.html#ad4a3abdbe08b45aa7332ec73e6f59493"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronization';

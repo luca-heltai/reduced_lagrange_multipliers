@@ -46,6 +46,7 @@ var class_inclusions =
     [ "inclusions_file", "class_inclusions.html#ae1e2329a3ed403d4063d2db8c3e12898", null ],
     [ "inclusions_rhs", "class_inclusions.html#acfb0dea20aee159aafaa7a9fbd34d5e3", null ],
     [ "map_vessel_inclusions", "class_inclusions.html#a41a470e37acda9641eca5fd0d5a4695a", null ],
+    [ "modulation_frequency", "class_inclusions.html#aecad5cf97e3e11bc42652c1be9cc4fe1", null ],
     [ "mpi_communicator", "class_inclusions.html#acbb351f2d77986b259763400a27763b5", null ],
     [ "n_coefficients", "class_inclusions.html#a68bce0c49a4d6b4f4d674ffbae07d4b3", null ],
     [ "n_q_points", "class_inclusions.html#a50f980c471a5f75106562ab2e064d2c8", null ],

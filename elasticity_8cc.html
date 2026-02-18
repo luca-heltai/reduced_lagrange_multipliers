@@ -115,17 +115,17 @@ $(function(){initNavTree('elasticity_8cc.html',''); initResizable(true); });
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;elasticity.h&quot;</code><br />
-<code>#include &lt;boost/algorithm/string.hpp&gt;</code><br />
+<code>#include &lt;iomanip&gt;</code><br />
+<code>#include &lt;limits&gt;</code><br />
+<code>#include &lt;sstream&gt;</code><br />
 <code>#include &quot;<a class="el" href="augmented__lagrangian_8h_source.html">augmented_lagrangian.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="augmented__lagrangian__preconditioner_8h_source.html">augmented_lagrangian_preconditioner.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="utils_8h_source.html">utils.h</a>&quot;</code><br />
 </div>
 <p><a href="elasticity_8cc_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a553034346c0de67e14a78f80f57d84e7" id="r_a553034346c0de67e14a78f80f57d84e7"><td class="memTemplParams" colspan="2">template&lt;int dim, int spacedim&gt; </td></tr>
-<tr class="memitem:a553034346c0de67e14a78f80f57d84e7"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a553034346c0de67e14a78f80f57d84e7">read_grid_and_cad_files</a> (const std::string &amp;grid_file_name, const std::string &amp;ids_and_cad_file_names, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt; &amp;tria)</td></tr>
-<tr class="separator:a553034346c0de67e14a78f80f57d84e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab25309a48ddc069f0ccabd157a0c5061" id="r_ab25309a48ddc069f0ccabd157a0c5061"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab25309a48ddc069f0ccabd157a0c5061">output_double_number</a> (double input, const std::string &amp;text)</td></tr>
 <tr class="separator:ab25309a48ddc069f0ccabd157a0c5061"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -157,43 +157,9 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l00597">597</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
+<p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l01015">1015</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
 
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00606">ElasticityProblem&lt; dim, spacedim &gt;::solve()</a>, and <a class="el" href="laplacian_8cc_source.html#l00573">PoissonProblem&lt; dim, spacedim &gt;::solve()</a>.</p>
-
-</div>
-</div>
-<a id="a553034346c0de67e14a78f80f57d84e7" name="a553034346c0de67e14a78f80f57d84e7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a553034346c0de67e14a78f80f57d84e7">&#9670;&#160;</a></span>read_grid_and_cad_files()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;int dim, int spacedim&gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void read_grid_and_cad_files </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>grid_file_name</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>ids_and_cad_file_names</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classTriangulation.html">Triangulation</a>&lt; dim, spacedim &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>tria</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p class="definition">Definition at line <a class="el" href="elasticity_8cc_source.html#l00047">47</a> of file <a class="el" href="elasticity_8cc_source.html">elasticity.cc</a>.</p>
-
-<p class="reference">References <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classGridIn.html#a82ac1c03b0efe87204ad45d2f1d87f7e">GridIn&lt; int dim, int spacedim &gt;::attach_triangulation()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceOpenCASCADE.html#a3e3e0df474c0e4f9abb627753c8754e9">OpenCASCADE::count_elements()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/classGridIn.html#ad30d9d6f2ff9920c4285e795c4495826">GridIn&lt; int dim, int spacedim &gt;::read()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceOpenCASCADE.html#affe07b496f4edf844d5f4e8d7a540295">OpenCASCADE::read_IGES()</a>, <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespaceOpenCASCADE.html#a614ec9f581086ad423513dd407e9e520">OpenCASCADE::read_STEP()</a>, and <a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/group__manifold.html#ga9f9d720f5fbdcdf3dcbb445feefbdb9f">Triangulation&lt; int dim, int spacedim &gt;::set_manifold()</a>.</p>
-
-<p class="reference">Referenced by <a class="el" href="elasticity_8cc_source.html#l00111">ElasticityProblem&lt; dim, spacedim &gt;::make_grid()</a>.</p>
+<p class="reference">Referenced by <a class="el" href="laplacian_8cc_source.html#l00519">PoissonProblem&lt; dim, spacedim &gt;::solve()</a>, and <a class="el" href="elasticity_8cc_source.html#l01044">ElasticityProblem&lt; dim, spacedim &gt;::solve_static()</a>.</p>
 
 </div>
 </div>
@@ -203,7 +169,7 @@ template&lt;int dim, int spacedim&gt; </div>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_aa394cd1d9abb8ffe941d9aaafca8d03.html">github</a></li><li class="navelem"><a class="el" href="dir_c52569aa89a7adbb6029022c2fa60a11.html">workspace</a></li><li class="navelem"><a class="el" href="dir_37bdb9d2191b5493db509660c6a8c15a.html">source</a></li><li class="navelem"><a class="el" href="elasticity_8cc.html">elasticity.cc</a></li>
-    <li class="footer">Generated on Wed Feb 18 2026 13:16:26 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Wed Feb 18 2026 16:58:30 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

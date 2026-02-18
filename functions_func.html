@@ -115,6 +115,7 @@ $(function(){initNavTree('functions_func.html',''); initResizable(true); });
 <li>assemble_coupling()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#af1d83e7a8362f532c4070401250d2434">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a4940fb72b4a124deeb12f77b9fec9cdb">PoissonProblem&lt; dim, spacedim &gt;</a></li>
 <li>assemble_coupling_sparsity()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#acbb2126908224b1d98cd0f13ed96989b">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#af19b3bb2762dec0942e1772e6ad33e5e">PoissonProblem&lt; dim, spacedim &gt;</a></li>
 <li>assemble_elasticity_system()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a96c0fb6c738c0157ab81a680c8f93a76">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
+<li>assemble_forcing_terms()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#aa801c6fffe793fbfa8fe2dfeb0cf8101">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
 <li>assemble_poisson_system()&#160;:&#160;<a class="el" href="class_poisson_problem.html#ae412391f992f6c44302bb4623a0bd6ef">PoissonProblem&lt; dim, spacedim &gt;</a></li>
 </ul>
 
@@ -125,11 +126,12 @@ $(function(){initNavTree('functions_func.html',''); initResizable(true); });
 
 
 <h3><a id="index_c" name="index_c"></a>- c -</h3><ul>
-<li>check_boundary_ids()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a26b3051e5769dbeca559b05ae39a2f7e">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
+<li>check_model_consistency()&#160;:&#160;<a class="el" href="class_elasticity_problem_parameters.html#a08d394883bc815d5cd22dbe8ee891253">ElasticityProblemParameters&lt; dim, spacedim &gt;</a></li>
 <li>check_vessels()&#160;:&#160;<a class="el" href="class_inclusions.html#aa8626e28c16a2f5f26c2c689bb61e8f3">Inclusions&lt; spacedim &gt;</a></li>
 <li>compute_basis()&#160;:&#160;<a class="el" href="class_reference_cross_section.html#a42e35777ec2af755f7813eac869e2086">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a></li>
 <li>compute_internal_and_boundary_stress()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#aad7fd15c48c7fc1ef676b207bbc9be4f">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
 <li>compute_points_and_weights()&#160;:&#160;<a class="el" href="class_tensor_product_space.html#a4cd01f366716dfe449f3f5f60aa119ed">TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;</a></li>
+<li>compute_system_rhs()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#acbe0235ac8d982790b895c4c2bd73e1e">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
 <li>CouplingOperator()&#160;:&#160;<a class="el" href="class_coupling_operator.html#adc789969bde09223a70135d6a132bb58">CouplingOperator&lt; dim, number, n_components &gt;</a></li>
 </ul>
 
@@ -248,6 +250,9 @@ $(function(){initNavTree('functions_func.html',''); initResizable(true); });
 <li>RefinementParameters()&#160;:&#160;<a class="el" href="struct_refinement_parameters.html#a5d03f84f222b2686348a6cf86c4cc571">RefinementParameters</a></li>
 <li>RigidBodyMotion()&#160;:&#160;<a class="el" href="class_rigid_body_motion.html#a263926d4ef2912db211e3b29055eb01a">RigidBodyMotion&lt; dim &gt;</a></li>
 <li>run()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#af80c64ca7d93128b3267f5b3edeee46e">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#a884238511d4ad76388deb04fd50ce7cd">PoissonProblem&lt; dim, spacedim &gt;</a></li>
+<li>run_newmark()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a08e89158c68df45f6f4635bb453a6f42">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
+<li>run_quasistatic()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a4d96951b8669c75371ab33e115178266">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
+<li>run_static()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a2df97360ab522689ac2eced6a2f16322">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
 </ul>
 
 
@@ -259,6 +264,9 @@ $(function(){initNavTree('functions_func.html',''); initResizable(true); });
 <li>setup_inclusions_particles()&#160;:&#160;<a class="el" href="class_inclusions.html#ae169f424042677002f1cc6be3c6fa6a2">Inclusions&lt; spacedim &gt;</a></li>
 <li>shape_value()&#160;:&#160;<a class="el" href="class_reference_cross_section.html#adfc668904719061d5aefa2a64c42e13c">ReferenceCrossSection&lt; dim, spacedim, n_components &gt;</a></li>
 <li>solve()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#ab6c843df1c4f13b217e26467e9a360a0">ElasticityProblem&lt; dim, spacedim &gt;</a>, <a class="el" href="class_poisson_problem.html#aec5418239033b3c703d69b5f0c36b5bc">PoissonProblem&lt; dim, spacedim &gt;</a></li>
+<li>solve_newmark()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a1afdf91a1ac79f20d1bcdbd4f578e73b">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
+<li>solve_quasistatic()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#a51f10c0d73ac1c504fb233d17b6888ca">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
+<li>solve_static()&#160;:&#160;<a class="el" href="class_elasticity_problem.html#aa8d1a3fc624ff841c64e5e64824fa48b">ElasticityProblem&lt; dim, spacedim &gt;</a></li>
 </ul>
 
 
@@ -289,7 +297,7 @@ $(function(){initNavTree('functions_func.html',''); initResizable(true); });
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Wed Feb 18 2026 13:16:26 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Wed Feb 18 2026 16:58:30 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

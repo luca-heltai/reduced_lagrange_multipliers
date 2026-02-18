@@ -4,6 +4,7 @@ var dir_7a95a9cc00fcc7af5a429eec361b64d1 =
     [ "augmented_lagrangian_preconditioner.h", "augmented__lagrangian__preconditioner_8h.html", "augmented__lagrangian__preconditioner_8h" ],
     [ "coupled_elasticity.h", "coupled__elasticity_8h.html", null ],
     [ "elasticity.h", "elasticity_8h.html", "elasticity_8h" ],
+    [ "elasticity_problem_parameters.h", "elasticity__problem__parameters_8h.html", "elasticity__problem__parameters_8h" ],
     [ "immersed_repartitioner.h", "immersed__repartitioner_8h.html", "immersed__repartitioner_8h" ],
     [ "inclusions.h", "inclusions_8h.html", "inclusions_8h" ],
     [ "laplacian.h", "laplacian_8h.html", "laplacian_8h" ],

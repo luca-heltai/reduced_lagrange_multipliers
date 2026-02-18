@@ -278,10 +278,10 @@ $(function(){initNavTree('reduced__coupling_8h_source.html',''); initResizable(t
 <div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>          <span class="keyword">const</span> <span class="keyword">auto</span> [immersed_cell_id, immersed_q, section_q] =</div>
 <div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>            this-&gt;particle_id_to_cell_and_qpoint_indices(p.get_id());</div>
 <div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span> </div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>          <span class="keyword">const</span> <span class="keyword">auto</span> &amp;background_p = p.get_reference_location();</div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>          <span class="keyword">const</span> <span class="keyword">auto</span>  immersed_p   = this-&gt;get_quadrature().point(immersed_q);</div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>          <span class="keyword">const</span> <span class="keyword">auto</span> &amp;JxW          = p.get_properties()[0];</div>
-<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>          last_cell_id             = immersed_cell_id;</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>          <span class="keyword">const</span> <span class="keyword">auto</span>  &amp;background_p = p.get_reference_location();</div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>          <span class="keyword">const</span> <span class="keyword">auto</span>   immersed_p   = this-&gt;get_quadrature().point(immersed_q);</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>          <span class="keyword">const</span> <span class="keywordtype">double</span> JxW          = p.get_properties()[0];</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>          last_cell_id              = immersed_cell_id;</div>
 <div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>          <span class="keywordflow">if</span> (immersed_cell_id != previous_cell_id &amp;&amp;</div>
 <div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>              previous_cell_id != <a class="code hl_variableRef" href="http://www.dealii.org/developer/doxygen/deal.II/namespacenumbers.html#a467f5cb204969e195914273bd5a84e33">numbers::invalid_unsigned_int</a>)</div>
 <div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>            {</div>
@@ -569,7 +569,7 @@ $(function(){initNavTree('reduced__coupling_8h_source.html',''); initResizable(t
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_aa394cd1d9abb8ffe941d9aaafca8d03.html">github</a></li><li class="navelem"><a class="el" href="dir_c52569aa89a7adbb6029022c2fa60a11.html">workspace</a></li><li class="navelem"><a class="el" href="dir_7a95a9cc00fcc7af5a429eec361b64d1.html">include</a></li><li class="navelem"><a class="el" href="reduced__coupling_8h.html">reduced_coupling.h</a></li>
-    <li class="footer">Generated on Wed Feb 18 2026 13:16:26 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Wed Feb 18 2026 16:58:29 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>

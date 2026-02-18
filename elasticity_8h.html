@@ -163,6 +163,11 @@ $(function(){initNavTree('elasticity_8h.html',''); initResizable(true); });
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/solver__gmres_8h.html">deal.II/lac/solver_gmres.h</a>&gt;</code><br />
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/solver__minres_8h.html">deal.II/lac/solver_minres.h</a>&gt;</code><br />
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/sparsity__tools_8h.html">deal.II/lac/sparsity_tools.h</a>&gt;</code><br />
+<code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/trilinos__precondition_8h.html">deal.II/lac/trilinos_precondition.h</a>&gt;</code><br />
+<code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/trilinos__solver_8h.html">deal.II/lac/trilinos_solver.h</a>&gt;</code><br />
+<code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/trilinos__sparse__matrix_8h.html">deal.II/lac/trilinos_sparse_matrix.h</a>&gt;</code><br />
+<code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/trilinos__vector_8h.html">deal.II/lac/trilinos_vector.h</a>&gt;</code><br />
+<code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/standard__tensors_8h.html">deal.II/physics/elasticity/standard_tensors.h</a>&gt;</code><br />
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/vector_8h.html">deal.II/lac/vector.h</a>&gt;</code><br />
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/meshworker_2dof__info_8h.html">deal.II/meshworker/dof_info.h</a>&gt;</code><br />
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/integration__info_8h.html">deal.II/meshworker/integration_info.h</a>&gt;</code><br />
@@ -178,12 +183,16 @@ $(function(){initNavTree('elasticity_8h.html',''); initResizable(true); });
 <code>#include &quot;<a class="el" href="inclusions_8h_source.html">inclusions.h</a>&quot;</code><br />
 <code>#include &lt;<a class="elRef" href="http://www.dealii.org/developer/doxygen/deal.II/hdf5_8h.html">deal.II/base/hdf5.h</a>&gt;</code><br />
 <code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;filesystem&gt;</code><br />
 <code>#include &lt;fstream&gt;</code><br />
 <code>#include &lt;iomanip&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
 <code>#include &lt;map&gt;</code><br />
 <code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;set&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
+<code>#include &lt;system_error&gt;</code><br />
+<code>#include &quot;<a class="el" href="elasticity__problem__parameters_8h_source.html">elasticity_problem_parameters.h</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="material__properties_8h_source.html">material_properties.h</a>&quot;</code><br />
 </div>
 <p><a href="elasticity_8h_source.html">Go to the source code of this file.</a></p>
@@ -191,8 +200,6 @@ $(function(){initNavTree('elasticity_8h.html',''); initResizable(true); });
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_rigid_body_motion.html">RigidBodyMotion&lt; dim &gt;</a></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_elasticity_problem_parameters.html">ElasticityProblemParameters&lt; dim, spacedim &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_elasticity_problem.html">ElasticityProblem&lt; dim, spacedim &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -230,7 +237,7 @@ Macros</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_aa394cd1d9abb8ffe941d9aaafca8d03.html">github</a></li><li class="navelem"><a class="el" href="dir_c52569aa89a7adbb6029022c2fa60a11.html">workspace</a></li><li class="navelem"><a class="el" href="dir_7a95a9cc00fcc7af5a429eec361b64d1.html">include</a></li><li class="navelem"><a class="el" href="elasticity_8h.html">elasticity.h</a></li>
-    <li class="footer">Generated on Wed Feb 18 2026 13:16:26 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
+    <li class="footer">Generated on Wed Feb 18 2026 16:58:30 for Reduced Lagrange Multipliers by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.13.2 </li>
   </ul>
 </div>
 </body>
