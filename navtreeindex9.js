@@ -1,5 +1,10 @@
 var NAVTREEINDEX9 =
 {
+"namespacedeal__II__exceptions_1_1internals.html#a262c3f6ed8ff5ed894edbada5541a829":[1,0,19,0,8],
+"namespacedeal__II__exceptions_1_1internals.html#a5dabff80d05c3f98e8e46f1068348d77":[1,0,19,0,0],
+"namespacedeal__II__exceptions_1_1internals.html#a600f8f191a6ce368afda0074dd7ea1dc":[1,0,19,0,1],
+"namespacedeal__II__exceptions_1_1internals.html#a65f46f7f17897cc3b5bf5f74ffbfba8e":[1,0,19,0,6],
+"namespacedeal__II__exceptions_1_1internals.html#a80f29b6a6438f7e2c6531a7789091ea9":[1,0,19,0,7],
 "namespacedeal__II__exceptions_1_1internals.html#ab2077cadd140a086651e0ebc84a5d779":[1,0,19,0,5],
 "namespacedeal__II__exceptions_1_1internals.html#ab2c8e6dcb61cc485415d3e4dc6b601bf":[1,0,19,0,4],
 "namespacedeal__II__exceptions_1_1internals.html#acca0bc9b6db3845f927c12203f124717":[1,0,19,0,10],
@@ -244,10 +249,5 @@ var NAVTREEINDEX9 =
 "namespaceinternal_1_1LAPACKFullMatrixImplementation.html#a396fc7be76c58575b6c6381bdffdaed2":[1,0,57,27,5],
 "namespaceinternal_1_1LAPACKFullMatrixImplementation.html#a78a67be91c5ff03487771fc91ff993c9":[1,0,57,27,1],
 "namespaceinternal_1_1LAPACKFullMatrixImplementation.html#a97e1b92e58dc95a7567f7eb1760d8d9b":[1,0,57,27,0],
-"namespaceinternal_1_1LAPACKFullMatrixImplementation.html#ab07aee5fe8125ce5bd5fff58c74afd1f":[1,0,57,27,4],
-"namespaceinternal_1_1LinearOperatorImplementation.html":[1,0,57,28],
-"namespaceinternal_1_1LinearOperatorImplementation.html#a57b5abe16e045d935c60397f830f065c":[1,0,57,28,2],
-"namespaceinternal_1_1LinearOperatorImplementation.html#ab93d9044df2cf214963e15067ac1aa00":[1,0,57,28,0],
-"namespaceinternal_1_1LinearOperatorImplementation.html#afa4dff3b52776d22414dbdb1f3b0dffc":[1,0,57,28,1],
-"namespaceinternal_1_1MGTransfer.html":[1,0,57,35]
+"namespaceinternal_1_1LAPACKFullMatrixImplementation.html#ab07aee5fe8125ce5bd5fff58c74afd1f":[1,0,57,27,4]
 };

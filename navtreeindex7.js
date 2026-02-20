@@ -1,5 +1,6 @@
 var NAVTREEINDEX7 =
 {
+"namespaceSUNDIALS.html":[1,0,149],
 "namespaceSUNDIALS.html#a4c1be173b7d012aea503b4641dde5353":[1,0,149,6],
 "namespaceSUNDIALS.html#ab567897dbcc4726ba9f0b8c5b369e495":[1,0,149,5],
 "namespaceSUNDIALS.html#ae7462b99be7c5b3564d55b3e38ece3f3":[1,0,149,7],
@@ -248,6 +249,5 @@ var NAVTREEINDEX7 =
 "namespaceUtilities_1_1MPI.html#ae1a6010093934733412b070e393f14b0":[1,0,165,2,38],
 "namespaceUtilities_1_1MPI.html#ae34c12b7f8c2f96e1e61618a466a36b6":[1,0,165,2,11],
 "namespaceUtilities_1_1MPI.html#ae6b67f340ae37780263c2ea666b7566c":[1,0,165,2,20],
-"namespaceUtilities_1_1MPI.html#ae88c8a645cc6d254cdcc500ffac340f1":[1,0,165,2,36],
-"namespaceUtilities_1_1MPI.html#af33bd8bc3321be5d52f966d851bb0521":[1,0,165,2,35]
+"namespaceUtilities_1_1MPI.html#ae88c8a645cc6d254cdcc500ffac340f1":[1,0,165,2,36]
 };

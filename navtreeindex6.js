@@ -206,10 +206,11 @@ var NAVTREEINDEX6 =
 "namespacePhysics.html":[1,0,104],
 "namespacePipeSegment.html":[1,0,105],
 "namespacePolynomials.html":[1,0,106],
-"namespacePolynomials.html#a1cb749462a4b600923ea340c55f703df":[1,0,106,5],
+"namespacePolynomials.html#a2a0a30778bafa5f97d929e21e5433951":[1,0,106,4],
 "namespacePolynomials.html#a5c1b874ba6a891f806ed53234600bf0a":[1,0,106,1],
 "namespacePolynomials.html#aa0c0b5c9c7df57f5c30ec41326488906":[1,0,106,3],
-"namespacePolynomials.html#adc782b64b1a5c3d009eb24dd372be6e4":[1,0,106,4],
+"namespacePolynomials.html#adc782b64b1a5c3d009eb24dd372be6e4":[1,0,106,5],
+"namespacePolynomials.html#ae3daaf8289fb97e7b2c35989ada73d82":[1,0,106,6],
 "namespacePolynomials.html#ae66b65dc61a9dca786ec84a122651ab9":[1,0,106,2],
 "namespacePolynomials_1_1internal.html":[1,0,106,0],
 "namespacePortable.html":[1,0,107],
@@ -248,6 +249,5 @@ var NAVTREEINDEX6 =
 "namespaceReferenceCells.html#af032029f5b36c08c52294cc10529442f":[1,0,116,8],
 "namespaceRepartitioningPolicyTools.html":[1,0,118],
 "namespaceRol.html":[1,0,119],
-"namespaceRol.html#aa3f1877dbf138962f98bbda5c02eb7b0":[1,0,119,0],
-"namespaceSUNDIALS.html":[1,0,149]
+"namespaceRol.html#aa3f1877dbf138962f98bbda5c02eb7b0":[1,0,119,0]
 };
