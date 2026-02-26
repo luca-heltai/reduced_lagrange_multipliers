@@ -1,4 +1,4 @@
 var inclusions_8h =
 [
-    [ "Inclusions< spacedim >", "class_inclusions.html", "class_inclusions" ]
+    [ "Inclusions&lt; spacedim &gt;", "class_inclusions.html", "class_inclusions" ]
 ];

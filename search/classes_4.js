@@ -42,7 +42,7 @@ var searchData=
   ['enableopenmpsimdfor_39',['EnableOpenMPSimdFor',['http://www.dealii.org/developer/doxygen/deal.II/structparallel_1_1internal_1_1EnableOpenMPSimdFor.html',1,'parallel::internal']]],
   ['energyfunctional_40',['EnergyFunctional',['http://www.dealii.org/developer/doxygen/deal.II/classDifferentiation_1_1AD_1_1EnergyFunctional.html',1,'Differentiation::AD']]],
   ['enrichmentvalues_41',['EnrichmentValues',['http://www.dealii.org/developer/doxygen/deal.II/structFE__Enriched_1_1InternalData_1_1EnrichmentValues.html',1,'FE_Enriched::InternalData']]],
-  ['entry_42',['Entry',['http://www.dealii.org/developer/doxygen/deal.II/classMultipleParameterLoop_1_1Entry.html',1,'MultipleParameterLoop::Entry'],['http://www.dealii.org/developer/doxygen/deal.II/structSparseMatrixEZ_1_1Entry.html',1,'SparseMatrixEZ::Entry']]],
+  ['entry_42',['Entry',['http://www.dealii.org/developer/doxygen/deal.II/classMultipleParameterLoop_1_1Entry.html',1,'MultipleParameterLoop::Entry'],['http://www.dealii.org/developer/doxygen/deal.II/structSparseMatrixEZ_1_1Entry.html',1,'SparseMatrixEZ&lt; typename number &gt;::Entry']]],
   ['epetra_5foperator_43',['Epetra_Operator',['http://www.dealii.org/developer/doxygen/deal.II/classEpetra__Operator.html',1,'']]],
   ['eps_44',['Eps',['http://www.dealii.org/developer/doxygen/deal.II/structGridOutFlags_1_1Eps.html',1,'GridOutFlags']]],
   ['eps_3c_201_20_3e_45',['Eps&lt; 1 &gt;',['http://www.dealii.org/developer/doxygen/deal.II/structGridOutFlags_1_1Eps_3_011_01_4.html',1,'GridOutFlags']]],

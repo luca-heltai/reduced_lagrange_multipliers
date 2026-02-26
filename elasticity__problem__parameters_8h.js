@@ -1,6 +1,6 @@
 var elasticity__problem__parameters_8h =
 [
-    [ "ElasticityProblemParameters< dim, spacedim >", "class_elasticity_problem_parameters.html", "class_elasticity_problem_parameters" ],
+    [ "ElasticityProblemParameters&lt; dim, spacedim &gt;", "class_elasticity_problem_parameters.html", "class_elasticity_problem_parameters" ],
     [ "ElasticityModel", "elasticity__problem__parameters_8h.html#afb65dffc43b1f0e550ca9370a7631284", [
       [ "LinearElasticity", "elasticity__problem__parameters_8h.html#afb65dffc43b1f0e550ca9370a7631284a558c6d963b22a6b5d16ea5005bf23b9d", null ],
       [ "KelvinVoigt", "elasticity__problem__parameters_8h.html#afb65dffc43b1f0e550ca9370a7631284aa7a304314855a8bec866c8f3447559d7", null ]

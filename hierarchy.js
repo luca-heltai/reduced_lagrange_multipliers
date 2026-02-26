@@ -1,8 +1,8 @@
 var hierarchy =
 [
-    [ "BlockPreconditionerAugmentedLagrangian< VectorType, BlockVectorType >", "class_block_preconditioner_augmented_lagrangian.html", null ],
-    [ "UtilitiesAL::BlockPreconditionerAugmentedLagrangian< VectorType, BlockVectorType >", "class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html", null ],
-    [ "CouplingOperator< dim, number, n_components >", "class_coupling_operator.html", null ],
+    [ "BlockPreconditionerAugmentedLagrangian&lt; VectorType, BlockVectorType &gt;", "class_block_preconditioner_augmented_lagrangian.html", null ],
+    [ "UtilitiesAL::BlockPreconditionerAugmentedLagrangian&lt; VectorType, BlockVectorType &gt;", "class_utilities_a_l_1_1_block_preconditioner_augmented_lagrangian.html", null ],
+    [ "CouplingOperator&lt; dim, number, n_components &gt;", "class_coupling_operator.html", null ],
     [ "EnableObserverPointer", "http://www.dealii.org/developer/doxygen/deal.II/classEnableObserverPointer.html", [
       [ "Function< dim >", "http://www.dealii.org/developer/doxygen/deal.II/classFunction.html", [
         [ "RigidBodyMotion< dim >", "class_rigid_body_motion.html", null ]
@@ -29,10 +29,10 @@ var hierarchy =
       ] ],
       [ "PoissonProblem< dim, spacedim >", "class_poisson_problem.html", null ]
     ] ],
-    [ "FunctionTime< typename Number >", "http://www.dealii.org/developer/doxygen/deal.II/classFunctionTime.html", [
+    [ "FunctionTime&lt; typename Number &gt;", "http://www.dealii.org/developer/doxygen/deal.II/classFunctionTime.html", [
       [ "Function< dim >", "http://www.dealii.org/developer/doxygen/deal.II/classFunction.html", null ]
     ] ],
-    [ "ParticleCoupling< dim >", "class_particle_coupling.html", null ],
-    [ "ReferenceCrossSection< dim, spacedim, n_components >", "class_reference_cross_section.html", null ],
-    [ "TensorProductSpace< reduced_dim, dim, spacedim, n_components >", "class_tensor_product_space.html", null ]
+    [ "ParticleCoupling&lt; dim &gt;", "class_particle_coupling.html", null ],
+    [ "ReferenceCrossSection&lt; dim, spacedim, n_components &gt;", "class_reference_cross_section.html", null ],
+    [ "TensorProductSpace&lt; reduced_dim, dim, spacedim, n_components &gt;", "class_tensor_product_space.html", null ]
 ];

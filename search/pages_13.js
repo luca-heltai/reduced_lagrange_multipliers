@@ -6,5 +6,6 @@ var searchData=
   ['laser_20heating_20code_20gallery_20program_3',['The &apos;Distributed moving laser heating&apos; code gallery program',['http://www.dealii.org/developer/doxygen/deal.II/code_gallery_Distributed_Moving_Laser_Heating.html',1,'']]],
   ['last_20release_4',['Changes since the last release',['http://www.dealii.org/developer/doxygen/deal.II/recent_changes.html',1,'']]],
   ['ldg_20method_20code_20gallery_20program_5',['The &apos;Distributed LDG Method&apos; code gallery program',['http://www.dealii.org/developer/doxygen/deal.II/code_gallery_Distributed_LDG_Method.html',1,'']]],
-  ['linear_20elastic_20active_20skeletal_20muscle_20model_20code_20gallery_20program_6',['The &apos;Linear Elastic Active Skeletal Muscle Model&apos; code gallery program',['http://www.dealii.org/developer/doxygen/deal.II/code_gallery_Linear_Elastic_Active_Skeletal_Muscle_Model.html',1,'']]]
+  ['licence_6',['Licence',['../index.html#autotoc_md4',1,'']]],
+  ['linear_20elastic_20active_20skeletal_20muscle_20model_20code_20gallery_20program_7',['The &apos;Linear Elastic Active Skeletal Muscle Model&apos; code gallery program',['http://www.dealii.org/developer/doxygen/deal.II/code_gallery_Linear_Elastic_Active_Skeletal_Muscle_Model.html',1,'']]]
 ];
