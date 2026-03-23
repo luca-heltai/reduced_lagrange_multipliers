@@ -12,12 +12,14 @@ subsection Functions
   subsection Dirichlet boundary conditions
     set Function constants  =
     set Function expression = x*y*(x - 1)*(y - 1) + sin(pi*x)*sin(pi*y)*cos(5*pi*t/2); x*y*(x - 1)*(y - 1) + sin(5*pi*t/2)*sin(pi*y)*cos(pi*x)
+    set Modulation frequency = 0
     set Variable names      = x,y,t
   end
   subsection Exact solution
     set Function constants  =
     set Function expression = x*y*(x - 1)*(y - 1) + sin(pi*x)*sin(pi*y)*cos(5*pi*t/2); x*y*(x - 1)*(y - 1) + sin(5*pi*t/2)*sin(pi*y)*cos(pi*x)
     set Variable names      = x,y,t
+    set Weight expression   = 1.
   end
   subsection Initial displacement
     set Function constants  =
@@ -32,11 +34,13 @@ subsection Functions
   subsection Neumann boundary conditions
     set Function constants  =
     set Function expression = 0; 0
+    set Modulation frequency = 0
     set Variable names      = x,y,t
   end
   subsection Right hand side
     set Function constants  =
     set Function expression = -2.0*x^2 - 12.0*x*y + 8.0*x - 8.0*y^2 + 14.0*y + 3.0*pi^2*sin(5*pi*t/2)*sin(pi*x)*cos(pi*y) + 5.0*pi^2*sin(pi*x)*sin(pi*y)*cos(5*pi*t/2) - 3.0; -8.0*x^2 - 12.0*x*y + 14.0*x - 2.0*y^2 + 8.0*y + 5.0*pi^2*sin(5*pi*t/2)*sin(pi*y)*cos(pi*x) - 3.0*pi^2*cos(5*pi*t/2)*cos(pi*x)*cos(pi*y) - 3.0
+    set Modulation frequency = 0
     set Variable names      = x,y,t
   end
 end
@@ -53,12 +57,6 @@ subsection Immersed Problem
   set Output results also before solving = false
   set Pressure coupling                  = false
   set Weak Dirichlet penalty coefficient = 100
-  subsection Dirichlet boundary conditions
-    set Modulation frequency = 0
-  end
-  subsection Exact solution
-    set Weight expression = 1.
-  end
   subsection Grid generation
     set Domain type              = generate
     set Grid generator           = hyper_cube
@@ -91,18 +89,12 @@ subsection Immersed Problem
       set Viscosity eta   = 0.0
     end
   end
-  subsection Neumann boundary conditions
-    set Modulation frequency = 0
-  end
   subsection Refinement and remeshing
     set Coarsening fraction         = 0
     set Maximum number of cells     = 20000
     set Number of refinement cycles = 6
     set Refinement fraction         = 0.3
     set Strategy                    = global
-  end
-  subsection Right hand side
-    set Modulation frequency = 0
   end
   subsection Time dependency
     set Final time    = 0.0
