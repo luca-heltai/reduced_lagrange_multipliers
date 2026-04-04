@@ -1,0 +1,183 @@
+subsection Error
+  set Enable computation of the errors = false
+  set Error file name                  =
+  set Error precision                  = 3
+  set Exponent for p-norms             = 2
+  set Extra columns                    = cells, dofs
+  set List of error norms to compute   = L2_norm, Linfty_norm, H1_norm
+  set Rate key                         = dofs
+  set Rate mode                        = reduction_rate_log2
+end
+subsection Functions
+  subsection Dirichlet boundary conditions
+    set Function constants   =
+    set Function expression  = 0;0;0.0001
+    set Modulation frequency = 25
+    set Variable names       = x,y,z,t
+  end
+  subsection Exact solution
+    set Function constants  =
+    set Function expression = 0; 0; 0
+    set Variable names      = x,y,z,t
+    set Weight expression   = 1.
+  end
+  subsection Initial displacement
+    set Function constants  =
+    set Function expression = 0; 0; 0
+    set Variable names      = x,y,z,t
+  end
+  subsection Initial velocity
+    set Function constants  =
+    set Function expression = 0; 0; 0
+    set Variable names      = x,y,z,t
+  end
+  subsection Neumann boundary conditions
+    set Function constants   =
+    set Function expression  = 0; 0; 0
+    set Modulation frequency = 0
+    set Variable names       = x,y,z,t
+  end
+  subsection Right hand side
+    set Function constants   =
+    set Function expression  = 0; 0; 0
+    set Modulation frequency = 0
+    set Variable names       = x,y,z,t
+  end
+end
+subsection Immersed Problem
+  set Dirichlet boundary ids             =
+  set FE degree                          = 1
+  set Initial refinement                 = 0
+  set Neumann boundary ids               = 0
+  set Normal flux boundary ids           =
+  set Output directory                   = output/M5/25
+  set Output name                        = solution
+  set Output pressure                    = false
+  set Output results also before solving = false
+  set Pressure coupling                  = false
+  set Weak Dirichlet boundary ids        = 501
+  set Weak Dirichlet penalty coefficient = 1000000000
+  subsection Grid generation
+    set Domain type              = generate
+    set Grid generator           = luca_heltai_brain.inp
+    set Grid generator arguments = 
+    set Triangulation type       = fullydistributed
+  end
+  subsection Immersed inclusions
+    set Bounding boxes extraction level   = 1
+    set Cluster inclusions with segments  = false
+    set Data file                         =
+    set Inclusions                        =
+    set Inclusions file                   =
+    set Inclusions refinement             = 1
+    set Number of fourier coefficients    = 1
+    set Reference inclusion data          =
+    set Selection of Fourier coefficients =
+    subsection Boundary data
+      set Function constants   =
+      set Function expression  = 0;0;0
+      set Modulation frequency = 0
+      set Variable names       = x,y,z,t
+    end
+  end
+  subsection Material properties
+    set Material tags by material id = 2:WM,3:GM,4:CSF,7:WM,8:GM,10:DGM,11:DGM,16:WM,17:DGM,18:DGM,24:CSF,251:WM,500:Skull
+    subsection CSF
+      set Density        = 1000
+      set Lame lambda    = 1000000
+      set Lame mu        = 1
+      set Rayleigh alpha = 0
+      set Rayleigh beta  = 0
+      set Viscosity eta  = 0.01
+    end
+    subsection DGM
+      set Density        = 1000
+      set Lame lambda    = 1000000
+      set Lame mu        = 1600
+      set Rayleigh alpha = 0
+      set Rayleigh beta  = 0
+      set Viscosity eta  = 3.2
+    end
+    subsection GM
+      set Density        = 1000
+      set Lame lambda    = 1000000
+      set Lame mu        = 1200
+      set Rayleigh alpha = 0
+      set Rayleigh beta  = 0
+      set Viscosity eta  = 1.9
+    end
+    subsection Skull
+      set Density        = 1000
+      set Lame lambda    = 1000000
+      set Lame mu        = 4000000
+      set Rayleigh alpha = 0
+      set Rayleigh beta  = 0
+      set Viscosity eta  = 0
+    end
+    subsection WM
+      set Density        = 1000
+      set Lame lambda    = 1000000
+      set Lame mu        = 1400
+      set Rayleigh alpha = 0
+      set Rayleigh beta  = 0
+      set Viscosity eta  = 2.2
+    end
+    subsection default
+      set Density        = 1000
+      set Lame lambda    = 1000000
+      set Lame mu        = 2000
+      set Rayleigh alpha = 0
+      set Rayleigh beta  = 0
+      set Viscosity eta  = 2
+    end
+  end
+  subsection Refinement and remeshing
+    set Coarsening fraction         = 0
+    set Maximum number of cells     = 20000
+    set Number of refinement cycles = 1
+    set Refinement fraction         = 0.3
+    set Strategy                    = fixed_fraction
+  end
+  subsection Time dependency
+    set Final time       = 2.5
+    set Initial time     = 0
+    set Newmark beta     = 0.25
+    set Newmark gamma    = 0.5
+    set Refine time step = false
+    set Time step        = 0.005
+  end
+end
+subsection Solvers
+  subsection Augmented Lagrange
+    set Log frequency = 1
+    set Log history   = false
+    set Log result    = true
+    set Max steps     = 1000
+    set Reduction     = 1.e-10
+    set Tolerance     = 1.e-8
+  end
+  subsection Displacement
+    set Log frequency = 1
+    set Log history   = false
+    set Log result    = true
+    set Max steps     = 1000
+    set Reduction     = 1.e-10
+    set Tolerance     = 1.e-8
+  end
+  subsection Reduced mass
+    set Log frequency = 1
+    set Log history   = false
+    set Log result    = true
+    set Max steps     = 1000
+    set Reduction     = 1.e-10
+    set Tolerance     = 1.e-8
+  end
+  subsection Schur complement
+    set Log frequency = 1
+    set Log history   = false
+    set Log result    = true
+    set Max steps     = 1000
+    set Reduction     = 1.e-10
+    set Tolerance     = 1.e-8
+  end
+end
