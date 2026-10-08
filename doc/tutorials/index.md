@@ -19,7 +19,10 @@ The introductory sequence is:
 
 [Navier–Stokes](navier-stokes) documents the independent incompressible-flow
 application. The [MetricFlowX and elastodynamics tutorial](metric-flow-x-elastodynamics)
-shows the parameter-driven two-way vessel-wall coupling.
+shows the parameter-driven two-way vessel-wall coupling. The
+[MetricFlowX and elastodynamics coupling formulation](metric-flow-x-elastodynamics-coupling)
+introduces the coupled equations. Four companion pages describe its kinematic,
+static, spatial manufactured, and transient inputs.
 
 ```{toctree}
 :maxdepth: 1
@@ -33,4 +36,9 @@ coupled-poisson-elasticity
 fiber-reinforced-elastodynamics
 navier-stokes
 metric-flow-x-elastodynamics
+metric-flow-x-elastodynamics-coupling
+metric-flow-x-elastodynamics-01-kinematics
+metric-flow-x-elastodynamics-02-static-equilibrium
+metric-flow-x-elastodynamics-03-spatial-mms
+metric-flow-x-elastodynamics-04-transient-mms
 ```

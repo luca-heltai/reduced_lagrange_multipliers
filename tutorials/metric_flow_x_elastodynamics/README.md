@@ -7,3 +7,9 @@ initial and boundary functions, and output directories.
 
 The template is generated below the build tree. Run the application with that
 generated file, as described in the [tutorial](../../doc/tutorials/metric-flow-x-elastodynamics.md).
+
+The [mathematical formulation](../../doc/tutorials/metric-flow-x-elastodynamics-coupling.md)
+is documented in the tutorial documentation.
+
+Analytical helpers and residual/Jacobian checks are in
+`gtests/metric_flow_x_elastodynamics_mms.h` and the corresponding tests.
