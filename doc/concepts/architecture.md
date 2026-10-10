@@ -89,11 +89,9 @@ auto continuity = make_constraint(
   weak_term(value(v), test(lambda)));
 ```
 
-Other Interactions can own geometry, search, transfer operators, native
-provider access, and auxiliary fields. The `MetricFlowXVesselWallConstraint`
-is one such interaction: it connects a MetricFlowX area field to a nonlinear
-wall displacement observable and sends the wall multiplier back as native
-external pressure.
+Other Interactions can own geometry, search, transfer operators, and auxiliary
+fields. Applications express each coupling through the terms and fields that
+define its residual contribution.
 
 ## Residual and execution adapters
 

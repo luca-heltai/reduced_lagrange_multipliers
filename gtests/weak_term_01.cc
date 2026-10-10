@@ -14,6 +14,7 @@
 #include <deal.II/dofs/dof_handler.h>
 #include <deal.II/dofs/dof_tools.h>
 
+#include <deal.II/fe/fe_dgq.h>
 #include <deal.II/fe/fe_q.h>
 #include <deal.II/fe/fe_system.h>
 #include <deal.II/fe/mapping_q1.h>
@@ -235,6 +236,131 @@ TEST(WeakTerm, NonlinearSquareLawResidualAndJacobian)
   jacobian.vmult(jacobian_action, state);
   finite_difference -= jacobian_action;
   EXPECT_LT(finite_difference.l2_norm(), 1.e-6);
+}
+
+TEST(WeakTerm, ActiveAndFrozenObservablesUseTheirOwnFiniteElements)
+{
+  Triangulation<1, 3> tria;
+  GridGenerator::subdivided_hyper_cube(tria, 2, 0., 1.);
+
+  FE_Q<1, 3>       active_fe(1);
+  FE_DGQ<1, 3>     frozen_fe(0);
+  DoFHandler<1, 3> active_dh(tria), frozen_dh(tria);
+  active_dh.distribute_dofs(active_fe);
+  frozen_dh.distribute_dofs(frozen_fe);
+  AffineConstraints<double> active_constraints, frozen_constraints;
+  active_constraints.close();
+  frozen_constraints.close();
+
+  const auto active_space =
+    fe_space(active_dh, StaticMappingQ1<1, 3>::mapping, active_constraints);
+  const auto frozen_space =
+    fe_space(frozen_dh, StaticMappingQ1<1, 3>::mapping, frozen_constraints);
+  StateLayout layout;
+  const auto  area     = active_space.field(layout, "area");
+  const auto  target   = active_space.field(layout, "target");
+  const auto  a0_field = frozen_space.field("a0");
+
+  Vector<double> a0(frozen_dh.n_dofs());
+  for (const auto &cell : frozen_dh.active_cell_iterators())
+    {
+      const auto                           id = cell->id();
+      std::vector<types::global_dof_index> indices(frozen_fe.n_dofs_per_cell());
+      cell->get_dof_indices(indices);
+      a0[indices.front()] = id == frozen_dh.begin_active()->id() ? 1. : 4.;
+    }
+  const auto A0 = ImmersX::frozen(a0_field, a0);
+
+  using Vector = Vector<double>;
+  using Matrix = SparseMatrix<double>;
+  using Model  = SemiDiscreteModel<Vector, Matrix>;
+  Model                               model;
+  SemidiscreteBuilder<Vector, Matrix> builder(layout, model);
+
+  const auto radius       = sqrt(value(area) / numbers::PI);
+  const auto a0_radius    = sqrt(A0 / numbers::PI);
+  const auto displacement = radius - a0_radius;
+  const auto reversed_sum = a0_radius + radius;
+  EXPECT_EQ(displacement.dependencies(), std::vector<FieldId>{area.field_id()});
+
+  weak_term(displacement, test(target)).add(builder);
+
+  Vector state(active_dh.n_dofs());
+  state = 9.;
+  Vector            target_state(active_dh.n_dofs());
+  StateView<Vector> state_view(layout, 0.);
+  state_view.bind(area.field_id(), state);
+  state_view.bind(target.field_id(), target_state);
+  const EvaluationContext<Vector> context(0., state_view);
+
+  Vector residual(active_dh.n_dofs());
+  model.evaluate_row(target.field_id(), context, residual);
+
+  Vector                               expected(residual.size());
+  const QGauss<1>                      quadrature(2);
+  FEValues<1, 3>                       values(StaticMappingQ1<1, 3>::mapping,
+                        active_fe,
+                        quadrature,
+                        update_values | update_quadrature_points |
+                          update_JxW_values);
+  FEValues<1, 3>                       a0_values(StaticMappingQ1<1, 3>::mapping,
+                           frozen_fe,
+                           quadrature,
+                           update_values);
+  std::vector<types::global_dof_index> active_indices(
+    active_fe.n_dofs_per_cell());
+  std::vector<types::global_dof_index> frozen_indices(
+    frozen_fe.n_dofs_per_cell());
+  for (const auto &cell : active_dh.active_cell_iterators())
+    {
+      values.reinit(cell);
+      const auto frozen_cell = cell->as_dof_handler_iterator(frozen_dh);
+      a0_values.reinit(frozen_cell);
+      cell->get_dof_indices(active_indices);
+      frozen_cell->get_dof_indices(frozen_indices);
+      for (unsigned int q = 0; q < quadrature.size(); ++q)
+        {
+          double active_value = 0.;
+          for (unsigned int j = 0; j < active_indices.size(); ++j)
+            active_value += state[active_indices[j]] * values.shape_value(j, q);
+          const double reference_area = a0[frozen_indices.front()];
+          const double direct         = std::sqrt(active_value / numbers::PI) -
+                                std::sqrt(reference_area / numbers::PI);
+          const double direct_sum = std::sqrt(active_value / numbers::PI) +
+                                    std::sqrt(reference_area / numbers::PI);
+          const double expression_sum = reversed_sum.evaluate_point(
+            values.quadrature_point(q),
+            0.,
+            [&](const auto &input, const auto &, const double) {
+              if (input.is_frozen())
+                return std::sqrt(reference_area / numbers::PI);
+              return std::sqrt(active_value / numbers::PI);
+            });
+          EXPECT_NEAR(expression_sum, direct_sum, 1.e-14);
+          for (unsigned int i = 0; i < active_indices.size(); ++i)
+            expected[active_indices[i]] +=
+              direct * values.shape_value(i, q) * values.JxW(q);
+        }
+    }
+  residual -= expected;
+  EXPECT_LT(residual.l2_norm(), 1.e-12);
+
+  const auto jacobian =
+    model.state_operator(target.field_id(), area.field_id(), context);
+  Vector direction(state.size());
+  for (unsigned int i = 0; i < direction.size(); ++i)
+    direction[i] = 0.5 + 0.1 * i;
+  Vector action(state.size());
+  jacobian.vmult(action, direction);
+
+  const double epsilon = 1.e-7;
+  state.add(epsilon, direction);
+  Vector perturbed(active_dh.n_dofs());
+  model.evaluate_row(target.field_id(), context, perturbed);
+  perturbed -= expected;
+  perturbed *= 1. / epsilon;
+  perturbed -= action;
+  EXPECT_LT(perturbed.l2_norm(), 1.e-6);
 }
 
 TEST(WeakTerm, TypedVectorConvectionResidualJacobian)

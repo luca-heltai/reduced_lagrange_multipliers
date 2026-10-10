@@ -18,9 +18,8 @@ The introductory sequence is:
    nonmatching Problems and a multiplier constraint.
 
 [Navier–Stokes](navier-stokes) documents the independent incompressible-flow
-application. The four [MetricFlowX vessel-wall pages](metric-flow-x-elastodynamics-01-kinematics)
-describe the kinematic, static, spatial manufactured, and transient inputs for
-the same two-way coupling application.
+application. The [MetricFlowX and elastodynamics tutorial](metric-flow-x-elastodynamics)
+shows the parameter-driven two-way vessel-wall coupling.
 
 ```{toctree}
 :maxdepth: 1
@@ -33,8 +32,5 @@ coupled-poisson
 coupled-poisson-elasticity
 fiber-reinforced-elastodynamics
 navier-stokes
-metric-flow-x-elastodynamics-01-kinematics
-metric-flow-x-elastodynamics-02-static-equilibrium
-metric-flow-x-elastodynamics-03-spatial-mms
-metric-flow-x-elastodynamics-04-transient-mms
+metric-flow-x-elastodynamics
 ```

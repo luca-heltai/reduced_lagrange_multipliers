@@ -47,6 +47,7 @@ set(_public_headers
     immersx/core/linear_adapter.h
     immersx/core/matrix_operator.h
     immersx/core/observable.h
+    immersx/core/observable_lift.h
     immersx/core/weak_term.h
     immersx/core/problem_handle.h
     immersx/core/symbolic_field_evaluator.h
@@ -65,10 +66,7 @@ set(_public_headers
     immersx/physics/navier_stokes_semidiscrete.h
     immersx/physics/poisson_residual.h)
 if(IMMERSX_WITH_METRIC_FLOW_X)
-  list(APPEND _public_headers
-       immersx/physics/metric_flow_x.h
-       immersx/physics/metric_flow_x_vessel_wall_observable.h
-       immersx/algebra/metric_flow_x_vessel_wall_constraint.h)
+  list(APPEND _public_headers immersx/physics/metric_flow_x.h)
 endif()
 
 set(_public_header_targets)
@@ -100,11 +98,7 @@ foreach(_build_type ${_d2_build_types})
                              $<$<CXX_COMPILER_ID:Clang>:-Wno-cpp>
                              $<$<CXX_COMPILER_ID:GNU>:-Wno-cpp>)
       if(IMMERSX_WITH_METRIC_FLOW_X AND
-         (_public_header STREQUAL "immersx/physics/metric_flow_x.h" OR
-          _public_header STREQUAL
-            "immersx/physics/metric_flow_x_vessel_wall_observable.h" OR
-          _public_header STREQUAL
-            "immersx/algebra/metric_flow_x_vessel_wall_constraint.h"))
+         _public_header STREQUAL "immersx/physics/metric_flow_x.h")
         target_link_libraries(${_public_header_target}
                               MetricFlowX::metric_flow_x)
       endif()
@@ -332,57 +326,4 @@ if(IMMERSX_WITH_METRIC_FLOW_X)
     endif()
   endforeach()
 
-  # Keep the one-vessel MMS algebra and two-way residual composition as a
-  # small, independently runnable vertical gate. The aggregate gtests
-  # executable filters MPI tests by process count; this target lets CTest
-  # invoke the gate directly.
-  foreach(_build_type ${_d2_build_types})
-    if(_build_type IN_LIST IMMERSX_REQUESTED_BUILD_TYPES)
-      string(TOUPPER "${_build_type}" _BUILD_TYPE)
-      set(_mms_gate_target
-          "metric_flow_x_elastodynamics_mms_verification${${_build_type}_postfix}")
-      add_executable(${_mms_gate_target}
-                     metric_flow_x_vessel_wall_constraint_01.cc
-                     metric_flow_x_elastodynamics_mms_01.cc
-                     metric_flow_x_elastodynamics_mms_driver.cc
-                     mms_convergence_main.cc)
-      target_include_directories(
-        ${_mms_gate_target}
-        PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
-                ${CMAKE_SOURCE_DIR}/include
-                ${CMAKE_BINARY_DIR}/include)
-      target_compile_definitions(
-        ${_mms_gate_target}
-        PRIVATE SOURCE_DIR="${IMMERSX_SOURCE_DIR}"
-                IMMERSX_SOURCE_DIR="${IMMERSX_SOURCE_DIR}"
-                IMMERSX_BINARY_DIR="${IMMERSX_BINARY_DIR}"
-                TEST_DATA_DIR="${TEST_DATA_DIR}"
-                TEST_OUTPUT_DIR="${TEST_OUTPUT_DIR}")
-      target_compile_options(
-        ${_mms_gate_target}
-        PRIVATE $<$<CXX_COMPILER_ID:AppleClang>:-Wno-cpp>
-                $<$<CXX_COMPILER_ID:Clang>:-Wno-cpp>
-                $<$<CXX_COMPILER_ID:GNU>:-Wno-cpp>)
-      target_link_libraries(
-        ${_mms_gate_target}
-        ${TEST_LIBRARIES_${_BUILD_TYPE}}
-        ${GTEST_LIBRARIES})
-      target_include_directories(${_mms_gate_target}
-                                 PRIVATE ${GTEST_INCLUDE_DIRS})
-      DEAL_II_SETUP_TARGET(${_mms_gate_target} ${_BUILD_TYPE})
-      find_program(_immersx_mpiexec NAMES mpirun mpiexec)
-      if(_immersx_mpiexec)
-        set(_mms_gate_test
-            "ImmersX${${_build_type}_ctest_suffix}.validation.MetricFlowX.MMS")
-        add_test(
-          NAME ${_mms_gate_test}
-          COMMAND ${_immersx_mpiexec} -np 2
-                  $<TARGET_FILE:${_mms_gate_target}>
-                  --gtest_filter=OneVesselMMS.*:OneVesselMMSDriver.MPI_ActualTwoWayTransientSolve:MetricFlowXVesselWallConstraint.MPI_TwoWayResidualAndPressureSign:MetricFlowXVesselWallConstraint.MPI_TwoWayCompositionResidualSmoke:MetricFlowXVesselWallConstraint.MPI_GenericKinematicCompositionSmoke:MetricFlowXVesselWallConstraint.MPI_FullCoupledJacobianFiniteDifference)
-        set_tests_properties(${_mms_gate_test}
-                             PROPERTIES LABELS "validation;mpi"
-                                        TIMEOUT 1200)
-      endif()
-    endif()
-  endforeach()
 endif()

@@ -82,6 +82,25 @@ TEST(FESpace, IsANonOwningViewAndSupportsSubspaces)
   EXPECT_EQ(displacement.extractor().first_vector_component, 0u);
 }
 
+TEST(FESpace, CompactedFieldUsesASelectedDoFSubset)
+{
+  ExternalFESystem system;
+  const auto       V      = ImmersX::fe_space(system.dof_handler,
+                                   system.mapping,
+                                   system.constraints,
+                                   system.relevant);
+  const auto       scalar = V.field("scalar", FEValuesExtractors::Scalar(0));
+  const IndexSet   selected =
+    DoFTools::extract_dofs(system.dof_handler, scalar.component_mask());
+
+  const auto compact = scalar.compacted("compact", selected);
+  EXPECT_EQ(compact.locally_owned_dofs().n_elements(), selected.n_elements());
+  EXPECT_EQ(compact.locally_relevant_dofs().n_elements(),
+            selected.n_elements());
+  for (const auto native_index : selected)
+    EXPECT_LT(compact.execution_index(native_index), selected.n_elements());
+}
+
 TEST(FESpace, FieldLocalConstraintsArePersistentAndIndependent)
 {
   ExternalFESystem system;
@@ -372,6 +391,35 @@ TEST(FESpace, NonlinearTransformChainsActiveAndFrozenInputs)
     1.);
 }
 
+TEST(FESpace, SquareRootTransformHasCorrectDerivative)
+{
+  Triangulation<2> tria;
+  GridGenerator::hyper_cube(tria);
+  FE_Q<2>       fe(1);
+  DoFHandler<2> dof_handler(tria);
+  dof_handler.distribute_dofs(fe);
+  AffineConstraints<double> constraints;
+  constraints.close();
+  const auto V =
+    ImmersX::fe_space(dof_handler, StaticMappingQ1<2>::mapping, constraints);
+  const auto field = V.field("active");
+  const auto root  = ImmersX::sqrt(ImmersX::value(field));
+  const auto point = Point<2>(0.25, 0.5);
+
+  EXPECT_DOUBLE_EQ(
+    root.evaluate_point(
+      point, 0., [](const auto &, const auto &, const double) { return 4.; }),
+    2.);
+  EXPECT_DOUBLE_EQ(
+    root.linearize_point(
+      field.field_id(),
+      point,
+      0.,
+      [](const auto &, const auto &, const double) { return 4.; },
+      [](const auto &, const auto, const auto &, const double) { return 1.; }),
+    0.25);
+}
+
 TEST(FESpace, SymbolicKernelSuppliesTransformDerivatives)
 {
   if (!ImmersX::SymbolicExpressionKernel::available())
@@ -472,6 +520,88 @@ TEST(FESpace, NonlinearLiftUsesComposedSource)
   ImmersX::ImmersXLA::MPI::Vector action;
   linearization.vmult(action, direction);
   EXPECT_EQ(action.size(), values.size());
+}
+
+TEST(FESpace, LiftThicknessUsesFrozenFieldOnItsOwnFiniteElement)
+{
+  Triangulation<1, 3> triangulation;
+  GridGenerator::subdivided_hyper_cube(triangulation, 2, 0., 1.);
+  FE_Q<1, 3>       active_fe(1);
+  FE_DGQ<1, 3>     thickness_fe(0);
+  DoFHandler<1, 3> active_dh(triangulation), thickness_dh(triangulation);
+  active_dh.distribute_dofs(active_fe);
+  thickness_dh.distribute_dofs(thickness_fe);
+  AffineConstraints<double> constraints;
+  constraints.close();
+  const auto active_space =
+    ImmersX::fe_space(active_dh, StaticMappingQ1<1, 3>::mapping, constraints);
+  const auto           thickness_space = ImmersX::fe_space(thickness_dh,
+                                                 StaticMappingQ1<1, 3>::mapping,
+                                                 constraints);
+  ImmersX::StateLayout layout;
+  const auto           active          = active_space.field(layout, "active");
+  const auto           thickness_field = thickness_space.field("thickness");
+  using Vector                         = ImmersX::ImmersXLA::MPI::Vector;
+  Vector thickness_values(thickness_dh.locally_owned_dofs(), MPI_COMM_SELF);
+  for (const auto &cell : thickness_dh.active_cell_iterators())
+    {
+      std::vector<types::global_dof_index> indices(
+        thickness_fe.n_dofs_per_cell());
+      cell->get_dof_indices(indices);
+      thickness_values[indices.front()] = cell->index() == 0 ? 1. : 4.;
+    }
+  const auto A0     = ImmersX::frozen(thickness_field, thickness_values);
+  const auto radius = ImmersX::sqrt(A0 / numbers::PI);
+  const auto dR = ImmersX::sqrt(ImmersX::value(active) / numbers::PI) - radius;
+
+  ImmersX::TensorProductLift<1, 2, 3, 3> descriptor;
+  descriptor.section.selected_coefficients = {3u, 7u};
+  descriptor.section.inclusion_degree      = 1;
+  descriptor.section.refinement_level      = 0;
+  descriptor.section.n_q_points            = 8;
+  descriptor.representative_n_q_points     = 2;
+  const auto lifted = ImmersX::lift(dR, descriptor, radius);
+
+  double first_cell_radius  = 0.;
+  double second_cell_radius = 0.;
+  double first_cell_weight  = 0.;
+  double second_cell_weight = 0.;
+  for (const auto &point : lifted.lifted_points())
+    {
+      const double distance = point.point.distance(point.representative_point);
+      if (point.source_entity_id == 0)
+        {
+          first_cell_radius = distance;
+          first_cell_weight = point.weight;
+        }
+      else if (point.source_entity_id == 1)
+        {
+          second_cell_radius = distance;
+          second_cell_weight = point.weight;
+        }
+    }
+  EXPECT_GT(first_cell_radius, 0.);
+  EXPECT_NEAR(second_cell_radius / first_cell_radius, 2., 1.e-10);
+  EXPECT_NEAR(second_cell_weight / first_cell_weight, 4., 1.e-10);
+
+  using State = ImmersX::ImmersXLA::MPI::Vector;
+  State active_state(active.locally_owned_dofs(), MPI_COMM_SELF);
+  active_state = 9.;
+  State direction(active.locally_owned_dofs(), MPI_COMM_SELF);
+  direction = 1.;
+  ImmersX::StateView<State> state_view(layout, 0.);
+  state_view.bind(active.field_id(), active_state);
+  const ImmersX::EvaluationContext<State> context(0., state_view);
+  const auto                              values = lifted.evaluate(context);
+  const auto linearization = lifted.linearize(context, active.field_id());
+  std::vector<Tensor<1, 3>> action;
+  linearization.vmult(action, direction);
+  ASSERT_EQ(action.size(), values.size());
+  const double epsilon = 1.e-7;
+  active_state.add(epsilon, direction);
+  const auto perturbed = lifted.evaluate(context);
+  for (unsigned int q = 0; q < action.size(); ++q)
+    EXPECT_LT(((perturbed[q] - values[q]) / epsilon - action[q]).norm(), 1.e-6);
 }
 
 TEST(FESpace, WrapsAnExistingProblemFromTheOutside)

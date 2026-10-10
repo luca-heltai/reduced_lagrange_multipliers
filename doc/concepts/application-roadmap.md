@@ -169,13 +169,10 @@ ranks, exercising distributed nonmatching execution.
 P3/G1 nonmatching tied elasticity, P3/G2 FiberReinforcedElastodynamics, and
 P3/G3 MetricFlowX plus elastodynamics are the three flagship targets. The
 remaining cells are deliberately smaller examples whose purpose is to isolate
-one semantic or geometric step. The P3/G3 flagship is covered by the
-MetricFlowX integration tests and the registered
-`metric_flow_x_elastodynamics_mms_verification` application gate. The gate
-checks the generic kinematic composition, two-way residual, pressure feedback,
-finite-difference Jacobian, and two-rank execution. The four-level MMS studies
-remain optional in that gate because they are expensive and are skipped when
-their external data is unavailable.
+one semantic or geometric step. The P3/G3 flagship is covered by focused
+MetricFlowX integration tests and a single parameter-driven two-way
+application example. The coupling uses a generic kinematic constraint and
+cell-volume pressure feedback.
 
 ## Foundational examples
 

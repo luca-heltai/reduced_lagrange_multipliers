@@ -10,17 +10,13 @@ introductory learning path.
   cases.
 - `gtests/parameters/` contains small configured inputs used by focused tests.
 
-The one-vessel two-way verification cases are documented in the four pages
-under `doc/tutorials/metric-flow-x-elastodynamics-*.md`. Their independent
-analytical gates are implemented in
-`gtests/metric_flow_x_elastodynamics_mms_01.cc`; they verify the nonlinear
-Area-to-radius map, the radial traction-jump coefficient, mass conservation,
-pressure-work normalization, and exact solid gradients by centered finite
-differences. The registered gate also verifies the assembled
-TensorProduct-lift coupling, multiplier metric, pressure sign, and full
-coupled Jacobian. The opt-in spatial, temporal, and combined studies are
-diagnostics only; the full-system linear solver does not complete on the finest
-coupled levels.
+The MetricFlowX–elastodynamics example is configured by
+`tutorials/metric_flow_x_elastodynamics/two_way.prm.in` and documented in one
+[tutorial](../tutorials/metric-flow-x-elastodynamics). Its focused coupling
+regressions cover the Area-to-radius Observable, the lifted kinematic row, the
+cell-volume multiplier pairing against the MetricFlowX velocity extractor, and
+the coupled Jacobian. The parameter-driven example exercises the transient
+adapter path and writes the flow, solid, and multiplier fields.
 
 Use the [application reference](applications) to choose the executable and the
 [testing guide](../developer/testing) to run a regression or GoogleTest.

@@ -28,8 +28,6 @@ choice does not change the constraint API. Distributed point ownership and
 search use deal.II's distributed particle facilities where the coupling
 requires them.
 
-`MetricFlowXVesselWallConstraint` is a domain-specific Interaction. It relates
-the MetricFlowX area field and the wall displacement observable, contributes
-the solid-side coupling terms, and maps the multiplier to the native
-MetricFlowX external-pressure operation. The application adds the native
-MetricFlowX provider and the solid Problem to the same `IDAAdapter`.
+The MetricFlowX vessel-wall example expresses its cell-volume pressure feedback
+as a `WeakTerm` and its kinematic relation as a `Constraint`. The application
+adds both Problems and the constraint to the same `IDAAdapter`.

@@ -16,6 +16,7 @@
 
 #include <deal.II/fe/fe_q.h>
 #include <deal.II/fe/fe_system.h>
+#include <deal.II/fe/fe_values_extractors.h>
 #include <deal.II/fe/mapping_q1.h>
 
 #include <deal.II/grid/grid_generator.h>
@@ -208,5 +209,55 @@ TEST(OutputHandler, BOTH_ReindexedNavierStokesFields)
       EXPECT_NE(
         output_text(output_parameters.output_directory).find("pressure"),
         std::string::npos);
+    }
+}
+
+TEST(OutputHandler, BOTH_CompactedFieldExpansion)
+{
+  parallel::distributed::Triangulation<2> triangulation(MPI_COMM_WORLD);
+  GridGenerator::hyper_cube(triangulation);
+  triangulation.refine_global(1);
+  FESystem<2>   finite_element(FE_Q<2>(1), 2);
+  DoFHandler<2> dof_handler(triangulation);
+  dof_handler.distribute_dofs(finite_element);
+  AffineConstraints<double> constraints;
+  constraints.close();
+  const auto locally_relevant =
+    DoFTools::extract_locally_relevant_dofs(dof_handler);
+  const auto space = ImmersX::fe_space(dof_handler,
+                                       StaticMappingQ1<2>::mapping,
+                                       constraints,
+                                       locally_relevant);
+
+  ImmersX::StateLayout layout;
+  const auto           base =
+    space.field(layout, "lambda", FEValuesExtractors::Scalar(0));
+  const auto selected =
+    DoFTools::extract_dofs(dof_handler, base.component_mask());
+  const auto  compact = base.compacted("lambda", selected);
+  FieldVector values(compact.locally_owned_dofs(), MPI_COMM_WORLD);
+  for (const auto index : compact.locally_owned_dofs())
+    values[index] = 2. + index;
+
+  ImmersX::OutputHandlerParameters parameters("/Output compacted/");
+  parameters.output_directory =
+    ImmersX::TestPaths::output_directory("output-handler-compacted");
+  ImmersX::OutputHandler<2, 2, FieldVector> output(space, parameters, "lambda");
+  const auto expanded = output.expanded_field(compact, values);
+  for (const auto native : space.locally_owned_dofs())
+    if (compact.has_execution_index(native))
+      EXPECT_DOUBLE_EQ(expanded[native],
+                       values[compact.execution_index(native)]);
+    else
+      EXPECT_DOUBLE_EQ(expanded[native], 0.);
+
+  ASSERT_NO_THROW(output.write_field(compact, values, 0.25));
+  MPI_Barrier(MPI_COMM_WORLD);
+  if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
+    {
+      EXPECT_TRUE(std::filesystem::exists(
+        std::filesystem::path(parameters.output_directory) / "lambda.pvd"));
+      EXPECT_NE(output_text(parameters.output_directory).find("lambda"),
+                std::string::npos);
     }
 }

@@ -69,10 +69,6 @@ set(IMMERSX_VALIDATION_TEST_SUITES
     FiberReinforcedElastodynamicsValidation
     LargeNetworksValidation
     ElasticityCouplingIntegrationValidation
-    OneVesselMMS
-    OneVesselMMSDriver
-    MetricFlowXVesselWallGeometry
-    MetricFlowXVesselWallConstraint
     NavierStokes)
 
 set(IMMERSX_APPLICATION_TEST_SUITES
@@ -145,10 +141,6 @@ set(_immersx_expected_test_suites
     MaterialParameters
     BoundaryConditionParameters
     RhsParameters
-    OneVesselMMS
-    OneVesselMMSDriver
-    MetricFlowXVesselWallGeometry
-    MetricFlowXVesselWallConstraint
     ModulatedParsedFunction
     NavierStokes
     Poisson
