@@ -578,7 +578,7 @@ namespace ImmersX
       for (unsigned int i = 0; i < positions.size(); ++i)
         result +=
           local_values[i] * observable.operation()(view, positions[i], 0);
-      return observable.scale() * result;
+      return result;
     }
 
     template <typename ObservableType>
@@ -611,7 +611,7 @@ namespace ImmersX
         dealii::update_values | ObservableType::update_flags());
       values.reinit(cell);
       const auto &view = values[field.extractor()];
-      return observable.scale() * observable.operation()(view, basis, 0);
+      return observable.operation()(view, basis, 0);
     }
 
     template <typename ObservableType, typename CoefficientProvider>

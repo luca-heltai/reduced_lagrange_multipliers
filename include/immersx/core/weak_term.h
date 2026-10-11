@@ -1605,7 +1605,7 @@ namespace ImmersX
           dealii::update_values | observable.update_flags());
         input_values.reinit(input_cell);
         const auto &view = input_values[input_field.extractor()];
-        return observable.scale() * observable.operation()(view, basis, 0);
+        return observable.operation()(view, basis, 0);
       }
 
       template <typename VectorType,

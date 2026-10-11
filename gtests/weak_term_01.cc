@@ -333,8 +333,8 @@ TEST(WeakTerm, ActiveAndFrozenObservablesUseTheirOwnFiniteElements)
             0.,
             [&](const auto &input, const auto &, const double) {
               if (input.is_frozen())
-                return std::sqrt(reference_area / numbers::PI);
-              return std::sqrt(active_value / numbers::PI);
+                return input.scale() * reference_area;
+              return input.scale() * active_value;
             });
           EXPECT_NEAR(expression_sum, direct_sum, 1.e-14);
           for (unsigned int i = 0; i < active_indices.size(); ++i)

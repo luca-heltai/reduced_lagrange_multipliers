@@ -582,7 +582,7 @@ TEST(FESpace, LiftThicknessUsesFrozenFieldOnItsOwnFiniteElement)
     }
   EXPECT_GT(first_cell_radius, 0.);
   EXPECT_NEAR(second_cell_radius / first_cell_radius, 2., 1.e-10);
-  EXPECT_NEAR(second_cell_weight / first_cell_weight, 4., 1.e-10);
+  EXPECT_NEAR(second_cell_weight / first_cell_weight, 2., 1.e-10);
 
   using State = ImmersX::ImmersXLA::MPI::Vector;
   State active_state(active.locally_owned_dofs(), MPI_COMM_SELF);

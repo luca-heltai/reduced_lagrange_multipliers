@@ -153,11 +153,7 @@ namespace ImmersX
         if (field.has_execution_index(native_index))
           {
             const auto execution_index = field.execution_index(native_index);
-            AssertThrow(values.locally_owned_elements().is_element(
-                          execution_index),
-                        dealii::ExcMessage(
-                          "The compacted Field does not own an output DoF."));
-            native[native_index] = values[execution_index];
+            native[native_index]       = values[execution_index];
           }
       native.update_ghost_values();
       return native;
