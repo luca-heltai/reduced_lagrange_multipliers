@@ -43,6 +43,7 @@ set(IMMERSX_INTEGRATION_TEST_SUITES
     ElasticityCouplingParticleOutput
     Elastodynamics
     ImportedFiniteElementFields
+    Domain
     LegacyInclusions
     LinearAdapter
     PoissonPrimitives
@@ -107,6 +108,7 @@ set(_immersx_expected_test_suites
     DimensionParameters
     DistributedIDA
     DistributedLiftedQuadrature
+    Domain
     ElasticStaticDimensions
     ElasticStaticExecution
     ElasticStaticProblem
