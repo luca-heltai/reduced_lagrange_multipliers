@@ -108,9 +108,10 @@ TEST(ImportedFiniteElementFields, BOTH_CellDataA0RemainsDiscontinuous)
   auto       mesh     = make_distributed_mesh<1, 3>(filename);
   auto       imported =
     std::make_shared<ImportedFiniteElementFields<1, 3>>(filename, *mesh);
-  const auto  a0  = imported->field("a0");
-  const auto &fe  = imported->finite_element();
-  const auto *dgq = dynamic_cast<const FE_DGQ<1, 3> *>(&fe);
+  const auto  a0 = imported->field("a0");
+  const auto &fe = imported->finite_element();
+  ASSERT_EQ(fe.n_blocks(), 1u);
+  const auto *dgq = dynamic_cast<const FE_DGQ<1, 3> *>(&fe.base_element(0));
   ASSERT_NE(dgq, nullptr);
   EXPECT_EQ(fe.degree, 0u);
   ASSERT_EQ(mesh->n_global_active_cells(), 2u);
