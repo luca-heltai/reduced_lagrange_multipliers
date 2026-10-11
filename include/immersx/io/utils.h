@@ -595,8 +595,9 @@ namespace ImmersX
 
 
   inline void
-  initialize_parameters(const std::string &filename        = "",
-                        const std::string &output_filename = "")
+  initialize_parameters(const std::string &filename                  = "",
+                        const std::string &output_filename           = "",
+                        const bool         skip_undefined_parameters = false)
   {
     // Two-pass initialization:
     // 1. Parse the file ignoring undeclared entries
@@ -615,11 +616,11 @@ namespace ImmersX
             prm.parse_input(filename, "", true);
             ParameterAcceptor::parse_all_parameters(prm);
 
-            // Second pass. In this case, we do not skip undeclared entries,
-            // because all acceptors should have been created in the first pass,
-            // and we want to check that all entries in the file are valid.
+            // The second pass parses after all dynamically created acceptors
+            // have been declared. Keep strict checking as the default, while
+            // allowing applications to reuse parameter files with extra keys.
             ParameterAcceptor::declare_all_parameters(prm);
-            prm.parse_input(filename);
+            prm.parse_input(filename, "", skip_undefined_parameters);
             ParameterAcceptor::parse_all_parameters(prm);
           }
         catch (const dealii::ExcFileNotOpen &)
@@ -653,8 +654,10 @@ namespace ImmersX
 
 
   inline void
-  initialize_parameters_from_string(const std::string &prm_content,
-                                    const std::string &output_filename = "")
+  initialize_parameters_from_string(
+    const std::string &prm_content,
+    const std::string &output_filename           = "",
+    const bool         skip_undefined_parameters = false)
   {
     // Two-pass initialization:
     // 1) Parse the prm_content ignoring undeclared entries, so we can still
@@ -673,7 +676,7 @@ namespace ImmersX
 
     // Second pass.
     ParameterAcceptor::declare_all_parameters(prm);
-    prm.parse_input_from_string(prm_content);
+    prm.parse_input_from_string(prm_content, "", skip_undefined_parameters);
     ParameterAcceptor::parse_all_parameters(prm);
 
     if (!output_filename.empty() &&
