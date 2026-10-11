@@ -127,11 +127,10 @@ namespace ImmersX
                     dealii::ExcMessage(
                       "Registered output fields do not cover the FE space."));
 
-      VectorType native;
-      native.reinit(space_.locally_owned_dofs(),
-                    space_.locally_relevant_dofs(),
-                    space_.mpi_communicator());
-      native = 0.;
+      VectorType locally_owned_native;
+      locally_owned_native.reinit(space_.locally_owned_dofs(),
+                                  space_.mpi_communicator());
+      locally_owned_native = 0.;
       std::vector<dealii::IndexSet> component_dofs(n_components);
       for (unsigned int component = 0; component < n_components; ++component)
         component_dofs[component] = dealii::DoFTools::extract_dofs(
@@ -160,8 +159,14 @@ namespace ImmersX
                       dealii::ExcMessage(
                         "A registered output field does not own the required "
                         "execution DoF."));
-          native[native_index] = values[execution_index];
+          locally_owned_native[native_index] = values[execution_index];
         }
+
+      VectorType native;
+      native.reinit(space_.locally_owned_dofs(),
+                    space_.locally_relevant_dofs(),
+                    space_.mpi_communicator());
+      native = locally_owned_native;
       native.update_ghost_values();
 
       std::vector<std::string> names;
