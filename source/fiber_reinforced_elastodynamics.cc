@@ -18,8 +18,6 @@
 #include <deal.II/lac/solver_control.h>
 #include <deal.II/lac/solver_gmres.h>
 
-#include <deal.II/numerics/data_out.h>
-
 #include <immersx/core/constraint.h>
 #include <immersx/core/matrix_operator.h>
 #include <immersx/core/observable.h>
@@ -307,6 +305,17 @@ namespace ImmersX
     multiplier_storage.reinit(
       multiplier_dof_handler_storage->locally_owned_dofs(), MPI_COMM_WORLD);
     multiplier_storage = 0.;
+
+    const auto multiplier_output_field =
+      multiplier_space_storage->field(multiplier_output_layout_storage,
+                                      "lagrange_multiplier",
+                                      dealii::FEValuesExtractors::Vector(0));
+    multiplier_output_field_id_storage = multiplier_output_field.id();
+    multiplier_output_storage = std::make_unique<MultiplierOutputHandler>(
+      *multiplier_space_storage,
+      std::filesystem::path(parameters.output_directory) / "interaction",
+      parameters.multiplier_output_name);
+    multiplier_output_storage->add_field(multiplier_output_field);
 
     coupling_setup_complete = true;
     setup_complete          = true;
@@ -601,35 +610,10 @@ namespace ImmersX
     matrix_problem_storage.output_results();
     fiber_problem_storage.output_results();
 
-    const auto output_directory =
-      std::filesystem::path(parameters.output_directory) / "interaction";
-    std::filesystem::create_directories(output_directory);
-    dealii::DataOut<1, dim> data_out;
-    data_out.attach_dof_handler(*multiplier_dof_handler_storage);
-    const std::vector<std::string> names(dim, "lagrange_multiplier");
-    const std::vector<
-      dealii::DataComponentInterpretation::DataComponentInterpretation>
-      interpretation(
-        dim, dealii::DataComponentInterpretation::component_is_part_of_vector);
-    data_out.add_data_vector(multiplier_storage,
-                             names,
-                             dealii::DataOut<1, dim>::type_dof_data,
-                             interpretation);
-    data_out.build_patches(fiber_problem_storage.mapping());
-
-    const auto filename = parameters.multiplier_output_name + "_" +
-                          std::to_string(time_step_number_storage) + ".vtu";
-    data_out.write_vtu_in_parallel((output_directory / filename).string(),
-                                   MPI_COMM_WORLD);
-    multiplier_output_records_storage.emplace_back(current_time_storage,
-                                                   filename);
-    if (dealii::Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
-      {
-        std::ofstream pvd(output_directory /
-                          (parameters.multiplier_output_name + ".pvd"));
-        dealii::DataOutBase::write_pvd_record(
-          pvd, multiplier_output_records_storage);
-      }
+    StateView<VectorType> output_state(multiplier_output_layout_storage,
+                                       current_time_storage);
+    output_state.bind(multiplier_output_field_id_storage, multiplier_storage);
+    multiplier_output_storage->write(output_state, current_time_storage);
   }
 
 
