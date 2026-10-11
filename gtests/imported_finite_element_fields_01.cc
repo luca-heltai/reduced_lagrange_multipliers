@@ -14,6 +14,8 @@
 
 #include <deal.II/dofs/dof_tools.h>
 
+#include <deal.II/fe/fe_dgq.h>
+
 #include <deal.II/grid/grid_tools.h>
 #include <deal.II/grid/tria_description.h>
 
@@ -24,6 +26,8 @@
 #include <immersx/io/imported_finite_element_fields.h>
 #include <immersx/io/vtk_utils.h>
 #include <immersx/physics/elastic_static.h>
+
+#include <cmath>
 
 #include "test_paths.h"
 
@@ -96,6 +100,44 @@ TEST(ImportedFiniteElementFields, CellDataScalar)
 {
   check_scalar_import<1, 3>(TestPaths::data_filename("tests/mstree_10.vtk"),
                             "edge_length");
+}
+
+TEST(ImportedFiniteElementFields, BOTH_CellDataA0RemainsDiscontinuous)
+{
+  const auto filename = TestPaths::data_filename("tests/two_cell_a0.vtk");
+  auto       mesh     = make_distributed_mesh<1, 3>(filename);
+  auto       imported =
+    std::make_shared<ImportedFiniteElementFields<1, 3>>(filename, *mesh);
+  const auto  a0 = imported->field("a0");
+  const auto &fe = imported->finite_element();
+  ASSERT_EQ(fe.n_blocks(), 1u);
+  const auto *dgq = dynamic_cast<const FE_DGQ<1, 3> *>(&fe.base_element(0));
+  ASSERT_NE(dgq, nullptr);
+  EXPECT_EQ(fe.degree, 0u);
+  ASSERT_EQ(mesh->n_global_active_cells(), 2u);
+
+  unsigned int local_one  = 0;
+  unsigned int local_four = 0;
+  for (const auto &cell : imported->dof_handler().active_cell_iterators())
+    if (cell->is_locally_owned())
+      {
+        std::vector<types::global_dof_index> indices(fe.n_dofs_per_cell());
+        cell->get_dof_indices(indices);
+        ASSERT_EQ(indices.size(), 1u);
+        const double value = a0.coefficients()[indices.front()];
+        if (std::abs(value - 1.) < 1.e-14)
+          ++local_one;
+        else if (std::abs(value - 4.) < 1.e-14)
+          ++local_four;
+        else
+          FAIL() << "Unexpected imported a0 value " << value;
+      }
+  EXPECT_EQ(Utilities::MPI::sum(local_one, MPI_COMM_WORLD), 1u);
+  EXPECT_EQ(Utilities::MPI::sum(local_four, MPI_COMM_WORLD), 1u);
+
+  const auto frozen_a0 = ImmersX::frozen(a0.field(), a0.coefficients());
+  EXPECT_TRUE(frozen_a0.is_frozen());
+  EXPECT_TRUE(frozen_a0.dependencies().empty());
 }
 
 TEST(ImportedFiniteElementFields, ComponentLookupSharesStorage)

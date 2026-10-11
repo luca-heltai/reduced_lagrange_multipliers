@@ -1527,8 +1527,21 @@ namespace ImmersX
         using Observable = std::decay_t<decltype(observable)>;
         using Value      = typename Observable::value_type;
 
-        const auto input_cell = source_cell->as_dof_handler_iterator(
-          observable.source().dof_handler());
+        const auto &input_field = observable.source();
+        const auto  input_cell =
+          source_cell->as_dof_handler_iterator(input_field.dof_handler());
+        const auto input_reference_point =
+          input_field.mapping().transform_real_to_unit_cell(
+            input_cell, source_values.quadrature_point(q));
+        const dealii::Quadrature<dim> input_quadrature(
+          std::vector<dealii::Point<dim>>{input_reference_point},
+          std::vector<double>{1.});
+        dealii::FEValues<dim, spacedim> input_values(
+          input_field.mapping(),
+          input_field.space().finite_element(),
+          input_quadrature,
+          dealii::update_values | observable.update_flags());
+        input_values.reinit(input_cell);
         std::vector<dealii::types::global_dof_index> indices(
           input_cell->get_fe().n_dofs_per_cell());
         input_cell->get_dof_indices(indices);
@@ -1554,11 +1567,11 @@ namespace ImmersX
           execution_values.begin(),
           execution_values.end());
 
-        const auto &view   = source_values[observable.source().extractor()];
+        const auto &view   = input_values[input_field.extractor()];
         Value       result = Value{};
         for (unsigned int i = 0; i < positions.size(); ++i)
           result +=
-            execution_values[i] * observable.operation()(view, positions[i], q);
+            execution_values[i] * observable.operation()(view, positions[i], 0);
         return observable.scale() * result;
       }
 
@@ -1575,11 +1588,24 @@ namespace ImmersX
         using Value      = typename Observable::value_type;
         if (observable.is_frozen() || observable.source_field() != field)
           return Value{};
-        const auto input_cell = source_cell->as_dof_handler_iterator(
-          observable.source().dof_handler());
+        const auto &input_field = observable.source();
+        const auto  input_cell =
+          source_cell->as_dof_handler_iterator(input_field.dof_handler());
         AssertIndexRange(basis, input_cell->get_fe().n_dofs_per_cell());
-        const auto &view = source_values[observable.source().extractor()];
-        return observable.scale() * observable.operation()(view, basis, q);
+        const auto input_reference_point =
+          input_field.mapping().transform_real_to_unit_cell(
+            input_cell, source_values.quadrature_point(q));
+        const dealii::Quadrature<dim> input_quadrature(
+          std::vector<dealii::Point<dim>>{input_reference_point},
+          std::vector<double>{1.});
+        dealii::FEValues<dim, spacedim> input_values(
+          input_field.mapping(),
+          input_field.space().finite_element(),
+          input_quadrature,
+          dealii::update_values | observable.update_flags());
+        input_values.reinit(input_cell);
+        const auto &view = input_values[input_field.extractor()];
+        return observable.operation()(view, basis, 0);
       }
 
       template <typename VectorType,

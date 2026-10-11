@@ -16,6 +16,7 @@
 
 #include <deal.II/fe/fe_q.h>
 #include <deal.II/fe/fe_system.h>
+#include <deal.II/fe/fe_values_extractors.h>
 #include <deal.II/fe/mapping_q1.h>
 
 #include <deal.II/grid/grid_generator.h>
@@ -208,5 +209,50 @@ TEST(OutputHandler, BOTH_ReindexedNavierStokesFields)
       EXPECT_NE(
         output_text(output_parameters.output_directory).find("pressure"),
         std::string::npos);
+    }
+}
+
+TEST(OutputHandler, BOTH_IndependentFiniteElementSpaceOutput)
+{
+  parallel::distributed::Triangulation<2> triangulation(MPI_COMM_WORLD);
+  GridGenerator::hyper_cube(triangulation);
+  triangulation.refine_global(1);
+  FESystem<2>   host_element(FE_Q<2>(1), 2);
+  DoFHandler<2> host_dof_handler(triangulation);
+  host_dof_handler.distribute_dofs(host_element);
+  ImmersX::FiniteElementSpaceParameters<2> parameters(
+    "/Output independent FE space/", "FE_DGQ<2>(1)");
+  ImmersX::FiniteElementSpace<2> space(triangulation, parameters);
+  EXPECT_EQ(&space.triangulation(), &host_dof_handler.get_triangulation());
+  EXPECT_NE(&space.dof_handler(), &host_dof_handler);
+  FieldVector values;
+  values.reinit(space.locally_owned_dofs(),
+                space.locally_relevant_dofs(),
+                MPI_COMM_WORLD);
+  for (const auto index : space.locally_owned_dofs())
+    values[index] = 2. + index;
+  ASSERT_EQ(values.size(), space.dof_handler().n_dofs());
+  for (const auto index : space.locally_owned_dofs())
+    EXPECT_DOUBLE_EQ(values[index], 2. + index);
+
+  const auto output_directory =
+    ImmersX::TestPaths::output_directory("output-handler-independent-fe");
+  DataOut<2> output;
+  output.attach_dof_handler(space.dof_handler());
+  output.add_data_vector(values, "lambda", DataOut<2>::type_dof_data);
+  output.build_patches(space.view().mapping());
+  const auto rank = Utilities::MPI::this_mpi_process(MPI_COMM_WORLD);
+  if (rank == 0)
+    std::filesystem::create_directories(output_directory);
+  MPI_Barrier(MPI_COMM_WORLD);
+  output.write_vtu_in_parallel(output_directory + "/lambda.vtu",
+                               MPI_COMM_WORLD);
+  MPI_Barrier(MPI_COMM_WORLD);
+  if (rank == 0)
+    {
+      EXPECT_TRUE(std::filesystem::exists(output_directory + "/lambda.pvtu") ||
+                  std::filesystem::exists(output_directory + "/lambda.vtu"));
+      const auto text = output_text(output_directory);
+      EXPECT_NE(text.find("Name=\"lambda\""), std::string::npos);
     }
 }

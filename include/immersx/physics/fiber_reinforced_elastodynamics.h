@@ -24,6 +24,7 @@
 #include <immersx/core/constraint.h>
 #include <immersx/core/fe_space.h>
 #include <immersx/core/time_parameters.h>
+#include <immersx/io/output_handler.h>
 #ifdef DEAL_II_WITH_SUNDIALS
 #  include <immersx/core/sundials_ida_adapter.h>
 #endif
@@ -33,7 +34,6 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 namespace ImmersX
 {
@@ -96,6 +96,7 @@ namespace ImmersX
     using Problem       = MatrixProblem;
     using VectorType    = typename MatrixProblem::VectorType;
     using MatrixType    = typename MatrixProblem::MatrixType;
+    using MultiplierOutputHandler = OutputHandler<1, dim, VectorType>;
 #ifdef DEAL_II_WITH_SUNDIALS
     using GlobalVectorType = ImmersXLA::MPI::BlockVector;
     using IDAAdapterType   = IDAAdapter<VectorType, GlobalVectorType>;
@@ -245,10 +246,13 @@ namespace ImmersX
     std::unique_ptr<FiniteElementSpaceView<dim, dim>> matrix_space_storage;
     std::unique_ptr<FiniteElementSpaceView<1, dim>>   fiber_space_storage;
     std::unique_ptr<FiniteElementSpaceView<1, dim>>   multiplier_space_storage;
-    std::shared_ptr<MatrixType>  matrix_to_multiplier_storage;
-    std::shared_ptr<MatrixType>  fiber_to_multiplier_storage;
-    std::shared_ptr<MatrixType>  matrix_coupling_storage;
-    std::unique_ptr<SchurSolver> schur_solver;
+    StateLayout                              multiplier_output_layout_storage;
+    FieldId                                  multiplier_output_field_id_storage;
+    std::unique_ptr<MultiplierOutputHandler> multiplier_output_storage;
+    std::shared_ptr<MatrixType>              matrix_to_multiplier_storage;
+    std::shared_ptr<MatrixType>              fiber_to_multiplier_storage;
+    std::shared_ptr<MatrixType>              matrix_coupling_storage;
+    std::unique_ptr<SchurSolver>             schur_solver;
 #ifdef DEAL_II_WITH_SUNDIALS
     std::unique_ptr<IDAAdapterType> ida_storage;
 
@@ -262,8 +266,6 @@ namespace ImmersX
     MatrixType fiber_effective_matrix;
     VectorType multiplier_storage;
     VectorType matrix_only_displacement_storage;
-    mutable std::vector<std::pair<double, std::string>>
-      multiplier_output_records_storage;
 
     double       current_time_storage     = 0.;
     unsigned int time_step_number_storage = 0;

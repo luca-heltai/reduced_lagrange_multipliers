@@ -25,6 +25,7 @@
 
 #include <algorithm>
 #include <any>
+#include <cmath>
 #include <memory>
 #include <tuple>
 #include <type_traits>
@@ -759,6 +760,8 @@ namespace ImmersX
     const source_field_type &
     source() const
     {
+      if (!dependencies_.empty())
+        return source_for(dependencies_.front());
       return std::get<0>(inputs_).source();
     }
 
@@ -1339,6 +1342,25 @@ namespace ImmersX
         return -direction;
       }
     };
+
+    struct SqrtKernel
+    {
+      template <typename Value,
+                std::enable_if_t<std::is_arithmetic_v<Value>, int> = 0>
+      auto
+      evaluate(const Value &value) const
+      {
+        return std::sqrt(value);
+      }
+
+      template <typename Value,
+                std::enable_if_t<std::is_arithmetic_v<Value>, int> = 0>
+      auto
+      linearize(const Value &value, const Value &direction) const
+      {
+        return direction / (2. * std::sqrt(value));
+      }
+    };
     /// \endcond
   } // namespace detail
 
@@ -1375,6 +1397,15 @@ namespace ImmersX
   operator-(Expression expression)
   {
     return transform(as_fe_expression(expression), detail::NegateKernel{});
+  }
+
+  template <
+    typename Expression,
+    std::enable_if_t<detail::is_expression_operand<Expression>, int> = 0>
+  auto
+  sqrt(Expression expression)
+  {
+    return transform(as_fe_expression(expression), detail::SqrtKernel{});
   }
 
   template <typename Left,

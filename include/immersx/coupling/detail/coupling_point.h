@@ -14,6 +14,8 @@
 #include <deal.II/base/tensor.h>
 #include <deal.II/base/types.h>
 
+#include <deal.II/grid/cell_id.h>
+
 #include <cstdint>
 #include <limits>
 #include <vector>
@@ -31,6 +33,7 @@ namespace ImmersX::detail
     double                           weight = 0.;
     dealii::types::global_cell_index source_entity_id =
       dealii::numbers::invalid_unsigned_int;
+    dealii::CellId source_cell_id;
     unsigned int  representative_qpoint = dealii::numbers::invalid_unsigned_int;
     unsigned int  section_qpoint        = dealii::numbers::invalid_unsigned_int;
     std::uint64_t stable_id = std::numeric_limits<std::uint64_t>::max();

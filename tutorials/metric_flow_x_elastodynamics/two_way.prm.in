@@ -1,23 +1,60 @@
 subsection Time interval
   set Initial time = 0.0
-  set Final time = 0.0
-  set Output time interval = 1e-6
+  set Final time = 0.02
+  set Output time interval = 0.01
 end
+
 subsection Fixed step
-  set Time step = 1e-6
-  set Number of time steps = 1
+  set Time step = 0.01
+  set Number of time steps = 2
   set Policy = number_of_steps
+end
+
+subsection IDA
+  subsection Running parameters
+    set Initial step size = 0.001
+    set Minimum step size = 1e-8
+    set Maximum order of BDF = 2
+    set Maximum number of nonlinear iterations = 8
+  end
+  subsection Error control
+    set Absolute error tolerance = 1e-6
+    set Relative error tolerance = 1e-5
+  end
 end
 
 subsection Elastodynamics
   set FE degree = 1
   set Number of refinement cycles = 1
   set Dirichlet boundary ids = 0
-  set Output directory = @TEST_OUTPUT_DIR@/tutorial-output/metric-flow-x-elastodynamics-01
+  set Output directory = @TEST_OUTPUT_DIR@/metric-flow-x-elastodynamics/solid
+  set Output name = two_way
   subsection Domain
     set Initial refinement = 1
     set Grid generator = subdivided_cylinder
     set Grid generator arguments = 4:0.05:0.120685
+  end
+  subsection Material
+    set Density = 1060.0
+    set Lame mu = 1e6
+    set Lame lambda = 1e6
+  end
+  subsection Functions
+    subsection Body force
+      set Function expression = 0;0;0
+    end
+    subsection Displacement boundary
+      set Function expression = 0;0;0
+    end
+    subsection Velocity boundary
+      set Function expression = 0;0;0
+    end
+    subsection Initial displacement
+      set Function expression = 0;0;0
+    end
+    subsection Initial velocity
+      set Function expression = 0;0;0
+    end
   end
 end
 
@@ -30,15 +67,15 @@ subsection Metric Flow Parameters
 end
 
 subsection Functions
-  set Inflow function = 0.0
+  set Inflow function = 1e-7*sin(100*pi*t)
 end
 
 subsection MetricFlowSystem<1, 3>
   set Finite element degree = 1
   set Number of global refinement = 0
   set Number of refinement cycles = 1
-  set Output filename = wall_kinematics
-  set Output directory = @TEST_OUTPUT_DIR@/tutorial-output/metric-flow-x-elastodynamics-01
+  set Output filename = two_way
+  set Output directory = @TEST_OUTPUT_DIR@/metric-flow-x-elastodynamics/flow
   set Use direct solver = true
   set Verbosity (console depth) = 0
   set Numerical flux type = HLL
@@ -46,8 +83,8 @@ subsection MetricFlowSystem<1, 3>
   set Vtk file path for mesh input = @TEST_DATA_DIR@/metric_flow_x/single_vessel_centered.vtk
 end
 
-subsection MetricFlowX elastodynamics tutorial
-  set MMS case = kinematics
+subsection MetricFlowX multiplier space
+  set Finite element = FE_DGQ(1)
 end
 
 subsection MetricFlowX vessel wall lift

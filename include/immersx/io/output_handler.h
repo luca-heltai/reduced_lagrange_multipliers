@@ -59,8 +59,17 @@ namespace ImmersX
     OutputHandler(const Space                   &space,
                   const OutputHandlerParameters &parameters,
                   std::string                    basename)
+      : OutputHandler(space,
+                      std::filesystem::path(parameters.output_directory),
+                      std::move(basename))
+    {}
+
+    /** Write fields below an application-provided output directory. */
+    OutputHandler(const Space                 &space,
+                  const std::filesystem::path &output_directory,
+                  std::string                  basename)
       : space_(space)
-      , parameters_(parameters)
+      , output_directory_(output_directory)
       , basename_(std::move(basename))
     {
       AssertThrow(!basename_.empty(),
@@ -181,8 +190,7 @@ namespace ImmersX
 
       const auto communicator = space_.mpi_communicator();
       const auto rank = dealii::Utilities::MPI::this_mpi_process(communicator);
-      const std::filesystem::path output_directory(
-        parameters_.output_directory);
+      const std::filesystem::path output_directory(output_directory_);
       if (rank == 0)
         std::filesystem::create_directories(output_directory);
       MPI_Barrier(communicator);
@@ -250,7 +258,7 @@ namespace ImmersX
     }
 
     const Space                                &space_;
-    const OutputHandlerParameters              &parameters_;
+    std::filesystem::path                       output_directory_;
     std::string                                 basename_;
     std::vector<RegisteredField>                fields_;
     std::vector<std::pair<double, std::string>> output_records_;

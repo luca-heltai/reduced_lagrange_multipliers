@@ -26,6 +26,7 @@
 #include <immersx/coupling/tensor_product_lift.h>
 
 #include <cstdint>
+#include <functional>
 #include <limits>
 #include <memory>
 #include <type_traits>
@@ -92,6 +93,34 @@ namespace ImmersX
       , support_(lift.parameters())
     {
       support_.set_thickness_evaluator(std::move(thickness_evaluator));
+      build_points();
+    }
+
+    template <typename ThicknessObservable,
+              std::enable_if_t<
+                detail::is_observable<std::decay_t<ThicknessObservable>>::value,
+                int> = 0>
+    LiftedObservable(SourceObservable    source,
+                     const Lift         &lift,
+                     ThicknessObservable thickness)
+      : source_(std::move(source))
+      , support_(lift.parameters())
+    {
+      AssertThrow(thickness.dependencies().empty(),
+                  dealii::ExcMessage(
+                    "Lift thickness Observables must be frozen."));
+      thickness_evaluator_ = [thickness](const dealii::CellId          &cell_id,
+                                         const dealii::Point<spacedim> &point,
+                                         const double                   time) {
+        return evaluate_frozen_expression(
+          thickness,
+          cell_id,
+          point,
+          time,
+          [](const auto &input) -> const auto & {
+            return input.template frozen_values<state_type>();
+          });
+      };
       build_points();
     }
 
@@ -290,15 +319,10 @@ namespace ImmersX
                     const unsigned int basis) const
     {
       AssertIndexRange(point, points_.size());
-      AssertIndexRange(basis, points_[point].dof_indices.size());
       double derivative = 0.;
       if constexpr (detail::is_transformed_observable<SourceObservable>::value)
-        derivative = composed_basis_derivative(source_,
-                                               context.state(field),
-                                               field,
-                                               points_[point],
-                                               basis,
-                                               context.time());
+        derivative = composed_basis_derivative(
+          source_, context, field, points_[point], basis, context.time());
       else if (!source_.is_frozen() && field == source_field())
         derivative = points_[point].source_basis_values[basis];
 
@@ -453,6 +477,160 @@ namespace ImmersX
     }
 
   private:
+    template <typename ObservableType, typename CoefficientProvider>
+    static auto
+    primitive_value_at(const ObservableType &observable,
+                       const Point          &point,
+                       const double          time,
+                       CoefficientProvider &&coefficients_for)
+    {
+      const auto &field = observable.source();
+      const auto  tria_cell =
+        field.dof_handler().get_triangulation().create_cell_iterator(
+          point.source_cell_id);
+      const auto cell = tria_cell->as_dof_handler_iterator(field.dof_handler());
+      const auto reference_point =
+        field.mapping().transform_real_to_unit_cell(cell,
+                                                    point.representative_point);
+      const dealii::Quadrature<reduced_dim> quadrature(
+        std::vector<dealii::Point<reduced_dim>>{reference_point},
+        std::vector<double>{1.});
+      dealii::FEValues<reduced_dim, spacedim> values(
+        field.mapping(),
+        field.space().finite_element(),
+        quadrature,
+        dealii::update_values | ObservableType::update_flags());
+      values.reinit(cell);
+
+      std::vector<dealii::types::global_dof_index> native_indices(
+        cell->get_fe().n_dofs_per_cell());
+      cell->get_dof_indices(native_indices);
+      std::vector<dealii::types::global_dof_index> execution_indices;
+      std::vector<unsigned int>                    positions;
+      for (unsigned int i = 0; i < native_indices.size(); ++i)
+        if (field.has_execution_index(native_indices[i]))
+          {
+            positions.push_back(i);
+            execution_indices.push_back(
+              field.execution_index(native_indices[i]));
+          }
+      const auto         &coefficients = coefficients_for(observable);
+      std::vector<double> local_values(execution_indices.size());
+      field.constraints().get_dof_values(coefficients,
+                                         execution_indices.begin(),
+                                         local_values.begin(),
+                                         local_values.end());
+
+      using Value = typename ObservableType::value_type;
+      Value       result{};
+      const auto &view = values[field.extractor()];
+      for (unsigned int i = 0; i < positions.size(); ++i)
+        result +=
+          local_values[i] * observable.operation()(view, positions[i], 0);
+      (void)time;
+      return observable.scale() * result;
+    }
+
+    template <typename ObservableType>
+    static auto
+    primitive_direction_at(const ObservableType &observable,
+                           const Point          &point,
+                           const state_type     &direction)
+    {
+      const auto &field = observable.source();
+      const auto  tria_cell =
+        field.dof_handler().get_triangulation().create_cell_iterator(
+          point.source_cell_id);
+      const auto cell = tria_cell->as_dof_handler_iterator(field.dof_handler());
+      const auto reference_point =
+        field.mapping().transform_real_to_unit_cell(cell,
+                                                    point.representative_point);
+      const dealii::Quadrature<reduced_dim> quadrature(
+        std::vector<dealii::Point<reduced_dim>>{reference_point},
+        std::vector<double>{1.});
+      dealii::FEValues<reduced_dim, spacedim> values(
+        field.mapping(),
+        field.space().finite_element(),
+        quadrature,
+        dealii::update_values | ObservableType::update_flags());
+      values.reinit(cell);
+
+      std::vector<dealii::types::global_dof_index> native_indices(
+        cell->get_fe().n_dofs_per_cell());
+      cell->get_dof_indices(native_indices);
+      std::vector<dealii::types::global_dof_index> execution_indices;
+      std::vector<unsigned int>                    positions;
+      for (unsigned int i = 0; i < native_indices.size(); ++i)
+        if (field.has_execution_index(native_indices[i]))
+          {
+            positions.push_back(i);
+            execution_indices.push_back(
+              field.execution_index(native_indices[i]));
+          }
+      std::vector<double> local_values(execution_indices.size());
+      field.constraints().get_dof_values(direction,
+                                         execution_indices.begin(),
+                                         local_values.begin(),
+                                         local_values.end());
+      using Value = typename ObservableType::value_type;
+      Value       result{};
+      const auto &view = values[field.extractor()];
+      for (unsigned int i = 0; i < positions.size(); ++i)
+        result +=
+          local_values[i] * observable.operation()(view, positions[i], 0);
+      return result;
+    }
+
+    template <typename ObservableType>
+    static auto
+    primitive_basis_at(const ObservableType &observable,
+                       const Point          &point,
+                       const unsigned int    basis)
+    {
+      const auto &field = observable.source();
+      const auto  tria_cell =
+        field.dof_handler().get_triangulation().create_cell_iterator(
+          point.source_cell_id);
+      const auto cell = tria_cell->as_dof_handler_iterator(field.dof_handler());
+      AssertIndexRange(basis, cell->get_fe().n_dofs_per_cell());
+      std::vector<dealii::types::global_dof_index> native_indices(
+        cell->get_fe().n_dofs_per_cell());
+      cell->get_dof_indices(native_indices);
+      if (!field.has_execution_index(native_indices[basis]))
+        return typename ObservableType::value_type{};
+      const auto reference_point =
+        field.mapping().transform_real_to_unit_cell(cell,
+                                                    point.representative_point);
+      const dealii::Quadrature<reduced_dim> quadrature(
+        std::vector<dealii::Point<reduced_dim>>{reference_point},
+        std::vector<double>{1.});
+      dealii::FEValues<reduced_dim, spacedim> values(
+        field.mapping(),
+        field.space().finite_element(),
+        quadrature,
+        dealii::update_values | ObservableType::update_flags());
+      values.reinit(cell);
+      const auto &view = values[field.extractor()];
+      return observable.operation()(view, basis, 0);
+    }
+
+    template <typename ObservableType, typename CoefficientProvider>
+    static auto
+    evaluate_frozen_expression(const ObservableType          &observable,
+                               const dealii::CellId          &cell_id,
+                               const dealii::Point<spacedim> &point,
+                               const double                   time,
+                               CoefficientProvider          &&coefficients_for)
+    {
+      const auto evaluator = [&](const auto &input, const auto &, double) {
+        Point source_point;
+        source_point.source_cell_id       = cell_id;
+        source_point.representative_point = point;
+        return primitive_value_at(input, source_point, time, coefficients_for);
+      };
+      return evaluate_observable_input(observable, point, time, evaluator);
+    }
+
     template <typename Context>
     double
     primitive_value(const Context &context, const Point &point) const
@@ -501,15 +679,15 @@ namespace ImmersX
     Operator
     linearize_vector(const Context &context, const FieldId field) const
     {
-      const auto owned        = point_owned_;
-      const auto relevant     = point_relevant_;
-      const auto points       = points_;
-      const auto source_ref   = source();
-      const auto communicator = mpi_communicator();
-      const auto coefficient  = scale();
-      const auto observable   = source_;
-      const auto current      = context.state(field);
-      const auto time         = context.time();
+      const auto owned         = point_owned_;
+      const auto relevant      = point_relevant_;
+      const auto points        = points_;
+      const auto column_source = source_for(field);
+      const auto communicator  = mpi_communicator();
+      const auto coefficient   = scale();
+      const auto observable    = source_;
+      const auto context_copy  = context;
+      const auto time          = context.time();
 
       Operator result;
       result.reinit_range_vector = [n = points.size()](value_type &vector,
@@ -519,97 +697,76 @@ namespace ImmersX
           entry = 0.;
       };
       result.reinit_domain_vector =
-        [source_ref, communicator](state_type &vector, const bool omit) {
-          vector.reinit(source_ref.locally_owned_dofs(),
-                        source_ref.locally_relevant_dofs(),
+        [column_source, communicator](state_type &vector, const bool omit) {
+          vector.reinit(column_source.locally_owned_dofs(),
+                        column_source.locally_relevant_dofs(),
                         communicator);
           if (!omit)
             vector = 0.;
         };
       result.vmult =
-        [points, coefficient, observable, source_ref, current, field, time](
+        [points, coefficient, observable, context_copy, field, time](
           value_type &destination, const state_type &direction) {
           destination.resize(points.size());
           for (std::size_t q = 0; q < points.size(); ++q)
             {
               double derivative = 0.;
-              if constexpr (detail::is_transformed_observable<
-                              SourceObservable>::value)
-                derivative = composed_derivative(observable,
-                                                 source_ref,
-                                                 current,
-                                                 direction,
-                                                 field,
-                                                 points[q],
-                                                 time);
-              else if (!observable.is_frozen())
-                {
-                  std::vector<double> local(points[q].dof_indices.size());
-                  source_ref.constraints().get_dof_values(
-                    direction,
-                    points[q].dof_indices.begin(),
-                    local.begin(),
-                    local.end());
-                  for (unsigned int i = 0; i < local.size(); ++i)
-                    derivative += local[i] * points[q].source_basis_values[i];
-                }
+              derivative        = composed_derivative(
+                observable, context_copy, direction, field, points[q], time);
               destination[q] =
                 mode_vector(points[q]) * (coefficient * derivative);
             }
         };
       result.vmult_add =
-        [points, coefficient, observable, source_ref, current, field, time](
+        [points, coefficient, observable, context_copy, field, time](
           value_type &destination, const state_type &direction) {
           for (std::size_t q = 0; q < points.size(); ++q)
             {
-              double derivative = 0.;
-              if constexpr (detail::is_transformed_observable<
-                              SourceObservable>::value)
-                derivative = composed_derivative(observable,
-                                                 source_ref,
-                                                 current,
-                                                 direction,
-                                                 field,
-                                                 points[q],
-                                                 time);
-              else if (!observable.is_frozen())
-                {
-                  std::vector<double> local(points[q].dof_indices.size());
-                  source_ref.constraints().get_dof_values(
-                    direction,
-                    points[q].dof_indices.begin(),
-                    local.begin(),
-                    local.end());
-                  for (unsigned int i = 0; i < local.size(); ++i)
-                    derivative += local[i] * points[q].source_basis_values[i];
-                }
+              const double derivative = composed_derivative(
+                observable, context_copy, direction, field, points[q], time);
               destination[q] +=
                 mode_vector(points[q]) * (coefficient * derivative);
             }
         };
-      result.Tvmult =
-        [points, coefficient, observable, source_ref, current, field, time](
-          state_type &destination, const value_type &values) {
-          destination = 0.;
-          for (std::size_t q = 0; q < points.size(); ++q)
-            {
-              const double weight =
-                coefficient * (mode_vector(points[q]) * values[q]);
-              std::vector<double> local(points[q].dof_indices.size());
-              for (unsigned int i = 0; i < local.size(); ++i)
-                local[i] =
-                  weight *
-                  (detail::is_transformed_observable<SourceObservable>::value ?
-                     composed_basis_derivative(
-                       observable, current, field, points[q], i, time) :
-                     (observable.is_frozen() ?
-                        0. :
-                        points[q].source_basis_values[i]));
-              source_ref.constraints().distribute_local_to_global(
-                local, points[q].dof_indices, destination);
-            }
-          destination.compress(dealii::VectorOperation::add);
-        };
+      result.Tvmult = [points,
+                       coefficient,
+                       observable,
+                       column_source,
+                       context_copy,
+                       field,
+                       time](state_type       &destination,
+                             const value_type &values) {
+        destination = 0.;
+        for (std::size_t q = 0; q < points.size(); ++q)
+          {
+            const double weight =
+              coefficient * (mode_vector(points[q]) * values[q]);
+            const auto tria_cell =
+              column_source.dof_handler()
+                .get_triangulation()
+                .create_cell_iterator(points[q].source_cell_id);
+            const auto cell =
+              tria_cell->as_dof_handler_iterator(column_source.dof_handler());
+            std::vector<dealii::types::global_dof_index> native_indices(
+              cell->get_fe().n_dofs_per_cell());
+            cell->get_dof_indices(native_indices);
+            std::vector<dealii::types::global_dof_index> execution_indices;
+            std::vector<double>                          local;
+            for (unsigned int i = 0; i < native_indices.size(); ++i)
+              if (column_source.has_execution_index(native_indices[i]))
+                {
+                  execution_indices.push_back(
+                    column_source.execution_index(native_indices[i]));
+                  local.push_back(
+                    weight *
+                    composed_basis_derivative(
+                      observable, context_copy, field, points[q], i, time));
+                }
+            column_source.constraints().distribute_local_to_global(
+              local, execution_indices, destination);
+          }
+        destination.compress(dealii::VectorOperation::add);
+      };
       result.Tvmult_add = [transpose =
                              result.Tvmult](state_type       &destination,
                                             const value_type &values) {
@@ -626,16 +783,16 @@ namespace ImmersX
     Operator
     linearize_composed(const Context &context, const FieldId field) const
     {
-      const auto owned        = point_owned_;
-      const auto relevant     = point_relevant_;
-      const auto point_ids    = point_indices_;
-      const auto points       = points_;
-      const auto source_ref   = source();
-      const auto communicator = mpi_communicator();
-      const auto coefficient  = scale();
-      const auto observable   = source_;
-      const auto current      = context.state(field);
-      const auto time         = context.time();
+      const auto owned         = point_owned_;
+      const auto relevant      = point_relevant_;
+      const auto point_ids     = point_indices_;
+      const auto points        = points_;
+      const auto column_source = source_for(field);
+      const auto communicator  = mpi_communicator();
+      const auto coefficient   = scale();
+      const auto observable    = source_;
+      const auto context_copy  = context;
+      const auto time          = context.time();
 
       Operator result;
       result.reinit_range_vector =
@@ -645,9 +802,9 @@ namespace ImmersX
             vector = 0.;
         };
       result.reinit_domain_vector =
-        [source_ref, communicator](state_type &vector, const bool omit) {
-          vector.reinit(source_ref.locally_owned_dofs(),
-                        source_ref.locally_relevant_dofs(),
+        [column_source, communicator](state_type &vector, const bool omit) {
+          vector.reinit(column_source.locally_owned_dofs(),
+                        column_source.locally_relevant_dofs(),
                         communicator);
           if (!omit)
             vector = 0.;
@@ -659,48 +816,33 @@ namespace ImmersX
                       communicator,
                       coefficient,
                       observable,
-                      source_ref,
-                      current,
+                      context_copy,
                       field,
                       time](value_type       &destination,
                             const state_type &direction) {
         destination.reinit(owned, relevant, communicator);
         destination = 0.;
         for (std::size_t q = 0; q < points.size(); ++q)
-          destination[point_ids[q]] = coefficient * mode_value(points[q]) *
-                                      composed_derivative(observable,
-                                                          source_ref,
-                                                          current,
-                                                          direction,
-                                                          field,
-                                                          points[q],
-                                                          time);
+          destination[point_ids[q]] =
+            coefficient * mode_value(points[q]) *
+            composed_derivative(
+              observable, context_copy, direction, field, points[q], time);
       };
-      result.vmult_add = [points,
-                          point_ids,
-                          coefficient,
-                          observable,
-                          source_ref,
-                          current,
-                          field,
-                          time](value_type       &destination,
-                                const state_type &direction) {
-        for (std::size_t q = 0; q < points.size(); ++q)
-          destination[point_ids[q]] += coefficient * mode_value(points[q]) *
-                                       composed_derivative(observable,
-                                                           source_ref,
-                                                           current,
-                                                           direction,
-                                                           field,
-                                                           points[q],
-                                                           time);
-      };
+      result.vmult_add =
+        [points, point_ids, coefficient, observable, context_copy, field, time](
+          value_type &destination, const state_type &direction) {
+          for (std::size_t q = 0; q < points.size(); ++q)
+            destination[point_ids[q]] +=
+              coefficient * mode_value(points[q]) *
+              composed_derivative(
+                observable, context_copy, direction, field, points[q], time);
+        };
       result.Tvmult = [points,
                        point_ids,
                        coefficient,
                        observable,
-                       source_ref,
-                       current,
+                       column_source,
+                       context_copy,
                        field,
                        time](state_type       &destination,
                              const value_type &values) {
@@ -709,13 +851,29 @@ namespace ImmersX
           {
             const double weight =
               coefficient * mode_value(points[q]) * values[point_ids[q]];
-            std::vector<double> local(points[q].dof_indices.size());
-            for (unsigned int i = 0; i < local.size(); ++i)
-              local[i] =
-                weight * composed_basis_derivative(
-                           observable, current, field, points[q], i, time);
-            source_ref.constraints().distribute_local_to_global(
-              local, points[q].dof_indices, destination);
+            const auto tria_cell =
+              column_source.dof_handler()
+                .get_triangulation()
+                .create_cell_iterator(points[q].source_cell_id);
+            const auto cell =
+              tria_cell->as_dof_handler_iterator(column_source.dof_handler());
+            std::vector<dealii::types::global_dof_index> native_indices(
+              cell->get_fe().n_dofs_per_cell());
+            cell->get_dof_indices(native_indices);
+            std::vector<dealii::types::global_dof_index> execution_indices;
+            std::vector<double>                          local;
+            for (unsigned int i = 0; i < native_indices.size(); ++i)
+              if (column_source.has_execution_index(native_indices[i]))
+                {
+                  execution_indices.push_back(
+                    column_source.execution_index(native_indices[i]));
+                  local.push_back(
+                    weight *
+                    composed_basis_derivative(
+                      observable, context_copy, field, points[q], i, time));
+                }
+            column_source.constraints().distribute_local_to_global(
+              local, execution_indices, destination);
           }
         destination.compress(dealii::VectorOperation::add);
       };
@@ -731,85 +889,66 @@ namespace ImmersX
       return result;
     }
 
-    template <typename ObservableType>
-    static double
-    composed_derivative(const ObservableType    &observable,
-                        const source_field_type &field,
-                        const state_type        &current,
-                        const state_type        &direction,
-                        const FieldId            requested_field,
-                        const Point             &point,
-                        const double             time)
+    template <typename ObservableType, typename Context>
+    static auto
+    composed_derivative(const ObservableType &observable,
+                        const Context        &context,
+                        const state_type     &direction,
+                        const FieldId         requested_field,
+                        const Point          &point,
+                        const double          time)
     {
-      const auto evaluate = [&](const auto &input, const auto &, const double) {
-        const auto &coefficients =
-          input.is_frozen() ? input.template frozen_values<state_type>() :
-                              current;
-        std::vector<double> local(point.dof_indices.size());
-        input.source().constraints().get_dof_values(coefficients,
-                                                    point.dof_indices.begin(),
-                                                    local.begin(),
-                                                    local.end());
-        double value = 0.;
-        for (unsigned int i = 0; i < local.size(); ++i)
-          value += local[i] * point.source_basis_values[i];
-        return value;
+      const auto evaluate = [&](const auto &input, const auto &, double) {
+        const auto coefficients = [&](const auto &primitive) -> const auto & {
+          return primitive.is_frozen() ?
+                   primitive.template frozen_values<state_type>() :
+                   context.state(primitive.source_field());
+        };
+        return primitive_value_at(input, point, time, coefficients);
       };
       const auto derivative = [&](const auto   &input,
                                   const FieldId input_field,
                                   const auto &,
-                                  const double) {
+                                  double) {
         if (input.is_frozen() || input_field != requested_field)
-          return 0.;
-        std::vector<double> local(point.dof_indices.size());
-        field.constraints().get_dof_values(direction,
-                                           point.dof_indices.begin(),
-                                           local.begin(),
-                                           local.end());
-        double value = 0.;
-        for (unsigned int i = 0; i < local.size(); ++i)
-          value += local[i] * point.source_basis_values[i];
-        return value;
+          return typename std::decay_t<decltype(input)>::value_type{};
+        return primitive_direction_at(input, point, direction);
       };
-      return observable.linearize_point(requested_field,
+      return linearize_observable_input(observable,
+                                        requested_field,
                                         point.representative_point,
                                         time,
                                         evaluate,
                                         derivative);
     }
 
-    template <typename ObservableType>
-    static double
+    template <typename ObservableType, typename Context>
+    static auto
     composed_basis_derivative(const ObservableType &observable,
-                              const state_type     &current,
+                              const Context        &context,
                               const FieldId         requested_field,
                               const Point          &point,
                               const unsigned int    basis,
                               const double          time)
     {
-      const auto evaluate = [&](const auto &input, const auto &, const double) {
-        const auto &coefficients =
-          input.is_frozen() ? input.template frozen_values<state_type>() :
-                              current;
-        std::vector<double> local(point.dof_indices.size());
-        input.source().constraints().get_dof_values(coefficients,
-                                                    point.dof_indices.begin(),
-                                                    local.begin(),
-                                                    local.end());
-        double value = 0.;
-        for (unsigned int i = 0; i < local.size(); ++i)
-          value += local[i] * point.source_basis_values[i];
-        return value;
+      const auto evaluate = [&](const auto &input, const auto &, double) {
+        const auto coefficients = [&](const auto &primitive) -> const auto & {
+          return primitive.is_frozen() ?
+                   primitive.template frozen_values<state_type>() :
+                   context.state(primitive.source_field());
+        };
+        return primitive_value_at(input, point, time, coefficients);
       };
       const auto derivative = [&](const auto   &input,
                                   const FieldId input_field,
                                   const auto &,
-                                  const double) {
+                                  double) {
         if (input.is_frozen() || input_field != requested_field)
-          return 0.;
-        return point.source_basis_values[basis];
+          return typename std::decay_t<decltype(input)>::value_type{};
+        return primitive_basis_at(input, point, basis);
       };
-      return observable.linearize_point(requested_field,
+      return linearize_observable_input(observable,
+                                        requested_field,
                                         point.representative_point,
                                         time,
                                         evaluate,
@@ -826,24 +965,15 @@ namespace ImmersX
     double
     composed_value(const Context &context, const Point &point) const
     {
-      const auto evaluator =
-        [&](const auto &input, const auto &, const double) {
-          const auto &coefficients =
-            input.is_frozen() ? input.template frozen_values<state_type>() :
-                                context.state(input.source_field());
-          std::vector<double> local(point.dof_indices.size());
-          input.source().constraints().get_dof_values(coefficients,
-                                                      point.dof_indices.begin(),
-                                                      local.begin(),
-                                                      local.end());
-          double result = 0.;
-          for (unsigned int i = 0; i < local.size(); ++i)
-            result += local[i] * point.source_basis_values[i];
-          return result;
-        };
-      return source_.evaluate_point(point.representative_point,
-                                    context.time(),
-                                    evaluator);
+      const auto coefficients = [&](const auto &input) -> const auto & {
+        return input.is_frozen() ? input.template frozen_values<state_type>() :
+                                   context.state(input.source_field());
+      };
+      return evaluate_frozen_expression(source_,
+                                        point.source_cell_id,
+                                        point.representative_point,
+                                        context.time(),
+                                        coefficients);
     }
 
     void
@@ -868,12 +998,16 @@ namespace ImmersX
             const auto &view = values[field.extractor()];
             for (const auto q : values.quadrature_point_indices())
               {
+                const auto   representative_point = values.quadrature_point(q);
+                const double thickness =
+                  thickness_evaluator_ ?
+                    thickness_evaluator_(cell->id(), representative_point, 0.) :
+                    support_.thickness(representative_point, 0.);
+                AssertThrow(std::isfinite(thickness) && thickness > 0.,
+                            dealii::ExcMessage(
+                              "Lift thickness must be finite and positive."));
                 const auto transformed = support_.transform(
-                  values.quadrature_point(q),
-                  tangent,
-                  values.JxW(q),
-                  support_.thickness(values.quadrature_point(q), 0.),
-                  q);
+                  representative_point, tangent, values.JxW(q), thickness, q);
                 for (unsigned int section_q = 0; section_q < transformed.size();
                      ++section_q)
                   {
@@ -883,6 +1017,7 @@ namespace ImmersX
                     point.representative_point = lifted.representative_point;
                     point.weight               = lifted.weight;
                     point.source_entity_id = cell->global_active_cell_index();
+                    point.source_cell_id   = cell->id();
                     point.representative_qpoint = q;
                     point.section_qpoint        = section_q;
                     point.stable_id =
@@ -955,8 +1090,11 @@ namespace ImmersX
         point_indices_.push_back(offset + i);
     }
 
-    SourceObservable                             source_;
-    Support                                      support_;
+    SourceObservable source_;
+    Support          support_;
+    std::function<
+      double(const dealii::CellId &, const dealii::Point<spacedim> &, double)>
+                                                 thickness_evaluator_;
     std::vector<Point>                           points_;
     dealii::IndexSet                             point_owned_;
     dealii::IndexSet                             point_relevant_;
@@ -1077,6 +1215,30 @@ namespace ImmersX
                                           std::move(thickness_evaluator));
   }
 
+  template <typename SourceObservable,
+            typename ThicknessObservable,
+            int reduced_dim,
+            int surface_dim,
+            int spacedim,
+            int n_components,
+            std::enable_if_t<
+              detail::is_observable<SourceObservable>::value &&
+                detail::is_observable<std::decay_t<ThicknessObservable>>::value,
+              int> = 0>
+  auto
+  make_lift(
+    const SourceObservable &source,
+    const TensorProductLift<reduced_dim, surface_dim, spacedim, n_components>
+                              &lift,
+    const ThicknessObservable &thickness)
+  {
+    return LiftedObservable<SourceObservable,
+                            reduced_dim,
+                            surface_dim,
+                            spacedim,
+                            n_components>(source, lift, thickness);
+  }
+
   template <
     typename SourceObservable,
     int reduced_dim,
@@ -1106,6 +1268,25 @@ namespace ImmersX
        SourceThicknessEvaluator<spacedim> thickness_evaluator)
   {
     return make_lift(source, descriptor, std::move(thickness_evaluator));
+  }
+
+  template <typename SourceObservable,
+            typename ThicknessObservable,
+            int reduced_dim,
+            int surface_dim,
+            int spacedim,
+            int n_components,
+            std::enable_if_t<
+              detail::is_observable<SourceObservable>::value &&
+                detail::is_observable<std::decay_t<ThicknessObservable>>::value,
+              int> = 0>
+  auto
+  lift(const SourceObservable &source,
+       const TensorProductLift<reduced_dim, surface_dim, spacedim, n_components>
+                                 &descriptor,
+       const ThicknessObservable &thickness)
+  {
+    return make_lift(source, descriptor, thickness);
   }
 } // namespace ImmersX
 
