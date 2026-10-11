@@ -52,6 +52,11 @@ namespace ImmersX
     add_parameter("FE degree", fe_degree, "", this->prm, Patterns::Integer(1));
     add_parameter("Output directory", output_directory);
     add_parameter("Output name", output_name);
+    add_parameter("Output every n steps",
+                  output_every_n_steps,
+                  "Write VTU output every n time steps.",
+                  this->prm,
+                  Patterns::Integer(1));
     add_parameter(
       "Coupling type",
       coupling_type,

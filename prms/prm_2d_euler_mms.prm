@@ -1,0 +1,81 @@
+set dimension         = 2
+set space dimension   = 2
+set reduced dimension = 1
+
+subsection Error
+  set Enable computation of the errors = true
+  set Error file name                  = output/elasticity_explicit_mms/errors.txt
+  set Error precision                  = 8
+  set Exponent for p-norms             = 2
+  set Extra columns                    = cells, dofs
+  set List of error norms to compute   = L2_norm, Linfty_norm, H1_norm
+  set Rate key                         = dofs
+  set Rate mode                        = reduction_rate_log2
+end
+
+subsection Functions
+  subsection Dirichlet boundary conditions
+    set Function constants  = lam=2.0, mu0=1.0, eta0=0.0, rho0=1.0
+    set Function expression = -0.2*sin(pi*(6.06060606060606*t*sqrt((lam + 2*mu0)/rho0) - 6.06060606060606*x)); 0
+    set Variable names      = x,y,t
+  end
+  subsection Exact solution
+    set Function constants  = lam=2.0, mu0=1.0, eta0=0.0, rho0=1.0
+    set Function expression = -0.2*sin(pi*(6.06060606060606*t*sqrt((lam + 2*mu0)/rho0) - 6.06060606060606*x)); 0
+    set Variable names      = x,y,t
+  end
+  subsection Initial displacement
+    set Function constants  = lam=2.0, mu0=1.0, eta0=0.0, rho0=1.0
+    set Function expression = -0.2*sin(pi*(6.06060606060606*t*sqrt((lam + 2*mu0)/rho0) - 6.06060606060606*x)); 0
+    set Variable names      = x,y,t
+  end
+  subsection Initial velocity
+    set Function constants  = lam=2.0, mu0=1.0, eta0=0.0, rho0=1.0
+    set Function expression = -1.21212121212121*pi*sqrt((lam + 2*mu0)/rho0)*cos(pi*(6.06060606060606*t*sqrt((lam + 2*mu0)/rho0) - 6.06060606060606*x)); 0
+    set Variable names      = x,y,t
+  end
+  subsection Neumann boundary conditions
+    set Function expression = 0; 0
+    set Variable names      = x,y,t
+  end
+  subsection Right hand side
+    set Function constants  = lam=2.0, mu0=1.0, eta0=0.0, rho0=1.0
+    set Function expression = pi^2*(7.34618916437098*lam + 14.692378328742*mu0 - 29.3847566574839*rho0)*sin(pi*(6.06060606060606*t*sqrt((lam + 2*mu0)/rho0) - 6.06060606060606*x))/rho0; 0
+    set Variable names      = x,y,t
+  end
+end
+
+subsection Immersed Problem
+  set FE degree                          = 1
+  set Initial refinement                 = 2
+  set Dirichlet boundary ids             = 0,1,2,3
+  set Output directory                   = output/elasticity_explicit_mms
+  set Output name                        = elasticity_explicit_mms
+  set Output every n steps               = 10
+
+  subsection Grid generation
+    set Domain type              = generate
+    set Grid generator           = hyper_cube
+    set Grid generator arguments = 0:1:true
+    set Grid scale               = 1.0
+    set Triangulation type       = distributed
+  end
+
+  subsection Material properties
+    set Material tags by material id =
+    subsection default
+      set Density        = 1.0
+      set Lame lambda    = 2.0
+      set Lame mu        = 1.0
+      set Rayleigh alpha = 0.0
+      set Rayleigh beta  = 0.0
+      set Viscosity eta  = 0.0
+    end
+  end
+
+  subsection Time parameters
+    set Final time   = 0.05
+    set Initial time = 0.0
+    set Time step    = 0.0001
+  end
+end
