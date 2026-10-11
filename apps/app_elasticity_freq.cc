@@ -58,21 +58,21 @@ main(int argc, char *argv[])
         {
           ElasticityFreqProblemParameters<2, 3> par;
           ElasticityFreqProblem<2, 3>           problem(par);
-          initialize_parameters(prm_file);
+          initialize_parameters(prm_file, "", true);
           problem.run();
         }
       else if (dimensions.dimension == 3 && dimensions.space_dimension == 3)
         {
           ElasticityFreqProblemParameters<3> par;
           ElasticityFreqProblem<3>           problem(par);
-          initialize_parameters(prm_file);
+          initialize_parameters(prm_file, "", true);
           problem.run();
         }
       else if (dimensions.dimension == 2 && dimensions.space_dimension == 2)
         {
           ElasticityFreqProblemParameters<2> par;
           ElasticityFreqProblem<2>           problem(par);
-          initialize_parameters(prm_file);
+          initialize_parameters(prm_file, "", true);
           problem.run();
         }
       else

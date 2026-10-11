@@ -34,23 +34,10 @@ namespace ImmersX
                                   spacedim>::ElasticityFreqProblemParameters()
     : ParameterAcceptor("/Immersed Problem/")
     , rhs("/Functions/Right hand side", spacedim)
-    , exact_solution("/Functions/Exact solution", spacedim)
-    , initial_displacement("/Functions/Initial displacement", spacedim)
-    , initial_velocity("/Functions/Initial velocity", spacedim)
     , bc("/Functions/Dirichlet boundary conditions", spacedim)
     , Neumann_bc("/Functions/Neumann boundary conditions", spacedim)
     , displacement_solver_control("/Solvers/Displacement")
-    , reduced_mass_solver_control("/Solvers/Reduced mass")
-    , augmented_lagrange_solver_control("/Solvers/Augmented Lagrange")
-    , schur_complement_solver_control("/Solvers/Schur complement")
-    , convergence_table(std::vector<std::string>(spacedim, "u"))
-    , time_parameters("/Immersed Problem/Time parameters/")
   {
-    // Preserve the historical elasticity default while keeping the canonical
-    // storage in TimeParameters.
-    time_parameters.time_step  = 5.e-3;
-    time_parameters.final_time = 0.;
-
     enter_subsection("Frequency domain");
     add_parameter("Frequencies", frequencies);
     add_parameter("Dirichlet phase", dirichlet_phase);
@@ -64,14 +51,6 @@ namespace ImmersX
     add_parameter("FE degree", fe_degree, "", this->prm, Patterns::Integer(1));
     add_parameter("Output directory", output_directory);
     add_parameter("Output name", output_name);
-    add_parameter(
-      "Coupling type",
-      coupling_type,
-      "Point uses discrete inclusion centers with finite radii. TensorProduct "
-      "uses a VTK reduced mesh and a reference cross section.");
-    add_parameter("Output results also before solving",
-                  output_results_before_solving);
-    add_parameter("Estimate condition number", estimate_condition_number);
     add_parameter("Initial refinement", initial_refinement);
     add_parameter("Dirichlet boundary ids", dirichlet_ids);
     add_parameter("Weak Dirichlet boundary ids", weak_dirichlet_ids);
@@ -79,13 +58,6 @@ namespace ImmersX
     add_parameter("Neumann boundary ids", neumann_ids);
     add_parameter("Normal flux boundary ids", normal_flux_ids);
     add_parameter("Rhs material ids", rhs_material_ids);
-    add_parameter("Output pressure", output_pressure);
-    add_parameter(
-      "Pressure coupling",
-      pressure_coupling,
-      "If this is true, then we do NOT solve a saddle point problem, but we use the "
-      "input data as a pressure field on the vasculature network, and we solve for "
-      "the displacement field directly.");
     enter_subsection("Grid generation");
     {
       add_parameter("Domain type",
@@ -109,8 +81,7 @@ namespace ImmersX
                     refinement_strategy,
                     "",
                     this->prm,
-                    Patterns::Selection(
-                      "fixed_fraction|fixed_number|global|inclusions"));
+                    Patterns::Selection("fixed_fraction|fixed_number|global"));
       add_parameter("Coarsening fraction", coarsening_fraction);
       add_parameter("Refinement fraction", refinement_fraction);
       add_parameter("Maximum number of cells", max_cells);
@@ -121,39 +92,11 @@ namespace ImmersX
     enter_subsection("Material properties");
     add_parameter("Material tags by material id", material_tags_by_material_id);
     leave_subsection();
-    this->prm.enter_subsection("Error");
-    convergence_table.add_parameters(this->prm);
-    this->prm.leave_subsection();
-
-    // Make sure all functions have reasonable defaults, and add their
-    // modulation frequencies
-    {
-      auto reset_function = [this]() {
-        this->prm.declare_entry(
-          "Function expression",
-          (spacedim == 2 ? "0; 0" : "0; 0; 0"),
-          Patterns::List(Patterns::Anything(), spacedim, spacedim, ";"));
-      };
-
-      exact_solution.declare_parameters_call_back.connect(reset_function);
-      exact_solution.declare_parameters_call_back.connect([this]() {
-        this->prm.add_parameter("Weight expression", weight_expression);
-      });
-
-      initial_displacement.declare_parameters_call_back.connect(reset_function);
-      initial_velocity.declare_parameters_call_back.connect(reset_function);
-    }
     {
       auto reduction = [&]() {
         this->prm.declare_entry("Reduction", "1.e-10", Patterns::Double(0));
       };
       displacement_solver_control.declare_parameters_call_back.connect(
-        reduction);
-      reduced_mass_solver_control.declare_parameters_call_back.connect(
-        reduction);
-      augmented_lagrange_solver_control.declare_parameters_call_back.connect(
-        reduction);
-      schur_complement_solver_control.declare_parameters_call_back.connect(
         reduction);
     }
 
@@ -316,7 +259,7 @@ namespace ImmersX
           AssertDimension(material_properties_by_id.size(),
                           material_tags_by_material_id.size());
           // In the second pass, all material subsections have been parsed.
-          check_model_consistency();
+          validate_parameters();
           return;
         }
 
@@ -324,14 +267,14 @@ namespace ImmersX
         return;
 
       // No dynamic material tags: all information is already available.
-      check_model_consistency();
+      validate_parameters();
     });
   }
 
 
   template <int dim, int spacedim>
   void
-  ElasticityFreqProblemParameters<dim, spacedim>::check_model_consistency()
+  ElasticityFreqProblemParameters<dim, spacedim>::validate_parameters()
   {
     // --- Validate boundary id sets
     // --------------------------------------------
@@ -391,23 +334,12 @@ namespace ImmersX
     for (const auto &mp_ref : materials)
       AssertThrow(mp_ref.get().rho >= 0.0,
                   ExcMessage("Density must be nonnegative."));
-    time_mode = ElasticityFreqTimeMode::Dynamic;
-
-    // --- Infer ElasticityFreqModel
-    // ------------------------------------------------
-    bool any_neta_positive = false;
     for (const auto &mp_ref : materials)
       {
         const auto &mp = mp_ref.get();
         AssertThrow(mp.neta >= 0.0,
                     ExcMessage("Material viscosity (eta/neta) must be >= 0."));
-        any_neta_positive |= (mp.neta > 0.0);
       }
-
-    if (any_neta_positive)
-      elasticity_model = ElasticityFreqModel::KelvinVoigt;
-    else
-      elasticity_model = ElasticityFreqModel::LinearElasticity;
   }
 
 

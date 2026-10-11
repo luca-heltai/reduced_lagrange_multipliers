@@ -20,7 +20,6 @@
 #define immersx_elasticity_freq_h
 
 #include <deal.II/base/function.h>
-#include <deal.II/base/parsed_convergence_table.h>
 #include <deal.II/base/quadrature_lib.h>
 #include <deal.II/base/timer.h>
 
@@ -198,10 +197,10 @@ namespace ImmersX
     std::vector<IndexSet>                     owned_dofs, relevant_dofs;
     AffineConstraints<double>  constraints, imaginary_constraints;
     LA::MPI::BlockVector       solution, locally_relevant_solution;
-    unsigned int               cycle = 0, time_step = 0;
+    unsigned int               cycle = 0, frequency_index = 0;
     FEValuesExtractors::Vector displacement;
-    double                     current_time = 0.0, current_frequency = 0.0;
-    std::string                stress_part = "real";
+    double                     current_frequency = 0.0;
+    std::string                stress_part       = "real";
   };
 } // namespace ImmersX
 #endif

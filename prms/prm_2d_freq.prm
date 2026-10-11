@@ -2,17 +2,6 @@ set dimension         = 2
 set space dimension   = 2
 set reduced dimension = 1
 
-subsection Error
-  set Enable computation of the errors = false
-  set Error file name                  =
-  set Error precision                  = 3
-  set Exponent for p-norms             = 2
-  set Extra columns                    = cells, dofs
-  set List of error norms to compute   = L2_norm, Linfty_norm, H1_norm
-  set Rate key                         = dofs
-  set Rate mode                        = reduction_rate_log2
-end
-
 subsection Functions
   subsection Dirichlet boundary conditions 0
     # Spatial displacement amplitude: x = 1, y = 0.
@@ -32,11 +21,7 @@ subsection Immersed Problem
   set Normal flux boundary ids           =
   set Output directory                   = output/square_freq/
   set Output name                        = solution_elasticity_freq_50Hz
-  set Output pressure                    = false
-  set Output results also before solving = false
-  set Pressure coupling                  = false
   set Rhs material ids                   =
-  set Coupling type                      = Point
 
   subsection Frequency domain
     set Frequencies                    = 50
@@ -78,31 +63,9 @@ subsection Immersed Problem
     set Strategy                    = global
   end
 
-  # Retained for parameter-file compatibility.
-  # These settings do not control the direct-frequency solve.
-  subsection Time parameters
-    set Final time       = 0.02
-    set Initial time     = 0
-    set Newmark beta     = 0.25
-    set Newmark gamma    = 0.5
-    set Refine time step = false
-    set Time step        = 0.0025
-  end
 end
 
 subsection Solvers
-  # Only Displacement controls the current frequency-domain GMRES solve.
-  # Other solver subsections are retained for compatibility.
-
-  subsection Augmented Lagrange
-    set Log frequency = 1
-    set Log history   = false
-    set Log result    = true
-    set Max steps     = 1000
-    set Reduction     = 1.e-7
-    set Tolerance     = 1.e-7
-  end
-
   subsection Displacement
     set Log frequency = 1
     set Log history   = false
@@ -112,21 +75,4 @@ subsection Solvers
     set Tolerance     = 1.e-7
   end
 
-  subsection Reduced mass
-    set Log frequency = 1
-    set Log history   = false
-    set Log result    = true
-    set Max steps     = 1000
-    set Reduction     = 1.e-7
-    set Tolerance     = 1.e-7
-  end
-
-  subsection Schur complement
-    set Log frequency = 1
-    set Log history   = false
-    set Log result    = true
-    set Max steps     = 1000
-    set Reduction     = 1.e-7
-    set Tolerance     = 1.e-7
-  end
 end

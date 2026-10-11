@@ -18,14 +18,11 @@
 #define immersx_elasticity_freq_problem_parameters_h
 
 #include <deal.II/base/parameter_acceptor.h>
-#include <deal.II/base/parsed_convergence_table.h>
-#include <deal.II/base/parsed_function.h>
 #include <deal.II/base/patterns.h>
 #include <deal.II/base/types.h>
 
 #include <deal.II/lac/solver_control.h>
 
-#include <immersx/core/time_parameters.h>
 #include <immersx/physics/material_properties.h>
 #include <immersx/physics/modulated_parsed_function.h>
 
@@ -35,57 +32,11 @@
 #include <string>
 #include <vector>
 
-#ifdef DEAL_II_WITH_VTK
-#  include <immersx/coupling/reduced_coupling.h>
-#endif
-
 namespace ImmersX
 {
-  /**
-   * Time integration mode inferred from user parameters and material densities.
-   *
-   * - `Static`: stationary solve (no time loop), selected when
-   *   `initial_time == final_time`.
-   * - `QuasiStatic`: time-dependent loading without inertia, selected when
-   *   `initial_time != final_time` and all materials have `rho == 0`.
-   * - `Dynamic`: time-dependent loading with inertia, selected when
-   *   `initial_time != final_time` and all materials have `rho > 0`.
-   */
-  enum class ElasticityFreqTimeMode
-  {
-    Static,
-    QuasiStatic,
-    Dynamic
-  };
-
-  /**
-   * Bulk constitutive model inferred from material parameters.
-   *
-   * This replaces the previous boolean model flags with a single, validated
-   * choice.
-   */
-  enum class ElasticityFreqModel
-  {
-    LinearElasticity,
-    KelvinVoigt
-  };
-
-  /**
-   * Backend used for the immersed coupling.
-   *
-   * Point coupling reads discrete inclusion centers and their finite radii.
-   * Tensor-product coupling reads a reduced mesh and combines it with a
-   * reference cross section.
-   */
-  enum class ElasticityFreqCouplingType
-  {
-    Point,
-    TensorProduct
-  };
-
   template <int dim, int spacedim = dim>
   /**
-   * Parameter set driving mesh generation, constitutive model, and solvers.
+   * Parameters for the direct frequency-domain elasticity solver.
    */
   class ElasticityFreqProblemParameters : public ParameterAcceptor
   {
@@ -117,42 +68,16 @@ namespace ImmersX
     void
     set_boundary_condition_times(const double time) const;
 
-    /**
-     * Check model consistency and infer derived modes after parameter parsing.
-     *
-     * This performs the requested consistency checks and sets:
-     * - `time_mode` based on `{initial_time, final_time}` and `rho` across all
-     *   materials;
-     * - `elasticity_model` based on `neta` across all materials;
-     *
-     * This is called automatically from the parse callback once all material
-     * subsections have been parsed (i.e., in the second pass when material tags
-     * are used).
-     */
+    /** Validate boundary and material data after parameter parsing. */
     void
-    check_model_consistency();
+    validate_parameters();
 
-    /**
-     * Inferred time mode (set during parameter parsing).
-     *
-     * @note Parameters are parsed using a two-pass strategy (see
-     * `initialize_parameters()` in `include/immersx/io/utils.h`). We infer
-     * modes only after pass >= 2 so that dynamically-created
-     * `MaterialProperties` acceptors have been parsed.
-     */
-    ElasticityFreqTimeMode time_mode = ElasticityFreqTimeMode::Dynamic;
-    std::vector<double>    frequencies{100.0};
+    std::vector<double> frequencies{100.0};
     double dirichlet_phase = 0.0, neumann_phase = 0.0, rhs_phase = 0.0;
     std::map<types::boundary_id, double> dirichlet_phase_by_id,
       neumann_phase_by_id;
     std::map<types::material_id, double> rhs_phase_by_id;
     unsigned int                         gmres_basis_size = 200;
-
-    /**
-     * Inferred bulk constitutive model (set during parameter parsing).
-     */
-    ElasticityFreqModel elasticity_model =
-      ElasticityFreqModel::LinearElasticity;
 
     /**
      * Output, mesh, and finite-element setup parameters.
@@ -188,14 +113,8 @@ namespace ImmersX
     double       refinement_fraction = 0.3;   ///< Refinement fraction.
     unsigned int n_refinement_cycles = 1;     ///< Number of adapt cycles.
     unsigned int max_cells           = 20000; ///< Global cell cap.
-    bool         output_pressure     = false; ///< Enable pressure output.
     double       penalty_term        = 1.0e4; ///< Weak-Dirichlet penalty.
     /// @}
-
-    /**
-     * Toggle load transfer through inclusion pressure projection.
-     */
-    bool pressure_coupling = false;
 
     /**
      * Volumetric forcing and forcing modulation.
@@ -206,24 +125,6 @@ namespace ImmersX
              std::shared_ptr<ModulatedParsedFunction<spacedim>>>
       rhs_by_material_id;
     /// @}
-
-    /**
-     * Exact solution used for error postprocessing.
-     */
-    mutable ParameterAcceptorProxy<Functions::ParsedFunction<spacedim>>
-      exact_solution;
-
-    /**
-     * Initial displacement for time-dependent runs.
-     */
-    mutable ParameterAcceptorProxy<Functions::ParsedFunction<spacedim>>
-      initial_displacement;
-
-    /**
-     * Initial velocity for time-dependent runs.
-     */
-    mutable ParameterAcceptorProxy<Functions::ParsedFunction<spacedim>>
-      initial_velocity;
 
     /**
      * Dirichlet and Neumann boundary data with modulation factors.
@@ -241,58 +142,9 @@ namespace ImmersX
       neumann_bc_by_id;
     /// @}
 
-    /**
-     * Expression used to define quadrature weights on inclusions.
-     */
-    std::string weight_expression = "1.";
-
-#ifdef DEAL_II_WITH_VTK
-    /** Parameters for the tensor-product coupling backend. */
-    ReducedCouplingParameters<1, 2, spacedim, spacedim>
-      tensor_product_coupling_parameters;
-#endif
-
-    /**
-     * Backend used for the immersed coupling. `Point` uses discrete
-     * inclusion centers with finite radii; `TensorProduct` uses a VTK reduced
-     * mesh and a reference cross section.
-     */
-    ElasticityFreqCouplingType coupling_type =
-      ElasticityFreqCouplingType::Point;
-
-    /**
-     * Solver controls for different linear blocks.
-     */
-    /// @{
+    /** Solver control for the frequency-domain FGMRES solve. */
     mutable ParameterAcceptorProxy<ReductionControl>
       displacement_solver_control;
-
-    mutable ParameterAcceptorProxy<ReductionControl>
-      reduced_mass_solver_control; ///< Mass solve control.
-
-    mutable ParameterAcceptorProxy<ReductionControl>
-      augmented_lagrange_solver_control; ///< Augmented-Lagrangian solve
-                                         ///< control.
-
-    mutable ParameterAcceptorProxy<ReductionControl>
-      schur_complement_solver_control; ///< Schur-complement solve control.
-    /// @}
-
-    /** Run the optional coupling condition-number diagnostic. */
-    bool estimate_condition_number = false;
-
-    /**
-     * Emit output before each solve step.
-     */
-    bool output_results_before_solving = false;
-
-    /**
-     * Convergence table used for run summaries.
-     */
-    mutable ParsedConvergenceTable convergence_table;
-
-    /** Canonical time-integration parameters for this Problem. */
-    TimeParameters time_parameters;
   };
 
 } // namespace ImmersX

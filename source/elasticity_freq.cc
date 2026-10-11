@@ -182,12 +182,11 @@ namespace ImmersX
                    const IndexSet        &owned,
                    const MPI_Comm         comm,
                    SolverControl         &control,
+                   const unsigned int     restart,
                    const bool             allow_iteration_limit,
                    const bool             print_progress = false)
     {
-      using C                        = ComplexCoefficient;
-      constexpr unsigned int restart = 30; // limit search cycle to 30
-                                           // directions
+      using C                   = ComplexCoefficient;
       const unsigned int limit  = control.max_steps();
       const double       target = control.tolerance();
       const bool         print_on_this_rank =
@@ -385,7 +384,8 @@ namespace ImmersX
         AssertThrow(std::isfinite(norm), ExcMessage("Non-finite inner RHS."));
         SolverControl inner_control(30, 0.1 * norm, false, false);
 
-        complex_fgmres(op, dst, src, prec, owned, comm, inner_control, true);
+        complex_fgmres(
+          op, dst, src, prec, owned, comm, inner_control, 30, true);
 
         AssertThrow(std::isfinite(dst.l2_norm()),
                     ExcMessage("Non-finite inner correction."));
@@ -829,8 +829,7 @@ namespace ImmersX
         boundary_stress[id] /= perimeter[id];
       }
 
-    const unsigned int output_index =
-      (par.time_mode == ElasticityFreqTimeMode::Static) ? cycle : time_step;
+    const unsigned int output_index = frequency_index;
     if (Utilities::MPI::this_mpi_process(mpi_communicator) == 0)
       {
         const std::string filename(par.output_directory + "/" +
@@ -923,14 +922,6 @@ namespace ImmersX
         else if (par.refinement_strategy == "global")
           for (const auto &cell : tria->active_cell_iterators())
             cell->set_refine_flag();
-        else if (par.refinement_strategy == "inclusions")
-          {
-            pcout
-              << " Refinement around inclusions only implemented for coupled "
-                 "elasticity"
-              << std::endl;
-            cycle = par.n_refinement_cycles;
-          }
 
         execute_actual_refine_and_transfer();
         return;
@@ -1071,7 +1062,6 @@ namespace ImmersX
     FullMatrix<double> cell_damping(dofs_per_cell, dofs_per_cell);
     FullMatrix<double> cell_stiffness(dofs_per_cell, dofs_per_cell);
     FullMatrix<double> cell_mass(dofs_per_cell, dofs_per_cell);
-    FullMatrix<double> cell_newmark(dofs_per_cell, dofs_per_cell);
 
     Vector<double>              cell_rhs(dofs_per_cell);
     Vector<double>              cell_penalty_value_rhs(dofs_per_cell);
@@ -1100,7 +1090,6 @@ namespace ImmersX
           cell_penalty_div   = 0;
           cell_mass          = 0;
           cell_damping       = 0;
-          cell_newmark       = 0;
           cell_stiffness     = 0;
 
           cell_rhs               = 0;
@@ -1375,7 +1364,7 @@ namespace ImmersX
     const std::string stem =
       par.output_name + "_cycle_" + std::to_string(cycle);
     data.write_vtu_with_pvtu_record(
-      par.output_directory, stem, time_step, mpi_communicator, 3);
+      par.output_directory, stem, frequency_index, mpi_communicator, 3);
   }
 
   template <int dim, int spacedim>
@@ -1386,10 +1375,6 @@ namespace ImmersX
     make_grid();
     setup_fe();
     setup_dofs();
-    AssertThrow(
-      par.refinement_strategy != "inclusions",
-      ExcMessage(
-        "No inclusions: select global, fixed_fraction or fixed_number refinement."));
     if (pcout.is_active())
       {
         std::ofstream metadata(par.output_directory + "/" + par.output_name +
@@ -1447,9 +1432,10 @@ namespace ImmersX
                                                    own,
                                                    mpi_communicator,
                                                    rel);
-        for (time_step = 0; time_step < par.frequencies.size(); ++time_step)
+        for (frequency_index = 0; frequency_index < par.frequencies.size();
+             ++frequency_index)
           {
-            current_frequency  = par.frequencies[time_step];
+            current_frequency  = par.frequencies[frequency_index];
             const double omega = 2 * std::acos(-1.0) * current_frequency;
             LA::MPI::SparseMatrix H;
             H.reinit(own, own, dsp, mpi_communicator);
@@ -1590,6 +1576,7 @@ namespace ImmersX
                                owned_dofs[0],
                                mpi_communicator,
                                control,
+                               par.gmres_basis_size,
                                false,
                                true);
               }
@@ -1627,12 +1614,12 @@ namespace ImmersX
             locally_relevant_solution = solution;
             stress_part               = "real";
             if (par.domain_type == "generate")
-              compute_internal_and_boundary_stress(time_step == 0);
+              compute_internal_and_boundary_stress(frequency_index == 0);
             solution.block(0)         = ui;
             locally_relevant_solution = solution;
             stress_part               = "imag";
             if (par.domain_type == "generate")
-              compute_internal_and_boundary_stress(time_step == 0);
+              compute_internal_and_boundary_stress(frequency_index == 0);
             // Refinement uses component amplitudes at the last solved
             // frequency.
             for (const auto i : owned_dofs[0])
