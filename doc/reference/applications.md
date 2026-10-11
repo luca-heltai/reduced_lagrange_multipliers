@@ -22,6 +22,7 @@ and `space dimension` entries select the template instantiation.
 | `navier_stokes` | `apps/app_navier_stokes.cc`; `NavierStokesSolver` | `2/2`, `3/3` | MPI; uses `IDAAdapter` with deal.II SUNDIALS and the native solver path without it; `tutorials/navier_stokes/transient_2d.prm.in` |
 | `laplacian` | `apps/app_laplacian.cc`; `PoissonProblem` | `2/2`, `2/3`, `3/3` | MPI; `gtests/parameters/laplacian_simple.prm.in` |
 | `elasticity` | `apps/app_elasticity.cc`; `ElasticityProblem` | `2/2`, `2/3`, `3/3` | MPI; `tutorials/elasticity/strong_dirichlet.prm` |
+| `elasticity_explicit` | `apps/app_elasticity_explicit.cc`; lumped-mass forward Euler elasticity | `2/2`, `2/3`, `3/3` | MPI and Trilinos; `prms/prm_2d_euler_mms.prm` |
 | `coupled_elasticity` | `apps/app_coupled_elasticity.cc`; 3D tissue and 1D hemodynamics | 3D tissue; command-line coupling controls | MPI, OpenMP, and `lib1dsolver`; enable with `ENABLE_COUPLED_PROBLEMS` |
 | `pseudocoupling1D` | `apps/app_pseudocoupling1D.cc`; 3D tissue and 1D pseudo-coupling | 3D tissue; five positional arguments | MPI, OpenMP, and `lib1dsolver`; enable with `ENABLE_COUPLED_PROBLEMS` |
 
