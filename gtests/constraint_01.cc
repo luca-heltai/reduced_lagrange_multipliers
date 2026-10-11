@@ -203,6 +203,48 @@ TEST(Constraint, IndependentVectorMultiplierSpace)
   check_constraint<false, Tensor<1, 2>>(FEValuesExtractors::Vector(0));
 }
 
+TEST(Constraint, FiniteElementSpaceMultiplierRegistration)
+{
+  ParameterAcceptor::clear();
+  parallel::distributed::Triangulation<2> triangulation(MPI_COMM_WORLD);
+  GridGenerator::hyper_cube(triangulation);
+  triangulation.refine_global(1);
+
+  FE_Q<2>       source_fe(1);
+  DoFHandler<2> source_dof_handler(triangulation);
+  source_dof_handler.distribute_dofs(source_fe);
+  AffineConstraints<double> source_constraints;
+  source_constraints.close();
+  const auto source_view = fe_space(source_dof_handler,
+                                    StaticMappingQ1<2>::mapping,
+                                    source_constraints);
+
+  FiniteElementSpaceParameters<2> multiplier_parameters(
+    "/Constraint multiplier FE space/", "FE_DGQ<2>(0)");
+  FiniteElementSpace<2> multiplier_space(triangulation, multiplier_parameters);
+  const auto            multiplier_view = multiplier_space.view();
+
+  StateLayout layout;
+  const auto  source = source_view.field(layout, "source");
+  const auto  lambda = multiplier_view.field("lambda");
+  using Vector       = dealii::Vector<double>;
+  using Matrix       = dealii::SparseMatrix<double>;
+  using Model        = SemiDiscreteModel<Vector, Matrix>;
+
+  Model                               model;
+  SemidiscreteBuilder<Vector, Matrix> builder(layout, model);
+  const auto                          fields =
+    make_constraint(weak_term(value(source), test(lambda))).add(builder);
+
+  EXPECT_TRUE(fields.multiplier.is_registered());
+  EXPECT_EQ(&fields.multiplier.dof_handler(), &multiplier_space.dof_handler());
+  EXPECT_NE(&fields.multiplier.dof_handler(), &source_dof_handler);
+  EXPECT_EQ(layout.field(fields.multiplier.id()).locally_owned.n_elements(),
+            multiplier_space.locally_owned_dofs().n_elements());
+  EXPECT_EQ(multiplier_space.dof_handler().n_dofs(),
+            multiplier_space.locally_owned_dofs().n_elements());
+}
+
 TEST(Constraint, FrozenScalarRightHandSide)
 {
   check_constraint<true, double>(FEValuesExtractors::Scalar(0));

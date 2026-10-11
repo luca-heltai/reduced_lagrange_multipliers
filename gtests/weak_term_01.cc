@@ -518,8 +518,22 @@ TEST(WeakTerm, ScalarDifferentDoFHandlersOnOneTriangulation)
   ASSERT_TRUE(matrix.has_value());
   Vector action(residual.size());
   matrix->view.vmult(action, state);
+  Vector jacobian_action = action;
   action -= residual;
   EXPECT_LT(action.l2_norm(), 1.e-12);
+
+  const double epsilon         = 1.e-7;
+  Vector       perturbed_state = state;
+  perturbed_state.add(epsilon, state);
+  StateView<Vector> perturbed_view(layout, 0.);
+  perturbed_view.bind(source.field_id(), perturbed_state);
+  const EvaluationContext<Vector> perturbed_context(0., perturbed_view);
+  Vector                          perturbed_residual(residual.size());
+  model.evaluate_row(target.field_id(), perturbed_context, perturbed_residual);
+  perturbed_residual -= residual;
+  perturbed_residual *= 1. / epsilon;
+  perturbed_residual -= jacobian_action;
+  EXPECT_LT(perturbed_residual.l2_norm(), 1.e-6);
 }
 
 TEST(WeakTerm, SameDoFHandlerGradientMatchesMatrixCreator)

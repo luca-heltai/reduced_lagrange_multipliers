@@ -10,6 +10,10 @@
 #include <deal.II/base/mpi.h>
 #include <deal.II/base/parameter_acceptor.h>
 
+#include <deal.II/fe/fe_dgq.h>
+
+#include <deal.II/numerics/data_out.h>
+
 #include <immersx/config.h>
 
 #ifdef IMMERSX_WITH_METRIC_FLOW_X
@@ -19,16 +23,17 @@
 #  include <immersx/core/sundials_ida_adapter.h>
 #  include <immersx/core/weak_term.h>
 #  include <immersx/io/imported_finite_element_fields.h>
-#  include <immersx/io/output_handler.h>
 #  include <immersx/io/utils.h>
 #  include <immersx/physics/elastodynamics.h>
 #  include <immersx/physics/elastodynamics_semidiscrete.h>
 #  include <immersx/physics/metric_flow_x.h>
 
 #  include <filesystem>
+#  include <fstream>
 #  include <iostream>
 #  include <stdexcept>
 #  include <string>
+#  include <vector>
 
 namespace
 {
@@ -66,11 +71,33 @@ namespace
                                                  &fixed_step,
                                                  &ida_parameters);
     WallLift                    wall_lift("/MetricFlowX vessel wall lift/");
+    auto                       &prm = ParameterAcceptor::prm;
+    prm.enter_subsection("MetricFlowSystem<1, 3>");
+    const auto default_lambda_element =
+      "FE_DGQ(" + std::to_string(prm.get_integer("Finite element degree")) +
+      ")";
+    prm.leave_subsection();
+    FiniteElementSpaceParameters<1, 3> lambda_parameters(
+      "/MetricFlowX multiplier space/", default_lambda_element);
 
     initialize_parameters(parameter_file);
     flow_problem.initialize_params(parameter_file);
 
     flow_problem.setup();
+    auto lambda_space =
+      std::make_shared<FiniteElementSpace<1, 3>>(flow_problem.triangulation(),
+                                                 lambda_parameters);
+    const auto *area_fe = dynamic_cast<const FE_DGQ<1, 3> *>(
+      &flow_problem.finite_element().base_element(0));
+    const auto *lambda_fe =
+      dynamic_cast<const FE_DGQ<1, 3> *>(&lambda_space->finite_element());
+    AssertThrow(area_fe != nullptr && lambda_fe != nullptr &&
+                  area_fe->degree == lambda_fe->degree &&
+                  area_fe->n_dofs_per_cell() == lambda_fe->n_dofs_per_cell(),
+                ExcMessage("The multiplier FE must have the same local "
+                           "basis as MetricFlowX area."));
+    const auto lambda_view = lambda_space->view();
+    const auto lambda      = lambda_view.field("lambda");
     const auto imported = std::make_shared<ImportedFiniteElementFields<1, 3>>(
       metric_flow_parameter("Vtk file path for mesh input"),
       flow_problem.triangulation(),
@@ -95,13 +122,10 @@ namespace
     const auto radius            = sqrt(A0 / numbers::PI);
     const auto dR                = sqrt(value(area) / numbers::PI) - radius;
     const auto wall_displacement = lift(dR, wall_lift, radius);
-    const auto lambda_field =
-      area.with_id(FieldId()).compacted("lambda",
-                                        flow_fields.fields().area_components);
-    const auto lambda_wall = lift(value(lambda_field), wall_lift, radius);
+    const auto lambda_wall       = lift(value(lambda), wall_lift, radius);
     const auto kinematic_constraint =
       make_constraint(weak_term(value(solid_field), test(lambda_wall)) -
-                      weak_term(wall_displacement, test(lambda_field)));
+                      weak_term(wall_displacement, test(lambda)));
     const auto coupling_fields =
       adapter.add(kinematic_constraint, "vessel-wall");
 
@@ -123,17 +147,16 @@ namespace
 
     const auto flow_output_directory =
       metric_flow_parameter("Output directory");
-    OutputHandlerParameters multiplier_output_parameters(
-      "/MetricFlowX multiplier output/");
-    multiplier_output_parameters.output_directory =
+    const std::filesystem::path multiplier_output_directory =
       flow_output_directory + "/interaction";
-    OutputHandler<1, 3, FieldVector> multiplier_output(
-      area.space(), multiplier_output_parameters, "pressure_jump");
-    const auto output = [&solid_problem,
+    std::vector<std::pair<double, std::string>> multiplier_output_records;
+    const auto                                  output = [&solid_problem,
                          &solid_parameters,
                          &flow_problem,
                          &adapter,
-                         &multiplier_output,
+                         &lambda_view,
+                         &multiplier_output_directory,
+                         &multiplier_output_records,
                          coupling_fields,
                          flow_fields,
                          flow_output_directory](const GlobalVector &solution,
@@ -147,10 +170,27 @@ namespace
       flow_problem.compute_pressure(flow_state, pressure, time);
       flow_problem.output_results(flow_state, pressure, step);
       solid_problem.output_results();
-      multiplier_output.write_field(
-        coupling_fields.fields().multiplier,
+      DataOut<1, 3> multiplier_output;
+      multiplier_output.attach_dof_handler(lambda_view.dof_handler());
+      multiplier_output.add_data_vector(
         adapter.field(solution, coupling_fields.fields().multiplier),
-        time);
+        "pressure_jump",
+        DataOut<1, 3>::type_dof_data);
+      multiplier_output.build_patches(lambda_view.mapping());
+      const auto rank = Utilities::MPI::this_mpi_process(MPI_COMM_WORLD);
+      if (rank == 0)
+        std::filesystem::create_directories(multiplier_output_directory);
+      MPI_Barrier(MPI_COMM_WORLD);
+      const auto filename = "pressure_jump_" + std::to_string(step) + ".vtu";
+      multiplier_output.write_vtu_in_parallel(
+        (multiplier_output_directory / filename).string(), MPI_COMM_WORLD);
+      multiplier_output_records.emplace_back(time, filename);
+      if (rank == 0)
+        {
+          std::ofstream pvd(multiplier_output_directory / "pressure_jump.pvd");
+          DataOutBase::write_pvd_record(pvd, multiplier_output_records);
+        }
+      MPI_Barrier(MPI_COMM_WORLD);
     };
 
     adapter.set_output_step([&solid_problem, &adapter, output, solid_fields](

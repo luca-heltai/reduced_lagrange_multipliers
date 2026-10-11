@@ -49,8 +49,6 @@ namespace ImmersX
     std::shared_ptr<const Space> space;
     ScalarField                  area;
     ScalarField                  velocity;
-    dealii::IndexSet             area_components;
-    dealii::IndexSet             velocity_components;
   };
 
   /** Make a non-owning MetricFlowX contribution descriptor. */
@@ -149,9 +147,7 @@ namespace ImmersX
     return {state,
             space,
             make_state_field(problem.area_extractor(), "area"),
-            make_state_field(problem.velocity_extractor(), "velocity"),
-            problem.component_dofs(Problem::Component::area),
-            problem.component_dofs(Problem::Component::velocity)};
+            make_state_field(problem.velocity_extractor(), "velocity")};
   }
 } // namespace ImmersX
 

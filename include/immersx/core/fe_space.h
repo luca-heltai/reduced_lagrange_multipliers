@@ -205,31 +205,6 @@ namespace ImmersX
       return result;
     }
 
-    /** Return a compactly numbered field containing a selected DoF subset. */
-    Field
-    compacted(std::string name, const dealii::IndexSet &selected_dofs) const
-    {
-      AssertDimension(selected_dofs.size(), dof_handler().n_dofs());
-      dealii::IndexSet          owned(selected_dofs.size());
-      dealii::IndexSet          relevant(selected_dofs.size());
-      std::vector<global_index> indices(
-        dof_handler().n_dofs(), std::numeric_limits<global_index>::max());
-
-      global_index compact_index = 0;
-      for (const auto native_index : selected_dofs)
-        {
-          indices[native_index] = compact_index;
-          if (locally_owned_dofs().is_element(native_index))
-            owned.add_index(compact_index);
-          if (locally_relevant_dofs().is_element(native_index))
-            relevant.add_index(compact_index);
-          ++compact_index;
-        }
-      owned.compress();
-      relevant.compress();
-      return reindexed(std::move(name), owned, relevant, std::move(indices));
-    }
-
     bool
     is_registered() const
     {

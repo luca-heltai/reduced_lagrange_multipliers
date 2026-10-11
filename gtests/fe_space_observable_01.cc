@@ -82,25 +82,6 @@ TEST(FESpace, IsANonOwningViewAndSupportsSubspaces)
   EXPECT_EQ(displacement.extractor().first_vector_component, 0u);
 }
 
-TEST(FESpace, CompactedFieldUsesASelectedDoFSubset)
-{
-  ExternalFESystem system;
-  const auto       V      = ImmersX::fe_space(system.dof_handler,
-                                   system.mapping,
-                                   system.constraints,
-                                   system.relevant);
-  const auto       scalar = V.field("scalar", FEValuesExtractors::Scalar(0));
-  const IndexSet   selected =
-    DoFTools::extract_dofs(system.dof_handler, scalar.component_mask());
-
-  const auto compact = scalar.compacted("compact", selected);
-  EXPECT_EQ(compact.locally_owned_dofs().n_elements(), selected.n_elements());
-  EXPECT_EQ(compact.locally_relevant_dofs().n_elements(),
-            selected.n_elements());
-  for (const auto native_index : selected)
-    EXPECT_LT(compact.execution_index(native_index), selected.n_elements());
-}
-
 TEST(FESpace, FieldLocalConstraintsArePersistentAndIndependent)
 {
   ExternalFESystem system;

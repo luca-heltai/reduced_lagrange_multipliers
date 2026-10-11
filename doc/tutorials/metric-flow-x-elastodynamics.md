@@ -39,6 +39,8 @@ pairing above.
 The application imports `a0` from the VTK mesh already configured for
 MetricFlowX. It represents `a0` as a frozen `FE_DGQ(0)` Observable, so adjacent
 cells can keep different reference areas. The same Observable defines both
-the radial increment and the lift thickness. The multiplier is a compacted
-Field exported on the parent centerline FE space. The IDA adapter advances
-both Problems, and output includes flow, solid, and multiplier fields.
+the radial increment and the lift thickness. The multiplier has an independent
+scalar `FiniteElementSpace<1,3>` on the centerline triangulation. Its default
+`FE_DGQ` degree matches the MetricFlowX area degree, and the application checks
+that the local scalar FE basis matches. The IDA adapter advances both Problems,
+and output includes flow, solid, and multiplier fields.

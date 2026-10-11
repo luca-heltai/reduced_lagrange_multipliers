@@ -212,52 +212,50 @@ TEST(OutputHandler, BOTH_ReindexedNavierStokesFields)
     }
 }
 
-TEST(OutputHandler, BOTH_CompactedFieldExpansion)
+TEST(OutputHandler, BOTH_IndependentFiniteElementSpaceOutput)
 {
   parallel::distributed::Triangulation<2> triangulation(MPI_COMM_WORLD);
   GridGenerator::hyper_cube(triangulation);
   triangulation.refine_global(1);
-  FESystem<2>   finite_element(FE_Q<2>(1), 2);
-  DoFHandler<2> dof_handler(triangulation);
-  dof_handler.distribute_dofs(finite_element);
-  AffineConstraints<double> constraints;
-  constraints.close();
-  const auto locally_relevant =
-    DoFTools::extract_locally_relevant_dofs(dof_handler);
-  const auto space = ImmersX::fe_space(dof_handler,
-                                       StaticMappingQ1<2>::mapping,
-                                       constraints,
-                                       locally_relevant);
-
-  ImmersX::StateLayout layout;
-  const auto           base =
-    space.field(layout, "lambda", FEValuesExtractors::Scalar(0));
-  const auto selected =
-    DoFTools::extract_dofs(dof_handler, base.component_mask());
-  const auto  compact = base.compacted("lambda", selected);
-  FieldVector values(compact.locally_owned_dofs(), MPI_COMM_WORLD);
-  for (const auto index : compact.locally_owned_dofs())
+  FESystem<2>   host_element(FE_Q<2>(1), 2);
+  DoFHandler<2> host_dof_handler(triangulation);
+  host_dof_handler.distribute_dofs(host_element);
+  ImmersX::FiniteElementSpaceParameters<2> parameters(
+    "/Output independent FE space/", "FE_DGQ<2>(1)");
+  ImmersX::FiniteElementSpace<2> space(triangulation, parameters);
+  EXPECT_EQ(&space.triangulation(), &host_dof_handler.get_triangulation());
+  EXPECT_NE(&space.dof_handler(), &host_dof_handler);
+  FieldVector values;
+  values.reinit(space.locally_owned_dofs(),
+                space.locally_relevant_dofs(),
+                MPI_COMM_WORLD);
+  for (const auto index : space.locally_owned_dofs())
     values[index] = 2. + index;
 
-  ImmersX::OutputHandlerParameters parameters("/Output compacted/");
-  parameters.output_directory =
-    ImmersX::TestPaths::output_directory("output-handler-compacted");
-  ImmersX::OutputHandler<2, 2, FieldVector> output(space, parameters, "lambda");
-  const auto expanded = output.expanded_field(compact, values);
-  for (const auto native : space.locally_owned_dofs())
-    if (compact.has_execution_index(native))
-      EXPECT_DOUBLE_EQ(expanded[native],
-                       values[compact.execution_index(native)]);
-    else
-      EXPECT_DOUBLE_EQ(expanded[native], 0.);
-
-  ASSERT_NO_THROW(output.write_field(compact, values, 0.25));
+  const auto output_directory =
+    ImmersX::TestPaths::output_directory("output-handler-independent-fe");
+  DataOut<2> output;
+  output.attach_dof_handler(space.dof_handler());
+  output.add_data_vector(values, "lambda", DataOut<2>::type_dof_data);
+  output.build_patches(space.view().mapping());
+  const auto rank = Utilities::MPI::this_mpi_process(MPI_COMM_WORLD);
+  if (rank == 0)
+    std::filesystem::create_directories(output_directory);
   MPI_Barrier(MPI_COMM_WORLD);
-  if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
+  output.write_vtu_in_parallel(output_directory + "/lambda.vtu",
+                               MPI_COMM_WORLD);
+  MPI_Barrier(MPI_COMM_WORLD);
+  if (rank == 0)
     {
-      EXPECT_TRUE(std::filesystem::exists(
-        std::filesystem::path(parameters.output_directory) / "lambda.pvd"));
-      EXPECT_NE(output_text(parameters.output_directory).find("lambda"),
-                std::string::npos);
+      EXPECT_TRUE(std::filesystem::exists(output_directory + "/lambda.pvtu"));
+      const auto text = output_text(output_directory);
+      const auto name = text.find("Name=\"lambda\"");
+      ASSERT_NE(name, std::string::npos);
+      const auto values_begin = text.find('>', name) + 1;
+      const auto values_end   = text.find("</DataArray>", values_begin);
+      ASSERT_NE(values_end, std::string::npos);
+      const auto values = text.substr(values_begin, values_end - values_begin);
+      EXPECT_NE(values.find("2"), std::string::npos);
+      EXPECT_NE(values.find("3"), std::string::npos);
     }
 }
