@@ -37,8 +37,4 @@ fiber-reinforced-elastodynamics
 navier-stokes
 metric-flow-x-elastodynamics
 metric-flow-x-elastodynamics-coupling
-metric-flow-x-elastodynamics-01-kinematics
-metric-flow-x-elastodynamics-02-static-equilibrium
-metric-flow-x-elastodynamics-03-spatial-mms
-metric-flow-x-elastodynamics-04-transient-mms
 ```

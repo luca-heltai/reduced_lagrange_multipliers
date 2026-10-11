@@ -112,19 +112,6 @@ constraint. The multiplier feeds the pressure jump back into MetricFlowX and
 balances the solid wall residual. The flow equations and their tube-law model
 remain those of MetricFlowX.
 
-## Runnable cases
-
-The accompanying parameter files exercise the same coupled application:
-
-- [Area-to-wall kinematics](metric-flow-x-elastodynamics-01-kinematics)
-  isolates the nonlinear \(A\mapsto\delta R\) map.
-- [Static equilibrium](metric-flow-x-elastodynamics-02-static-equilibrium)
-  checks the two-way residual and multiplier sign at a stationary state.
-- [Spatial manufactured solution](metric-flow-x-elastodynamics-03-spatial-mms)
-  checks a nonuniform stationary coupled state.
-- [Transient manufactured solution](metric-flow-x-elastodynamics-04-transient-mms)
-  performs a time-dependent IDA solve and checks the coupled Jacobian.
-
 The executable requires MetricFlowX, deal.II with SUNDIALS, and MPI. The
 application and its build requirements are listed in the
 [application reference](../reference/applications).
