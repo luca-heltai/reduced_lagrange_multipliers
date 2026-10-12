@@ -223,6 +223,17 @@ introduced it, for example:
 - [PR #231](https://github.com/luca-heltai/immersx/pull/231) Add primitive static elasticity boundary conditions.
 ```
 
+Add each new entry immediately below its category heading so the newest changes
+appear first. Keep entries within every category in reverse chronological
+merge order; use descending PR numbers when merge dates are unavailable. Apply
+the same ordering within unreleased and dated release sections.
+
+When reviewing recent merged PRs, check whether each change already has an
+entry in the current `CHANGELOG.md`; do not rely only on whether that PR's diff
+changed the changelog. Add an entry for every missing change. Use the actual PR
+number in the link. A `#N` placeholder is temporary and must be replaced before
+the PR is complete.
+
 Write the entry in plain prose. Describe the behavior change, not the internal
 refactor. When a release is tagged, move the accumulated `[Unreleased]` entries
 into a new dated version section instead of rewriting them.
