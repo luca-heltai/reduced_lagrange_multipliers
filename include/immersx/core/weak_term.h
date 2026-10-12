@@ -1757,6 +1757,45 @@ namespace ImmersX
           vector.reinit(field.dof_handler().n_dofs());
       }
 
+      template <typename Support, typename CellIterator>
+      static bool
+      support_includes(const Support &support, const CellIterator &cell)
+      {
+        if constexpr (is_integration_support<std::decay_t<Support>>::value)
+          return support.includes_cell(cell);
+        else
+          return true;
+      }
+
+      template <typename Support, typename SourceField, typename TargetField>
+      static void
+      assert_support_matches(const Support     &support,
+                             const SourceField &source,
+                             const TargetField &target)
+      {
+        if constexpr (is_integration_support<std::decay_t<Support>>::value)
+          {
+            support.assert_matches(source.dof_handler().get_triangulation());
+            support.assert_matches(target.dof_handler().get_triangulation());
+          }
+      }
+
+      template <typename ObservableType_>
+      static void
+      assert_dependencies_match_source_mesh(const ObservableType_ &observable)
+      {
+        const auto &source_triangulation =
+          observable.source().dof_handler().get_triangulation();
+        for (const auto field : observable.dependencies())
+          AssertThrow(
+            static_cast<const void *>(&observable.source_for(field)
+                                         .dof_handler()
+                                         .get_triangulation()) ==
+              static_cast<const void *>(&source_triangulation),
+            dealii::ExcMessage(
+              "Nonlinear weak term inputs must use the source triangulation."));
+      }
+
       template <typename VectorType,
                 typename ObservableType_,
                 typename Context,
@@ -1910,14 +1949,20 @@ namespace ImmersX
                                           derivative_evaluator);
       }
 
-      template <typename VectorType, typename MatrixType, typename Context>
+      template <typename VectorType,
+                typename MatrixType,
+                typename Context,
+                typename Support = InferredIntegrationSupport>
       static std::shared_ptr<VectorType>
       residual(const ObservableType   &observable,
                const TargetExpression &target,
-               const Context          &context)
+               const Context          &context,
+               const Support          &support = {})
       {
         const auto &source       = observable.source();
         const auto  target_field = target.source();
+        assert_dependencies_match_source_mesh(observable);
+        assert_support_matches(support, source, target_field);
         AssertThrow(SourceField::dimension() == dim &&
                       &source.dof_handler().get_triangulation() ==
                         &target_field.dof_handler().get_triangulation(),
@@ -1926,7 +1971,7 @@ namespace ImmersX
                       "source and target meshes."));
 
         const auto degree =
-          std::max(source.space().finite_element().degree,
+          std::max(observable.polynomial_degree(),
                    target_field.space().finite_element().degree);
         const dealii::QGauss<dim> quadrature(degree + 1);
         const auto                flags = dealii::update_JxW_values |
@@ -1949,6 +1994,8 @@ namespace ImmersX
              source.dof_handler().active_cell_iterators())
           if (source_cell->is_locally_owned())
             {
+              if (!support_includes(support, source_cell))
+                continue;
               const auto target_cell = source_cell->as_dof_handler_iterator(
                 target_field.dof_handler());
               if (!target_cell->is_locally_owned())
@@ -1979,16 +2026,22 @@ namespace ImmersX
         return result;
       }
 
-      template <typename VectorType, typename MatrixType, typename Context>
+      template <typename VectorType,
+                typename MatrixType,
+                typename Context,
+                typename Support = InferredIntegrationSupport>
       static MatrixStorage<MatrixType>
       jacobian(const ObservableType   &observable,
                const TargetExpression &target,
                const FieldId           field,
-               const Context          &context)
+               const Context          &context,
+               const Support          &support = {})
       {
         const auto &source        = observable.source();
         const auto &column_source = observable.source_for(field);
         const auto  target_field  = target.source();
+        assert_dependencies_match_source_mesh(observable);
+        assert_support_matches(support, source, target_field);
         AssertThrow(SourceField::dimension() == dim &&
                       &source.dof_handler().get_triangulation() ==
                         &target_field.dof_handler().get_triangulation() &&
@@ -1999,7 +2052,7 @@ namespace ImmersX
                       "source meshes."));
 
         const auto degree =
-          std::max(source.space().finite_element().degree,
+          std::max(observable.polynomial_degree(),
                    target_field.space().finite_element().degree);
         const dealii::QGauss<dim> quadrature(degree + 1);
         const auto                flags = dealii::update_JxW_values |
@@ -2018,6 +2071,8 @@ namespace ImmersX
              source.dof_handler().active_cell_iterators())
           if (source_cell->is_locally_owned())
             {
+              if (!support_includes(support, source_cell))
+                continue;
               const auto target_cell = source_cell->as_dof_handler_iterator(
                 target_field.dof_handler());
               if (!target_cell->is_locally_owned())
@@ -2066,6 +2121,8 @@ namespace ImmersX
              source.dof_handler().active_cell_iterators())
           if (source_cell->is_locally_owned())
             {
+              if (!support_includes(support, source_cell))
+                continue;
               const auto target_cell = source_cell->as_dof_handler_iterator(
                 target_field.dof_handler());
               if (!target_cell->is_locally_owned())
@@ -2128,15 +2185,19 @@ namespace ImmersX
         return result;
       }
 
-      template <typename VectorType, typename MatrixType, typename Context>
+      template <typename VectorType,
+                typename MatrixType,
+                typename Context,
+                typename Support = InferredIntegrationSupport>
       static MaterializedOperator<VectorType, MatrixType>
       linearize_matrix(const ObservableType   &observable,
                        const TargetExpression &target,
                        const FieldId           field,
-                       const Context          &context)
+                       const Context          &context,
+                       const Support          &support = {})
       {
-        const auto storage =
-          jacobian<VectorType, MatrixType>(observable, target, field, context);
+        const auto storage = jacobian<VectorType, MatrixType>(
+          observable, target, field, context, support);
         const auto matrix   = storage.matrix;
         const auto sparsity = storage.sparsity;
         const auto matrix_view =
@@ -3120,10 +3181,27 @@ namespace ImmersX
       auto       term      = builder.term(target_id, "weak_term");
       if constexpr (!detail::is_linear_observable<TrialExpression>::value)
         {
-          AssertThrow((std::is_same_v<Support, InferredIntegrationSupport>),
-                      dealii::ExcMessage(
-                        "Explicit integration support for nonlinear weak "
-                        "terms is not implemented yet."));
+          if constexpr (detail::is_lifted_observable<TrialExpression>::value)
+            AssertThrow((std::is_same_v<Support, InferredIntegrationSupport>),
+                        dealii::ExcMessage(
+                          "Explicit integration support for lifted nonlinear "
+                          "weak terms is not implemented yet."));
+          else
+            {
+              AssertThrow(
+                (std::is_same_v<Support, InferredIntegrationSupport> ||
+                 is_integration_support<Support>::value),
+                dealii::ExcMessage(
+                  "Nonlinear weak terms require cell integration "
+                  "support."));
+              if constexpr (is_integration_support<Support>::value)
+                {
+                  support_.assert_matches(
+                    observable_.source().dof_handler().get_triangulation());
+                  support_.assert_matches(
+                    target_.source().dof_handler().get_triangulation());
+                }
+            }
           AssertThrow(region_.kind == WeakTermRegion::Kind::volume,
                       dealii::ExcMessage(
                         "Boundary regions currently require linear weak "
@@ -3132,35 +3210,49 @@ namespace ImmersX
             detail::is_lifted_observable<TrialExpression>::value,
             detail::LiftedWeakAssembly<TrialExpression, TestExpression>,
             detail::NonlinearWeakAssembly<TrialExpression, TestExpression>>;
-          term.residual(
-            [observable = observable_, target = target_](const auto &context) {
-              const auto values =
-                Assembly::template residual<VectorType, MatrixType>(observable,
-                                                                    target,
-                                                                    context);
-              typename Model::Operation result;
-              result.reinit_vector = [values](VectorType &vector,
-                                              const bool  omit) {
-                vector.reinit(*values, omit);
-              };
-              result.apply = [values](VectorType &destination) {
-                destination = *values;
-              };
-              result.apply_add = [values](VectorType &destination) {
-                destination += *values;
-              };
-              return result;
-            });
+          term.residual([observable = observable_,
+                         target     = target_,
+                         support    = support_](const auto &context) {
+            const auto values = [&] {
+              if constexpr (detail::is_lifted_observable<
+                              TrialExpression>::value)
+                return Assembly::template residual<VectorType, MatrixType>(
+                  observable, target, context);
+              else
+                return Assembly::template residual<VectorType, MatrixType>(
+                  observable, target, context, support);
+            }();
+            typename Model::Operation result;
+            result.reinit_vector = [values](VectorType &vector,
+                                            const bool  omit) {
+              vector.reinit(*values, omit);
+            };
+            result.apply = [values](VectorType &destination) {
+              destination = *values;
+            };
+            result.apply_add = [values](VectorType &destination) {
+              destination += *values;
+            };
+            return result;
+          });
           using MatrixOperatorFactory = typename Model::MatrixOperatorFactory;
           for (const auto field : observable_.dependencies())
-            term.state(field,
-                       MatrixOperatorFactory([observable = observable_,
-                                              target     = target_,
-                                              field](const auto &context) {
-                         return Assembly::template linearize_matrix<VectorType,
-                                                                    MatrixType>(
-                           observable, target, field, context);
-                       }));
+            term.state(
+              field,
+              MatrixOperatorFactory([observable = observable_,
+                                     target     = target_,
+                                     field,
+                                     support = support_](const auto &context) {
+                if constexpr (detail::is_lifted_observable<
+                                TrialExpression>::value)
+                  return Assembly::template linearize_matrix<VectorType,
+                                                             MatrixType>(
+                    observable, target, field, context);
+                else
+                  return Assembly::template linearize_matrix<VectorType,
+                                                             MatrixType>(
+                    observable, target, field, context, support);
+              }));
         }
       else if (observable_.is_frozen())
         {

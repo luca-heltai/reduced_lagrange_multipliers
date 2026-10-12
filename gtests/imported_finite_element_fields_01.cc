@@ -15,6 +15,7 @@
 #include <deal.II/dofs/dof_tools.h>
 
 #include <deal.II/fe/fe_dgq.h>
+#include <deal.II/fe/fe_q.h>
 
 #include <deal.II/grid/grid_tools.h>
 #include <deal.II/grid/tria_description.h>
@@ -22,7 +23,10 @@
 #include <deal.II/lac/la_parallel_vector.h>
 
 #include <gtest/gtest.h>
+#include <immersx/core/contributor.h>
 #include <immersx/core/observable.h>
+#include <immersx/core/state.h>
+#include <immersx/core/weak_term.h>
 #include <immersx/io/imported_finite_element_fields.h>
 #include <immersx/io/vtk_utils.h>
 #include <immersx/physics/elastic_static.h>
@@ -87,6 +91,24 @@ namespace
     EXPECT_TRUE(frozen.dependencies().empty());
     EXPECT_EQ(fe_field.extractor().component, 0u);
   }
+
+  struct AddActiveAndFrozen
+  {
+    double
+    evaluate(const double active, const double frozen) const
+    {
+      return active + frozen;
+    }
+
+    double
+    linearize(const double,
+              const double,
+              const double active_direction,
+              const double) const
+    {
+      return active_direction;
+    }
+  };
 } // namespace
 
 TEST(ImportedFiniteElementFields, PointDataScalarAndGradient)
@@ -100,6 +122,97 @@ TEST(ImportedFiniteElementFields, CellDataScalar)
 {
   check_scalar_import<1, 3>(TestPaths::data_filename("tests/mstree_10.vtk"),
                             "edge_length");
+}
+
+TEST(ImportedFiniteElementFields,
+     BOTH_ImportedFrozenInputFeedsResidualJacobianAndTranspose)
+{
+  using Vector = ImmersXLA::MPI::Vector;
+  using Matrix = ImmersXLA::MPI::SparseMatrix;
+  using Model  = SemiDiscreteModel<Vector, Matrix>;
+
+  const auto filename = TestPaths::data_filename("tests/simple_1d_grid.vtk");
+  auto       mesh     = make_distributed_mesh<1, 3>(filename);
+  auto       imported =
+    std::make_shared<ImportedFiniteElementFields<1, 3>>(filename, *mesh);
+  const auto imported_x = imported->field("x");
+  const auto frozen_x =
+    ImmersX::frozen(imported_x.field(), imported_x.coefficients());
+
+  FE_Q<1, 3>       active_fe(1);
+  DoFHandler<1, 3> active_dh(*mesh);
+  active_dh.distribute_dofs(active_fe);
+  AffineConstraints<double> active_constraints;
+  active_constraints.close();
+  const auto active_space =
+    fe_space(active_dh, StaticMappingQ1<1, 3>::mapping, active_constraints);
+  StateLayout layout;
+  const auto  active = active_space.field(layout, "active");
+  const auto  target = active_space.field(layout, "target");
+  auto observable    = transform(value(active), frozen_x, AddActiveAndFrozen{});
+  EXPECT_EQ(observable.dependencies(), std::vector<FieldId>{active.field_id()});
+
+  Model                               model;
+  SemidiscreteBuilder<Vector, Matrix> builder(layout, model);
+  weak_term(observable, test(target)).add(builder);
+
+  Vector state;
+  state.reinit(active.locally_owned_dofs(),
+               active.locally_relevant_dofs(),
+               MPI_COMM_WORLD);
+  for (const auto index : state.locally_owned_elements())
+    state[index] = 0.5 + 0.2 * index;
+  state.compress(VectorOperation::insert);
+  StateView<Vector> state_view(layout, 0.);
+  state_view.bind(active.field_id(), state);
+  const EvaluationContext<Vector> context(0., state_view);
+
+  Vector residual;
+  residual.reinit(target.locally_owned_dofs(),
+                  target.locally_relevant_dofs(),
+                  MPI_COMM_WORLD);
+  model.evaluate_row(target.field_id(), context, residual);
+  const auto jacobian =
+    model.state_matrix_operator(target.field_id(), active.field_id(), context);
+  ASSERT_TRUE(jacobian.has_value());
+
+  Vector direction;
+  direction.reinit(active.locally_owned_dofs(),
+                   active.locally_relevant_dofs(),
+                   MPI_COMM_WORLD);
+  for (const auto index : direction.locally_owned_elements())
+    direction[index] = 0.25 + 0.05 * index;
+  direction.compress(VectorOperation::insert);
+  Vector action;
+  action.reinit(target.locally_owned_dofs(),
+                target.locally_relevant_dofs(),
+                MPI_COMM_WORLD);
+  jacobian->view.vmult(action, direction);
+
+  Vector dual;
+  dual.reinit(target.locally_owned_dofs(),
+              target.locally_relevant_dofs(),
+              MPI_COMM_WORLD);
+  for (const auto index : dual.locally_owned_elements())
+    dual[index] = 1. - 0.1 * index;
+  dual.compress(VectorOperation::insert);
+  Vector transpose;
+  transpose.reinit(active.locally_owned_dofs(),
+                   active.locally_relevant_dofs(),
+                   MPI_COMM_WORLD);
+  jacobian->view.Tvmult(transpose, dual);
+  EXPECT_NEAR(action * dual, direction * transpose, 1.e-12);
+
+  state.add(1.e-7, direction);
+  Vector perturbed;
+  perturbed.reinit(target.locally_owned_dofs(),
+                   target.locally_relevant_dofs(),
+                   MPI_COMM_WORLD);
+  model.evaluate_row(target.field_id(), context, perturbed);
+  perturbed -= residual;
+  perturbed *= 1.e7;
+  perturbed -= action;
+  EXPECT_LT(perturbed.l2_norm(), 1.e-6);
 }
 
 TEST(ImportedFiniteElementFields, BOTH_CellDataA0RemainsDiscontinuous)

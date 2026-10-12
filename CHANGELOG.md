@@ -11,6 +11,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Added
 
+- [PR #244](https://github.com/luca-heltai/immersx/pull/244) Added support-aware nonlinear weak terms over multiple finite element spaces and frozen inputs.
 - [PR #243](https://github.com/luca-heltai/immersx/pull/243) Added explicit embedded-mesh integration supports and native deal.II nonmatching mass assembly for value pairings.
 - [PR #242](https://github.com/luca-heltai/immersx/pull/242) Added boundary integration supports and normal, conormal, and tangential expressions for linear weak terms.
 - [PR #241](https://github.com/luca-heltai/immersx/pull/241) Added cell supports for selecting the integration domain of linear weak terms.

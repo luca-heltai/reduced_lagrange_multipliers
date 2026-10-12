@@ -96,6 +96,29 @@ namespace
     }
   };
 
+  struct ProductPlusGradientOffset
+  {
+    double
+    evaluate(const double        first,
+             const Tensor<1, 2> &gradient,
+             const double        offset) const
+    {
+      return first * (1. + gradient[0]) + offset;
+    }
+
+    double
+    linearize(const double        first,
+              const Tensor<1, 2> &gradient,
+              const double,
+              const double        first_direction,
+              const Tensor<1, 2> &gradient_direction,
+              const double) const
+    {
+      return first_direction * (1. + gradient[0]) +
+             first * gradient_direction[0];
+    }
+  };
+
   class XBoundaryNormal : public Function<2>
   {
   public:
@@ -615,6 +638,108 @@ TEST(WeakTerm, ActiveAndFrozenObservablesUseTheirOwnFiniteElements)
   perturbed *= 1. / epsilon;
   perturbed -= action;
   EXPECT_LT(perturbed.l2_norm(), 1.e-6);
+}
+
+TEST(WeakTerm, MultipleNativeSpacesAndFrozenInputUseExplicitSupport)
+{
+  Triangulation<2> tria;
+  GridGenerator::hyper_cube(tria);
+  tria.refine_global(1);
+  for (const auto &cell : tria.active_cell_iterators())
+    cell->set_material_id(cell->center()[0] < 0.5 ? 1 : 0);
+
+  FE_Q<2>       first_fe(1);
+  FE_Q<2>       second_fe(2);
+  FE_DGQ<2>     frozen_fe(0);
+  DoFHandler<2> first_dh(tria), second_dh(tria), frozen_dh(tria);
+  first_dh.distribute_dofs(first_fe);
+  second_dh.distribute_dofs(second_fe);
+  frozen_dh.distribute_dofs(frozen_fe);
+  AffineConstraints<double> first_constraints, second_constraints,
+    frozen_constraints;
+  first_constraints.close();
+  second_constraints.close();
+  frozen_constraints.close();
+
+  const auto first_space =
+    fe_space(first_dh, StaticMappingQ1<2>::mapping, first_constraints);
+  const auto second_space =
+    fe_space(second_dh, StaticMappingQ1<2>::mapping, second_constraints);
+  const auto frozen_space =
+    fe_space(frozen_dh, StaticMappingQ1<2>::mapping, frozen_constraints);
+  StateLayout layout;
+  const auto  first  = first_space.field(layout, "first");
+  const auto  target = first_space.field(layout, "target");
+  const auto  second = second_space.field(layout, "second");
+  const auto  offset = frozen_space.field("offset");
+
+  Vector<double> frozen_values(frozen_dh.n_dofs());
+  for (unsigned int i = 0; i < frozen_values.size(); ++i)
+    frozen_values[i] = 0.25 + 0.1 * i;
+  const auto observable = transform(value(first),
+                                    gradient(second),
+                                    frozen(offset, frozen_values),
+                                    ProductPlusGradientOffset{});
+  EXPECT_EQ(observable.dependencies(),
+            (std::vector<FieldId>{first.field_id(), second.field_id()}));
+
+  const IntegrationSupport<2> support(tria, 1);
+  using Vector = Vector<double>;
+  using Matrix = SparseMatrix<double>;
+  using Model  = SemiDiscreteModel<Vector, Matrix>;
+  Model                               model;
+  SemidiscreteBuilder<Vector, Matrix> builder(layout, model);
+  weak_term(observable, test(target), support).add(builder);
+
+  Vector first_state(first_dh.n_dofs());
+  Vector second_state(second_dh.n_dofs());
+  Vector target_state(first_dh.n_dofs());
+  for (unsigned int i = 0; i < first_state.size(); ++i)
+    first_state[i] = 0.5 + 0.2 * i;
+  for (unsigned int i = 0; i < second_state.size(); ++i)
+    second_state[i] = 1. + 0.05 * i;
+  StateView<Vector> state_view(layout, 0.);
+  state_view.bind(first.field_id(), first_state);
+  state_view.bind(second.field_id(), second_state);
+  state_view.bind(target.field_id(), target_state);
+  const EvaluationContext<Vector> context(0., state_view);
+  Vector                          residual(first_dh.n_dofs());
+  model.evaluate_row(target.field_id(), context, residual);
+
+  const auto check_jacobian = [&](const FieldId field_id, Vector &state) {
+    const auto jacobian =
+      model.state_matrix_operator(target.field_id(), field_id, context);
+    EXPECT_TRUE(jacobian.has_value());
+    if (!jacobian.has_value())
+      return;
+    Vector direction(state.size());
+    for (unsigned int i = 0; i < direction.size(); ++i)
+      direction[i] = 0.3 + 0.07 * i;
+    Vector action(first_dh.n_dofs());
+    jacobian->view.vmult(action, direction);
+
+    const Vector dual = [&] {
+      Vector result(first_dh.n_dofs());
+      for (unsigned int i = 0; i < result.size(); ++i)
+        result[i] = 0.8 - 0.1 * i;
+      return result;
+    }();
+    Vector transpose_action(state.size());
+    jacobian->view.Tvmult(transpose_action, dual);
+    EXPECT_NEAR(action * dual, direction * transpose_action, 1.e-12);
+
+    const double epsilon = 1.e-7;
+    state.add(epsilon, direction);
+    Vector perturbed(first_dh.n_dofs());
+    model.evaluate_row(target.field_id(), context, perturbed);
+    state.add(-epsilon, direction);
+    perturbed -= residual;
+    perturbed *= 1. / epsilon;
+    perturbed -= action;
+    EXPECT_LT(perturbed.l2_norm(), 2.e-6);
+  };
+  check_jacobian(first.field_id(), first_state);
+  check_jacobian(second.field_id(), second_state);
 }
 
 TEST(WeakTerm, TypedVectorConvectionResidualJacobian)
