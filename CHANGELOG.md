@@ -11,6 +11,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Added
 
+- [PR #240](https://github.com/luca-heltai/immersx/pull/240) Added an opt-in benchmark for comparing matching mass assembly with deal.II.
 - [PR #236](https://github.com/luca-heltai/immersx/pull/236) Add an explicit forward-Euler elasticity solver with a lumped mass matrix.
 - [PR #235](https://github.com/luca-heltai/immersx/pull/235) Add a frequency-domain elasticity solver.
 - [PR #232](https://github.com/luca-heltai/immersx/pull/232) Add Coral operations for domain triangulations, VTK output, and output handlers.

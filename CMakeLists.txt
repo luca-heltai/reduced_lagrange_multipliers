@@ -59,6 +59,8 @@ option(IMMERSX_BUILD_CORAL_PLUGINS
   "Build Coral plugins when a compatible Coral package is available." ON)
 option(IMMERSX_ENABLE_CORAL_GRAPH_TESTS
   "Enable numerical Coral graph integration tests." OFF)
+option(IMMERSX_BUILD_BENCHMARKS
+  "Build standalone ImmersX versus deal.II benchmarks." OFF)
 
 set(IMMERSX_INSTALL_DOCDIR "${CMAKE_INSTALL_DATADIR}/doc/immersx"
   CACHE PATH "Installation directory for ImmersX documentation")
@@ -605,6 +607,10 @@ IF(ENABLE_GOOGLE_TESTING)
       MESSAGE(WARNING "GTest library not found. Tests will not be compiled!")
   endif ()
 ENDIF()
+
+if(IMMERSX_BUILD_BENCHMARKS)
+  add_subdirectory(benchmarks)
+endif()
 
 # Installation and downstream package metadata.
 IF(IMMERSX_LIBRARY_TARGETS)
