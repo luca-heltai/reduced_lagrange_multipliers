@@ -1401,7 +1401,7 @@ TEST(WeakTerm, LiftedSupportPreservesFrozenExpressionAndJacobian)
   EXPECT_NEAR(ones * action, 1., 1.e-12);
 }
 
-TEST(WeakTerm, MPI_IndependentDistributedSupportRoutesTracePoints)
+TEST(WeakTerm, MPI_IndependentReplicatedSupportRoutesTracePoints)
 {
   ASSERT_EQ(Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD), 2u);
   parallel::distributed::Triangulation<2> background(MPI_COMM_WORLD);
@@ -1417,9 +1417,11 @@ TEST(WeakTerm, MPI_IndependentDistributedSupportRoutesTracePoints)
   StateLayout layout;
   const auto  u = space.field(layout, "u");
 
-  parallel::distributed::Triangulation<1, 2> support_mesh(MPI_COMM_WORLD);
-  std::vector<Point<2>>                      vertices{{0., 0.5}, {1., 0.5}};
-  CellData<1>                                support_cell;
+  // deal.II does not support distributed embedded triangulations. Replicate
+  // the curve and let weak-term assembly route its quadrature points.
+  Triangulation<1, 2>   support_mesh;
+  std::vector<Point<2>> vertices{{0., 0.5}, {1., 0.5}};
+  CellData<1>           support_cell;
   support_cell.vertices[0] = 0;
   support_cell.vertices[1] = 1;
   support_mesh.create_triangulation(vertices,
