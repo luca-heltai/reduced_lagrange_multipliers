@@ -40,6 +40,7 @@ namespace
       domain.make_grid();
 
       lift.section.inclusion_degree      = 0;
+      lift.section.inclusion_type        = "hyper_cube";
       lift.section.refinement_level      = 0;
       lift.section.selected_coefficients = {0};
       lift.section.n_q_points            = 2;
@@ -121,6 +122,7 @@ TEST(LiftedIntegrationSupport, BOTH_OwnershipAndIdsArePartitionIndependent)
 
   TensorProductLift<1, 2, 3> lift("/Distributed lifted line geometry/");
   lift.section.inclusion_degree      = 0;
+  lift.section.inclusion_type        = "hyper_cube";
   lift.section.refinement_level      = 0;
   lift.section.selected_coefficients = {0};
   lift.section.n_q_points            = 2;
@@ -175,6 +177,7 @@ TEST(LiftedIntegrationSupport, RotatedRepresentativeLineUsesPhysicalGeometry)
 
   TensorProductLift<1, 2, 3> lift("/Rotated lifted line geometry/");
   lift.section.inclusion_degree      = 0;
+  lift.section.inclusion_type        = "hyper_cube";
   lift.section.refinement_level      = 0;
   lift.section.selected_coefficients = {0};
   lift.section.n_q_points            = 2;
@@ -212,20 +215,30 @@ TEST(LiftedIntegrationSupport, BOTH_AssemblesBulkMassOnPhysicalQuadrature)
   DoFHandler<3> target_dof_handler(background);
   source_dof_handler.distribute_dofs(source_element);
   target_dof_handler.distribute_dofs(target_element);
+  const auto source_relevant =
+    DoFTools::extract_locally_relevant_dofs(source_dof_handler);
+  const auto target_relevant =
+    DoFTools::extract_locally_relevant_dofs(target_dof_handler);
   AffineConstraints<double> source_constraints;
+  source_constraints.reinit(source_dof_handler.locally_owned_dofs(),
+                            source_relevant);
   DoFTools::make_hanging_node_constraints(source_dof_handler,
                                           source_constraints);
   source_constraints.close();
   AffineConstraints<double> target_constraints;
+  target_constraints.reinit(target_dof_handler.locally_owned_dofs(),
+                            target_relevant);
   DoFTools::make_hanging_node_constraints(target_dof_handler,
                                           target_constraints);
   target_constraints.close();
   const auto source_space = fe_space(source_dof_handler,
                                      StaticMappingQ1<3>::mapping,
-                                     source_constraints);
+                                     source_constraints,
+                                     source_relevant);
   const auto target_space = fe_space(target_dof_handler,
                                      StaticMappingQ1<3>::mapping,
-                                     target_constraints);
+                                     target_constraints,
+                                     target_relevant);
 
   using Vector = ImmersXLA::MPI::Vector;
   using Matrix = ImmersXLA::MPI::SparseMatrix;
@@ -260,11 +273,12 @@ TEST(LiftedIntegrationSupport, BOTH_AssemblesBulkMassOnPhysicalQuadrature)
   double local_measure = 0.;
   for (const auto &point : support.locally_owned_quadrature_points())
     local_measure += point.weight;
+  const auto global_measure =
+    Utilities::MPI::sum(local_measure, MPI_COMM_WORLD);
+  EXPECT_NEAR(global_measure, 1., 1.e-10);
   Vector ones;
   ones.reinit(target.locally_owned_dofs(), MPI_COMM_WORLD);
   ones = 1.;
   ones.compress(VectorOperation::insert);
-  EXPECT_NEAR(residual * ones,
-              Utilities::MPI::sum(local_measure, MPI_COMM_WORLD),
-              1.e-10);
+  EXPECT_NEAR(residual * ones, global_measure, 1.e-10);
 }

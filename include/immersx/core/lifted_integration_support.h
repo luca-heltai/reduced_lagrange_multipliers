@@ -163,7 +163,8 @@ namespace ImmersX
         mapping,
         geometry_fe,
         representative_quadrature,
-        dealii::update_quadrature_points | dealii::update_JxW_values);
+        dealii::update_quadrature_points | dealii::update_JxW_values |
+          dealii::update_jacobians);
 
       const auto section_count =
         cache_->lift_support->reference_cross_section().n_quadrature_points();

@@ -115,6 +115,29 @@ namespace ImmersX
         matrix.compress(dealii::VectorOperation::add);
     }
 
+    template <typename Support, typename = void>
+    struct has_support_triangulation : std::false_type
+    {};
+
+    template <typename Support>
+    struct has_support_triangulation<
+      Support,
+      std::void_t<decltype(std::declval<const Support &>().triangulation())>>
+      : std::true_type
+    {};
+
+    template <typename Support, typename = void>
+    struct support_triangulation_dimension
+      : std::integral_constant<int, Support::intrinsic_dimension>
+    {};
+
+    template <typename Support>
+    struct support_triangulation_dimension<
+      Support,
+      std::void_t<decltype(Support::representative_dimension)>>
+      : std::integral_constant<int, Support::representative_dimension>
+    {};
+
     template <typename VectorType, typename = void>
     struct has_index_set_vector_reinit : std::false_type
     {};
@@ -520,18 +543,19 @@ namespace ImmersX
         using CellIterator = typename SourceField::space_type::DoFHandlerType::
           active_cell_iterator;
         std::map<dealii::CellId, CellQuadrature> cell_quadratures;
-        const auto append_point = [&](const CellIterator       &source_cell,
+        std::uint64_t local_quadrature_point_count = 0;
+        const auto    append_point = [&](const CellIterator       &source_cell,
                                       const dealii::Point<dim> &point,
                                       const double              weight) {
           auto &cell_quadrature       = cell_quadratures[source_cell->id()];
           cell_quadrature.source_cell = source_cell;
           cell_quadrature.reference_points.push_back(point);
           cell_quadrature.physical_weights.push_back(weight);
+          ++local_quadrature_point_count;
         };
-        std::vector<dealii::Point<spacedim>>       positions;
-        std::vector<std::vector<double>>           properties;
-        std::vector<dealii::types::particle_index> ids;
-        const auto *background_tria = dynamic_cast<
+        std::vector<dealii::Point<spacedim>> positions;
+        std::vector<std::vector<double>>     properties;
+        const auto                          *background_tria = dynamic_cast<
           const dealii::parallel::TriangulationBase<dim, spacedim> *>(
           &source.dof_handler().get_triangulation());
         if constexpr (is_physical_quadrature_support<Support>::value)
@@ -557,21 +581,34 @@ namespace ImmersX
                           "congruent MPI communicators or be serial."));
             const auto support_rank = dealii::Utilities::MPI::this_mpi_process(
               support.mpi_communicator());
+            bool replicated_support     = false;
+            bool support_is_distributed = false;
+            if constexpr (has_support_triangulation<Support>::value)
+              {
+                const auto *distributed_support =
+                  dynamic_cast<const dealii::parallel::TriangulationBase<
+                    support_triangulation_dimension<Support>::value,
+                    Support::ambient_dimension> *>(&support.triangulation());
+                support_is_distributed = distributed_support != nullptr;
+                replicated_support =
+                  background_tria != nullptr && !support_is_distributed &&
+                  dealii::Utilities::MPI::this_mpi_process(
+                    target_field.space().mpi_communicator()) != 0;
+              }
             const auto &physical_points =
               support.locally_owned_quadrature_points();
             positions.reserve(physical_points.size());
             properties.reserve(physical_points.size());
-            ids.reserve(physical_points.size());
             for (const auto &point : physical_points)
               {
                 AssertThrow(point.owner_rank == support_rank,
                             dealii::ExcMessage(
                               "Physical support points must be locally "
                               "owned."));
+                if (replicated_support)
+                  continue;
                 positions.push_back(point.point);
                 properties.push_back({point.weight});
-                ids.push_back(
-                  static_cast<dealii::types::particle_index>(point.stable_id));
               }
           }
         else
@@ -596,7 +633,6 @@ namespace ImmersX
             positions.reserve(support.triangulation().n_active_cells() *
                               support_quadrature.size());
             properties.reserve(positions.capacity());
-            ids.reserve(positions.capacity());
             for (const auto &support_cell :
                  support.triangulation().active_cell_iterators())
               if (!replicated_support && support_cell->is_locally_owned() &&
@@ -607,10 +643,6 @@ namespace ImmersX
                     {
                       positions.push_back(support_values.quadrature_point(q));
                       properties.push_back({support_values.JxW(q)});
-                      ids.push_back(static_cast<dealii::types::particle_index>(
-                        support_cell->global_active_cell_index() *
-                          support_quadrature.size() +
-                        q));
                     }
                 }
           }
@@ -626,8 +658,11 @@ namespace ImmersX
                 distribution.initialize_particle_handler(*background_tria,
                                                          source.mapping(),
                                                          1);
+                // ParticleHandler's optional ID exchange is collective but
+                // branches on local ID-vector emptiness. Generated IDs avoid
+                // divergent collectives when a rank has no support points.
                 const auto receiving_ranks =
-                  distribution.insert_points(positions, properties, ids);
+                  distribution.insert_points(positions, properties);
                 std::size_t routed_points = 0;
                 for (const auto &[rank, indices] : receiving_ranks)
                   {
@@ -654,6 +689,13 @@ namespace ImmersX
                                    particle.get_reference_location(),
                                    particle.get_properties()[0]);
                     }
+                const auto global_located_points = dealii::Utilities::MPI::sum(
+                  local_quadrature_point_count,
+                  target_field.space().mpi_communicator());
+                AssertThrow(global_located_points == global_points,
+                            dealii::ExcMessage(
+                              "Physical support quadrature points were not "
+                              "assigned to locally owned background cells."));
               }
             else
               {
@@ -2087,6 +2129,162 @@ namespace ImmersX
           vector.reinit(field.dof_handler().n_dofs());
       }
 
+      template <typename Support>
+      struct PhysicalSupportQuadrature
+      {
+        using CellIterator = typename SourceField::space_type::DoFHandlerType::
+          active_cell_iterator;
+
+        CellIterator                    cell;
+        std::vector<dealii::Point<dim>> reference_points;
+        std::vector<double>             physical_weights;
+      };
+
+      template <typename Support, typename TargetField>
+      static auto
+      make_physical_support_quadratures(const Support     &support,
+                                        const SourceField &source,
+                                        const TargetField &target_field)
+      {
+        static_assert(Support::ambient_dimension == spacedim,
+                      "Physical support and fields must share an embedding "
+                      "dimension.");
+        using CellIterator = typename SourceField::space_type::DoFHandlerType::
+          active_cell_iterator;
+        using QuadratureData = PhysicalSupportQuadrature<Support>;
+
+        AssertThrow(
+          &source.dof_handler().get_triangulation() ==
+              &target_field.dof_handler().get_triangulation() &&
+            &source.mapping() == &target_field.mapping(),
+          dealii::ExcMessage(
+            "Physical nonlinear support requires matching source and target "
+            "meshes and mappings."));
+
+        int communicator_relation = MPI_UNEQUAL;
+        MPI_Comm_compare(support.mpi_communicator(),
+                         target_field.space().mpi_communicator(),
+                         &communicator_relation);
+        int support_processes    = 0;
+        int background_processes = 0;
+        MPI_Comm_size(support.mpi_communicator(), &support_processes);
+        MPI_Comm_size(target_field.space().mpi_communicator(),
+                      &background_processes);
+        AssertThrow(communicator_relation == MPI_IDENT ||
+                      communicator_relation == MPI_CONGRUENT ||
+                      (support_processes == 1 && background_processes == 1),
+                    dealii::ExcMessage(
+                      "Physical support and background must use congruent "
+                      "MPI communicators or be serial."));
+
+        std::vector<dealii::Point<spacedim>> positions;
+        std::vector<std::vector<double>>     properties;
+        const auto                          *background_tria = dynamic_cast<
+          const dealii::parallel::TriangulationBase<dim, spacedim> *>(
+          &source.dof_handler().get_triangulation());
+        const auto support_rank =
+          dealii::Utilities::MPI::this_mpi_process(support.mpi_communicator());
+        bool replicated_support = false;
+        if constexpr (has_support_triangulation<Support>::value)
+          {
+            const auto *distributed_support =
+              dynamic_cast<const dealii::parallel::TriangulationBase<
+                support_triangulation_dimension<Support>::value,
+                Support::ambient_dimension> *>(&support.triangulation());
+            replicated_support =
+              background_tria != nullptr && distributed_support == nullptr &&
+              dealii::Utilities::MPI::this_mpi_process(
+                target_field.space().mpi_communicator()) != 0;
+          }
+        const auto &physical_points = support.locally_owned_quadrature_points();
+        positions.reserve(physical_points.size());
+        properties.reserve(physical_points.size());
+        for (const auto &point : physical_points)
+          {
+            AssertThrow(point.owner_rank == support_rank,
+                        dealii::ExcMessage(
+                          "Physical support points must be locally owned."));
+            if (replicated_support)
+              continue;
+            positions.push_back(point.point);
+            properties.push_back({point.weight});
+          }
+
+        std::map<dealii::CellId, QuadratureData> cell_quadratures;
+        const auto append_point = [&](const CellIterator       &source_cell,
+                                      const dealii::Point<dim> &reference_point,
+                                      const double              weight) {
+          auto &data = cell_quadratures[source_cell->id()];
+          data.cell  = source_cell;
+          data.reference_points.push_back(reference_point);
+          data.physical_weights.push_back(weight);
+        };
+
+        if (background_tria != nullptr)
+          {
+            ParticleCouplingParameters<spacedim> parameters(
+              "/ImmersX/weak term/nonlinear support/" +
+              std::to_string(reinterpret_cast<std::uintptr_t>(&support)));
+            ParticleCoupling<spacedim> distribution(parameters);
+            distribution.initialize_particle_handler(*background_tria,
+                                                     source.mapping(),
+                                                     1);
+            // Use generated IDs for the collective point routing.
+            const auto receiving_ranks =
+              distribution.insert_points(positions, properties);
+            std::size_t routed_points = 0;
+            for (const auto &[rank, indices] : receiving_ranks)
+              {
+                (void)rank;
+                routed_points += indices.n_elements();
+              }
+            const auto global_points = dealii::Utilities::MPI::sum(
+              static_cast<std::uint64_t>(positions.size()),
+              target_field.space().mpi_communicator());
+            const auto global_routed_points = dealii::Utilities::MPI::sum(
+              static_cast<std::uint64_t>(routed_points),
+              target_field.space().mpi_communicator());
+            AssertThrow(global_routed_points == global_points,
+                        dealii::ExcMessage(
+                          "Not every physical support quadrature point was "
+                          "located in the background mesh."));
+            for (const auto &particle : distribution.get_particles())
+              if (particle.get_surrounding_cell()->is_locally_owned())
+                {
+                  const CellIterator source_cell(
+                    *particle.get_surrounding_cell(), &source.dof_handler());
+                  append_point(source_cell,
+                               particle.get_reference_location(),
+                               particle.get_properties()[0]);
+                }
+          }
+        else
+          {
+            dealii::GridTools::Cache<dim, spacedim> cache(
+              source.dof_handler().get_triangulation(), source.mapping());
+            typename dealii::Triangulation<dim, spacedim>::active_cell_iterator
+              cell_hint;
+            for (unsigned int q = 0; q < positions.size(); ++q)
+              {
+                const auto [background_cell, reference_point] =
+                  dealii::GridTools::find_active_cell_around_point(cache,
+                                                                   positions[q],
+                                                                   cell_hint);
+                AssertThrow(
+                  background_cell !=
+                    source.dof_handler().get_triangulation().end(),
+                  dealii::ExcMessage(
+                    "A physical support quadrature point lies outside the "
+                    "background mesh."));
+                cell_hint = background_cell;
+                const CellIterator source_cell(*background_cell,
+                                               &source.dof_handler());
+                append_point(source_cell, reference_point, properties[q][0]);
+              }
+          }
+        return cell_quadratures;
+      }
+
       template <typename Support, typename CellIterator>
       static bool
       support_includes(const Support &support, const CellIterator &cell)
@@ -2300,6 +2498,70 @@ namespace ImmersX
                       "Nonlinear weak terms currently require matching "
                       "source and target meshes."));
 
+        if constexpr (is_physical_quadrature_support<Support>::value)
+          {
+            const auto cell_quadratures =
+              make_physical_support_quadratures(support, source, target_field);
+            auto result = std::make_shared<VectorType>();
+            reinit_result(*result, target_field);
+            *result = 0.;
+            for (const auto &[cell_id, cell_quadrature] : cell_quadratures)
+              {
+                (void)cell_id;
+                const auto target_cell =
+                  cell_quadrature.cell->as_dof_handler_iterator(
+                    target_field.dof_handler());
+                if (!target_cell->is_locally_owned())
+                  continue;
+                const dealii::Quadrature<dim> point_quadrature(
+                  cell_quadrature.reference_points,
+                  std::vector<double>(cell_quadrature.reference_points.size(),
+                                      1.));
+                const auto flags = dealii::update_quadrature_points |
+                                   observable.update_flags() |
+                                   target.update_flags();
+                dealii::FEValues<dim, spacedim> source_values(
+                  source.mapping(),
+                  source.space().finite_element(),
+                  point_quadrature,
+                  flags);
+                dealii::FEValues<dim, spacedim> target_values(
+                  target_field.mapping(),
+                  target_field.space().finite_element(),
+                  point_quadrature,
+                  flags);
+                source_values.reinit(cell_quadrature.cell);
+                target_values.reinit(target_cell);
+                std::vector<dealii::types::global_dof_index> target_indices(
+                  target_cell->get_fe().n_dofs_per_cell());
+                target_cell->get_dof_indices(target_indices);
+                const auto &target_view =
+                  target_values[target_field.extractor()];
+                for (unsigned int q = 0;
+                     q < cell_quadrature.reference_points.size();
+                     ++q)
+                  {
+                    const auto value =
+                      value_at<VectorType>(observable,
+                                           context,
+                                           cell_quadrature.cell,
+                                           source_values,
+                                           q,
+                                           context.time());
+                    for (unsigned int i = 0; i < target_indices.size(); ++i)
+                      if (target_field.has_execution_index(target_indices[i]))
+                        (*result)(
+                          target_field.execution_index(target_indices[i])) +=
+                          target.scale() *
+                          natural_pairing(
+                            value, target.operation()(target_view, i, q)) *
+                          cell_quadrature.physical_weights[q];
+                  }
+              }
+            result->compress(dealii::VectorOperation::add);
+            return result;
+          }
+
         const auto degree =
           std::max(observable.polynomial_degree(),
                    target_field.space().finite_element().degree);
@@ -2380,6 +2642,149 @@ namespace ImmersX
                     dealii::ExcMessage(
                       "Nonlinear weak terms currently require matching "
                       "source meshes."));
+
+        if constexpr (is_physical_quadrature_support<Support>::value)
+          {
+            const auto cell_quadratures =
+              make_physical_support_quadratures(support, source, target_field);
+            dealii::DynamicSparsityPattern sparsity(
+              target_field.locally_owned_dofs().size(),
+              column_source.locally_owned_dofs().size(),
+              target_field.locally_owned_dofs());
+            for (const auto &[cell_id, cell_quadrature] : cell_quadratures)
+              {
+                (void)cell_id;
+                const auto target_cell =
+                  cell_quadrature.cell->as_dof_handler_iterator(
+                    target_field.dof_handler());
+                const auto column_cell =
+                  cell_quadrature.cell->as_dof_handler_iterator(
+                    column_source.dof_handler());
+                std::vector<dealii::types::global_dof_index> target_indices(
+                  target_cell->get_fe().n_dofs_per_cell());
+                std::vector<dealii::types::global_dof_index> column_indices(
+                  column_cell->get_fe().n_dofs_per_cell());
+                target_cell->get_dof_indices(target_indices);
+                column_cell->get_dof_indices(column_indices);
+                std::vector<dealii::types::global_dof_index>
+                  target_execution_indices;
+                std::vector<dealii::types::global_dof_index>
+                  column_execution_indices;
+                for (const auto index : target_indices)
+                  if (target_field.has_execution_index(index))
+                    target_execution_indices.push_back(
+                      target_field.execution_index(index));
+                for (const auto index : column_indices)
+                  if (column_source.has_execution_index(index))
+                    column_execution_indices.push_back(
+                      column_source.execution_index(index));
+                target_field.constraints().add_entries_local_to_global(
+                  target_execution_indices,
+                  column_source.constraints(),
+                  column_execution_indices,
+                  sparsity,
+                  true);
+              }
+
+            MatrixStorage<MatrixType> result;
+            result.matrix = std::make_shared<MatrixType>();
+            result.sparsity =
+              initialize_weak_matrix(*result.matrix,
+                                     target_field.locally_owned_dofs(),
+                                     column_source.locally_owned_dofs(),
+                                     sparsity,
+                                     target_field.space().mpi_communicator());
+
+            for (const auto &[cell_id, cell_quadrature] : cell_quadratures)
+              {
+                (void)cell_id;
+                const auto target_cell =
+                  cell_quadrature.cell->as_dof_handler_iterator(
+                    target_field.dof_handler());
+                if (!target_cell->is_locally_owned())
+                  continue;
+                const auto column_cell =
+                  cell_quadrature.cell->as_dof_handler_iterator(
+                    column_source.dof_handler());
+                const dealii::Quadrature<dim> point_quadrature(
+                  cell_quadrature.reference_points,
+                  std::vector<double>(cell_quadrature.reference_points.size(),
+                                      1.));
+                const auto flags = dealii::update_quadrature_points |
+                                   observable.update_flags() |
+                                   target.update_flags();
+                dealii::FEValues<dim, spacedim> source_values(
+                  source.mapping(),
+                  source.space().finite_element(),
+                  point_quadrature,
+                  flags);
+                dealii::FEValues<dim, spacedim> target_values(
+                  target_field.mapping(),
+                  target_field.space().finite_element(),
+                  point_quadrature,
+                  flags);
+                source_values.reinit(cell_quadrature.cell);
+                target_values.reinit(target_cell);
+                std::vector<dealii::types::global_dof_index> target_indices(
+                  target_cell->get_fe().n_dofs_per_cell());
+                std::vector<dealii::types::global_dof_index> column_indices(
+                  column_cell->get_fe().n_dofs_per_cell());
+                target_cell->get_dof_indices(target_indices);
+                column_cell->get_dof_indices(column_indices);
+                std::vector<unsigned int> target_positions;
+                std::vector<unsigned int> column_positions;
+                std::vector<dealii::types::global_dof_index>
+                  target_execution_indices;
+                std::vector<dealii::types::global_dof_index>
+                  column_execution_indices;
+                for (unsigned int i = 0; i < target_indices.size(); ++i)
+                  if (target_field.has_execution_index(target_indices[i]))
+                    {
+                      target_positions.push_back(i);
+                      target_execution_indices.push_back(
+                        target_field.execution_index(target_indices[i]));
+                    }
+                for (unsigned int j = 0; j < column_indices.size(); ++j)
+                  if (column_source.has_execution_index(column_indices[j]))
+                    {
+                      column_positions.push_back(j);
+                      column_execution_indices.push_back(
+                        column_source.execution_index(column_indices[j]));
+                    }
+                dealii::FullMatrix<double> local(target_positions.size(),
+                                                 column_positions.size());
+                const auto                &target_view =
+                  target_values[target_field.extractor()];
+                for (unsigned int q = 0;
+                     q < cell_quadrature.reference_points.size();
+                     ++q)
+                  for (unsigned int i = 0; i < target_positions.size(); ++i)
+                    for (unsigned int j = 0; j < column_positions.size(); ++j)
+                      local(i, j) +=
+                        target.scale() *
+                        natural_pairing(
+                          derivative_at<VectorType>(observable,
+                                                    context,
+                                                    field,
+                                                    cell_quadrature.cell,
+                                                    source_values,
+                                                    q,
+                                                    column_positions[j],
+                                                    context.time()),
+                          target.operation()(target_view,
+                                             target_positions[i],
+                                             q)) *
+                        cell_quadrature.physical_weights[q];
+                target_field.constraints().distribute_local_to_global(
+                  local,
+                  target_execution_indices,
+                  column_source.constraints(),
+                  column_execution_indices,
+                  *result.matrix);
+              }
+            result.matrix->compress(dealii::VectorOperation::add);
+            return result;
+          }
 
         const auto degree =
           std::max(observable.polynomial_degree(),
@@ -3541,9 +3946,10 @@ namespace ImmersX
             {
               AssertThrow(
                 (std::is_same_v<Support, InferredIntegrationSupport> ||
-                 is_integration_support<Support>::value),
+                 is_integration_support<Support>::value ||
+                 is_physical_quadrature_support<Support>::value),
                 dealii::ExcMessage(
-                  "Nonlinear weak terms require cell integration "
+                  "Nonlinear weak terms require cell or physical quadrature "
                   "support."));
               if constexpr (is_integration_support<Support>::value)
                 {

@@ -115,6 +115,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Fixed
 
+- [PR #247](https://github.com/luca-heltai/immersx/pull/247) Enabled nonlinear weak terms on physical quadrature supports and made lifted quadrature update flags and cross-section geometry explicit.
 - [PR #243](https://github.com/luca-heltai/immersx/pull/243) Use particle-based assembly when deal.II's native nonmatching path cannot handle a distributed immersed mesh or a multi-rank background mesh.
 - [PR #241](https://github.com/luca-heltai/immersx/pull/241) Keep persisted Coral weak-term and continuity graphs readable across compilers.
 - [PR #238](https://github.com/luca-heltai/immersx/pull/238) Avoid indexed writes to ghosted Trilinos vectors in `OutputHandler`.

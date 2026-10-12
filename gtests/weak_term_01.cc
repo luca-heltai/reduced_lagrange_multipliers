@@ -1279,6 +1279,7 @@ TEST(WeakTerm, LiftedSupportAssemblesBackgroundTraceMass)
 
   TensorProductLift<1, 2, 3> lift("/Trace mass lift/");
   lift.section.inclusion_degree      = 0;
+  lift.section.inclusion_type        = "hyper_cube";
   lift.section.refinement_level      = 0;
   lift.section.selected_coefficients = {0};
   lift.section.n_q_points            = 2;
@@ -1330,6 +1331,7 @@ TEST(WeakTerm, LiftedSupportPreservesFrozenExpressionAndJacobian)
   representative_domain.make_grid();
   TensorProductLift<1, 2, 3> lift("/Frozen trace lift/");
   lift.section.inclusion_degree      = 0;
+  lift.section.inclusion_type        = "hyper_cube";
   lift.section.refinement_level      = 0;
   lift.section.selected_coefficients = {0};
   lift.section.n_q_points            = 2;
@@ -1389,6 +1391,7 @@ TEST(WeakTerm, LiftedSupportPreservesFrozenExpressionAndJacobian)
 
   lift.thickness = "0.5";
   dGamma.rebuild();
+  residual = 0.;
   model.evaluate_row(target.field_id(), context, residual);
   EXPECT_NEAR(ones * residual, 2., 1.e-12);
   const auto rebuilt_jacobian =
