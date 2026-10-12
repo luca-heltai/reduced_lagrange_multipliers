@@ -74,7 +74,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Changed
 
-- [PR #249](https://github.com/luca-heltai/immersx/pull/249) Reused trial and test basis values at each quadrature point during linear weak-term assembly.
+- [PR #249](https://github.com/luca-heltai/immersx/pull/249) Reused trial and test basis values during linear assembly and input FEValues across cells with a shared mapping during nonlinear assembly.
 - [PR #237](https://github.com/luca-heltai/immersx/pull/237) Replace custom MetricFlowX coupling with structural finite-element observables and cell integration.
 - [PR #226](https://github.com/luca-heltai/immersx/pull/226) Associated boundary conditions with semantic fields.
 - [PR #222](https://github.com/luca-heltai/immersx/pull/222) Returned typed semantic fields from the contributors.

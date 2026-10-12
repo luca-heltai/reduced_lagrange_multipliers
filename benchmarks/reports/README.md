@@ -41,3 +41,13 @@ The lifted-support benchmark now forces matrix materialization inside its timed
 region. Its executable still aborts during `MPI_Init_thread` in this
 environment with `MPIDI_POSIX_comm_bootstrap: Out of memory`, before producing
 timings.
+
+`weakterm-cp5-nonlinear-q1-q2-dgq0-dealii-9.8.0-rc1-arm64.jsonl` records the
+40-repetition Debug and Release timings for the heterogeneous nonlinear
+Q1/Q2/DGQ0 case before and after reusing input FEValues across cells with a
+shared mapping. After the change, the relative residual error is `1.37e-16`,
+and the Q1 Jacobian, Q2 Jacobian, and Jacobian-action errors are zero for this
+case. The warm ImmersX to MeshWorker ratio changed from 4449 to 8.10 in Debug
+and from 5212 to 2.59 in Release. MeshWorker assembles the residual and both
+Jacobians in one cell pass; ImmersX measures its three public assembly calls,
+so these ratios include the different traversal counts.

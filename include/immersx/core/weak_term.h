@@ -2410,75 +2410,184 @@ namespace ImmersX
               "Nonlinear weak term inputs must use the source triangulation."));
       }
 
-      template <typename VectorType,
-                typename ObservableType_,
-                typename Context,
-                typename Cell,
-                typename SourceValues>
+      /** Cache input FEValues and local coefficients on one cell. Reuse the
+       * FEValues across cells when an input shares the integration mapping;
+       * otherwise transfer quadrature points from physical space. */
+      template <typename Context, typename Cell, typename SourceValues>
+      class CellInputCache
+      {
+      public:
+        struct Entry
+        {
+          std::unique_ptr<dealii::FEValues<dim, spacedim>> values;
+          std::vector<unsigned int>                        positions;
+          std::vector<dealii::types::global_dof_index>     execution_indices;
+          std::vector<double>                              execution_values;
+          const dealii::DoFHandler<dim, spacedim> *dof_handler = nullptr;
+          dealii::CellId                           cell_id;
+          bool                                     cell_initialized = false;
+          bool                                     reusable         = false;
+        };
+
+        CellInputCache(
+          const Context                        &context,
+          const Cell                           &source_cell,
+          const SourceValues                   &source_values,
+          const dealii::Mapping<dim, spacedim> &integration_mapping,
+          const dealii::UpdateFlags             update_flags,
+          const bool                            reuse_across_cells = false)
+          : context_(context)
+          , source_cell_(source_cell)
+          , source_values_(&source_values)
+          , integration_mapping_(&integration_mapping)
+          , update_flags_(update_flags)
+          , reuse_across_cells_(reuse_across_cells)
+        {}
+
+        void
+        reinit(const Cell &source_cell, const SourceValues &source_values)
+        {
+          source_cell_   = source_cell;
+          source_values_ = &source_values;
+          if (!reuse_across_cells_)
+            {
+              entries_.clear();
+              return;
+            }
+
+          for (auto it = entries_.begin(); it != entries_.end();)
+            if (it->second->reusable)
+              {
+                const auto input_cell = source_cell_->as_dof_handler_iterator(
+                  *it->second->dof_handler);
+                it->second->values->reinit(input_cell);
+                ++it;
+              }
+            else
+              it = entries_.erase(it);
+        }
+
+        template <typename ObservableType_>
+        const Entry &
+        get(const ObservableType_ &observable) const
+        {
+          const auto key = static_cast<const void *>(&observable);
+          auto       it  = entries_.find(key);
+          if (it != entries_.end())
+            {
+              if (it->second->reusable &&
+                  (!it->second->cell_initialized ||
+                   it->second->cell_id != source_cell_->id()))
+                update_coefficients(observable, *it->second);
+              return *it->second;
+            }
+
+          using VectorType =
+            std::decay_t<decltype(context_.state(observable.source_field()))>;
+          const auto &input_field = observable.source();
+          const auto  input_cell =
+            source_cell_->as_dof_handler_iterator(input_field.dof_handler());
+          auto entry         = std::make_unique<Entry>();
+          entry->dof_handler = &input_field.dof_handler();
+          entry->reusable    = reuse_across_cells_ &&
+                            &input_field.mapping() == integration_mapping_;
+          std::unique_ptr<dealii::Quadrature<dim>> quadrature;
+          if (!entry->reusable)
+            {
+              std::vector<dealii::Point<dim>> reference_points;
+              reference_points.reserve(source_values_->n_quadrature_points);
+              for (unsigned int q = 0; q < source_values_->n_quadrature_points;
+                   ++q)
+                reference_points.push_back(
+                  input_field.mapping().transform_real_to_unit_cell(
+                    input_cell, source_values_->quadrature_point(q)));
+              quadrature = std::make_unique<dealii::Quadrature<dim>>(
+                reference_points,
+                std::vector<double>(reference_points.size(), 1.));
+            }
+          entry->values = std::make_unique<dealii::FEValues<dim, spacedim>>(
+            input_field.mapping(),
+            input_field.space().finite_element(),
+            entry->reusable ? source_values_->get_quadrature() : *quadrature,
+            dealii::update_values | update_flags_);
+          entry->values->reinit(input_cell);
+          update_coefficients(observable, *entry);
+
+          return *entries_.emplace(key, std::move(entry)).first->second;
+        }
+
+      private:
+        template <typename ObservableType_>
+        void
+        update_coefficients(const ObservableType_ &observable,
+                            Entry                 &entry) const
+        {
+          using VectorType =
+            std::decay_t<decltype(context_.state(observable.source_field()))>;
+          const auto &input_field = observable.source();
+          const auto  input_cell =
+            source_cell_->as_dof_handler_iterator(input_field.dof_handler());
+          std::vector<dealii::types::global_dof_index> indices(
+            input_cell->get_fe().n_dofs_per_cell());
+          input_cell->get_dof_indices(indices);
+          entry.positions.clear();
+          entry.execution_indices.clear();
+          entry.positions.reserve(indices.size());
+          entry.execution_indices.reserve(indices.size());
+          for (unsigned int i = 0; i < indices.size(); ++i)
+            if (input_field.has_execution_index(indices[i]))
+              {
+                entry.positions.push_back(i);
+                entry.execution_indices.push_back(
+                  input_field.execution_index(indices[i]));
+              }
+          entry.execution_values.resize(entry.execution_indices.size());
+          const auto &coefficients =
+            observable.is_frozen() ?
+              observable.template frozen_values<VectorType>() :
+              context_.state(observable.source_field());
+          input_field.constraints().get_dof_values(
+            coefficients,
+            entry.execution_indices.begin(),
+            entry.execution_values.begin(),
+            entry.execution_values.end());
+          entry.cell_id          = source_cell_->id();
+          entry.cell_initialized = true;
+        }
+
+        const Context                        &context_;
+        Cell                                  source_cell_;
+        const SourceValues                   *source_values_;
+        const dealii::Mapping<dim, spacedim> *integration_mapping_;
+        dealii::UpdateFlags                   update_flags_;
+        bool                                  reuse_across_cells_;
+        mutable std::map<const void *, std::unique_ptr<Entry>> entries_;
+      };
+
+      template <typename VectorType, typename ObservableType_, typename Cache>
       static typename std::decay_t<ObservableType_>::value_type
       primitive_value(const ObservableType_ &observable,
-                      const Context         &context,
-                      const Cell            &source_cell,
-                      const SourceValues    &source_values,
+                      const Cache           &input_cache,
                       const unsigned int     q)
       {
         using Observable = std::decay_t<decltype(observable)>;
         using Value      = typename Observable::value_type;
 
         const auto &input_field = observable.source();
-        const auto  input_cell =
-          source_cell->as_dof_handler_iterator(input_field.dof_handler());
-        const auto input_reference_point =
-          input_field.mapping().transform_real_to_unit_cell(
-            input_cell, source_values.quadrature_point(q));
-        const dealii::Quadrature<dim> input_quadrature(
-          std::vector<dealii::Point<dim>>{input_reference_point},
-          std::vector<double>{1.});
-        dealii::FEValues<dim, spacedim> input_values(
-          input_field.mapping(),
-          input_field.space().finite_element(),
-          input_quadrature,
-          dealii::update_values | observable.update_flags());
-        input_values.reinit(input_cell);
-        std::vector<dealii::types::global_dof_index> indices(
-          input_cell->get_fe().n_dofs_per_cell());
-        input_cell->get_dof_indices(indices);
-        const auto &coefficients =
-          observable.is_frozen() ?
-            observable.template frozen_values<VectorType>() :
-            context.state(observable.source_field());
-        std::vector<dealii::types::global_dof_index> execution_indices;
-        execution_indices.reserve(indices.size());
-        std::vector<unsigned int> positions;
-        positions.reserve(indices.size());
-        for (unsigned int i = 0; i < indices.size(); ++i)
-          if (observable.source().has_execution_index(indices[i]))
-            {
-              positions.push_back(i);
-              execution_indices.push_back(
-                observable.source().execution_index(indices[i]));
-            }
-        std::vector<double> execution_values(execution_indices.size());
-        observable.source().constraints().get_dof_values(
-          coefficients,
-          execution_indices.begin(),
-          execution_values.begin(),
-          execution_values.end());
-
-        const auto &view   = input_values[input_field.extractor()];
-        Value       result = Value{};
-        for (unsigned int i = 0; i < positions.size(); ++i)
-          result +=
-            execution_values[i] * observable.operation()(view, positions[i], 0);
+        const auto &entry       = input_cache.get(observable);
+        const auto &view        = (*entry.values)[input_field.extractor()];
+        Value       result      = Value{};
+        for (unsigned int i = 0; i < entry.positions.size(); ++i)
+          result += entry.execution_values[i] *
+                    observable.operation()(view, entry.positions[i], q);
         return observable.scale() * result;
       }
 
-      template <typename ObservableType_, typename Cell, typename SourceValues>
+      template <typename ObservableType_, typename Cache>
       static typename std::decay_t<ObservableType_>::value_type
       primitive_derivative(const ObservableType_ &observable,
                            const FieldId          field,
-                           const Cell            &source_cell,
-                           const SourceValues    &source_values,
+                           const Cache           &input_cache,
                            const unsigned int     q,
                            const unsigned int     basis)
       {
@@ -2487,41 +2596,24 @@ namespace ImmersX
         if (observable.is_frozen() || observable.source_field() != field)
           return Value{};
         const auto &input_field = observable.source();
-        const auto  input_cell =
-          source_cell->as_dof_handler_iterator(input_field.dof_handler());
-        AssertIndexRange(basis, input_cell->get_fe().n_dofs_per_cell());
-        const auto input_reference_point =
-          input_field.mapping().transform_real_to_unit_cell(
-            input_cell, source_values.quadrature_point(q));
-        const dealii::Quadrature<dim> input_quadrature(
-          std::vector<dealii::Point<dim>>{input_reference_point},
-          std::vector<double>{1.});
-        dealii::FEValues<dim, spacedim> input_values(
-          input_field.mapping(),
-          input_field.space().finite_element(),
-          input_quadrature,
-          dealii::update_values | observable.update_flags());
-        input_values.reinit(input_cell);
-        const auto &view = input_values[input_field.extractor()];
-        return observable.operation()(view, basis, 0);
+        const auto &entry       = input_cache.get(observable);
+        AssertIndexRange(
+          basis, input_field.space().finite_element().n_dofs_per_cell());
+        const auto &view = (*entry.values)[input_field.extractor()];
+        return observable.operation()(view, basis, q);
       }
 
-      template <typename VectorType,
-                typename Context,
-                typename Cell,
-                typename SourceValues>
+      template <typename VectorType, typename SourceValues, typename Cache>
       static typename std::decay_t<ObservableType>::value_type
       value_at(const ObservableType &observable,
-               const Context        &context,
-               const Cell           &source_cell,
                const SourceValues   &source_values,
+               const Cache          &input_cache,
                const unsigned int    q,
                const double          time)
       {
         const auto evaluator =
           [&](const auto &input, const auto &, const double) {
-            return primitive_value<VectorType>(
-              input, context, source_cell, source_values, q);
+            return primitive_value<VectorType>(input, input_cache, q);
           };
         return evaluate_observable_input(observable,
                                          source_values.quadrature_point(q),
@@ -2529,31 +2621,26 @@ namespace ImmersX
                                          evaluator);
       }
 
-      template <typename VectorType,
-                typename Context,
-                typename Cell,
-                typename SourceValues>
+      template <typename VectorType, typename SourceValues, typename Cache>
       static typename std::decay_t<ObservableType>::value_type
       derivative_at(const ObservableType &observable,
-                    const Context        &context,
                     const FieldId         field,
-                    const Cell           &source_cell,
                     const SourceValues   &source_values,
+                    const Cache          &input_cache,
                     const unsigned int    q,
                     const unsigned int    basis,
                     const double          time)
       {
         const auto evaluator =
           [&](const auto &input, const auto &, const double) {
-            return primitive_value<VectorType>(
-              input, context, source_cell, source_values, q);
+            return primitive_value<VectorType>(input, input_cache, q);
           };
         const auto derivative_evaluator = [&](const auto   &input,
                                               const FieldId input_field,
                                               const auto &,
                                               const double) {
           return primitive_derivative(
-            input, input_field, source_cell, source_values, q, basis);
+            input, input_field, input_cache, q, basis);
         };
         return linearize_observable_input(observable,
                                           field,
@@ -2617,6 +2704,11 @@ namespace ImmersX
                   point_quadrature,
                   flags);
                 source_values.reinit(cell_quadrature.cell);
+                CellInputCache input_cache(context,
+                                           cell_quadrature.cell,
+                                           source_values,
+                                           source.mapping(),
+                                           observable.update_flags());
                 target_values.reinit(target_cell);
                 std::vector<dealii::types::global_dof_index> target_indices(
                   target_cell->get_fe().n_dofs_per_cell());
@@ -2627,13 +2719,11 @@ namespace ImmersX
                      q < cell_quadrature.reference_points.size();
                      ++q)
                   {
-                    const auto value =
-                      value_at<VectorType>(observable,
-                                           context,
-                                           cell_quadrature.cell,
-                                           source_values,
-                                           q,
-                                           context.time());
+                    const auto value = value_at<VectorType>(observable,
+                                                            source_values,
+                                                            input_cache,
+                                                            q,
+                                                            context.time());
                     for (unsigned int i = 0; i < target_indices.size(); ++i)
                       if (target_field.has_execution_index(target_indices[i]))
                         (*result)(
@@ -2668,6 +2758,12 @@ namespace ImmersX
         *result = 0.;
         std::vector<dealii::types::global_dof_index> target_indices(
           target_field.space().finite_element().n_dofs_per_cell());
+        CellInputCache input_cache(context,
+                                   source.dof_handler().begin_active(),
+                                   source_values,
+                                   source.mapping(),
+                                   observable.update_flags(),
+                                   true);
         for (const auto &source_cell :
              source.dof_handler().active_cell_iterators())
           if (source_cell->is_locally_owned())
@@ -2680,16 +2776,13 @@ namespace ImmersX
                 continue;
               source_values.reinit(source_cell);
               target_values.reinit(target_cell);
+              input_cache.reinit(source_cell, source_values);
               target_cell->get_dof_indices(target_indices);
               const auto &target_view = target_values[target_field.extractor()];
               for (unsigned int q = 0; q < quadrature.size(); ++q)
                 {
-                  const auto value = value_at<VectorType>(observable,
-                                                          context,
-                                                          source_cell,
-                                                          source_values,
-                                                          q,
-                                                          context.time());
+                  const auto value = value_at<VectorType>(
+                    observable, source_values, input_cache, q, context.time());
                   for (unsigned int i = 0; i < target_indices.size(); ++i)
                     if (target_field.has_execution_index(target_indices[i]))
                       (*result)(
@@ -2810,6 +2903,11 @@ namespace ImmersX
                   point_quadrature,
                   flags);
                 source_values.reinit(cell_quadrature.cell);
+                CellInputCache input_cache(context,
+                                           cell_quadrature.cell,
+                                           source_values,
+                                           source.mapping(),
+                                           observable.update_flags());
                 target_values.reinit(target_cell);
                 std::vector<dealii::types::global_dof_index> target_indices(
                   target_cell->get_fe().n_dofs_per_cell());
@@ -2844,23 +2942,25 @@ namespace ImmersX
                 for (unsigned int q = 0;
                      q < cell_quadrature.reference_points.size();
                      ++q)
-                  for (unsigned int i = 0; i < target_positions.size(); ++i)
-                    for (unsigned int j = 0; j < column_positions.size(); ++j)
-                      local(i, j) +=
-                        target.scale() *
-                        natural_pairing(
-                          derivative_at<VectorType>(observable,
-                                                    context,
-                                                    field,
-                                                    cell_quadrature.cell,
-                                                    source_values,
-                                                    q,
-                                                    column_positions[j],
-                                                    context.time()),
-                          target.operation()(target_view,
-                                             target_positions[i],
-                                             q)) *
-                        cell_quadrature.physical_weights[q];
+                  for (unsigned int j = 0; j < column_positions.size(); ++j)
+                    {
+                      const auto derivative =
+                        derivative_at<VectorType>(observable,
+                                                  field,
+                                                  source_values,
+                                                  input_cache,
+                                                  q,
+                                                  column_positions[j],
+                                                  context.time());
+                      for (unsigned int i = 0; i < target_positions.size(); ++i)
+                        local(i, j) += target.scale() *
+                                       natural_pairing(
+                                         derivative,
+                                         target.operation()(target_view,
+                                                            target_positions[i],
+                                                            q)) *
+                                       cell_quadrature.physical_weights[q];
+                    }
                 target_field.constraints().distribute_local_to_global(
                   local,
                   target_execution_indices,
@@ -2938,6 +3038,12 @@ namespace ImmersX
           target_field.space().finite_element(),
           quadrature,
           flags);
+        CellInputCache input_cache(context,
+                                   source.dof_handler().begin_active(),
+                                   source_values,
+                                   source.mapping(),
+                                   observable.update_flags(),
+                                   true);
         for (const auto &source_cell :
              source.dof_handler().active_cell_iterators())
           if (source_cell->is_locally_owned())
@@ -2952,6 +3058,7 @@ namespace ImmersX
                 column_source.dof_handler());
               source_values.reinit(source_cell);
               target_values.reinit(target_cell);
+              input_cache.reinit(source_cell, source_values);
               target_cell->get_dof_indices(target_indices);
               column_cell->get_dof_indices(column_indices);
               const auto &target_view = target_values[target_field.extractor()];
@@ -2978,23 +3085,25 @@ namespace ImmersX
               dealii::FullMatrix<double> local(target_positions.size(),
                                                column_positions.size());
               for (unsigned int q = 0; q < quadrature.size(); ++q)
-                for (unsigned int i = 0; i < target_positions.size(); ++i)
-                  for (unsigned int j = 0; j < column_positions.size(); ++j)
-                    local(i, j) +=
-                      target.scale() *
-                      natural_pairing(
-                        derivative_at<VectorType>(observable,
-                                                  context,
-                                                  field,
-                                                  source_cell,
-                                                  source_values,
-                                                  q,
-                                                  column_positions[j],
-                                                  context.time()),
-                        target.operation()(target_view,
-                                           target_positions[i],
-                                           q)) *
-                      target_values.JxW(q);
+                for (unsigned int j = 0; j < column_positions.size(); ++j)
+                  {
+                    const auto derivative =
+                      derivative_at<VectorType>(observable,
+                                                field,
+                                                source_values,
+                                                input_cache,
+                                                q,
+                                                column_positions[j],
+                                                context.time());
+                    for (unsigned int i = 0; i < target_positions.size(); ++i)
+                      local(i, j) +=
+                        target.scale() *
+                        natural_pairing(derivative,
+                                        target.operation()(target_view,
+                                                           target_positions[i],
+                                                           q)) *
+                        target_values.JxW(q);
+                  }
               target_field.constraints().distribute_local_to_global(
                 local,
                 target_execution_indices,
