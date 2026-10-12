@@ -133,6 +133,11 @@ namespace ImmersX
                          double                         time,
                          const std::vector<double>     &source_properties)>;
 
+  /** State-independent spatial thickness used by geometric supports. */
+  template <int spacedim>
+  using FixedThicknessEvaluator =
+    std::function<double(const dealii::Point<spacedim> &point)>;
+
   /** Lifting-only configuration for a tensor-product representation. */
   template <int reduced_dim,
             int surface_dim,
