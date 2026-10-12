@@ -416,6 +416,21 @@ namespace ImmersX
           observable, source, target, nullptr, nullptr, support);
       }
 
+      template <typename VectorType, typename MatrixType>
+      static MatrixStorage<MatrixType>
+      assemble_on_boundary_support(
+        const ObservableType                            &observable,
+        const TargetExpression                          &target,
+        const BoundaryIntegrationSupport<dim, spacedim> &support)
+      {
+        const auto &source       = observable.source();
+        const auto &target_field = target.source();
+        support.assert_matches(source.dof_handler().get_triangulation());
+        support.assert_matches(target_field.dof_handler().get_triangulation());
+        return assemble_boundary<VectorType, MatrixType>(
+          observable, target, support.boundary_ids());
+      }
+
       static bool
       geometry_is_nonmatching(const ObservableType   &observable,
                               const TargetExpression &target)
@@ -1487,12 +1502,26 @@ namespace ImmersX
         for (unsigned int q = 0; q < quadrature.size(); ++q)
           for (unsigned int i = 0; i < target_positions.size(); ++i)
             for (unsigned int j = 0; j < source_positions.size(); ++j)
-              local(i, j) +=
-                observable.scale() * target.scale() *
-                detail::natural_pairing(
-                  observable.operation()(trial_view, source_positions[j], q),
-                  target.operation()(test_view, target_positions[i], q)) *
-                target_values.JxW(q);
+              {
+                const auto trial_value = [&] {
+                  if constexpr (detail::is_boundary_normal_observable<
+                                  ObservableType>::value)
+                    return observable.evaluate_face(trial_view,
+                                                    source_positions[j],
+                                                    q,
+                                                    target_values);
+                  else
+                    return observable.operation()(trial_view,
+                                                  source_positions[j],
+                                                  q);
+                }();
+                local(i, j) +=
+                  observable.scale() * target.scale() *
+                  detail::natural_pairing(
+                    trial_value,
+                    target.operation()(test_view, target_positions[i], q)) *
+                  target_values.JxW(q);
+              }
 
         target_field.constraints().distribute_local_to_global(
           local,
@@ -2848,6 +2877,23 @@ namespace ImmersX
         observable_, target_, std::move(support));
     }
 
+    template <int support_dim, int support_spacedim>
+    auto
+    on(BoundaryIntegrationSupport<support_dim, support_spacedim> support) const
+    {
+      static_assert(support_dim == TestExpression::dimension(),
+                    "Boundary support dimension must match the test field "
+                    "dimension.");
+      static_assert(support_spacedim == TestExpression::spacedimension(),
+                    "Boundary support and test field must share an "
+                    "embedding dimension.");
+      return WeakTerm<
+        TrialExpression,
+        TestExpression,
+        BoundaryIntegrationSupport<support_dim, support_spacedim>>(
+        observable_, target_, std::move(support));
+    }
+
     WeakTerm
     on_boundary(const dealii::types::boundary_id id) const
     {
@@ -3213,19 +3259,43 @@ namespace ImmersX
           using Assembly = detail::WeakAssembly<TrialExpression, Target>;
           const bool nonmatching_geometry =
             Assembly::geometry_is_nonmatching(observable_, target);
+          if constexpr (detail::is_boundary_normal_observable<
+                          TrialExpression>::value)
+            {
+              constexpr bool has_explicit_boundary_support = std::is_same_v<
+                Support,
+                BoundaryIntegrationSupport<TestExpression::dimension(),
+                                           TestExpression::spacedimension()>>;
+              AssertThrow(has_explicit_boundary_support ||
+                            region.kind == WeakTermRegion::Kind::boundary,
+                          dealii::ExcMessage(
+                            "A normal-contracted weak term requires a "
+                            "boundary support."));
+            }
           if constexpr (!std::is_same_v<Support, InferredIntegrationSupport>)
             {
               AssertThrow(region.kind == WeakTermRegion::Kind::volume,
                           dealii::ExcMessage(
-                            "A cell integration support cannot be combined "
-                            "with a boundary region."));
+                            "An explicit integration support cannot be "
+                            "combined with an on_boundary region."));
               AssertThrow(!nonmatching_geometry,
                           dealii::ExcMessage(
-                            "This cell integration support requires the "
-                            "source and test fields to use its mesh."));
-              const auto storage =
-                Assembly::template assemble_on_support<VectorType, MatrixType>(
-                  observable_, target, support_);
+                            "This integration support requires the source "
+                            "and test fields to use its mesh."));
+              const auto storage = [&] {
+                if constexpr (std::is_same_v<
+                                Support,
+                                BoundaryIntegrationSupport<
+                                  TestExpression::dimension(),
+                                  TestExpression::spacedimension()>>)
+                  return Assembly::template assemble_on_boundary_support<
+                    VectorType,
+                    MatrixType>(observable_, target, support_);
+                else
+                  return Assembly::template assemble_on_support<VectorType,
+                                                                MatrixType>(
+                    observable_, target, support_);
+              }();
               result.matrix   = storage.matrix;
               result.sparsity = storage.sparsity;
               result.operator_with_matrix =
@@ -3326,6 +3396,49 @@ namespace ImmersX
   {
     return weak_term(std::move(trial), std::move(test_expression))
       .on(std::move(support));
+  }
+
+  template <typename Trial, typename Test, int dim, int spacedim>
+  auto
+  weak_term(Trial                                     trial,
+            Test                                      test_expression,
+            BoundaryIntegrationSupport<dim, spacedim> support)
+  {
+    return weak_term(std::move(trial), std::move(test_expression))
+      .on(std::move(support));
+  }
+
+  template <typename Trial, typename FieldType, typename Operation>
+  auto
+  operator*(Trial trial, TestExpression<FieldType, Operation> test_expression)
+    -> std::enable_if_t<detail::is_linear_observable<Trial>::value,
+                        WeakTerm<Trial, TestExpression<FieldType, Operation>>>
+  {
+    return weak_term(std::move(trial), std::move(test_expression));
+  }
+
+  template <typename Trial,
+            typename Test,
+            typename Support,
+            int dim,
+            int spacedim>
+  auto
+  operator*(WeakTerm<Trial, Test, Support>    term,
+            IntegrationSupport<dim, spacedim> support)
+  {
+    return term.on(std::move(support));
+  }
+
+  template <typename Trial,
+            typename Test,
+            typename Support,
+            int dim,
+            int spacedim>
+  auto
+  operator*(WeakTerm<Trial, Test, Support>            term,
+            BoundaryIntegrationSupport<dim, spacedim> support)
+  {
+    return term.on(std::move(support));
   }
 
   template <typename Quantity, typename Surface, typename TargetField>

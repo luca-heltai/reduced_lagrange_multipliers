@@ -133,6 +133,21 @@ namespace ImmersX
       return IntegrationSupport<dim, spacedim>(triangulation(), material_id);
     }
 
+    /** Integrate over every boundary face of this domain. */
+    BoundaryIntegrationSupport<dim, spacedim>
+    boundary_support() const
+    {
+      return BoundaryIntegrationSupport<dim, spacedim>(triangulation());
+    }
+
+    /** Integrate over boundary faces with the selected boundary id. */
+    BoundaryIntegrationSupport<dim, spacedim>
+    boundary_support(const dealii::types::boundary_id boundary_id) const
+    {
+      return BoundaryIntegrationSupport<dim, spacedim>(triangulation(),
+                                                       boundary_id);
+    }
+
     /** Whether VTK data fields have been imported for this domain. */
     bool
     has_vtk_fields() const;
