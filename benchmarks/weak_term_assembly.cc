@@ -1068,6 +1068,218 @@ benchmark_nonmatching_support(const unsigned int repetitions)
   benchmark_pair("nonmatching_value_forward", immersed_forward_assembly, false);
 }
 
+void
+benchmark_independent_trace(const unsigned int refinements,
+                            const unsigned int repetitions)
+{
+  const auto       setup_start = Clock::now();
+  Triangulation<2> background;
+  GridGenerator::hyper_cube(background, -1., 1.);
+  background.refine_global(refinements);
+  FE_Q<2>       finite_element(1);
+  DoFHandler<2> dof_handler(background);
+  dof_handler.distribute_dofs(finite_element);
+  AffineConstraints<double> constraints;
+  constraints.close();
+  const auto space =
+    fe_space(dof_handler, StaticMappingQ1<2>::mapping, constraints);
+  StateLayout layout;
+  const auto  u = space.field(layout, "u");
+
+  Triangulation<1, 2>   immersed_mesh;
+  std::vector<Point<2>> vertices{{-0.8, 0.25}, {0.8, 0.25}};
+  CellData<1>           immersed_cell;
+  immersed_cell.vertices[0] = 0;
+  immersed_cell.vertices[1] = 1;
+  immersed_mesh.create_triangulation(vertices,
+                                     std::vector<CellData<1>>{immersed_cell},
+                                     SubCellData());
+  const IntegrationSupport<1, 2> support(immersed_mesh);
+  using Vector          = dealii::Vector<double>;
+  using Matrix          = dealii::SparseMatrix<double>;
+  using Model           = SemiDiscreteModel<Vector, Matrix>;
+  const double setup_ms = milliseconds(Clock::now() - setup_start);
+
+  const auto assemble = [&] {
+    auto                                model = std::make_shared<Model>();
+    SemidiscreteBuilder<Vector, Matrix> builder(layout, *model);
+    (value(u) * test(u) * support).add(builder);
+    return model;
+  };
+  const auto              cold_start = Clock::now();
+  auto                    model      = assemble();
+  const auto              cold_ms    = milliseconds(Clock::now() - cold_start);
+  const StateView<Vector> state_view(layout, 0.);
+  const EvaluationContext<Vector> context(0., state_view);
+  const auto                      matrix_operator =
+    model->state_matrix_operator(u.field_id(), u.field_id(), context);
+  AssertThrow(
+    matrix_operator.has_value() && matrix_operator->is_materializable(),
+    ExcMessage("Trace benchmark did not produce a materialized matrix."));
+  const auto assembled_matrix = matrix_operator->matrix();
+
+  Vector ones(dof_handler.n_dofs());
+  ones = 1.;
+  Vector action(dof_handler.n_dofs());
+  assembled_matrix->vmult(action, ones);
+  const double          measure_error = std::abs(action * ones - 1.6);
+  std::vector<Point<2>> support_points(dof_handler.n_dofs());
+  DoFTools::map_dofs_to_support_points(StaticMappingQ1<2>::mapping,
+                                       dof_handler,
+                                       support_points);
+  Vector x_coordinate(dof_handler.n_dofs());
+  for (unsigned int i = 0; i < x_coordinate.size(); ++i)
+    x_coordinate[i] = support_points[i][0];
+  Vector x_action(dof_handler.n_dofs());
+  assembled_matrix->vmult(x_action, x_coordinate);
+  const double x_moment_error =
+    std::abs(x_coordinate * x_action - 2. * std::pow(0.8, 3) / 3.);
+  AssertThrow(measure_error < 1.e-12 && x_moment_error < 1.e-12,
+              ExcMessage(
+                "Independent trace mass failed its analytical checks."));
+
+  std::vector<double> assembly_samples;
+  std::vector<double> action_samples;
+  assembly_samples.reserve(repetitions);
+  action_samples.reserve(repetitions);
+  for (unsigned int repetition = 0; repetition < repetitions; ++repetition)
+    {
+      const auto assembly_start = Clock::now();
+      model                     = assemble();
+      assembly_samples.push_back(milliseconds(Clock::now() - assembly_start));
+      const auto action_start = Clock::now();
+      assembled_matrix->vmult(action, ones);
+      action_samples.push_back(milliseconds(Clock::now() - action_start));
+    }
+  const auto [assembly_median, assembly_mad] = median_and_mad(assembly_samples);
+  const auto [action_median, action_mad]     = median_and_mad(action_samples);
+  std::cout
+    << "{\"case\":\"independent_background_trace_mass\","
+    << "\"deal_ii_version\":\"" << DEAL_II_PACKAGE_VERSION
+    << "\",\"dimension\":2,\"support_dimension\":1,"
+    << "\"ranks\":1,\"background_dofs\":" << dof_handler.n_dofs()
+    << ",\"background_cells\":" << background.n_active_cells()
+    << ",\"support_cells\":1,\"setup_ms\":" << setup_ms
+    << ",\"cold_immersx_assembly_ms\":" << cold_ms
+    << ",\"warm_immersx_assembly_median_ms\":" << assembly_median
+    << ",\"warm_immersx_assembly_mad_ms\":" << assembly_mad
+    << ",\"operator_action_median_ms\":" << action_median
+    << ",\"operator_action_mad_ms\":" << action_mad
+    << ",\"analytical_measure_error\":" << measure_error
+    << ",\"analytical_x2_error\":" << x_moment_error
+    << ",\"native_reference\":null,\"native_timing_ratio\":null,"
+    << "\"timing_note\":\"No native deal.II bulk-bulk trace assembler exists; timings are ImmersX-only.\","
+    << "\"repetitions\":" << repetitions << "}\n";
+}
+
+void
+benchmark_rotated_trace_surface_3d(const unsigned int repetitions)
+{
+  const auto       setup_start = Clock::now();
+  Triangulation<3> background;
+  GridGenerator::hyper_cube(background, -1., 1.);
+  background.refine_global(1);
+  FE_Q<3>       finite_element(1);
+  DoFHandler<3> dof_handler(background);
+  dof_handler.distribute_dofs(finite_element);
+  AffineConstraints<double> constraints;
+  constraints.close();
+  const auto space =
+    fe_space(dof_handler, StaticMappingQ1<3>::mapping, constraints);
+  StateLayout layout;
+  const auto  u = space.field(layout, "u");
+
+  Triangulation<2, 3>         immersed_mesh;
+  const std::vector<Point<3>> vertices{{0., -0.5, 0.},
+                                       {0.5, 0., 0.},
+                                       {-0.5, 0., 0.},
+                                       {0., 0.5, 0.}};
+  CellData<2>                 immersed_cell;
+  immersed_cell.vertices[0] = 0;
+  immersed_cell.vertices[1] = 1;
+  immersed_cell.vertices[2] = 2;
+  immersed_cell.vertices[3] = 3;
+  immersed_mesh.create_triangulation(vertices,
+                                     std::vector<CellData<2>>{immersed_cell},
+                                     SubCellData());
+  const IntegrationSupport<2, 3> support(immersed_mesh);
+  using Vector          = dealii::Vector<double>;
+  using Matrix          = dealii::SparseMatrix<double>;
+  using Model           = SemiDiscreteModel<Vector, Matrix>;
+  const double setup_ms = milliseconds(Clock::now() - setup_start);
+
+  const auto                          assembly_start = Clock::now();
+  auto                                model = std::make_shared<Model>();
+  SemidiscreteBuilder<Vector, Matrix> builder(layout, *model);
+  (value(u) * test(u) * support).add(builder);
+  const double assembly_ms = milliseconds(Clock::now() - assembly_start);
+  const StateView<Vector>         state_view(layout, 0.);
+  const EvaluationContext<Vector> context(0., state_view);
+  const auto                      matrix_operator =
+    model->state_matrix_operator(u.field_id(), u.field_id(), context);
+  AssertThrow(matrix_operator.has_value() &&
+                matrix_operator->is_materializable(),
+              ExcMessage("3D trace benchmark did not produce a matrix."));
+  const auto matrix = matrix_operator->matrix();
+  Vector     ones(dof_handler.n_dofs());
+  ones = 1.;
+  Vector     action(dof_handler.n_dofs());
+  const auto action_start = Clock::now();
+  matrix->vmult(action, ones);
+  const double action_ms     = milliseconds(Clock::now() - action_start);
+  const double measure_error = std::abs(action * ones - 0.5);
+  AssertThrow(measure_error < 1.e-12,
+              ExcMessage("Rotated 3D trace mass failed its area check."));
+
+  std::vector<double> assembly_samples;
+  std::vector<double> action_samples;
+  assembly_samples.reserve(repetitions);
+  action_samples.reserve(repetitions);
+  for (unsigned int repetition = 0; repetition < repetitions; ++repetition)
+    {
+      const auto warm_start = Clock::now();
+      model                 = std::make_shared<Model>();
+      SemidiscreteBuilder<Vector, Matrix> warm_builder(layout, *model);
+      (value(u) * test(u) * support).add(warm_builder);
+      assembly_samples.push_back(milliseconds(Clock::now() - warm_start));
+
+      const auto warm_matrix = [&] {
+        const StateView<Vector>         warm_state(layout, 0.);
+        const EvaluationContext<Vector> warm_context(0., warm_state);
+        const auto warm_operator = model->state_matrix_operator(u.field_id(),
+                                                                u.field_id(),
+                                                                warm_context);
+        AssertThrow(
+          warm_operator.has_value() && warm_operator->is_materializable(),
+          ExcMessage("Warm 3D trace assembly did not produce a matrix."));
+        return warm_operator->matrix();
+      }();
+      const auto warm_action_start = Clock::now();
+      warm_matrix->vmult(action, ones);
+      action_samples.push_back(milliseconds(Clock::now() - warm_action_start));
+    }
+  const auto [assembly_median, assembly_mad] = median_and_mad(assembly_samples);
+  const auto [action_median, action_mad]     = median_and_mad(action_samples);
+  std::cout
+    << "{\"case\":\"independent_rotated_trace_surface_3d\","
+    << "\"deal_ii_version\":\"" << DEAL_II_PACKAGE_VERSION
+    << "\",\"dimension\":3,\"support_dimension\":2,"
+    << "\"ranks\":1,\"background_dofs\":" << dof_handler.n_dofs()
+    << ",\"background_cells\":" << background.n_active_cells()
+    << ",\"support_cells\":1"
+    << ",\"setup_ms\":" << setup_ms
+    << ",\"cold_immersx_assembly_ms\":" << assembly_ms
+    << ",\"cold_operator_action_ms\":" << action_ms
+    << ",\"warm_immersx_assembly_median_ms\":" << assembly_median
+    << ",\"warm_immersx_assembly_mad_ms\":" << assembly_mad
+    << ",\"operator_action_median_ms\":" << action_median
+    << ",\"operator_action_mad_ms\":" << action_mad
+    << ",\"analytical_area_error\":" << measure_error
+    << ",\"native_reference\":null,\"native_timing_ratio\":null,"
+    << "\"timing_note\":\"No native deal.II bulk-bulk trace assembler exists; timings are ImmersX-only.\","
+    << "\"repetitions\":" << repetitions << "}\n";
+}
+
 int
 main(int argc, char **argv)
 {
@@ -1081,4 +1293,6 @@ main(int argc, char **argv)
   benchmark_dimension<3>(refinements, repetitions);
   benchmark_heterogeneous_nonlinear(refinements, repetitions);
   benchmark_nonmatching_support(repetitions);
+  benchmark_independent_trace(refinements, repetitions);
+  benchmark_rotated_trace_surface_3d(repetitions);
 }

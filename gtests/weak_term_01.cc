@@ -35,7 +35,9 @@
 
 #include <gtest/gtest.h>
 #include <immersx/core/contributor.h>
+#include <immersx/core/domain.h>
 #include <immersx/core/fe_space.h>
+#include <immersx/core/lifted_integration_support.h>
 #include <immersx/core/state.h>
 #include <immersx/core/weak_term.h>
 
@@ -99,6 +101,22 @@ namespace
     {
       AssertDimension(values.size(), 1);
       return {values[0] * values[0], {2. * values[0]}};
+    }
+  };
+
+  struct ProductWithFrozenInput
+  {
+    struct Evaluation
+    {
+      double              value;
+      std::vector<double> derivatives;
+    };
+
+    Evaluation
+    evaluate(const std::vector<double> &values) const
+    {
+      AssertDimension(values.size(), 2);
+      return {values[0] * values[1], {values[1], values[0]}};
     }
   };
 
@@ -892,6 +910,541 @@ TEST(WeakTerm, MultipleNativeSpacesAndFrozenInputUseExplicitSupport)
   };
   check_jacobian(first.field_id(), first_state);
   check_jacobian(second.field_id(), second_state);
+}
+
+TEST(WeakTerm, IndependentImmersedSupportAssemblesBackgroundTraceMass)
+{
+  Triangulation<2> background;
+  GridGenerator::hyper_cube(background, -1., 1.);
+  background.refine_global(1);
+  background.begin_active()->set_refine_flag();
+  background.execute_coarsening_and_refinement();
+  FE_Q<2>       fe(1);
+  DoFHandler<2> dof_handler(background);
+  dof_handler.distribute_dofs(fe);
+  AffineConstraints<double> constraints;
+  DoFTools::make_hanging_node_constraints(dof_handler, constraints);
+  constraints.close();
+  const auto space =
+    fe_space(dof_handler, StaticMappingQ1<2>::mapping, constraints);
+  StateLayout layout;
+  const auto  u = space.field(layout, "u");
+
+  Triangulation<1, 2>   immersed_mesh;
+  std::vector<Point<2>> vertices{{-0.8, 0.25}, {0.8, 0.25}};
+  CellData<1>           immersed_cell;
+  immersed_cell.vertices[0] = 0;
+  immersed_cell.vertices[1] = 1;
+  immersed_mesh.create_triangulation(vertices,
+                                     std::vector<CellData<1>>{immersed_cell},
+                                     SubCellData());
+  const IntegrationSupport<1, 2> dGamma(immersed_mesh);
+
+  using Vector = Vector<double>;
+  using Matrix = SparseMatrix<double>;
+  using Model  = SemiDiscreteModel<Vector, Matrix>;
+  Model                               model;
+  SemidiscreteBuilder<Vector, Matrix> builder(layout, model);
+  (value(u) * test(u) * dGamma).add(builder);
+
+  const StateView<Vector>         state_view(layout, 0.);
+  const EvaluationContext<Vector> context(0., state_view);
+  const auto                      mass =
+    model.state_matrix_operator(u.field_id(), u.field_id(), context);
+  ASSERT_TRUE(mass.has_value());
+  ASSERT_TRUE(mass->is_materializable());
+  const auto matrix = mass->matrix();
+  ASSERT_EQ(matrix->m(), dof_handler.n_dofs());
+  ASSERT_EQ(matrix->n(), dof_handler.n_dofs());
+
+  Vector ones(dof_handler.n_dofs());
+  ones = 1.;
+  Vector action(dof_handler.n_dofs());
+  Vector transpose_action(dof_handler.n_dofs());
+  mass->view.vmult(action, ones);
+  mass->view.Tvmult(transpose_action, ones);
+  EXPECT_NEAR(action * ones, 1.6, 1.e-12);
+  EXPECT_NEAR(action * ones, transpose_action * ones, 1.e-12);
+
+  std::vector<Point<2>> support_points(dof_handler.n_dofs());
+  DoFTools::map_dofs_to_support_points(StaticMappingQ1<2>::mapping,
+                                       dof_handler,
+                                       support_points);
+  Vector x_coordinate(dof_handler.n_dofs());
+  for (unsigned int i = 0; i < x_coordinate.size(); ++i)
+    x_coordinate[i] = support_points[i][0];
+  Vector x_action(dof_handler.n_dofs());
+  mass->view.vmult(x_action, x_coordinate);
+  EXPECT_NEAR(x_coordinate * x_action, 2. * std::pow(0.8, 3) / 3., 1.e-12);
+
+  Vector probe(dof_handler.n_dofs());
+  for (unsigned int i = 0; i < probe.size(); ++i)
+    probe[i] = 0.3 + 0.17 * i;
+  Vector probe_action(dof_handler.n_dofs());
+  mass->view.vmult(probe_action, probe);
+  EXPECT_GE(probe * probe_action, -1.e-12);
+  for (unsigned int i = 0; i < matrix->m(); ++i)
+    for (unsigned int j = 0; j < matrix->n(); ++j)
+      EXPECT_NEAR(matrix->el(i, j), matrix->el(j, i), 1.e-12);
+}
+
+TEST(WeakTerm, IndependentImmersedTraceMassRespectsExecutionReindexing)
+{
+  Triangulation<2> background;
+  GridGenerator::hyper_cube(background, -1., 1.);
+  background.refine_global(1);
+  FE_Q<2>       fe(1);
+  DoFHandler<2> dof_handler(background);
+  dof_handler.distribute_dofs(fe);
+  AffineConstraints<double> constraints;
+  constraints.close();
+  const auto space =
+    fe_space(dof_handler, StaticMappingQ1<2>::mapping, constraints);
+  StateLayout layout;
+  const auto  native_field = space.field(layout, "u");
+  auto        execution_indices =
+    std::vector<types::global_dof_index>(dof_handler.n_dofs());
+  for (unsigned int i = 0; i < execution_indices.size(); ++i)
+    execution_indices[i] = execution_indices.size() - i - 1;
+  const auto u =
+    native_field.reindexed("u",
+                           dof_handler.locally_owned_dofs(),
+                           DoFTools::extract_locally_relevant_dofs(dof_handler),
+                           execution_indices);
+
+  Triangulation<1, 2>   immersed_mesh;
+  std::vector<Point<2>> vertices{{-0.8, 0.25}, {0.8, 0.25}};
+  CellData<1>           immersed_cell;
+  immersed_cell.vertices[0] = 0;
+  immersed_cell.vertices[1] = 1;
+  immersed_mesh.create_triangulation(vertices,
+                                     std::vector<CellData<1>>{immersed_cell},
+                                     SubCellData());
+  const IntegrationSupport<1, 2> dGamma(immersed_mesh);
+
+  using Vector = Vector<double>;
+  using Matrix = SparseMatrix<double>;
+  using Model  = SemiDiscreteModel<Vector, Matrix>;
+  Model                               model;
+  SemidiscreteBuilder<Vector, Matrix> builder(layout, model);
+  (value(u) * test(u) * dGamma).add(builder);
+  const StateView<Vector>         state_view(layout, 0.);
+  const EvaluationContext<Vector> context(0., state_view);
+  const auto                      mass =
+    model.state_matrix_operator(u.field_id(), u.field_id(), context);
+  ASSERT_TRUE(mass.has_value());
+
+  std::vector<Point<2>> support_points(dof_handler.n_dofs());
+  DoFTools::map_dofs_to_support_points(StaticMappingQ1<2>::mapping,
+                                       dof_handler,
+                                       support_points);
+  Vector x_execution(dof_handler.n_dofs());
+  for (unsigned int i = 0; i < dof_handler.n_dofs(); ++i)
+    x_execution[execution_indices[i]] = support_points[i][0];
+  Vector action(dof_handler.n_dofs());
+  mass->view.vmult(action, x_execution);
+  EXPECT_NEAR(x_execution * action, 2. * std::pow(0.8, 3) / 3., 1.e-12);
+}
+
+TEST(WeakTerm, IndependentImmersedSupportAssemblesScaledScalarQ2TraceMass)
+{
+  Triangulation<2> background;
+  GridGenerator::hyper_cube(background, -1., 1.);
+  background.refine_global(1);
+  FE_Q<2>       fe(2);
+  DoFHandler<2> dof_handler(background);
+  dof_handler.distribute_dofs(fe);
+  AffineConstraints<double> constraints;
+  constraints.close();
+  const auto space =
+    fe_space(dof_handler, StaticMappingQ1<2>::mapping, constraints);
+  StateLayout layout;
+  const auto  u = space.field(layout, "u");
+
+  Triangulation<1, 2>   immersed_mesh;
+  std::vector<Point<2>> vertices{{-0.8, 0.25}, {0.8, 0.25}};
+  CellData<1>           immersed_cell;
+  immersed_cell.vertices[0] = 0;
+  immersed_cell.vertices[1] = 1;
+  immersed_mesh.create_triangulation(vertices,
+                                     std::vector<CellData<1>>{immersed_cell},
+                                     SubCellData());
+  const IntegrationSupport<1, 2> dGamma(immersed_mesh);
+
+  using Vector = Vector<double>;
+  using Matrix = SparseMatrix<double>;
+  using Model  = SemiDiscreteModel<Vector, Matrix>;
+  Model                               model;
+  SemidiscreteBuilder<Vector, Matrix> builder(layout, model);
+  (value(u).scaled(2.) * test(u) * dGamma).add(builder);
+  const StateView<Vector>         state_view(layout, 0.);
+  const EvaluationContext<Vector> context(0., state_view);
+  const auto                      mass =
+    model.state_matrix_operator(u.field_id(), u.field_id(), context);
+  ASSERT_TRUE(mass.has_value());
+
+  Vector ones(dof_handler.n_dofs());
+  ones = 1.;
+  Vector action(dof_handler.n_dofs());
+  mass->view.vmult(action, ones);
+  EXPECT_NEAR(action * ones, 3.2, 1.e-12);
+}
+
+TEST(WeakTerm, IndependentImmersedSupportHandlesQ2VectorsAndGradients)
+{
+  Triangulation<2> background;
+  GridGenerator::hyper_cube(background, -1., 1.);
+  background.refine_global(1);
+  FESystem<2>   fe(FE_Q<2>(2), 2);
+  DoFHandler<2> dof_handler(background);
+  dof_handler.distribute_dofs(fe);
+  AffineConstraints<double> constraints;
+  constraints.close();
+  const auto space =
+    fe_space(dof_handler, StaticMappingQ1<2>::mapping, constraints);
+  StateLayout layout;
+  const auto  u = space.field(layout, "u", FEValuesExtractors::Vector(0));
+
+  Triangulation<1, 2>   immersed_mesh;
+  std::vector<Point<2>> vertices{{-0.8, -0.5}, {-0.2, -0.5}};
+  CellData<1>           immersed_cell;
+  immersed_cell.vertices[0] = 0;
+  immersed_cell.vertices[1] = 1;
+  immersed_mesh.create_triangulation(vertices,
+                                     std::vector<CellData<1>>{immersed_cell},
+                                     SubCellData());
+  const IntegrationSupport<1, 2> dGamma(immersed_mesh);
+
+  using Vector                        = Vector<double>;
+  using Matrix                        = SparseMatrix<double>;
+  using Model                         = SemiDiscreteModel<Vector, Matrix>;
+  const auto check_symmetric_positive = [&](const auto  &term,
+                                            const double constant_energy) {
+    Model                               model;
+    SemidiscreteBuilder<Vector, Matrix> builder(layout, model);
+    term.add(builder);
+    const StateView<Vector>         state_view(layout, 0.);
+    const EvaluationContext<Vector> context(0., state_view);
+    const auto                      matrix =
+      model.state_matrix_operator(u.field_id(), u.field_id(), context);
+    ASSERT_TRUE(matrix.has_value());
+    ASSERT_TRUE(matrix->is_materializable());
+    const auto assembled = matrix->matrix();
+    Vector     ones(dof_handler.n_dofs());
+    ones = 1.;
+    Vector action(dof_handler.n_dofs());
+    matrix->view.vmult(action, ones);
+    EXPECT_NEAR(action * ones, constant_energy, 1.e-11);
+
+    Vector probe(dof_handler.n_dofs());
+    for (unsigned int i = 0; i < probe.size(); ++i)
+      probe[i] = 0.2 + 0.09 * i;
+    Vector probe_action(dof_handler.n_dofs());
+    matrix->view.vmult(probe_action, probe);
+    EXPECT_GE(probe * probe_action, -1.e-11);
+    for (unsigned int i = 0; i < assembled->m(); ++i)
+      for (unsigned int j = 0; j < assembled->n(); ++j)
+        EXPECT_NEAR(assembled->el(i, j), assembled->el(j, i), 1.e-11);
+  };
+
+  check_symmetric_positive(value(u) * test(u) * dGamma, 1.2);
+  check_symmetric_positive(gradient(u) * gradient(test(u)) * dGamma, 0.);
+}
+
+TEST(WeakTerm, IndependentImmersedSupportPairsDifferentBackgroundSpaces)
+{
+  Triangulation<2> background;
+  GridGenerator::hyper_cube(background, -1., 1.);
+  background.refine_global(1);
+  FE_Q<2>       trial_fe(1);
+  FE_Q<2>       test_fe(2);
+  DoFHandler<2> trial_dof_handler(background);
+  DoFHandler<2> test_dof_handler(background);
+  trial_dof_handler.distribute_dofs(trial_fe);
+  test_dof_handler.distribute_dofs(test_fe);
+  AffineConstraints<double> trial_constraints;
+  AffineConstraints<double> test_constraints;
+  trial_constraints.close();
+  test_constraints.close();
+  const auto trial_space =
+    fe_space(trial_dof_handler, StaticMappingQ1<2>::mapping, trial_constraints);
+  const auto test_space =
+    fe_space(test_dof_handler, StaticMappingQ1<2>::mapping, test_constraints);
+  StateLayout layout;
+  const auto  u = trial_space.field(layout, "u");
+  const auto  v = test_space.field(layout, "v");
+
+  Triangulation<1, 2>   immersed_mesh;
+  std::vector<Point<2>> vertices{{-0.8, 0.25}, {0.8, 0.25}};
+  CellData<1>           immersed_cell;
+  immersed_cell.vertices[0] = 0;
+  immersed_cell.vertices[1] = 1;
+  immersed_mesh.create_triangulation(vertices,
+                                     std::vector<CellData<1>>{immersed_cell},
+                                     SubCellData());
+  const IntegrationSupport<1, 2> dGamma(immersed_mesh);
+
+  using Vector = Vector<double>;
+  using Matrix = SparseMatrix<double>;
+  using Model  = SemiDiscreteModel<Vector, Matrix>;
+  Model                               model;
+  SemidiscreteBuilder<Vector, Matrix> builder(layout, model);
+  (value(u) * test(v) * dGamma).add(builder);
+  const StateView<Vector>         state_view(layout, 0.);
+  const EvaluationContext<Vector> context(0., state_view);
+  const auto                      matrix =
+    model.state_matrix_operator(v.field_id(), u.field_id(), context);
+  ASSERT_TRUE(matrix.has_value());
+  ASSERT_TRUE(matrix->is_materializable());
+  const auto assembled = matrix->matrix();
+  ASSERT_EQ(assembled->m(), test_dof_handler.n_dofs());
+  ASSERT_EQ(assembled->n(), trial_dof_handler.n_dofs());
+
+  Vector trial_ones(trial_dof_handler.n_dofs());
+  Vector test_ones(test_dof_handler.n_dofs());
+  trial_ones = 1.;
+  test_ones  = 1.;
+  Vector action(test_dof_handler.n_dofs());
+  matrix->view.vmult(action, trial_ones);
+  EXPECT_NEAR(test_ones * action, 1.6, 1.e-12);
+
+  std::vector<Point<2>> support_points(trial_dof_handler.n_dofs());
+  DoFTools::map_dofs_to_support_points(StaticMappingQ1<2>::mapping,
+                                       trial_dof_handler,
+                                       support_points);
+  Vector x_coordinate(trial_dof_handler.n_dofs());
+  for (unsigned int i = 0; i < x_coordinate.size(); ++i)
+    x_coordinate[i] = support_points[i][0];
+  matrix->view.vmult(action, x_coordinate);
+  EXPECT_NEAR(test_ones * action, 0., 1.e-12);
+}
+
+TEST(WeakTerm, IndependentImmersedSupportIntegratesRotatedSurfaceIn3D)
+{
+  Triangulation<3> background;
+  GridGenerator::hyper_cube(background, -1., 1.);
+  background.refine_global(1);
+  FE_Q<3>       fe(1);
+  DoFHandler<3> dof_handler(background);
+  dof_handler.distribute_dofs(fe);
+  AffineConstraints<double> constraints;
+  constraints.close();
+  const auto space =
+    fe_space(dof_handler, StaticMappingQ1<3>::mapping, constraints);
+  StateLayout layout;
+  const auto  u = space.field(layout, "u");
+
+  Triangulation<2, 3>         immersed_mesh;
+  const std::vector<Point<3>> vertices{{0., -0.5, 0.},
+                                       {0.5, 0., 0.},
+                                       {-0.5, 0., 0.},
+                                       {0., 0.5, 0.}};
+  CellData<2>                 immersed_cell;
+  immersed_cell.vertices[0] = 0;
+  immersed_cell.vertices[1] = 1;
+  immersed_cell.vertices[2] = 2;
+  immersed_cell.vertices[3] = 3;
+  immersed_mesh.create_triangulation(vertices,
+                                     std::vector<CellData<2>>{immersed_cell},
+                                     SubCellData());
+  const IntegrationSupport<2, 3> dGamma(immersed_mesh);
+
+  using Vector = Vector<double>;
+  using Matrix = SparseMatrix<double>;
+  using Model  = SemiDiscreteModel<Vector, Matrix>;
+  Model                               model;
+  SemidiscreteBuilder<Vector, Matrix> builder(layout, model);
+  (value(u) * test(u) * dGamma).add(builder);
+  const StateView<Vector>         state_view(layout, 0.);
+  const EvaluationContext<Vector> context(0., state_view);
+  const auto                      matrix =
+    model.state_matrix_operator(u.field_id(), u.field_id(), context);
+  ASSERT_TRUE(matrix.has_value());
+  Vector ones(dof_handler.n_dofs());
+  ones = 1.;
+  Vector action(dof_handler.n_dofs());
+  matrix->view.vmult(action, ones);
+  EXPECT_NEAR(action * ones, 0.5, 1.e-12);
+}
+
+TEST(WeakTerm, LiftedSupportAssemblesBackgroundTraceMass)
+{
+  ParameterAcceptor::clear();
+  DomainParameters<1, 3> representative_parameters(
+    "/Trace mass representative domain/");
+  representative_parameters.name_of_grid       = "hyper_cube";
+  representative_parameters.arguments_for_grid = "-1: 1: false";
+  Domain<1, 3> representative_domain(representative_parameters);
+  representative_domain.make_grid();
+
+  TensorProductLift<1, 2, 3> lift("/Trace mass lift/");
+  lift.section.inclusion_degree      = 0;
+  lift.section.refinement_level      = 0;
+  lift.section.selected_coefficients = {0};
+  lift.section.n_q_points            = 2;
+  lift.representative_n_q_points     = 2;
+  lift.thickness                     = "0.25";
+  const auto dGamma                  = representative_domain.lift(lift);
+
+  Triangulation<3> background;
+  GridGenerator::hyper_cube(background, -1., 1.);
+  background.refine_global(1);
+  FE_Q<3>       fe(1);
+  DoFHandler<3> dof_handler(background);
+  dof_handler.distribute_dofs(fe);
+  AffineConstraints<double> constraints;
+  constraints.close();
+  const auto space =
+    fe_space(dof_handler, StaticMappingQ1<3>::mapping, constraints);
+  StateLayout layout;
+  const auto  u = space.field(layout, "u");
+
+  using Vector = Vector<double>;
+  using Matrix = SparseMatrix<double>;
+  using Model  = SemiDiscreteModel<Vector, Matrix>;
+  Model                               model;
+  SemidiscreteBuilder<Vector, Matrix> builder(layout, model);
+  (value(u) * test(u) * dGamma).add(builder);
+  const StateView<Vector>         state_view(layout, 0.);
+  const EvaluationContext<Vector> context(0., state_view);
+  const auto                      mass =
+    model.state_matrix_operator(u.field_id(), u.field_id(), context);
+  ASSERT_TRUE(mass.has_value());
+  ASSERT_TRUE(mass->is_materializable());
+
+  Vector ones(dof_handler.n_dofs());
+  ones = 1.;
+  Vector action(dof_handler.n_dofs());
+  mass->view.vmult(action, ones);
+  EXPECT_NEAR(action * ones, 1., 1.e-12);
+}
+
+TEST(WeakTerm, LiftedSupportPreservesFrozenExpressionAndJacobian)
+{
+  ParameterAcceptor::clear();
+  DomainParameters<1, 3> representative_parameters(
+    "/Frozen trace representative domain/");
+  representative_parameters.name_of_grid       = "hyper_cube";
+  representative_parameters.arguments_for_grid = "-1: 1: false";
+  Domain<1, 3> representative_domain(representative_parameters);
+  representative_domain.make_grid();
+  TensorProductLift<1, 2, 3> lift("/Frozen trace lift/");
+  lift.section.inclusion_degree      = 0;
+  lift.section.refinement_level      = 0;
+  lift.section.selected_coefficients = {0};
+  lift.section.n_q_points            = 2;
+  lift.representative_n_q_points     = 2;
+  lift.thickness                     = "0.25";
+  const auto dGamma                  = representative_domain.lift(lift);
+
+  Triangulation<3> background;
+  GridGenerator::hyper_cube(background, -1., 1.);
+  background.refine_global(1);
+  FE_Q<3>       active_fe(1);
+  FE_DGQ<3>     frozen_fe(0);
+  DoFHandler<3> active_dh(background), frozen_dh(background);
+  active_dh.distribute_dofs(active_fe);
+  frozen_dh.distribute_dofs(frozen_fe);
+  AffineConstraints<double> active_constraints, frozen_constraints;
+  active_constraints.close();
+  frozen_constraints.close();
+  const auto active_space =
+    fe_space(active_dh, StaticMappingQ1<3>::mapping, active_constraints);
+  const auto frozen_space =
+    fe_space(frozen_dh, StaticMappingQ1<3>::mapping, frozen_constraints);
+  StateLayout    layout;
+  const auto     u      = active_space.field(layout, "u");
+  const auto     target = active_space.field(layout, "target");
+  const auto     offset = frozen_space.field("offset");
+  Vector<double> frozen_values(frozen_dh.n_dofs());
+  frozen_values         = 0.5;
+  const auto observable = transform(value(u),
+                                    frozen(offset, frozen_values),
+                                    ProductWithFrozenInput{});
+
+  using Vector = Vector<double>;
+  using Matrix = SparseMatrix<double>;
+  using Model  = SemiDiscreteModel<Vector, Matrix>;
+  Model                               model;
+  SemidiscreteBuilder<Vector, Matrix> builder(layout, model);
+  weak_term(observable, test(target)).on(dGamma).add(builder);
+
+  Vector state(active_dh.n_dofs());
+  state = 2.;
+  StateView<Vector> state_view(layout, 0.);
+  state_view.bind(u.field_id(), state);
+  const EvaluationContext<Vector> context(0., state_view);
+  Vector                          residual(active_dh.n_dofs());
+  model.evaluate_row(target.field_id(), context, residual);
+  Vector ones(active_dh.n_dofs());
+  ones = 1.;
+  EXPECT_NEAR(ones * residual, 1., 1.e-12);
+
+  const auto jacobian =
+    model.state_matrix_operator(target.field_id(), u.field_id(), context);
+  ASSERT_TRUE(jacobian.has_value());
+  Vector action(active_dh.n_dofs());
+  jacobian->view.vmult(action, ones);
+  EXPECT_NEAR(ones * action, 0.5, 1.e-12);
+
+  lift.thickness = "0.5";
+  dGamma.rebuild();
+  model.evaluate_row(target.field_id(), context, residual);
+  EXPECT_NEAR(ones * residual, 2., 1.e-12);
+  const auto rebuilt_jacobian =
+    model.state_matrix_operator(target.field_id(), u.field_id(), context);
+  ASSERT_TRUE(rebuilt_jacobian.has_value());
+  rebuilt_jacobian->view.vmult(action, ones);
+  EXPECT_NEAR(ones * action, 1., 1.e-12);
+}
+
+TEST(WeakTerm, MPI_IndependentDistributedSupportRoutesTracePoints)
+{
+  ASSERT_EQ(Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD), 2u);
+  parallel::distributed::Triangulation<2> background(MPI_COMM_WORLD);
+  GridGenerator::hyper_cube(background, 0., 1.);
+  background.refine_global(2);
+  FE_Q<2>       fe(1);
+  DoFHandler<2> dof_handler(background);
+  dof_handler.distribute_dofs(fe);
+  AffineConstraints<double> constraints;
+  constraints.close();
+  const auto space =
+    fe_space(dof_handler, StaticMappingQ1<2>::mapping, constraints);
+  StateLayout layout;
+  const auto  u = space.field(layout, "u");
+
+  parallel::distributed::Triangulation<1, 2> support_mesh(MPI_COMM_WORLD);
+  std::vector<Point<2>>                      vertices{{0., 0.5}, {1., 0.5}};
+  CellData<1>                                support_cell;
+  support_cell.vertices[0] = 0;
+  support_cell.vertices[1] = 1;
+  support_mesh.create_triangulation(vertices,
+                                    std::vector<CellData<1>>{support_cell},
+                                    SubCellData());
+  support_mesh.refine_global(3);
+  const IntegrationSupport<1, 2> dGamma(support_mesh);
+
+  using Vector = ImmersXLA::MPI::Vector;
+  using Matrix = ImmersXLA::MPI::SparseMatrix;
+  using Model  = SemiDiscreteModel<Vector, Matrix>;
+  Model                               model;
+  SemidiscreteBuilder<Vector, Matrix> builder(layout, model);
+  (value(u) * test(u) * dGamma).add(builder);
+  const StateView<Vector>         state_view(layout, 0.);
+  const EvaluationContext<Vector> context(0., state_view);
+  const auto                      mass =
+    model.state_matrix_operator(u.field_id(), u.field_id(), context);
+  ASSERT_TRUE(mass.has_value());
+
+  Vector ones;
+  ones.reinit(dof_handler.locally_owned_dofs(), MPI_COMM_WORLD);
+  ones = 1.;
+  ones.compress(VectorOperation::insert);
+  Vector action;
+  action.reinit(dof_handler.locally_owned_dofs(), MPI_COMM_WORLD);
+  mass->view.vmult(action, ones);
+  EXPECT_NEAR(ones * action, 1., 1.e-12);
 }
 
 TEST(WeakTerm, TypedVectorConvectionResidualJacobian)
