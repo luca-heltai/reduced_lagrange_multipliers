@@ -170,7 +170,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Testing and CI
 
-- [PR #N](https://github.com/luca-heltai/immersx/pull/N) Run pull-request tests for stacked branches targeting any branch.
+- [PR #248](https://github.com/luca-heltai/immersx/pull/248) Run pull-request tests for stacked branches targeting any branch.
 - [PR #232](https://github.com/luca-heltai/immersx/pull/232) Build and test Coral plugins against the `dealiix-tutorial` Coral branch.
 - [PR #221](https://github.com/luca-heltai/immersx/pull/221) Added the issue #209 elastodynamics equivalence regression.
 - [PR #182](https://github.com/luca-heltai/immersx/pull/182) Migrated the coupled regressions to unified constraints.
