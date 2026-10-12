@@ -114,9 +114,11 @@ namespace ImmersX
 
   // Explicit instantiations
 
+  template class ParticleCouplingParameters<1>;
   template class ParticleCouplingParameters<2>;
   template class ParticleCouplingParameters<3>;
 
+  template class ParticleCoupling<1>;
   template class ParticleCoupling<2>;
   template class ParticleCoupling<3>;
 } // namespace ImmersX

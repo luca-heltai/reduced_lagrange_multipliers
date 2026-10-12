@@ -33,8 +33,9 @@ namespace ImmersX
     struct is_weak_term : std::false_type
     {};
 
-    template <typename ObservableType, typename TargetField>
-    struct is_weak_term<WeakTerm<ObservableType, TargetField>> : std::true_type
+    template <typename ObservableType, typename TargetField, typename Support>
+    struct is_weak_term<WeakTerm<ObservableType, TargetField, Support>>
+      : std::true_type
     {};
 
     template <typename Wanted,

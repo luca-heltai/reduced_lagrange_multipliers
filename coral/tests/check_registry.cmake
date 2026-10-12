@@ -398,6 +398,17 @@ if(SPACEDIM EQUAL 2)
     message(FATAL_ERROR
       "Registry still contains the specialized Test gradient operation.")
   endif()
+
+  foreach(_stable_primitive_function_key
+      "Weak term::std::function<ImmersX::WeakTerm<ImmersX::Observable<ImmersX::Field<2, 2, dealii::FEValuesExtractors::Scalar>, ImmersX::detail::GradientOperation>, ImmersX::TestExpression<ImmersX::Field<2, 2, dealii::FEValuesExtractors::Scalar>, ImmersX::detail::GradientOperation>> (const"
+      "Continuity constraint::std::function<ImmersX::Constraint<ImmersX::ConstraintSum<ImmersX::WeakTerm<ImmersX::Observable<ImmersX::Field<2, 2, dealii::FEValuesExtractors::Scalar>, ImmersX::detail::ValueOperation>, ImmersX::TestExpression<ImmersX::Field<1, 2, dealii::FEValuesExtractors::Scalar>, ImmersX::detail::ValueOperation>>, ImmersX::WeakTerm<ImmersX::Observable<ImmersX::Field<1, 2, dealii::FEValuesExtractors::Scalar>, ImmersX::detail::ValueOperation>, ImmersX::TestExpression<ImmersX::Field<1, 2, dealii::FEValuesExtractors::Scalar>, ImmersX::detail::ValueOperation>>>> (const")
+    string(FIND "${_registry}" "${_stable_primitive_function_key}"
+      _stable_primitive_function_key_found)
+    if(_stable_primitive_function_key_found EQUAL -1)
+      message(FATAL_ERROR
+        "Registry 2d is missing a stable support-aware primitive function key: ${_stable_primitive_function_key}")
+    endif()
+  endforeach()
 endif()
 
 set(_initialize_arity4_found FALSE)
