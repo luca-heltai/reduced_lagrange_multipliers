@@ -178,6 +178,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Testing and CI
 
+- [PR #244](https://github.com/luca-heltai/immersx/pull/244) Added a MeshWorker reference and a paired nonlinear residual/Jacobian benchmark for heterogeneous weak terms with frozen inputs.
 - [PR #248](https://github.com/luca-heltai/immersx/pull/248) Run pull-request tests for stacked branches targeting any branch.
 - [PR #232](https://github.com/luca-heltai/immersx/pull/232) Build and test Coral plugins against the `dealiix-tutorial` Coral branch.
 - [PR #221](https://github.com/luca-heltai/immersx/pull/221) Added the issue #209 elastodynamics equivalence regression.
