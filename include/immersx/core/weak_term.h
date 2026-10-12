@@ -1037,12 +1037,11 @@ namespace ImmersX
                     using EmbeddedField =
                       typename TargetExpression::source_field_type;
                     const auto &embedded = target.source();
-                    const bool  embedded_is_distributed =
-                      dynamic_cast<const dealii::parallel::distributed::
-                                     Triangulation<EmbeddedField::dimension(),
-                                                   spacedim> *>(
-                        &embedded.dof_handler().get_triangulation()) != nullptr;
-                    if (!embedded_is_distributed)
+                    const bool  background_is_distributed =
+                      dynamic_cast<
+                        const dealii::parallel::TriangulationBase<spacedim> *>(
+                        &source.dof_handler().get_triangulation()) != nullptr;
+                    if (!background_is_distributed)
                       return assemble_native_nonmatching_value<SourceField,
                                                                EmbeddedField,
                                                                VectorType,
@@ -1055,12 +1054,13 @@ namespace ImmersX
                 else if constexpr (SourceField::dimension() < dim &&
                                    dim == spacedim)
                   {
-                    const bool embedded_is_distributed =
+                    const auto &background = target.source();
+                    const bool  background_is_distributed =
                       dynamic_cast<
-                        const dealii::parallel::distributed::
-                          Triangulation<SourceField::dimension(), spacedim> *>(
-                        &source.dof_handler().get_triangulation()) != nullptr;
-                    if (!embedded_is_distributed)
+                        const dealii::parallel::TriangulationBase<spacedim> *>(
+                        &background.dof_handler().get_triangulation()) !=
+                      nullptr;
+                    if (!background_is_distributed)
                       return assemble_native_nonmatching_value<
                         typename TargetExpression::source_field_type,
                         SourceField,

@@ -112,7 +112,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Fixed
 
-- [PR #243](https://github.com/luca-heltai/immersx/pull/243) Use the particle-based weak-term assembly path when deal.II's native nonmatching assembler does not support a distributed immersed mesh.
+- [PR #243](https://github.com/luca-heltai/immersx/pull/243) Use particle-based assembly for mixed-dimensional weak terms with a distributed background mesh.
 - [PR #241](https://github.com/luca-heltai/immersx/pull/241) Keep persisted Coral weak-term and continuity graphs readable across compilers.
 - [PR #238](https://github.com/luca-heltai/immersx/pull/238) Avoid indexed writes to ghosted Trilinos vectors in `OutputHandler`.
 - [PR #232](https://github.com/luca-heltai/immersx/pull/232) Write the short Coral parameter values used by each graph run to a sibling file.
