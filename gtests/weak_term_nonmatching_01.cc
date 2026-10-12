@@ -11,14 +11,19 @@
 
 #include <deal.II/distributed/tria.h>
 
+#include <deal.II/dofs/dof_tools.h>
+
 #include <deal.II/fe/fe_q.h>
 #include <deal.II/fe/fe_system.h>
 
 #include <deal.II/grid/grid_generator.h>
 #include <deal.II/grid/grid_tools.h>
+#include <deal.II/grid/grid_tools_cache.h>
 
 #include <deal.II/lac/dynamic_sparsity_pattern.h>
 #include <deal.II/lac/sparse_matrix.h>
+
+#include <deal.II/non_matching/coupling.h>
 
 #include <gtest/gtest.h>
 #include <immersx/core/contributor.h>
@@ -334,6 +339,215 @@ TEST(WeakTermNonmatching, NonmatchingScalarGradientUsesPointSearch)
   for (unsigned int i = 0; i < reference.m(); ++i)
     for (unsigned int j = 0; j < reference.n(); ++j)
       EXPECT_NEAR(actual_matrix->el(i, j), reference.el(i, j), 1.e-12);
+}
+
+TEST(WeakTermNonmatching, EmbeddedSupportMatchesDealIINonMatchingCoupling)
+{
+  ASSERT_EQ(Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD), 1u);
+  parallel::distributed::Triangulation<2> bulk_tria(MPI_COMM_WORLD);
+  GridGenerator::hyper_cube(bulk_tria, 0., 1.);
+  bulk_tria.refine_global(1);
+  bulk_tria.begin_active()->set_refine_flag();
+  bulk_tria.execute_coarsening_and_refinement();
+  FE_Q<2>       bulk_fe(1);
+  DoFHandler<2> bulk_dof_handler(bulk_tria);
+  bulk_dof_handler.distribute_dofs(bulk_fe);
+  AffineConstraints<double> bulk_constraints;
+  DoFTools::make_hanging_node_constraints(bulk_dof_handler, bulk_constraints);
+  bulk_constraints.close();
+
+  Triangulation<1, 2> embedded_tria;
+  GridGenerator::hyper_cube(embedded_tria, 0., 1.);
+  GridTools::transform(
+    [](const Point<2> &point) {
+      auto shifted = point;
+      shifted[1] += 0.5;
+      return shifted;
+    },
+    embedded_tria);
+  embedded_tria.refine_global(2);
+  FE_Q<1, 2>       embedded_fe(1);
+  DoFHandler<1, 2> embedded_dof_handler(embedded_tria);
+  embedded_dof_handler.distribute_dofs(embedded_fe);
+  AffineConstraints<double> embedded_constraints;
+  embedded_constraints.close();
+
+  const auto bulk_view =
+    fe_space(bulk_dof_handler, StaticMappingQ1<2>::mapping, bulk_constraints);
+  const auto             embedded_view = fe_space(embedded_dof_handler,
+                                      StaticMappingQ1<1, 2>::mapping,
+                                      embedded_constraints);
+  GridTools::Cache<2, 2> cache(bulk_tria, StaticMappingQ1<2>::mapping);
+  const QGauss<1>        quadrature(2);
+  DynamicSparsityPattern native_sparsity(bulk_dof_handler.n_dofs(),
+                                         embedded_dof_handler.n_dofs());
+  NonMatching::create_coupling_sparsity_pattern(cache,
+                                                bulk_dof_handler,
+                                                embedded_dof_handler,
+                                                quadrature,
+                                                native_sparsity,
+                                                bulk_constraints,
+                                                ComponentMask(),
+                                                ComponentMask(),
+                                                StaticMappingQ1<1, 2>::mapping,
+                                                embedded_constraints);
+  SparsityPattern native_pattern;
+  native_pattern.copy_from(native_sparsity);
+  SparseMatrix<double> native_matrix(native_pattern);
+  NonMatching::create_coupling_mass_matrix(cache,
+                                           bulk_dof_handler,
+                                           embedded_dof_handler,
+                                           quadrature,
+                                           native_matrix,
+                                           bulk_constraints,
+                                           ComponentMask(),
+                                           ComponentMask(),
+                                           StaticMappingQ1<1, 2>::mapping,
+                                           embedded_constraints);
+
+  using Vector = ImmersXLA::MPI::Vector;
+  using Matrix = ImmersXLA::MPI::SparseMatrix;
+  using Model  = SemiDiscreteModel<Vector, Matrix>;
+  const IntegrationSupport<1, 2> support(embedded_tria);
+
+  StateLayout reverse_layout;
+  const auto  bulk_source = bulk_view.field(reverse_layout, "bulk-source");
+  const auto  embedded_target =
+    embedded_view.field(reverse_layout, "embedded-target");
+  Model                               reverse_model;
+  SemidiscreteBuilder<Vector, Matrix> reverse_builder(reverse_layout,
+                                                      reverse_model);
+  weak_term(value(bulk_source), test(embedded_target), support)
+    .add(reverse_builder);
+  StateView<Vector>               reverse_state(reverse_layout, 0.);
+  const EvaluationContext<Vector> reverse_context(0., reverse_state);
+  const auto                      reverse_matrix =
+    reverse_model.state_matrix_operator(embedded_target.field_id(),
+                                        bulk_source.field_id(),
+                                        reverse_context);
+  ASSERT_TRUE(reverse_matrix.has_value());
+  const auto reverse_native = reverse_matrix->matrix();
+  ASSERT_EQ(reverse_native->m(), native_matrix.n());
+  ASSERT_EQ(reverse_native->n(), native_matrix.m());
+  for (unsigned int i = 0; i < reverse_native->m(); ++i)
+    for (unsigned int j = 0; j < reverse_native->n(); ++j)
+      EXPECT_NEAR(reverse_native->el(i, j), native_matrix.el(j, i), 1.e-12);
+
+  StateLayout forward_layout;
+  const auto  embedded_source =
+    embedded_view.field(forward_layout, "embedded-source");
+  const auto bulk_target = bulk_view.field(forward_layout, "bulk-target");
+  Model      forward_model;
+  SemidiscreteBuilder<Vector, Matrix> forward_builder(forward_layout,
+                                                      forward_model);
+  weak_term(value(embedded_source), test(bulk_target), support)
+    .add(forward_builder);
+  StateView<Vector>               forward_state(forward_layout, 0.);
+  const EvaluationContext<Vector> forward_context(0., forward_state);
+  const auto                      forward_matrix =
+    forward_model.state_matrix_operator(bulk_target.field_id(),
+                                        embedded_source.field_id(),
+                                        forward_context);
+  ASSERT_TRUE(forward_matrix.has_value());
+  const auto forward_native = forward_matrix->matrix();
+  ASSERT_EQ(forward_native->m(), native_matrix.m());
+  ASSERT_EQ(forward_native->n(), native_matrix.n());
+  for (unsigned int i = 0; i < forward_native->m(); ++i)
+    for (unsigned int j = 0; j < forward_native->n(); ++j)
+      EXPECT_NEAR(forward_native->el(i, j), native_matrix.el(i, j), 1.e-12);
+
+  FESystem<2>   vector_bulk_fe(FE_Q<2>(1), 2);
+  DoFHandler<2> vector_bulk_dof_handler(bulk_tria);
+  vector_bulk_dof_handler.distribute_dofs(vector_bulk_fe);
+  AffineConstraints<double> vector_bulk_constraints;
+  DoFTools::make_hanging_node_constraints(vector_bulk_dof_handler,
+                                          vector_bulk_constraints);
+  vector_bulk_constraints.close();
+  FESystem<1, 2>   vector_embedded_fe(FE_Q<1, 2>(1), 2);
+  DoFHandler<1, 2> vector_embedded_dof_handler(embedded_tria);
+  vector_embedded_dof_handler.distribute_dofs(vector_embedded_fe);
+  AffineConstraints<double> vector_embedded_constraints;
+  vector_embedded_constraints.close();
+  const auto  vector_bulk_view     = fe_space(vector_bulk_dof_handler,
+                                         StaticMappingQ1<2>::mapping,
+                                         vector_bulk_constraints);
+  const auto  vector_embedded_view = fe_space(vector_embedded_dof_handler,
+                                             StaticMappingQ1<1, 2>::mapping,
+                                             vector_embedded_constraints);
+  StateLayout vector_layout;
+  const auto  vector_bulk =
+    vector_bulk_view.field(vector_layout,
+                           "vector-bulk",
+                           FEValuesExtractors::Vector(0));
+  const auto vector_embedded =
+    vector_embedded_view.field(vector_layout,
+                               "vector-embedded",
+                               FEValuesExtractors::Vector(0));
+  DynamicSparsityPattern vector_native_sparsity(
+    vector_bulk_dof_handler.n_dofs(), vector_embedded_dof_handler.n_dofs());
+  NonMatching::create_coupling_sparsity_pattern(
+    cache,
+    vector_bulk_dof_handler,
+    vector_embedded_dof_handler,
+    quadrature,
+    vector_native_sparsity,
+    vector_bulk_constraints,
+    vector_bulk_fe.component_mask(FEValuesExtractors::Vector(0)),
+    vector_embedded_fe.component_mask(FEValuesExtractors::Vector(0)),
+    StaticMappingQ1<1, 2>::mapping,
+    vector_embedded_constraints);
+  SparsityPattern vector_native_pattern;
+  vector_native_pattern.copy_from(vector_native_sparsity);
+  SparseMatrix<double> vector_native_matrix(vector_native_pattern);
+  NonMatching::create_coupling_mass_matrix(
+    cache,
+    vector_bulk_dof_handler,
+    vector_embedded_dof_handler,
+    quadrature,
+    vector_native_matrix,
+    vector_bulk_constraints,
+    vector_bulk_fe.component_mask(FEValuesExtractors::Vector(0)),
+    vector_embedded_fe.component_mask(FEValuesExtractors::Vector(0)),
+    StaticMappingQ1<1, 2>::mapping,
+    vector_embedded_constraints);
+
+  Model                               vector_reverse_model;
+  SemidiscreteBuilder<Vector, Matrix> vector_reverse_builder(
+    vector_layout, vector_reverse_model);
+  weak_term(value(vector_bulk), test(vector_embedded), support)
+    .add(vector_reverse_builder);
+  StateView<Vector>               vector_reverse_state(vector_layout, 0.);
+  const EvaluationContext<Vector> vector_reverse_context(0.,
+                                                         vector_reverse_state);
+  const auto                      vector_reverse_matrix =
+    vector_reverse_model.state_matrix_operator(vector_embedded.field_id(),
+                                               vector_bulk.field_id(),
+                                               vector_reverse_context);
+  ASSERT_TRUE(vector_reverse_matrix.has_value());
+  for (unsigned int i = 0; i < vector_reverse_matrix->matrix()->m(); ++i)
+    for (unsigned int j = 0; j < vector_reverse_matrix->matrix()->n(); ++j)
+      EXPECT_NEAR(vector_reverse_matrix->matrix()->el(i, j),
+                  vector_native_matrix.el(j, i),
+                  1.e-12);
+
+  Model                               vector_forward_model;
+  SemidiscreteBuilder<Vector, Matrix> vector_forward_builder(
+    vector_layout, vector_forward_model);
+  weak_term(value(vector_embedded), test(vector_bulk), support)
+    .add(vector_forward_builder);
+  StateView<Vector>               vector_forward_state(vector_layout, 0.);
+  const EvaluationContext<Vector> vector_forward_context(0.,
+                                                         vector_forward_state);
+  const auto                      vector_forward_matrix =
+    vector_forward_model.state_matrix_operator(vector_bulk.field_id(),
+                                               vector_embedded.field_id(),
+                                               vector_forward_context);
+  ASSERT_TRUE(vector_forward_matrix.has_value());
+  for (unsigned int i = 0; i < vector_forward_matrix->matrix()->m(); ++i)
+    for (unsigned int j = 0; j < vector_forward_matrix->matrix()->n(); ++j)
+      EXPECT_NEAR(vector_forward_matrix->matrix()->el(i, j),
+                  vector_native_matrix.el(i, j),
+                  1.e-12);
 }
 
 TEST(WeakTermNonmatching, MPI_NonmatchingPartitionAndTranspose)

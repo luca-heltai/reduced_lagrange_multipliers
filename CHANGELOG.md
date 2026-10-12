@@ -11,6 +11,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Added
 
+- [PR #243](https://github.com/luca-heltai/immersx/pull/243) Added explicit embedded-mesh integration supports and native deal.II nonmatching mass assembly for value pairings.
 - [PR #242](https://github.com/luca-heltai/immersx/pull/242) Added boundary integration supports and normal, conormal, and tangential expressions for linear weak terms.
 - [PR #241](https://github.com/luca-heltai/immersx/pull/241) Added cell supports for selecting the integration domain of linear weak terms.
 - [PR #240](https://github.com/luca-heltai/immersx/pull/240) Added an opt-in benchmark for comparing matching mass assembly with deal.II.
@@ -111,6 +112,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Fixed
 
+- [PR #243](https://github.com/luca-heltai/immersx/pull/243) Use the particle-based weak-term assembly path when deal.II's native nonmatching assembler does not support a distributed immersed mesh.
 - [PR #241](https://github.com/luca-heltai/immersx/pull/241) Keep persisted Coral weak-term and continuity graphs readable across compilers.
 - [PR #238](https://github.com/luca-heltai/immersx/pull/238) Avoid indexed writes to ghosted Trilinos vectors in `OutputHandler`.
 - [PR #232](https://github.com/luca-heltai/immersx/pull/232) Write the short Coral parameter values used by each graph run to a sibling file.
