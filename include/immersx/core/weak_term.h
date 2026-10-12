@@ -1037,13 +1037,19 @@ namespace ImmersX
                     using EmbeddedField =
                       typename TargetExpression::source_field_type;
                     const auto &embedded = target.source();
-                    const bool  background_is_distributed =
+                    const bool  embedded_is_distributed =
+                      dynamic_cast<const dealii::parallel::distributed::
+                                     Triangulation<EmbeddedField::dimension(),
+                                                   spacedim> *>(
+                        &embedded.dof_handler().get_triangulation()) != nullptr;
+                    const bool background_needs_particle_assembly =
                       dynamic_cast<
                         const dealii::parallel::TriangulationBase<spacedim> *>(
                         &source.dof_handler().get_triangulation()) != nullptr &&
                       dealii::Utilities::MPI::n_mpi_processes(
                         source.space().mpi_communicator()) > 1;
-                    if (!background_is_distributed)
+                    if (!embedded_is_distributed &&
+                        !background_needs_particle_assembly)
                       return assemble_native_nonmatching_value<SourceField,
                                                                EmbeddedField,
                                                                VectorType,
@@ -1057,14 +1063,20 @@ namespace ImmersX
                                    dim == spacedim)
                   {
                     const auto &background = target.source();
-                    const bool  background_is_distributed =
+                    const bool  immersed_is_distributed =
+                      dynamic_cast<
+                        const dealii::parallel::distributed::
+                          Triangulation<SourceField::dimension(), spacedim> *>(
+                        &source.dof_handler().get_triangulation()) != nullptr;
+                    const bool background_needs_particle_assembly =
                       dynamic_cast<
                         const dealii::parallel::TriangulationBase<spacedim> *>(
                         &background.dof_handler().get_triangulation()) !=
                         nullptr &&
                       dealii::Utilities::MPI::n_mpi_processes(
                         background.space().mpi_communicator()) > 1;
-                    if (!background_is_distributed)
+                    if (!immersed_is_distributed &&
+                        !background_needs_particle_assembly)
                       return assemble_native_nonmatching_value<
                         typename TargetExpression::source_field_type,
                         SourceField,
