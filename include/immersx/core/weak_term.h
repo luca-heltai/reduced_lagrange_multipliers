@@ -1040,7 +1040,9 @@ namespace ImmersX
                     const bool  background_is_distributed =
                       dynamic_cast<
                         const dealii::parallel::TriangulationBase<spacedim> *>(
-                        &source.dof_handler().get_triangulation()) != nullptr;
+                        &source.dof_handler().get_triangulation()) != nullptr &&
+                      dealii::Utilities::MPI::n_mpi_processes(
+                        source.space().mpi_communicator()) > 1;
                     if (!background_is_distributed)
                       return assemble_native_nonmatching_value<SourceField,
                                                                EmbeddedField,
@@ -1059,7 +1061,9 @@ namespace ImmersX
                       dynamic_cast<
                         const dealii::parallel::TriangulationBase<spacedim> *>(
                         &background.dof_handler().get_triangulation()) !=
-                      nullptr;
+                        nullptr &&
+                      dealii::Utilities::MPI::n_mpi_processes(
+                        background.space().mpi_communicator()) > 1;
                     if (!background_is_distributed)
                       return assemble_native_nonmatching_value<
                         typename TargetExpression::source_field_type,
