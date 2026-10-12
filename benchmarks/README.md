@@ -30,9 +30,10 @@ alternate repeated
 assemblies after an untimed warmup. The RHS cases report warmed repeated
 assemblies. The normal flux case times ImmersX matrix assembly plus matrix
 action, while `VectorTools` times RHS assembly, so those timings measure
-different work. Timings include the median and median absolute deviation
-(MAD). A relative Frobenius matrix or vector difference is checked before
-timing is accepted.
+different work. The JSON marks this case as non-equivalent and omits the timing
+ratio. Timings include the median and median absolute deviation (MAD). A
+relative Frobenius matrix or vector difference is checked before timing is
+accepted.
 
 Each JSON object is printed to standard output with the deal.II version, cell
 and DoF counts, warm medians and MADs, and relative matrix or right-hand-side
@@ -82,3 +83,5 @@ bulk-bulk trace-matrix assembler for this geometry, so these cases report no
 native timing ratio. Their results are ImmersX-only timings, not comparisons
 with `NonMatching::create_coupling_mass_matrix`, which assembles a different
 rectangular operation.
+
+Recorded Debug and Release benchmark reports are in the reports directory.

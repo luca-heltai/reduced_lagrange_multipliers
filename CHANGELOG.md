@@ -11,6 +11,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Added
 
+- [PR #249](https://github.com/luca-heltai/immersx/pull/249) Added a how-to guide for choosing weak-term integration supports.
 - [PR #247](https://github.com/luca-heltai/immersx/pull/247) Added background-to-background weak terms over independent codimension-one supports, including nonlinear terms with frozen inputs.
 - [PR #246](https://github.com/luca-heltai/immersx/pull/246) Added geometric quadrature supports for fixed tensor-product lifts and linear weak-term assembly on a distributed bulk mesh.
 - [PR #244](https://github.com/luca-heltai/immersx/pull/244) Added support-aware nonlinear weak terms over multiple finite element spaces and frozen inputs.
@@ -73,6 +74,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Changed
 
+- [PR #249](https://github.com/luca-heltai/immersx/pull/249) Reused trial and test basis values at each quadrature point during linear weak-term assembly.
 - [PR #237](https://github.com/luca-heltai/immersx/pull/237) Replace custom MetricFlowX coupling with structural finite-element observables and cell integration.
 - [PR #226](https://github.com/luca-heltai/immersx/pull/226) Associated boundary conditions with semantic fields.
 - [PR #222](https://github.com/luca-heltai/immersx/pull/222) Returned typed semantic fields from the contributors.
@@ -155,6 +157,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Documentation
 
+- [PR #249](https://github.com/luca-heltai/immersx/pull/249) Documented cell, boundary, independent immersed, and lifted weak-term supports.
 - [PR #248](https://github.com/luca-heltai/immersx/pull/248) Document reverse-chronological changelog ordering and checks for missing entries from merged PRs.
 - [PR #232](https://github.com/luca-heltai/immersx/pull/232) Allow pull requests without a related issue to omit the closing reference.
 - [PR #196](https://github.com/luca-heltai/immersx/pull/196) Refreshed the documentation for the current architecture.
@@ -181,9 +184,10 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Testing and CI
 
-- [PR #244](https://github.com/luca-heltai/immersx/pull/244) Added a MeshWorker reference and a paired nonlinear residual/Jacobian benchmark for heterogeneous weak terms with frozen inputs.
+- [PR #249](https://github.com/luca-heltai/immersx/pull/249) Recorded Debug and Release weak-term benchmark results and omitted ratios for non-equivalent operations.
 - [PR #248](https://github.com/luca-heltai/immersx/pull/248) Run pull-request tests for stacked branches targeting any branch.
 - [PR #247](https://github.com/luca-heltai/immersx/pull/247) Test MPI routing of fully distributed embedded support points into a distributed background mesh.
+- [PR #244](https://github.com/luca-heltai/immersx/pull/244) Added a MeshWorker reference and a paired nonlinear residual/Jacobian benchmark for heterogeneous weak terms with frozen inputs.
 - [PR #232](https://github.com/luca-heltai/immersx/pull/232) Build and test Coral plugins against the `dealiix-tutorial` Coral branch.
 - [PR #221](https://github.com/luca-heltai/immersx/pull/221) Added the issue #209 elastodynamics equivalence regression.
 - [PR #182](https://github.com/luca-heltai/immersx/pull/182) Migrated the coupled regressions to unified constraints.

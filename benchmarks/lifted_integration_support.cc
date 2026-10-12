@@ -154,6 +154,16 @@ main(int argc, char **argv)
     SemidiscreteBuilder<Vector, Matrix> builder(layout, model);
     const auto                          start = Clock::now();
     weak_term(value(source), test(target), support).add(builder);
+    const StateView<Vector>         state_view(layout, 0.);
+    const EvaluationContext<Vector> context(0., state_view);
+    const auto matrix = model.state_matrix_operator(target.field_id(),
+                                                    source.field_id(),
+                                                    context);
+    AssertThrow(matrix.has_value(),
+                ExcMessage("The lifted weak term did not expose a matrix."));
+    AssertThrow(matrix->matrix() != nullptr,
+                ExcMessage(
+                  "The lifted weak-term matrix was not materialized."));
     return Utilities::MPI::max(milliseconds(Clock::now() - start),
                                domain.communicator());
   };

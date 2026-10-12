@@ -1965,16 +1965,27 @@ namespace ImmersX
         const auto &test_view  = target_values[target_field.extractor()];
         dealii::FullMatrix<double> local(target_positions.size(),
                                          source_positions.size());
+        std::vector<typename ObservableType::value_type> trial_values(
+          source_positions.size());
+        std::vector<typename TargetExpression::value_type> test_values(
+          target_positions.size());
+        const double scale = observable.scale() * target.scale();
         for (unsigned int q = 0; q < quadrature.size(); ++q)
-          for (unsigned int i = 0; i < target_positions.size(); ++i)
+          {
             for (unsigned int j = 0; j < source_positions.size(); ++j)
-              local(i, j) +=
-                observable.scale() * target.scale() *
-                detail::natural_pairing(
-                  observable.operation()(trial_view, source_positions[j], q),
-                  target.operation()(test_view, target_positions[i], q)) *
-                (physical_weights == nullptr ? target_values.JxW(q) :
-                                               (*physical_weights)[q]);
+              trial_values[j] =
+                observable.operation()(trial_view, source_positions[j], q);
+            for (unsigned int i = 0; i < target_positions.size(); ++i)
+              test_values[i] =
+                target.operation()(test_view, target_positions[i], q);
+            for (unsigned int i = 0; i < target_positions.size(); ++i)
+              for (unsigned int j = 0; j < source_positions.size(); ++j)
+                local(i, j) +=
+                  scale *
+                  detail::natural_pairing(trial_values[j], test_values[i]) *
+                  (physical_weights == nullptr ? target_values.JxW(q) :
+                                                 (*physical_weights)[q]);
+          }
 
         if (affine_data != nullptr &&
             &source.constraints() == &target_field.constraints() &&

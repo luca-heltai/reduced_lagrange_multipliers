@@ -40,7 +40,12 @@ fields must share that bulk triangulation, and the lifted points must lie in
 its locally searchable domain. Linear and nonlinear weak terms can use the
 support, including nonlinear observables with frozen inputs. No synthetic
 Field or DoFHandler is created on the lifted geometry. Trial and test fields
-on separate bulk meshes are not supported.
+trial/test fields must share that bulk triangulation and mapping, and the
+lifted points must lie in its locally searchable domain. Linear terms and
+nonlinear observables with frozen finite-element inputs can use the same
+support. No synthetic Field or DoFHandler is created on the lifted geometry.
+Trial and test fields on separate bulk meshes are not supported. Shape
+derivatives of the lift geometry are not included in the weak-term Jacobian.
 
 ```cpp
 auto dV = centerline.lift(lift);
