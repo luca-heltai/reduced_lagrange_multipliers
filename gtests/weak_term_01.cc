@@ -137,6 +137,52 @@ TEST(WeakTerm, ScalarSameDoFHandler)
   EXPECT_LT(action.l2_norm(), 1.e-12);
 }
 
+TEST(WeakTerm, ExplicitCellSupportFiltersMaterialIds)
+{
+  Triangulation<2> tria;
+  GridGenerator::hyper_cube(tria, 0., 1.);
+  tria.refine_global(1);
+  for (const auto &cell : tria.active_cell_iterators())
+    cell->set_material_id(cell->center()[0] < 0.5 ? 1 : 2);
+
+  FE_Q<2>     fe(1);
+  ScalarSpace space(tria, fe);
+  StateLayout layout;
+  const auto  V =
+    fe_space(space.dof_handler, StaticMappingQ1<2>::mapping, space.constraints);
+  const auto source = V.field(layout, "source");
+  const auto target = V.field(layout, "target");
+  using Vector      = Vector<double>;
+  using Matrix      = SparseMatrix<double>;
+  using Model       = SemiDiscreteModel<Vector, Matrix>;
+
+  const IntegrationSupport<2>         left_half(tria, 1);
+  Model                               direct_model;
+  SemidiscreteBuilder<Vector, Matrix> direct_builder(layout, direct_model);
+  weak_term(value(source), test(target), left_half).add(direct_builder);
+
+  Vector source_values(space.dof_handler.n_dofs());
+  source_values = 1.;
+  StateView<Vector> state_view(layout, 0.);
+  state_view.bind(source.field_id(), source_values);
+  const EvaluationContext<Vector> context(0., state_view);
+
+  Vector direct_residual(target.dof_handler().n_dofs());
+  direct_model.evaluate_row(target.field_id(), context, direct_residual);
+  double integrated_measure = 0.;
+  for (const auto value : direct_residual)
+    integrated_measure += value;
+  EXPECT_NEAR(integrated_measure, 0.5, 1.e-12);
+
+  Model                               chained_model;
+  SemidiscreteBuilder<Vector, Matrix> chained_builder(layout, chained_model);
+  weak_term(value(source), test(target)).on(left_half).add(chained_builder);
+  Vector chained_residual(target.dof_handler().n_dofs());
+  chained_model.evaluate_row(target.field_id(), context, chained_residual);
+  chained_residual -= direct_residual;
+  EXPECT_LT(chained_residual.l2_norm(), 1.e-12);
+}
+
 TEST(WeakTerm, NonlinearSquareLawResidualAndJacobian)
 {
   Triangulation<2> tria;

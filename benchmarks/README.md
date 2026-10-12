@@ -12,22 +12,26 @@ cmake --build build-bench-debug --target weak_term_assembly_benchmark_debug -j
   --refinements=4 --repetitions=9
 ```
 
-The executable compares the existing scalar Q1 mass pairing assembled by
-`ImmersX::detail::WeakAssembly` with `dealii::MatrixCreator::create_mass_matrix`.
-Both use the same triangulation, DoFHandler, mapping, `QGauss(2)`, constraints,
-and serial matrix representation. Each timed assembly includes construction of
-its sparsity pattern and matrix. Common mesh, finite element, and DoF setup is
-reported separately. The first assembly is reported as cold; an untimed warmup
-precedes alternating repeated assemblies. Warm results report the median and
-median absolute deviation (MAD). A relative Frobenius matrix difference is
-checked before timing is accepted.
+The executable compares natural ImmersX mass and Poisson weak terms on explicit
+cell supports with `dealii::MatrixCreator::create_mass_matrix` and
+`create_laplace_matrix`. It emits nine JSON lines: Q1 volume mass and Laplace
+matrices, plus constant-source right-hand sides compared with
+`VectorTools::create_right_hand_side`, in 1D, 2D, and 3D. Each pair uses the
+same triangulation, DoFHandler, mapping, `QGauss(degree + 1)`, constraints, and
+serial matrix representation. Each timed matrix assembly includes construction
+of its sparsity pattern and matrix. Common mesh, finite element, and DoF setup
+is reported separately. Matrix cases report cold timings and alternate repeated
+assemblies after an untimed warmup. The RHS case reports warmed repeated
+assemblies. Timings include the median and median absolute deviation (MAD). A
+relative Frobenius matrix or vector difference is checked before timing is
+accepted.
 
-One JSON object is printed to standard output with the deal.II version, cell
-and DoF counts, common setup time, cold times and ratio, warm medians and MADs,
-and relative matrix error. Timings are diagnostic and are not CI pass/fail
-thresholds. The current benchmark exercises a matching 2D Q1 volume mass
-matrix; additional dimensions and forms should use the same paired setup and
-numerical comparison before their timings are reported.
+Each JSON object is printed to standard output with the deal.II version, cell
+and DoF counts, warm medians and MADs, and relative matrix or right-hand-side
+error. Matrix cases also report common setup time and cold timings. Timings are
+diagnostic and are not CI pass/fail thresholds. The current benchmark covers
+matching Q1 cell supports in 1D, 2D, and 3D. Additional forms should use the
+same paired setup and numerical comparison before their timings are reported.
 
 The installed deal.II package used for the baseline is `9.8.0-rc1`. Its
 headers provide `MatrixCreator::create_mass_matrix`,

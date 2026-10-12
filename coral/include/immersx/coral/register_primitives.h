@@ -169,9 +169,55 @@ namespace ImmersX::Coral
     coral::NodeObject::register_output_type<SymmetricGradientWeak>();
     coral::NodeObject::register_output_type<DivergenceWeak>();
 
-    coral::NodeObject::register_function(
+    const std::string key_dimensions =
+      std::to_string(dim) + ", " + std::to_string(spacedim);
+    const auto vector_field_key = "ImmersX::Field<" + key_dimensions +
+                                  ", dealii::FEValuesExtractors::Vector>";
+    const auto symmetric_gradient_key =
+      "ImmersX::Observable<" + vector_field_key +
+      ", ImmersX::detail::SymmetricGradientOperation>";
+    const auto test_symmetric_gradient_key =
+      "ImmersX::TestExpression<" + vector_field_key +
+      ", ImmersX::detail::SymmetricGradientOperation>";
+    const auto symmetric_gradient_weak_key = "ImmersX::WeakTerm<" +
+                                             symmetric_gradient_key + ", " +
+                                             test_symmetric_gradient_key + ">";
+    const auto divergence_key = "ImmersX::Observable<" + vector_field_key +
+                                ", ImmersX::detail::DivergenceOperation>";
+    const auto test_divergence_key = "ImmersX::TestExpression<" +
+                                     vector_field_key +
+                                     ", ImmersX::detail::DivergenceOperation>";
+    const auto divergence_weak_key =
+      "ImmersX::WeakTerm<" + divergence_key + ", " + test_divergence_key + ">";
+    using SymmetricGradientFactory =
       std::function<SymmetricGradientWeak(const SymmetricGradient &,
-                                          const TestSymmetricGradient &)>(
+                                          const TestSymmetricGradient &)>;
+    coral::detail::set_type_alias<SymmetricGradientFactory>(
+      "std::function<" + symmetric_gradient_weak_key + " (const " +
+      symmetric_gradient_key + " &, const " + test_symmetric_gradient_key +
+      " &)>");
+    using DivergenceFactory =
+      std::function<DivergenceWeak(const Divergence &, const TestDivergence &)>;
+    coral::detail::set_type_alias<DivergenceFactory>(
+      "std::function<" + divergence_weak_key + " (const " + divergence_key +
+      " &, const " + test_divergence_key + " &)>");
+    const std::string adapter_key =
+      "std::shared_ptr<ImmersX::LinearAdapter<"
+      "dealii::TrilinosWrappers::MPI::Vector, "
+      "dealii::TrilinosWrappers::MPI::BlockVector>>";
+    using AddSymmetricGradientFactory = std::function<void(
+      AdapterHandle &, const SymmetricGradientWeak &, const std::string &)>;
+    coral::detail::set_type_alias<AddSymmetricGradientFactory>(
+      "std::function<void (" + adapter_key + " &, const " +
+      symmetric_gradient_weak_key + " &, const std::string &)>");
+    using AddDivergenceFactory = std::function<
+      void(AdapterHandle &, const DivergenceWeak &, const std::string &)>;
+    coral::detail::set_type_alias<AddDivergenceFactory>(
+      "std::function<void (" + adapter_key + " &, const " +
+      divergence_weak_key + " &, const std::string &)>");
+
+    coral::NodeObject::register_function(
+      SymmetricGradientFactory(
         [](const SymmetricGradient     &trial,
            const TestSymmetricGradient &test_expression) {
           return ImmersX::weak_term(trial, test_expression);
@@ -186,7 +232,7 @@ namespace ImmersX::Coral
         "WeakTerm",
         "create"));
     coral::NodeObject::register_function(
-      std::function<DivergenceWeak(const Divergence &, const TestDivergence &)>(
+      DivergenceFactory(
         [](const Divergence &trial, const TestDivergence &test_expression) {
           return ImmersX::weak_term(trial, test_expression);
         }),
@@ -201,8 +247,7 @@ namespace ImmersX::Coral
         "create"));
 
     coral::NodeObject::register_function(
-      std::function<void(
-        AdapterHandle &, const SymmetricGradientWeak &, const std::string &)>(
+      AddSymmetricGradientFactory(
         [](AdapterHandle               &adapter,
            const SymmetricGradientWeak &term,
            const std::string &prefix) { (*adapter).add(term, prefix); }),
@@ -215,8 +260,7 @@ namespace ImmersX::Coral
         "LinearExecution",
         "add_weak_term"));
     coral::NodeObject::register_function(
-      std::function<
-        void(AdapterHandle &, const DivergenceWeak &, const std::string &)>(
+      AddDivergenceFactory(
         [](AdapterHandle        &adapter,
            const DivergenceWeak &term,
            const std::string    &prefix) { (*adapter).add(term, prefix); }),
@@ -374,6 +418,57 @@ namespace ImmersX::Coral
     coral::NodeObject::register_output_type<ParsedWeakTerm>();
     coral::NodeObject::register_output_type<StaticWeakTerm>();
 
+    // Keep the function keys used by existing Coral graphs stable across
+    // compilers. GCC prints the defaulted integration-support template
+    // argument in these std::function signatures, while the graph format
+    // stores the shorter deal.II-era spelling.
+    const std::string key_dimensions =
+      std::to_string(dim) + ", " + std::to_string(spacedim);
+    const auto scalar_field_key = "ImmersX::Field<" + key_dimensions +
+                                  ", dealii::FEValuesExtractors::Scalar>";
+    const auto gradient_key = "ImmersX::Observable<" + scalar_field_key +
+                              ", ImmersX::detail::GradientOperation>";
+    const auto test_gradient_key = "ImmersX::TestExpression<" +
+                                   scalar_field_key +
+                                   ", ImmersX::detail::GradientOperation>";
+    const auto weak_key =
+      "ImmersX::WeakTerm<" + gradient_key + ", " + test_gradient_key + ">";
+    using WeakFactory =
+      std::function<Weak(const Gradient &, const TestGradientExpression &)>;
+    coral::detail::set_type_alias<WeakFactory>(
+      "std::function<" + weak_key + " (const " + gradient_key + " &, const " +
+      test_gradient_key + " &)>");
+
+    const std::string adapter_key =
+      "std::shared_ptr<ImmersX::LinearAdapter<"
+      "dealii::TrilinosWrappers::MPI::Vector, "
+      "dealii::TrilinosWrappers::MPI::BlockVector>>";
+    using AddWeakFactory =
+      std::function<void(AdapterHandle &, const Weak &, const std::string &)>;
+    coral::detail::set_type_alias<AddWeakFactory>(
+      "std::function<void (" + adapter_key + " &, const " + weak_key +
+      " &, const std::string &)>");
+
+    const auto value_key = "ImmersX::Observable<" + scalar_field_key +
+                           ", ImmersX::detail::ValueOperation>";
+    const auto test_value_key = "ImmersX::TestExpression<" + scalar_field_key +
+                                ", ImmersX::detail::ValueOperation>";
+    const auto static_weak_key =
+      "ImmersX::WeakTerm<" + value_key + ", " + test_value_key + ">";
+    using StaticWeakFactory = std::function<StaticWeakTerm(
+      const typename ImmersX::Domain<dim, spacedim>::ImportedFields::FieldView
+        &,
+      const TestExpression &)>;
+    coral::detail::set_type_alias<StaticWeakFactory>(
+      "std::function<" + static_weak_key + " (const " +
+      "ImmersX::ImportedFiniteElementFields<" + key_dimensions +
+      ">::FieldView &, const " + test_value_key + " &)>");
+    using AddStaticWeakFactory = std::function<
+      void(AdapterHandle &, const StaticWeakTerm &, const std::string &)>;
+    coral::detail::set_type_alias<AddStaticWeakFactory>(
+      "std::function<void (" + adapter_key + " &, const " + static_weak_key +
+      " &, const std::string &)>");
+
     coral::NodeObject::register_function(
       std::function<
         ScalarField(AdapterHandle &, const ScalarField &, const std::string &)>(
@@ -400,11 +495,10 @@ namespace ImmersX::Coral
         "register_algebraic_field"));
 
     coral::NodeObject::register_function(
-      std::function<Weak(const Gradient &, const TestGradientExpression &)>(
-        [](const Gradient               &gradient,
-           const TestGradientExpression &test_gradient) {
-          return ImmersX::weak_term(gradient, test_gradient);
-        }),
+      WeakFactory([](const Gradient               &gradient,
+                     const TestGradientExpression &test_gradient) {
+        return ImmersX::weak_term(gradient, test_gradient);
+      }),
       {"trial_gradient", "test_gradient"},
       method_metadata("Weak term",
                       "Weak term",
@@ -439,10 +533,7 @@ namespace ImmersX::Coral
         "create"));
 
     coral::NodeObject::register_function(
-      std::function<StaticWeakTerm(
-        const typename ImmersX::Domain<dim, spacedim>::ImportedFields::FieldView
-          &,
-        const TestExpression &)>(
+      StaticWeakFactory(
         [](const auto &rhs, const TestExpression &test_expression) {
           return ImmersX::weak_term(ImmersX::frozen(rhs.field(),
                                                     rhs.coefficients()),
@@ -459,7 +550,7 @@ namespace ImmersX::Coral
         "create"));
 
     coral::NodeObject::register_function(
-      std::function<void(AdapterHandle &, const Weak &, const std::string &)>(
+      AddWeakFactory(
         [](AdapterHandle     &adapter,
            const Weak        &weak,
            const std::string &prefix) { (*adapter).add(weak, prefix); }),
@@ -486,8 +577,7 @@ namespace ImmersX::Coral
                       "add_weak_term"));
 
     coral::NodeObject::register_function(
-      std::function<
-        void(AdapterHandle &, const StaticWeakTerm &, const std::string &)>(
+      AddStaticWeakFactory(
         [](AdapterHandle        &adapter,
            const StaticWeakTerm &term,
            const std::string    &prefix) { (*adapter).add(term, prefix); }),

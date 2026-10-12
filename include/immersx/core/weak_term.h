@@ -29,6 +29,7 @@
 
 #include <immersx/algebra/linear_algebra.h>
 #include <immersx/core/contributor.h>
+#include <immersx/core/integration_support.h>
 #include <immersx/core/observable.h>
 #include <immersx/coupling/particle_coupling.h>
 
@@ -401,6 +402,20 @@ namespace ImmersX
           observable, observable.source(), target, affine_rhs, affine_data);
       }
 
+      template <typename VectorType, typename MatrixType>
+      static MatrixStorage<MatrixType>
+      assemble_on_support(const ObservableType                    &observable,
+                          const TargetExpression                  &target,
+                          const IntegrationSupport<dim, spacedim> &support)
+      {
+        const auto &source       = observable.source();
+        const auto &target_field = target.source();
+        support.assert_matches(source.dof_handler().get_triangulation());
+        support.assert_matches(target_field.dof_handler().get_triangulation());
+        return assemble_from_source<SourceField, VectorType, MatrixType>(
+          observable, source, target, nullptr, nullptr, support);
+      }
+
       static bool
       geometry_is_nonmatching(const ObservableType   &observable,
                               const TargetExpression &target)
@@ -553,14 +568,28 @@ namespace ImmersX
         return result;
       }
 
-      template <typename SourceField, typename VectorType, typename MatrixType>
+      template <typename Support, typename CellIterator>
+      static bool
+      support_includes(const Support &support, const CellIterator &cell)
+      {
+        if constexpr (std::is_same_v<Support, InferredIntegrationSupport>)
+          return true;
+        else
+          return support.includes_cell(cell);
+      }
+
+      template <typename SourceField,
+                typename VectorType,
+                typename MatrixType,
+                typename Support = InferredIntegrationSupport>
       static MatrixStorage<MatrixType>
       assemble_from_source(const ObservableType        &observable,
                            const SourceField           &source,
                            const TargetExpression      &target,
                            std::shared_ptr<VectorType> *affine_rhs = nullptr,
                            std::shared_ptr<AffineData<VectorType, MatrixType>>
-                             *affine_data = nullptr)
+                                         *affine_data = nullptr,
+                           const Support &support     = {})
       {
         const auto target_field = target.source();
         if constexpr (SourceField::dimension() != dim)
@@ -602,6 +631,8 @@ namespace ImmersX
                      target_field.dof_handler().active_cell_iterators())
                   if (cell->is_locally_owned())
                     {
+                      if (!support_includes(support, cell))
+                        continue;
                       std::vector<dealii::types::global_dof_index> indices(
                         cell->get_fe().n_dofs_per_cell());
                       cell->get_dof_indices(indices);
@@ -623,7 +654,8 @@ namespace ImmersX
                 {
                   const auto target_cell = source_cell->as_dof_handler_iterator(
                     target_field.dof_handler());
-                  if (!target_cell->is_locally_owned())
+                  if (!target_cell->is_locally_owned() ||
+                      !support_includes(support, source_cell))
                     continue;
                   std::vector<dealii::types::global_dof_index> source_indices(
                     source_cell->get_fe().n_dofs_per_cell());
@@ -693,6 +725,8 @@ namespace ImmersX
                   {
                     if (!cell->is_locally_owned())
                       continue;
+                    if (!support_includes(support, cell))
+                      continue;
                     values.reinit(cell);
                     assemble_cell<VectorType>(observable,
                                               source,
@@ -728,7 +762,8 @@ namespace ImmersX
                     const auto target_cell =
                       source_cell->as_dof_handler_iterator(
                         target_field.dof_handler());
-                    if (!target_cell->is_locally_owned())
+                    if (!target_cell->is_locally_owned() ||
+                        !support_includes(support, source_cell))
                       continue;
                     source_values.reinit(source_cell);
                     target_values.reinit(target_cell);
@@ -2778,7 +2813,9 @@ namespace ImmersX
   };
 
   /** A solver-neutral FE weak term contributed to a residual row. */
-  template <typename TrialExpression, typename TestExpression>
+  template <typename TrialExpression,
+            typename TestExpression,
+            typename Support = InferredIntegrationSupport>
   class WeakTerm
   {
   public:
@@ -2788,6 +2825,28 @@ namespace ImmersX
       : observable_(std::move(observable))
       , target_(std::move(target))
     {}
+
+    WeakTerm(TrialExpression observable, TestExpression target, Support support)
+      : observable_(std::move(observable))
+      , target_(std::move(target))
+      , support_(std::move(support))
+    {}
+
+    template <int support_dim, int support_spacedim>
+    auto
+    on(IntegrationSupport<support_dim, support_spacedim> support) const
+    {
+      static_assert(support_dim == TestExpression::dimension(),
+                    "Integration support dimension must match the test "
+                    "field dimension.");
+      static_assert(support_spacedim == TestExpression::spacedimension(),
+                    "Integration support and test field must share an "
+                    "embedding dimension.");
+      return WeakTerm<TrialExpression,
+                      TestExpression,
+                      IntegrationSupport<support_dim, support_spacedim>>(
+        observable_, target_, std::move(support));
+    }
 
     WeakTerm
     on_boundary(const dealii::types::boundary_id id) const
@@ -2813,6 +2872,12 @@ namespace ImmersX
       return result;
     }
 
+    const Support &
+    integration_support() const
+    {
+      return support_;
+    }
+
     template <typename VectorType, typename MatrixType>
     FieldId
     add(SemidiscreteBuilder<VectorType, MatrixType> &builder) const
@@ -2826,6 +2891,10 @@ namespace ImmersX
       auto       term      = builder.term(target_id, "weak_term");
       if constexpr (!detail::is_linear_observable<TrialExpression>::value)
         {
+          AssertThrow((std::is_same_v<Support, InferredIntegrationSupport>),
+                      dealii::ExcMessage(
+                        "Explicit integration support for nonlinear weak "
+                        "terms is not implemented yet."));
           AssertThrow(region_.kind == WeakTermRegion::Kind::volume,
                       dealii::ExcMessage(
                         "Boundary regions currently require linear weak "
@@ -3144,53 +3213,75 @@ namespace ImmersX
           using Assembly = detail::WeakAssembly<TrialExpression, Target>;
           const bool nonmatching_geometry =
             Assembly::geometry_is_nonmatching(observable_, target);
-          AssertThrow(region.kind != WeakTermRegion::Kind::boundary ||
-                        !nonmatching_geometry,
-                      dealii::ExcMessage(
-                        "Boundary weak terms require matching source and "
-                        "target geometry."));
-          if (nonmatching_geometry)
+          if constexpr (!std::is_same_v<Support, InferredIntegrationSupport>)
             {
-              const auto prepared =
-                Assembly::template prepare<VectorType, MatrixType>(observable_,
-                                                                   target);
-              result.matrix   = prepared->storage.matrix;
-              result.sparsity = prepared->storage.sparsity;
+              AssertThrow(region.kind == WeakTermRegion::Kind::volume,
+                          dealii::ExcMessage(
+                            "A cell integration support cannot be combined "
+                            "with a boundary region."));
+              AssertThrow(!nonmatching_geometry,
+                          dealii::ExcMessage(
+                            "This cell integration support requires the "
+                            "source and test fields to use its mesh."));
+              const auto storage =
+                Assembly::template assemble_on_support<VectorType, MatrixType>(
+                  observable_, target, support_);
+              result.matrix   = storage.matrix;
+              result.sparsity = storage.sparsity;
               result.operator_with_matrix =
-                Assembly::template dynamic_matrix_operator<VectorType,
-                                                           MatrixType>(
-                  prepared);
+                builder.matrix_operator(*result.matrix);
             }
           else
             {
-              using AffineData =
-                typename Assembly::template AffineData<VectorType, MatrixType>;
-              std::shared_ptr<AffineData> affine_data;
-              const auto                  storage = [&] {
-                if (region.kind == WeakTermRegion::Kind::boundary)
-                  {
-                    AssertThrow(!detail::is_lifted_observable<
-                                  std::decay_t<Target>>::value,
-                                dealii::ExcMessage(
-                                  "Boundary weak terms do not support lifted "
-                                                   "targets."));
-                    return Assembly::template assemble_boundary<VectorType,
-                                                                MatrixType>(
-                      observable_, target, region.boundary_ids);
-                  }
-                return Assembly::template assemble<VectorType, MatrixType>(
-                  observable_, target, &result.affine_rhs, &affine_data);
-              }();
-              result.matrix   = storage.matrix;
-              result.sparsity = storage.sparsity;
-              if (affine_data != nullptr)
-                result.affine_rhs_factory = [affine_data] {
-                  auto result = std::make_shared<VectorType>();
-                  affine_data->refresh(*result);
-                  return result;
-                };
-              result.operator_with_matrix =
-                builder.matrix_operator(*result.matrix);
+              AssertThrow(region.kind != WeakTermRegion::Kind::boundary ||
+                            !nonmatching_geometry,
+                          dealii::ExcMessage(
+                            "Boundary weak terms require matching source and "
+                            "target geometry."));
+              if (nonmatching_geometry)
+                {
+                  const auto prepared =
+                    Assembly::template prepare<VectorType, MatrixType>(
+                      observable_, target);
+                  result.matrix   = prepared->storage.matrix;
+                  result.sparsity = prepared->storage.sparsity;
+                  result.operator_with_matrix =
+                    Assembly::template dynamic_matrix_operator<VectorType,
+                                                               MatrixType>(
+                      prepared);
+                }
+              else
+                {
+                  using AffineData =
+                    typename Assembly::template AffineData<VectorType,
+                                                           MatrixType>;
+                  std::shared_ptr<AffineData> affine_data;
+                  const auto                  storage = [&] {
+                    if (region.kind == WeakTermRegion::Kind::boundary)
+                      {
+                        AssertThrow(!detail::is_lifted_observable<
+                                      std::decay_t<Target>>::value,
+                                    dealii::ExcMessage(
+                                      "Boundary weak terms do not support "
+                                                       "lifted targets."));
+                        return Assembly::template assemble_boundary<VectorType,
+                                                                    MatrixType>(
+                          observable_, target, region.boundary_ids);
+                      }
+                    return Assembly::template assemble<VectorType, MatrixType>(
+                      observable_, target, &result.affine_rhs, &affine_data);
+                  }();
+                  result.matrix   = storage.matrix;
+                  result.sparsity = storage.sparsity;
+                  if (affine_data != nullptr)
+                    result.affine_rhs_factory = [affine_data] {
+                      auto result = std::make_shared<VectorType>();
+                      affine_data->refresh(*result);
+                      return result;
+                    };
+                  result.operator_with_matrix =
+                    builder.matrix_operator(*result.matrix);
+                }
             }
         }
       result.source_id = observable_.source_field();
@@ -3200,6 +3291,7 @@ namespace ImmersX
 
     TrialExpression             observable_;
     TestExpression              target_;
+    Support                     support_;
     WeakTermRegion              region_;
     std::function<void(double)> context_update_;
   };
@@ -3224,6 +3316,16 @@ namespace ImmersX
     return WeakTerm<std::decay_t<decltype(trial_expression)>,
                     std::decay_t<decltype(test_expression)>>(
       std::move(trial_expression), std::move(test_expression));
+  }
+
+  template <typename Trial, typename Test, int dim, int spacedim>
+  auto
+  weak_term(Trial                             trial,
+            Test                              test_expression,
+            IntegrationSupport<dim, spacedim> support)
+  {
+    return weak_term(std::move(trial), std::move(test_expression))
+      .on(std::move(support));
   }
 
   template <typename Quantity, typename Surface, typename TargetField>

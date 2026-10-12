@@ -21,6 +21,17 @@ TEST(Domain, GeneratesNamedGrid)
   Domain<2> domain(parameters);
   ASSERT_NO_THROW(domain.make_grid());
   EXPECT_EQ(domain.triangulation().n_global_active_cells(), 4u);
+
+  const auto all_cells     = domain.support();
+  const auto material_zero = domain.support(0);
+  const auto material_one  = domain.support(1);
+  EXPECT_EQ(&all_cells.triangulation(), &domain.triangulation());
+  EXPECT_TRUE(all_cells.includes_cell(domain.triangulation().begin_active()));
+  EXPECT_EQ(material_zero.material_id(), 0u);
+  EXPECT_TRUE(
+    material_zero.includes_cell(domain.triangulation().begin_active()));
+  EXPECT_FALSE(
+    material_one.includes_cell(domain.triangulation().begin_active()));
 }
 
 
