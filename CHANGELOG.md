@@ -145,6 +145,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Documentation
 
+- [PR #248](https://github.com/luca-heltai/immersx/pull/248) Document reverse-chronological changelog ordering and checks for missing entries from merged PRs.
 - [PR #232](https://github.com/luca-heltai/immersx/pull/232) Allow pull requests without a related issue to omit the closing reference.
 - [PR #196](https://github.com/luca-heltai/immersx/pull/196) Refreshed the documentation for the current architecture.
 - [PR #95](https://github.com/luca-heltai/immersx/pull/95) Updated the agent instructions and the contributing guide.
