@@ -88,6 +88,7 @@ main(int argc, char **argv)
   TensorProductLift<1, 2, 3> lift("/Lifted support benchmark geometry/");
   lift.thickness                 = "0.05";
   lift.representative_n_q_points = 3;
+  lift.section.inclusion_type    = "hyper_cube";
   lift.section.inclusion_degree  = 0;
   lift.section.n_q_points        = 2;
 
@@ -114,7 +115,7 @@ main(int argc, char **argv)
                         domain.communicator());
   AssertThrow(std::isfinite(measure) && measure > 0.,
               ExcMessage("Lifted support produced an invalid measure."));
-  AssertThrow(std::abs(measure - 0.1) < 1.e-10,
+  AssertThrow(std::abs(measure - 0.2) < 1.e-10,
               ExcMessage("Lifted support measure differs from the expected "
                          "straight-strip measure."));
 
