@@ -1435,6 +1435,7 @@ namespace ImmersX
                 target_values.JxW(q);
 
         const bool use_square_constraints =
+          !source.is_reindexed() && !target_field.is_reindexed() &&
           &source.constraints() == &target_field.constraints() &&
           source_execution_indices == target_execution_indices;
         if (affine_data != nullptr)
@@ -1443,9 +1444,9 @@ namespace ImmersX
                                                 target_execution_indices,
                                                 use_square_constraints});
 
-        // Preserve deal.II's constrained diagonal rows for square cell terms.
-        // Rectangular field pairings and boundary terms only condense the
-        // physical trial and test bases.
+        // Preserve native constrained diagonals only for unreindexed fields.
+        // Mixed block fields use condensed residual rows; adding artificial
+        // diagonals there changes the semidiscrete residual and Jacobian.
         if (use_square_constraints)
           target_field.constraints().distribute_local_to_global(
             local, target_execution_indices, matrix);
