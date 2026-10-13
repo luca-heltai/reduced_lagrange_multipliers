@@ -1,0 +1,10 @@
+foreach(_build_type IN LISTS IMMERSX_REQUESTED_BUILD_TYPES)
+  string(TOUPPER "${_build_type}" _BUILD_TYPE)
+  set(_target "weak_term_assembly_benchmark${${_build_type}_postfix}")
+  add_executable(${_target} weak_term_assembly.cc)
+  target_include_directories(${_target} PRIVATE ${CMAKE_SOURCE_DIR}/include)
+  target_compile_definitions(
+    ${_target} PRIVATE DEAL_II_PACKAGE_VERSION="${DEAL_II_PACKAGE_VERSION}")
+  target_link_libraries(${_target} ${TEST_LIBRARIES_${_BUILD_TYPE}})
+  DEAL_II_SETUP_TARGET(${_target} ${_BUILD_TYPE})
+endforeach()
