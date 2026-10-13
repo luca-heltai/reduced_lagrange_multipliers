@@ -111,6 +111,8 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 ### Fixed
 
 - [PR #252](https://github.com/luca-heltai/immersx/pull/252) Select all ambient components of embedded vector fields and evolve the fiber driver's matrix-only backward-Euler reference from its own displacement and velocity history.
+- [PR #241](https://github.com/luca-heltai/immersx/pull/241) Preserve and dynamically refresh affine cell contributions in state, frozen-source, and multiplier residuals while retaining native constrained diagonal rows.
+- [PR #241](https://github.com/luca-heltai/immersx/pull/241) Derive locally relevant DoFs for FE-space views by default and retain off-rank matching matrix entries during distributed assembly.
 - [PR #241](https://github.com/luca-heltai/immersx/pull/241) Keep persisted Coral weak-term and continuity graphs readable across compilers.
 - [PR #238](https://github.com/luca-heltai/immersx/pull/238) Avoid indexed writes to ghosted Trilinos vectors in `OutputHandler`.
 - [PR #232](https://github.com/luca-heltai/immersx/pull/232) Write the short Coral parameter values used by each graph run to a sibling file.

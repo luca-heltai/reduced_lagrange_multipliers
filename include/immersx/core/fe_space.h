@@ -461,6 +461,10 @@ namespace ImmersX
       , mapping_(&mapping)
       , constraints_(&constraints)
       , locally_relevant_(locally_relevant)
+      , default_locally_relevant_(
+          locally_relevant == nullptr ?
+            dealii::DoFTools::extract_locally_relevant_dofs(dof_handler) :
+            dealii::IndexSet())
     {}
 
     const DoFHandlerType &
@@ -497,7 +501,7 @@ namespace ImmersX
     locally_relevant_dofs() const
     {
       return locally_relevant_ != nullptr ? *locally_relevant_ :
-                                            locally_owned_dofs();
+                                            default_locally_relevant_;
     }
 
     MPI_Comm
@@ -585,6 +589,7 @@ namespace ImmersX
     const MappingType                       *mapping_;
     const dealii::AffineConstraints<double> *constraints_;
     const dealii::IndexSet                  *locally_relevant_;
+    dealii::IndexSet                         default_locally_relevant_;
   };
 
   /** An owning finite-element discretization with a non-owning view API. */
