@@ -82,6 +82,42 @@ TEST(FESpace, IsANonOwningViewAndSupportsSubspaces)
   EXPECT_EQ(displacement.extractor().first_vector_component, 0u);
 }
 
+namespace
+{
+  template <int dim, int spacedim>
+  void
+  check_ambient_vector_mask()
+  {
+    Triangulation<dim, spacedim> mesh;
+    GridGenerator::hyper_cube(mesh);
+    FESystem<dim, spacedim>   fe(FE_Q<dim, spacedim>(1), spacedim + 2);
+    DoFHandler<dim, spacedim> dh(mesh);
+    dh.distribute_dofs(fe);
+    MappingQ1<dim, spacedim>  mapping;
+    AffineConstraints<double> constraints;
+    constraints.close();
+    const auto space  = ImmersX::fe_space(dh, mapping, constraints);
+    const auto vector = space.field("vector", FEValuesExtractors::Vector(1));
+    const auto mask   = vector.component_mask();
+    EXPECT_EQ(mask.n_selected_components(), spacedim);
+    for (unsigned int c = 0; c < fe.n_components(); ++c)
+      EXPECT_EQ(mask[c], c >= 1 && c < 1 + spacedim);
+    const auto scalar = space.field("scalar", FEValuesExtractors::Scalar(0));
+    EXPECT_EQ(scalar.component_mask().n_selected_components(), 1u);
+    EXPECT_TRUE(scalar.component_mask()[0]);
+    const auto invalid = space.field("invalid", FEValuesExtractors::Vector(3));
+    EXPECT_THROW(invalid.component_mask(), ExceptionBase);
+  }
+} // namespace
+
+TEST(FESpace, VectorMasksSelectAmbientComponents)
+{
+  check_ambient_vector_mask<1, 2>();
+  check_ambient_vector_mask<1, 3>();
+  check_ambient_vector_mask<2, 3>();
+  check_ambient_vector_mask<2, 2>();
+}
+
 TEST(FESpace, FieldLocalConstraintsArePersistentAndIndependent)
 {
   ExternalFESystem system;
