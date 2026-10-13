@@ -185,6 +185,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Testing and CI
 
+- [PR #249](https://github.com/luca-heltai/immersx/pull/249) Compare lifted source-to-bulk assembly with an independent physical-quadrature reference.
 - [PR #249](https://github.com/luca-heltai/immersx/pull/249) Recorded Debug and Release weak-term benchmark results and omitted ratios for non-equivalent operations.
 - [PR #248](https://github.com/luca-heltai/immersx/pull/248) Run pull-request tests for stacked branches targeting any branch.
 - [PR #247](https://github.com/luca-heltai/immersx/pull/247) Test MPI routing of fully distributed embedded support points into a distributed background mesh.
