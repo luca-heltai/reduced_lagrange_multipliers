@@ -483,33 +483,34 @@ TEST(WeakTermNonmatching, EmbeddedSupportMatchesDealIINonMatchingCoupling)
     vector_embedded_view.field(vector_layout,
                                "vector-embedded",
                                FEValuesExtractors::Vector(0));
+  // Both spaces represent ambient 2D vectors. Do not use the embedded FE's
+  // dim-sized vector mask or the implementation's Field mask in this oracle.
+  const ComponentMask    ambient_vector_mask(2, true);
   DynamicSparsityPattern vector_native_sparsity(
     vector_bulk_dof_handler.n_dofs(), vector_embedded_dof_handler.n_dofs());
-  NonMatching::create_coupling_sparsity_pattern(
-    cache,
-    vector_bulk_dof_handler,
-    vector_embedded_dof_handler,
-    quadrature,
-    vector_native_sparsity,
-    vector_bulk_constraints,
-    vector_bulk_fe.component_mask(FEValuesExtractors::Vector(0)),
-    vector_embedded_fe.component_mask(FEValuesExtractors::Vector(0)),
-    StaticMappingQ1<1, 2>::mapping,
-    vector_embedded_constraints);
+  NonMatching::create_coupling_sparsity_pattern(cache,
+                                                vector_bulk_dof_handler,
+                                                vector_embedded_dof_handler,
+                                                quadrature,
+                                                vector_native_sparsity,
+                                                vector_bulk_constraints,
+                                                ambient_vector_mask,
+                                                ambient_vector_mask,
+                                                StaticMappingQ1<1, 2>::mapping,
+                                                vector_embedded_constraints);
   SparsityPattern vector_native_pattern;
   vector_native_pattern.copy_from(vector_native_sparsity);
   SparseMatrix<double> vector_native_matrix(vector_native_pattern);
-  NonMatching::create_coupling_mass_matrix(
-    cache,
-    vector_bulk_dof_handler,
-    vector_embedded_dof_handler,
-    quadrature,
-    vector_native_matrix,
-    vector_bulk_constraints,
-    vector_bulk_fe.component_mask(FEValuesExtractors::Vector(0)),
-    vector_embedded_fe.component_mask(FEValuesExtractors::Vector(0)),
-    StaticMappingQ1<1, 2>::mapping,
-    vector_embedded_constraints);
+  NonMatching::create_coupling_mass_matrix(cache,
+                                           vector_bulk_dof_handler,
+                                           vector_embedded_dof_handler,
+                                           quadrature,
+                                           vector_native_matrix,
+                                           vector_bulk_constraints,
+                                           ambient_vector_mask,
+                                           ambient_vector_mask,
+                                           StaticMappingQ1<1, 2>::mapping,
+                                           vector_embedded_constraints);
 
   Model                               vector_reverse_model;
   SemidiscreteBuilder<Vector, Matrix> vector_reverse_builder(
