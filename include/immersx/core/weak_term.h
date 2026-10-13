@@ -19,11 +19,15 @@
 
 #include <deal.II/fe/fe_values.h>
 
+#include <deal.II/grid/grid_tools_cache.h>
+
 #include <deal.II/lac/dynamic_sparsity_pattern.h>
 #include <deal.II/lac/full_matrix.h>
 #include <deal.II/lac/sparsity_pattern.h>
 #include <deal.II/lac/sparsity_tools.h>
 #include <deal.II/lac/vector.h>
+
+#include <deal.II/non_matching/coupling.h>
 
 #include <boost/signals2/connection.hpp>
 
@@ -273,6 +277,17 @@ namespace ImmersX
     }
     /** \endcond */
 
+    template <typename FieldType>
+    void
+    assert_homogeneous_weak_constraints(const FieldType   &field,
+                                        const std::string &message)
+    {
+      const auto inhomogeneous = dealii::Utilities::MPI::max(
+        static_cast<unsigned int>(field.constraints().has_inhomogeneities()),
+        field.space().mpi_communicator());
+      AssertThrow(inhomogeneous == 0, dealii::ExcMessage(message));
+    }
+
     template <typename ObservableType, typename TargetExpression>
     struct WeakAssembly
     {
@@ -425,19 +440,40 @@ namespace ImmersX
           observable, observable.source(), target, affine_rhs, affine_data);
       }
 
-      template <typename VectorType, typename MatrixType>
+      template <typename VectorType, typename MatrixType, int support_dim>
       static MatrixStorage<MatrixType>
-      assemble_on_support(const ObservableType                    &observable,
-                          const TargetExpression                  &target,
-                          const IntegrationSupport<dim, spacedim> &support,
-                          std::shared_ptr<VectorType> *affine_rhs = nullptr,
-                          std::shared_ptr<AffineData<VectorType, MatrixType>>
-                            *affine_data = nullptr)
+      assemble_on_support(
+        const ObservableType                            &observable,
+        const TargetExpression                          &target,
+        const IntegrationSupport<support_dim, spacedim> &support,
+        std::shared_ptr<VectorType>                     *affine_rhs = nullptr,
+        std::shared_ptr<AffineData<VectorType, MatrixType>> *affine_data =
+          nullptr)
       {
         const auto &source       = observable.source();
         const auto &target_field = target.source();
-        support.assert_matches(source.dof_handler().get_triangulation());
-        support.assert_matches(target_field.dof_handler().get_triangulation());
+        const auto &support_tria = support.triangulation();
+        const bool  matches_source =
+          static_cast<const void *>(&support_tria) ==
+          static_cast<const void *>(&source.dof_handler().get_triangulation());
+        const bool matches_target =
+          static_cast<const void *>(&support_tria) ==
+          static_cast<const void *>(
+            &target_field.dof_handler().get_triangulation());
+        AssertThrow(matches_source || matches_target,
+                    dealii::ExcMessage(
+                      "An explicit support must use the source or test "
+                      "field triangulation."));
+        if constexpr (SourceField::dimension() < dim)
+          AssertThrow(matches_source,
+                      dealii::ExcMessage(
+                        "A lower-dimensional trial field defines the "
+                        "integration support."));
+        else if constexpr (SourceField::dimension() > dim)
+          AssertThrow(matches_target,
+                      dealii::ExcMessage(
+                        "A lower-dimensional test field defines the "
+                        "integration support."));
         return assemble_from_source<SourceField, VectorType, MatrixType>(
           observable, source, target, affine_rhs, affine_data, support);
       }
@@ -637,13 +673,13 @@ namespace ImmersX
       {
         const auto target_field = target.source();
         if constexpr (SourceField::dimension() != dim)
-          {
-            AssertThrow(false,
-                        dealii::ExcMessage(
-                          "A mixed-dimensional weak term must use the "
-                          "nonmatching assembly backend."));
-            return {};
-          }
+          return assemble_nonmatching<SourceField, VectorType, MatrixType>(
+            observable,
+            source,
+            target,
+            std::max(source.space().finite_element().degree,
+                     target_field.space().finite_element().degree),
+            support);
         else
           {
             const auto degree =
@@ -657,7 +693,7 @@ namespace ImmersX
             if (&source.space().dof_handler().get_triangulation() !=
                 &target_field.space().dof_handler().get_triangulation())
               return assemble_nonmatching<SourceField, VectorType, MatrixType>(
-                observable, source, target, degree);
+                observable, source, target, degree, support);
 
             AssertThrow(&source.mapping() == &target_field.mapping(),
                         dealii::ExcMessage(
@@ -968,30 +1004,173 @@ namespace ImmersX
       }
 
     private:
-      template <typename SourceField, typename VectorType, typename MatrixType>
+      template <typename BackgroundField,
+                typename EmbeddedField,
+                typename VectorType,
+                typename MatrixType>
+      static MatrixStorage<MatrixType>
+      assemble_native_nonmatching_value(const BackgroundField &background,
+                                        const EmbeddedField   &embedded,
+                                        const double           scale,
+                                        const bool             transpose)
+      {
+        constexpr int background_dim = BackgroundField::dimension();
+        constexpr int embedded_dim   = EmbeddedField::dimension();
+        static_assert(background_dim == BackgroundField::spacedimension(),
+                      "The NonMatching mass matrix needs a full-dimensional "
+                      "background field.");
+        static_assert(embedded_dim <= background_dim,
+                      "The embedded field dimension cannot exceed the "
+                      "background dimension.");
+
+        const auto background_mask = background.component_mask();
+        const auto embedded_mask   = embedded.component_mask();
+        const dealii::QGauss<embedded_dim> quadrature(
+          std::max(background.space().finite_element().degree,
+                   embedded.space().finite_element().degree) +
+          1);
+        dealii::DynamicSparsityPattern sparsity(
+          background.dof_handler().n_dofs(),
+          embedded.dof_handler().n_dofs(),
+          background.locally_relevant_dofs());
+        dealii::GridTools::Cache<background_dim, background_dim> cache(
+          background.dof_handler().get_triangulation(), background.mapping());
+        dealii::NonMatching::create_coupling_sparsity_pattern(
+          cache,
+          background.dof_handler(),
+          embedded.dof_handler(),
+          quadrature,
+          sparsity,
+          background.constraints(),
+          background_mask,
+          embedded_mask,
+          embedded.mapping(),
+          embedded.constraints());
+        if (dynamic_cast<const dealii::parallel::
+                           TriangulationBase<background_dim, background_dim> *>(
+              &background.dof_handler().get_triangulation()) != nullptr)
+          dealii::SparsityTools::distribute_sparsity_pattern(
+            sparsity,
+            background.locally_owned_dofs(),
+            background.space().mpi_communicator(),
+            background.locally_relevant_dofs());
+
+        auto matrix = std::make_shared<MatrixType>();
+        auto matrix_sparsity =
+          initialize_weak_matrix(*matrix,
+                                 background.locally_owned_dofs(),
+                                 embedded.locally_owned_dofs(),
+                                 sparsity,
+                                 background.space().mpi_communicator());
+        dealii::NonMatching::create_coupling_mass_matrix(
+          cache,
+          background.dof_handler(),
+          embedded.dof_handler(),
+          quadrature,
+          *matrix,
+          background.constraints(),
+          background_mask,
+          embedded_mask,
+          embedded.mapping(),
+          embedded.constraints());
+        compress_weak_matrix(*matrix);
+        *matrix *= scale;
+        if (transpose)
+          return {ImmersX::detail::transpose_matrix(matrix), nullptr};
+        return {std::move(matrix), std::move(matrix_sparsity)};
+      }
+
+      template <typename SourceField,
+                typename VectorType,
+                typename MatrixType,
+                typename Support = InferredIntegrationSupport>
       static MatrixStorage<MatrixType>
       assemble_nonmatching(const ObservableType   &observable,
                            const SourceField      &source,
                            const TargetExpression &target,
-                           const unsigned int      degree)
+                           const unsigned int      degree,
+                           const Support          &support = {})
       {
 #ifdef IMMERSX_WEAK_TERM_TESTING
         ++weak_term_nonmatching_preparations;
 #endif
+        if constexpr (std::is_same_v<typename ObservableType::operation_type,
+                                     ValueOperation> &&
+                      std::is_same_v<typename TargetExpression::operation_type,
+                                     ValueOperation>)
+          {
+            bool use_native_nonmatching = true;
+            if constexpr (!std::is_same_v<Support, InferredIntegrationSupport>)
+              use_native_nonmatching = !support.has_material_filter();
+
+            if (use_native_nonmatching)
+              {
+                if constexpr (SourceField::dimension() == spacedim)
+                  {
+                    using EmbeddedField =
+                      typename TargetExpression::source_field_type;
+                    const auto &embedded = target.source();
+                    const bool  embedded_is_distributed =
+                      dynamic_cast<const dealii::parallel::distributed::
+                                     Triangulation<EmbeddedField::dimension(),
+                                                   spacedim> *>(
+                        &embedded.dof_handler().get_triangulation()) != nullptr;
+                    const bool background_needs_particle_assembly =
+                      dynamic_cast<
+                        const dealii::parallel::TriangulationBase<spacedim> *>(
+                        &source.dof_handler().get_triangulation()) != nullptr &&
+                      dealii::Utilities::MPI::n_mpi_processes(
+                        source.space().mpi_communicator()) > 1;
+                    if (!embedded_is_distributed &&
+                        !background_needs_particle_assembly)
+                      return assemble_native_nonmatching_value<SourceField,
+                                                               EmbeddedField,
+                                                               VectorType,
+                                                               MatrixType>(
+                        source,
+                        embedded,
+                        observable.scale() * target.scale(),
+                        true);
+                  }
+                else if constexpr (SourceField::dimension() < dim &&
+                                   dim == spacedim)
+                  {
+                    const auto &background = target.source();
+                    const bool  immersed_is_distributed =
+                      dynamic_cast<
+                        const dealii::parallel::distributed::
+                          Triangulation<SourceField::dimension(), spacedim> *>(
+                        &source.dof_handler().get_triangulation()) != nullptr;
+                    const bool background_needs_particle_assembly =
+                      dynamic_cast<
+                        const dealii::parallel::TriangulationBase<spacedim> *>(
+                        &background.dof_handler().get_triangulation()) !=
+                        nullptr &&
+                      dealii::Utilities::MPI::n_mpi_processes(
+                        background.space().mpi_communicator()) > 1;
+                    if (!immersed_is_distributed &&
+                        !background_needs_particle_assembly)
+                      return assemble_native_nonmatching_value<
+                        typename TargetExpression::source_field_type,
+                        SourceField,
+                        VectorType,
+                        MatrixType>(target.source(),
+                                    source,
+                                    observable.scale() * target.scale(),
+                                    false);
+                  }
+              }
+          }
         if constexpr (SourceField::dimension() == spacedim)
           return assemble_nonmatching_reverse<SourceField,
                                               VectorType,
-                                              MatrixType>(observable,
-                                                          source,
-                                                          target,
-                                                          degree);
+                                              MatrixType>(
+            observable, source, target, degree, support);
         else if constexpr (SourceField::dimension() < dim && dim == spacedim)
           return assemble_nonmatching_forward<SourceField,
                                               VectorType,
-                                              MatrixType>(observable,
-                                                          source,
-                                                          target,
-                                                          degree);
+                                              MatrixType>(
+            observable, source, target, degree, support);
         else
           {
             AssertThrow(false,
@@ -1008,12 +1187,16 @@ namespace ImmersX
        * so the resulting matrix has target rows and source columns even when
        * the two meshes have different dimensions and partitions.
        */
-      template <typename SourceField, typename VectorType, typename MatrixType>
+      template <typename SourceField,
+                typename VectorType,
+                typename MatrixType,
+                typename Support>
       static MatrixStorage<MatrixType>
       assemble_nonmatching_forward(const ObservableType   &observable,
                                    const SourceField      &source,
                                    const TargetExpression &target,
-                                   const unsigned int      degree)
+                                   const unsigned int      degree,
+                                   const Support          &support)
       {
         static_assert(SourceField::dimension() < dim && dim == spacedim,
                       "Forward nonmatching assembly needs a lower-dimensional "
@@ -1062,7 +1245,8 @@ namespace ImmersX
           n_source_dofs);
         for (const auto &source_cell :
              source.dof_handler().active_cell_iterators())
-          if (source_cell->is_locally_owned())
+          if (source_cell->is_locally_owned() &&
+              support_includes(support, source_cell))
             {
               source_values.reinit(source_cell);
               source_cell->get_dof_indices(source_indices);
@@ -1101,7 +1285,7 @@ namespace ImmersX
         dealii::DynamicSparsityPattern sparsity(
           target_field.dof_handler().n_dofs(),
           source.dof_handler().n_dofs(),
-          target_field.locally_owned_dofs());
+          target_field.locally_relevant_dofs());
         std::vector<dealii::types::global_dof_index> target_indices(
           target_field.space().finite_element().n_dofs_per_cell());
         for (const auto &particle : distribution.get_particles())
@@ -1206,12 +1390,16 @@ namespace ImmersX
        * source mesh, so rows remain owned by the source background ranks and no
        * distributed matrix contribution exchange is needed before the explicit
        * transpose. */
-      template <typename SourceField, typename VectorType, typename MatrixType>
+      template <typename SourceField,
+                typename VectorType,
+                typename MatrixType,
+                typename Support>
       static MatrixStorage<MatrixType>
       assemble_nonmatching_reverse(const ObservableType   &observable,
                                    const SourceField      &source,
                                    const TargetExpression &target,
-                                   const unsigned int      degree)
+                                   const unsigned int      degree,
+                                   const Support          &support)
       {
         static_assert(SourceField::dimension() == spacedim,
                       "Nonmatching weak terms require a full-dimensional "
@@ -1270,7 +1458,7 @@ namespace ImmersX
           n_target_dofs);
         for (const auto &cell :
              target_field.dof_handler().active_cell_iterators())
-          if (cell->is_locally_owned())
+          if (cell->is_locally_owned() && support_includes(support, cell))
             {
               target_values.reinit(cell);
               cell->get_dof_indices(target_indices);
@@ -2915,7 +3103,8 @@ namespace ImmersX
   class WeakTerm
   {
   public:
-    using target_type = TestExpression;
+    using target_type      = TestExpression;
+    using trial_field_type = typename TrialExpression::source_field_type;
 
     WeakTerm(TrialExpression observable, TestExpression target)
       : observable_(std::move(observable))
@@ -2932,9 +3121,10 @@ namespace ImmersX
     auto
     on(IntegrationSupport<support_dim, support_spacedim> support) const
     {
-      static_assert(support_dim == TestExpression::dimension(),
-                    "Integration support dimension must match the test "
-                    "field dimension.");
+      static_assert(support_dim == TestExpression::dimension() ||
+                      support_dim == trial_field_type::dimension(),
+                    "Integration support dimension must match a trial or "
+                    "test field dimension.");
       static_assert(support_spacedim == TestExpression::spacedimension(),
                     "Integration support and test field must share an "
                     "embedding dimension.");
@@ -3279,8 +3469,18 @@ namespace ImmersX
             })
             .state(source_id, sign * pairing.operator_with_matrix);
 
+          const auto multiplier_field = multiplier_expression.source();
+          detail::assert_homogeneous_weak_constraints(
+            multiplier_field,
+            "Linear constraint reactions require homogeneous multiplier "
+            "constraints.");
           builder.term(source_id, suffix + ".participant")
-            .residual([reaction, multiplier, sign](const auto &context) {
+            .residual([reaction, multiplier, sign, multiplier_field](
+                        const auto &context) {
+              detail::assert_homogeneous_weak_constraints(
+                multiplier_field,
+                "Linear constraint reactions require homogeneous multiplier "
+                "constraints.");
               return sign * (reaction.view * context.state(multiplier));
             })
             .state(multiplier, sign * reaction);
@@ -3373,10 +3573,14 @@ namespace ImmersX
                           dealii::ExcMessage(
                             "An explicit integration support cannot be "
                             "combined with an on_boundary region."));
-              AssertThrow(!nonmatching_geometry,
-                          dealii::ExcMessage(
-                            "This integration support requires the source "
-                            "and test fields to use its mesh."));
+              if constexpr (std::is_same_v<Support,
+                                           BoundaryIntegrationSupport<
+                                             TestExpression::dimension(),
+                                             TestExpression::spacedimension()>>)
+                AssertThrow(!nonmatching_geometry,
+                            dealii::ExcMessage(
+                              "Boundary weak terms require matching source "
+                              "and test meshes."));
               using AffineData =
                 typename Assembly::template AffineData<VectorType, MatrixType>;
               std::shared_ptr<AffineData> affine_data;
@@ -3469,6 +3673,18 @@ namespace ImmersX
                     builder.matrix_operator(*result.matrix);
                 }
             }
+        }
+      if (!result.affine_rhs_factory)
+        {
+          const auto source         = observable_.source();
+          result.affine_rhs_factory = [source] {
+            detail::assert_homogeneous_weak_constraints(
+              source,
+              "This weak-term backend does not support inhomogeneous source "
+              "constraints. Use matching cell or boundary supports.");
+            return std::shared_ptr<VectorType>();
+          };
+          result.affine_rhs_factory();
         }
       result.source_id = observable_.source_field();
       result.target_id = target.source().field_id();

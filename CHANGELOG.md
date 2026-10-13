@@ -11,6 +11,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Added
 
+- [PR #243](https://github.com/luca-heltai/immersx/pull/243) Added explicit embedded-mesh integration supports and native deal.II nonmatching mass assembly for value pairings.
 - [PR #242](https://github.com/luca-heltai/immersx/pull/242) Added boundary integration supports and normal, conormal, and tangential expressions for linear weak terms.
 - [PR #241](https://github.com/luca-heltai/immersx/pull/241) Added cell supports for selecting the integration domain of linear weak terms.
 - [PR #240](https://github.com/luca-heltai/immersx/pull/240) Added an opt-in benchmark for comparing matching mass assembly with deal.II.
@@ -112,6 +113,10 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 ### Fixed
 
 - [PR #252](https://github.com/luca-heltai/immersx/pull/252) Select all ambient components of embedded vector fields and evolve the fiber driver's matrix-only backward-Euler reference from its own displacement and velocity history.
+- [PR #243](https://github.com/luca-heltai/immersx/pull/243) Reject unsupported inhomogeneous source constraints in nonmatching and lifted linear pairings, including offsets changed after assembly, and reject inhomogeneous linear multiplier reactions.
+- [PR #243](https://github.com/luca-heltai/immersx/pull/243) Retain relevant rows in nonmatching coupling sparsity.
+- [PR #243](https://github.com/luca-heltai/immersx/pull/243) Preserve all ambient vector components in native nonmatching value pairings, including offset fields and hanging-node constraints.
+- [PR #243](https://github.com/luca-heltai/immersx/pull/243) Use particle-based assembly when deal.II's native nonmatching path cannot handle a distributed immersed mesh or a multi-rank background mesh.
 - [PR #242](https://github.com/luca-heltai/immersx/pull/242) Include dynamic affine constraint contributions in explicit boundary supports and inferred boundary regions, including normal and conormal contractions.
 - [PR #241](https://github.com/luca-heltai/immersx/pull/241) Keep constrained residual and Jacobian rows condensed for reindexed mixed fields while preserving native diagonals for unreindexed square cell terms.
 - [PR #241](https://github.com/luca-heltai/immersx/pull/241) Preserve and dynamically refresh affine cell contributions in state, frozen-source, and multiplier residuals while retaining native constrained diagonal rows.
