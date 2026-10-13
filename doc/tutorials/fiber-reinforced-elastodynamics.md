@@ -24,7 +24,16 @@ Run the 2D input with:
 The matrix occupies `[-1,1]^2`. The fiber is an independently meshed line
 inside it. Its ambient vector components still have dimension two, but its FE
 support is one-dimensional. The fiber coefficients are an additive excess
-contribution coupled to the matrix through a line multiplier.
+contribution coupled to the matrix through a line multiplier. A vector Field
+on the line selects all ambient components (`spacedim`), not just the
+one-dimensional support component. Use `field.component_mask()` when passing
+that selection to a native assembler.
+
+For the fixed-step backward-Euler path, `matrix_only_displacement_difference()`
+compares the coupled displacement with an uncoupled reference advanced from
+its own displacement and velocity history under the same forcing and time
+steps. It does not reuse the coupled state to construct the reference load.
+This diagnostic is not an independent reference for the IDA path.
 
 The application exposes matrix and fiber velocity fields and creates an
 independent vector multiplier field. The constraint is assembled from

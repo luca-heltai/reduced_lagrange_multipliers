@@ -281,6 +281,69 @@ TEST(FiberReinforcedElastodynamicsValidation, CoupledResidualAndExcessResponse)
   EXPECT_GT(driver.matrix_only_displacement_difference(), 1.e-12);
 }
 
+TEST(FiberReinforcedElastodynamicsValidation,
+     MatrixOnlyReferenceUsesIndependentHistory)
+{
+  ParameterAcceptor::clear();
+  FiberReinforcedElastodynamicsParameters<2> parameters;
+  configure_problem(parameters, true, true);
+  parameters.time_parameters.final_time            = 0.04;
+  parameters.fixed_step_parameters.number_of_steps = 4;
+  FiberReinforcedElastodynamics<2> driver(parameters);
+  driver.setup();
+  driver.set_initial_conditions();
+  const auto                          &problem = driver.matrix_problem();
+  std::vector<types::global_dof_index> free_dofs;
+  for (const auto i : problem.locally_owned_dofs())
+    if (!problem.velocity_constraints().is_constrained(i))
+      free_dofs.push_back(i);
+  ASSERT_EQ(free_dofs.size(), 2u);
+  Vector<double> displacement(free_dofs.size()), velocity(free_dofs.size());
+  for (unsigned int i = 0; i < free_dofs.size(); ++i)
+    {
+      displacement[i] = problem.displacement()[free_dofs[i]];
+      velocity[i]     = problem.velocity()[free_dofs[i]];
+    }
+  // An independent dense solve on the unconstrained space evolves its own
+  // history; it must not use the driver's coupled previous state.
+  for (unsigned int step = 0; step < 4; ++step)
+    {
+      const double dt                            = step < 2 ? 0.01 : 0.005;
+      parameters.fixed_step_parameters.time_step = dt;
+      LA::MPI::Vector force;
+      problem.body_force_at_time(driver.current_time() + dt, force);
+      FullMatrix<double> effective(free_dofs.size());
+      Vector<double>     rhs(free_dofs.size()), next_velocity(free_dofs.size());
+      for (unsigned int i = 0; i < free_dofs.size(); ++i)
+        {
+          rhs[i] = force[free_dofs[i]];
+          for (unsigned int j = 0; j < free_dofs.size(); ++j)
+            {
+              const auto   row = free_dofs[i], column = free_dofs[j];
+              const double mass = problem.mass_matrix().el(row, column);
+              const double stiffness =
+                problem.stiffness_matrix().el(row, column);
+              effective(i, j) = mass / dt +
+                                problem.damping_matrix().el(row, column) +
+                                dt * stiffness;
+              rhs[i] += mass * velocity[j] / dt - stiffness * displacement[j];
+            }
+        }
+      effective.gauss_jordan();
+      effective.vmult(next_velocity, rhs);
+      velocity = next_velocity;
+      displacement.add(dt, velocity);
+      driver.advance_one_timestep();
+      LA::MPI::Vector difference(problem.displacement());
+      for (unsigned int i = 0; i < free_dofs.size(); ++i)
+        difference[free_dofs[i]] -= displacement[i];
+      EXPECT_NEAR(driver.matrix_only_displacement_difference(),
+                  difference.l2_norm(),
+                  1.e-12);
+      EXPECT_GT(difference.l2_norm(), 1.e-12);
+    }
+}
+
 #ifdef DEAL_II_WITH_SUNDIALS
 TEST(FiberReinforcedElastodynamicsValidation,
      Serial_IDAInitialDerivativeLifetime)
