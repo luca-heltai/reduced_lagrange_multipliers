@@ -311,6 +311,7 @@ namespace ImmersX
         TargetExpression::source_field_type::spacedimension();
 
       using SourceField = typename ObservableType::source_field_type;
+
       using TargetField = typename TargetExpression::source_field_type;
 
       struct AffineContribution
@@ -2096,6 +2097,18 @@ namespace ImmersX
 
       using SourceField = typename ObservableType::source_field_type;
 
+      template <typename Support>
+      static constexpr bool
+      uses_support_quadratures()
+      {
+        if constexpr (is_physical_quadrature_support<Support>::value)
+          return true;
+        else if constexpr (is_integration_support<Support>::value)
+          return Support::dimension() + 1 == dim;
+        else
+          return false;
+      }
+
       template <typename MatrixType>
       struct MatrixStorage
       {
@@ -2142,72 +2155,122 @@ namespace ImmersX
 
       template <typename Support, typename TargetField>
       static auto
-      make_physical_support_quadratures(const Support     &support,
-                                        const SourceField &source,
-                                        const TargetField &target_field)
+      make_support_quadratures(const Support     &support,
+                               const SourceField &source,
+                               const TargetField &target_field)
       {
-        static_assert(Support::ambient_dimension == spacedim,
-                      "Physical support and fields must share an embedding "
-                      "dimension.");
         using CellIterator = typename SourceField::space_type::DoFHandlerType::
           active_cell_iterator;
         using QuadratureData = PhysicalSupportQuadrature<Support>;
 
-        AssertThrow(
-          &source.dof_handler().get_triangulation() ==
-              &target_field.dof_handler().get_triangulation() &&
-            &source.mapping() == &target_field.mapping(),
-          dealii::ExcMessage(
-            "Physical nonlinear support requires matching source and target "
-            "meshes and mappings."));
-
-        int communicator_relation = MPI_UNEQUAL;
-        MPI_Comm_compare(support.mpi_communicator(),
-                         target_field.space().mpi_communicator(),
-                         &communicator_relation);
-        int support_processes    = 0;
-        int background_processes = 0;
-        MPI_Comm_size(support.mpi_communicator(), &support_processes);
-        MPI_Comm_size(target_field.space().mpi_communicator(),
-                      &background_processes);
-        AssertThrow(communicator_relation == MPI_IDENT ||
-                      communicator_relation == MPI_CONGRUENT ||
-                      (support_processes == 1 && background_processes == 1),
+        AssertThrow(&source.dof_handler().get_triangulation() ==
+                        &target_field.dof_handler().get_triangulation() &&
+                      &source.mapping() == &target_field.mapping(),
                     dealii::ExcMessage(
-                      "Physical support and background must use congruent "
-                      "MPI communicators or be serial."));
+                      "Nonlinear support requires matching source and test "
+                      "meshes and mappings."));
 
         std::vector<dealii::Point<spacedim>> positions;
         std::vector<std::vector<double>>     properties;
         const auto                          *background_tria = dynamic_cast<
           const dealii::parallel::TriangulationBase<dim, spacedim> *>(
           &source.dof_handler().get_triangulation());
-        const auto support_rank =
-          dealii::Utilities::MPI::this_mpi_process(support.mpi_communicator());
         bool replicated_support = false;
-        if constexpr (has_support_triangulation<Support>::value)
+        if constexpr (is_physical_quadrature_support<Support>::value)
           {
-            const auto *distributed_support =
-              dynamic_cast<const dealii::parallel::TriangulationBase<
-                support_triangulation_dimension<Support>::value,
-                Support::ambient_dimension> *>(&support.triangulation());
-            replicated_support =
-              background_tria != nullptr && distributed_support == nullptr &&
-              dealii::Utilities::MPI::this_mpi_process(
-                target_field.space().mpi_communicator()) != 0;
-          }
-        const auto &physical_points = support.locally_owned_quadrature_points();
-        positions.reserve(physical_points.size());
-        properties.reserve(physical_points.size());
-        for (const auto &point : physical_points)
-          {
-            AssertThrow(point.owner_rank == support_rank,
+            static_assert(Support::ambient_dimension == spacedim,
+                          "Physical support and fields must share an "
+                          "embedding dimension.");
+            int communicator_relation = MPI_UNEQUAL;
+            MPI_Comm_compare(support.mpi_communicator(),
+                             target_field.space().mpi_communicator(),
+                             &communicator_relation);
+            int support_processes    = 0;
+            int background_processes = 0;
+            MPI_Comm_size(support.mpi_communicator(), &support_processes);
+            MPI_Comm_size(target_field.space().mpi_communicator(),
+                          &background_processes);
+            AssertThrow(communicator_relation == MPI_IDENT ||
+                          communicator_relation == MPI_CONGRUENT ||
+                          (support_processes == 1 && background_processes == 1),
                         dealii::ExcMessage(
-                          "Physical support points must be locally owned."));
-            if (replicated_support)
-              continue;
-            positions.push_back(point.point);
-            properties.push_back({point.weight});
+                          "Physical support and background must use "
+                          "congruent MPI communicators or be serial."));
+            const auto support_rank = dealii::Utilities::MPI::this_mpi_process(
+              support.mpi_communicator());
+            if constexpr (has_support_triangulation<Support>::value)
+              {
+                const auto *distributed_support =
+                  dynamic_cast<const dealii::parallel::TriangulationBase<
+                    support_triangulation_dimension<Support>::value,
+                    Support::ambient_dimension> *>(&support.triangulation());
+                replicated_support =
+                  background_tria != nullptr &&
+                  distributed_support == nullptr &&
+                  dealii::Utilities::MPI::this_mpi_process(
+                    target_field.space().mpi_communicator()) != 0;
+              }
+            const auto &physical_points =
+              support.locally_owned_quadrature_points();
+            positions.reserve(physical_points.size());
+            properties.reserve(physical_points.size());
+            for (const auto &point : physical_points)
+              {
+                AssertThrow(point.owner_rank == support_rank,
+                            dealii::ExcMessage(
+                              "Physical support points must be locally "
+                              "owned."));
+                if (replicated_support)
+                  continue;
+                positions.push_back(point.point);
+                properties.push_back({point.weight});
+              }
+          }
+        else if constexpr (is_integration_support<Support>::value)
+          {
+            static_assert(Support::spacedimension() == spacedim,
+                          "Integration support and fields must share an "
+                          "embedding dimension.");
+            static_assert(Support::dimension() + 1 == dim,
+                          "Independent nonlinear supports currently require "
+                          "codimension one.");
+            if constexpr (has_support_triangulation<Support>::value)
+              {
+                constexpr int support_dim = Support::dimension();
+                const auto   *distributed_support =
+                  dynamic_cast<const dealii::parallel::
+                                 TriangulationBase<support_dim, spacedim> *>(
+                    &support.triangulation());
+                replicated_support =
+                  background_tria != nullptr &&
+                  distributed_support == nullptr &&
+                  dealii::Utilities::MPI::this_mpi_process(
+                    target_field.space().mpi_communicator()) != 0;
+                const unsigned int degree =
+                  std::max(source.space().finite_element().degree,
+                           target_field.space().finite_element().degree);
+                const dealii::QGauss<support_dim> quadrature(degree + 2);
+                const dealii::FE_Nothing<support_dim, spacedim> geometry_fe;
+                dealii::FEValues<support_dim, spacedim>         support_values(
+                  dealii::StaticMappingQ1<support_dim, spacedim>::mapping,
+                  geometry_fe,
+                  quadrature,
+                  dealii::update_quadrature_points | dealii::update_JxW_values);
+                for (const auto &cell :
+                     support.triangulation().active_cell_iterators())
+                  if (!replicated_support && cell->is_locally_owned() &&
+                      support.includes_cell(cell))
+                    {
+                      support_values.reinit(cell);
+                      for (const auto q :
+                           support_values.quadrature_point_indices())
+                        {
+                          positions.push_back(
+                            support_values.quadrature_point(q));
+                          properties.push_back({support_values.JxW(q)});
+                        }
+                    }
+              }
           }
 
         std::map<dealii::CellId, QuadratureData> cell_quadratures;
@@ -2303,8 +2366,20 @@ namespace ImmersX
       {
         if constexpr (is_integration_support<std::decay_t<Support>>::value)
           {
-            support.assert_matches(source.dof_handler().get_triangulation());
-            support.assert_matches(target.dof_handler().get_triangulation());
+            if constexpr (Support::dimension() == SourceField::dimension())
+              {
+                support.assert_matches(
+                  source.dof_handler().get_triangulation());
+                support.assert_matches(
+                  target.dof_handler().get_triangulation());
+              }
+            else
+              AssertThrow(
+                &source.dof_handler().get_triangulation() ==
+                  &target.dof_handler().get_triangulation(),
+                dealii::ExcMessage(
+                  "Independent nonlinear trace supports require matching "
+                  "source and test background meshes."));
           }
       }
 
@@ -2498,10 +2573,10 @@ namespace ImmersX
                       "Nonlinear weak terms currently require matching "
                       "source and target meshes."));
 
-        if constexpr (is_physical_quadrature_support<Support>::value)
+        if constexpr (uses_support_quadratures<Support>())
           {
             const auto cell_quadratures =
-              make_physical_support_quadratures(support, source, target_field);
+              make_support_quadratures(support, source, target_field);
             auto result = std::make_shared<VectorType>();
             reinit_result(*result, target_field);
             *result = 0.;
@@ -2643,10 +2718,10 @@ namespace ImmersX
                       "Nonlinear weak terms currently require matching "
                       "source meshes."));
 
-        if constexpr (is_physical_quadrature_support<Support>::value)
+        if constexpr (uses_support_quadratures<Support>())
           {
             const auto cell_quadratures =
-              make_physical_support_quadratures(support, source, target_field);
+              make_support_quadratures(support, source, target_field);
             dealii::DynamicSparsityPattern sparsity(
               target_field.locally_owned_dofs().size(),
               column_source.locally_owned_dofs().size(),
@@ -3953,10 +4028,14 @@ namespace ImmersX
                   "support."));
               if constexpr (is_integration_support<Support>::value)
                 {
-                  support_.assert_matches(
-                    observable_.source().dof_handler().get_triangulation());
-                  support_.assert_matches(
-                    target_.source().dof_handler().get_triangulation());
+                  if constexpr (Support::dimension() ==
+                                trial_field_type::dimension())
+                    {
+                      support_.assert_matches(
+                        observable_.source().dof_handler().get_triangulation());
+                      support_.assert_matches(
+                        target_.source().dof_handler().get_triangulation());
+                    }
                 }
             }
           AssertThrow(region_.kind == WeakTermRegion::Kind::volume,

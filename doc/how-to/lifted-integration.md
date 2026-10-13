@@ -34,13 +34,13 @@ representative point, so it cannot depend on the current solver state or time.
 Symbolic and active geometry dependencies are not supported.
 
 The support exposes geometry for direct integration and for weak-term assembly
-that evaluates its fields at physical points. For linear weak terms, the
-current assembly path distributes the points to a distributed bulk mesh with
-`ParticleCoupling`; trial and test fields must share that bulk triangulation,
-and the lifted points must lie in its locally searchable domain. No synthetic
-Field or DoFHandler is created on the lifted geometry. Nonlinear weak-term
-assembly over this support and trial/test fields on separate bulk meshes are
-not implemented yet.
+that evaluates its fields at physical points. The assembly path distributes
+the points to a distributed bulk mesh with `ParticleCoupling`; trial and test
+fields must share that bulk triangulation, and the lifted points must lie in
+its locally searchable domain. Linear and nonlinear weak terms can use the
+support, including nonlinear observables with frozen inputs. No synthetic
+Field or DoFHandler is created on the lifted geometry. Trial and test fields
+on separate bulk meshes are not supported.
 
 ```cpp
 auto dV = centerline.lift(lift);

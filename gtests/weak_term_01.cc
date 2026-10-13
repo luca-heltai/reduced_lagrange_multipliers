@@ -21,6 +21,7 @@
 #include <deal.II/fe/mapping_q1.h>
 
 #include <deal.II/grid/grid_generator.h>
+#include <deal.II/grid/grid_tools.h>
 
 #include <deal.II/lac/dynamic_sparsity_pattern.h>
 #include <deal.II/lac/sparse_matrix.h>
@@ -117,6 +118,23 @@ namespace
     {
       AssertDimension(values.size(), 2);
       return {values[0] * values[1], {values[1], values[0]}};
+    }
+  };
+
+  struct SquareWithFrozenInput
+  {
+    struct Evaluation
+    {
+      double              value;
+      std::vector<double> derivatives;
+    };
+
+    Evaluation
+    evaluate(const std::vector<double> &values) const
+    {
+      AssertDimension(values.size(), 2);
+      return {values[0] * values[0] * values[1],
+              {2. * values[0] * values[1], values[0] * values[0]}};
     }
   };
 
@@ -1265,6 +1283,92 @@ TEST(WeakTerm, IndependentImmersedSupportIntegratesRotatedSurfaceIn3D)
   Vector action(dof_handler.n_dofs());
   matrix->view.vmult(action, ones);
   EXPECT_NEAR(action * ones, 0.5, 1.e-12);
+}
+
+TEST(WeakTerm, IndependentImmersedSupportUpdatesFrozenNonlinearGeometry)
+{
+  Triangulation<2> background;
+  GridGenerator::hyper_cube(background, -1., 1.);
+  background.refine_global(1);
+  FE_Q<2>       active_fe(1);
+  FE_DGQ<2>     frozen_fe(0);
+  DoFHandler<2> active_dh(background), frozen_dh(background);
+  active_dh.distribute_dofs(active_fe);
+  frozen_dh.distribute_dofs(frozen_fe);
+  AffineConstraints<double> active_constraints, frozen_constraints;
+  active_constraints.close();
+  frozen_constraints.close();
+  const auto active_space =
+    fe_space(active_dh, StaticMappingQ1<2>::mapping, active_constraints);
+  const auto frozen_space =
+    fe_space(frozen_dh, StaticMappingQ1<2>::mapping, frozen_constraints);
+  StateLayout layout;
+  const auto  u      = active_space.field(layout, "u");
+  const auto  target = active_space.field(layout, "target");
+  const auto  offset = frozen_space.field("offset");
+
+  Vector<double> frozen_values(frozen_dh.n_dofs());
+  frozen_values = 0.5;
+  const auto observable =
+    transform(value(u), frozen(offset, frozen_values), SquareWithFrozenInput{});
+
+  Triangulation<1, 2>   immersed_mesh;
+  std::vector<Point<2>> vertices{{-0.8, 0.25}, {0.8, 0.25}};
+  CellData<1>           immersed_cell;
+  immersed_cell.vertices[0] = 0;
+  immersed_cell.vertices[1] = 1;
+  immersed_mesh.create_triangulation(vertices,
+                                     std::vector<CellData<1>>{immersed_cell},
+                                     SubCellData());
+  const IntegrationSupport<1, 2> dGamma(immersed_mesh);
+
+  using Vector = Vector<double>;
+  using Matrix = SparseMatrix<double>;
+  using Model  = SemiDiscreteModel<Vector, Matrix>;
+  Model                               model;
+  SemidiscreteBuilder<Vector, Matrix> builder(layout, model);
+  weak_term(observable, test(target)).on(dGamma).add(builder);
+
+  Vector state(active_dh.n_dofs());
+  state = 2.;
+  StateView<Vector> state_view(layout, 0.);
+  state_view.bind(u.field_id(), state);
+  const EvaluationContext<Vector> context(0., state_view);
+  Vector                          residual(active_dh.n_dofs());
+  model.evaluate_row(target.field_id(), context, residual);
+  Vector ones(active_dh.n_dofs());
+  ones = 1.;
+  EXPECT_NEAR(ones * residual, 3.2, 1.e-12);
+
+  const auto jacobian =
+    model.state_matrix_operator(target.field_id(), u.field_id(), context);
+  ASSERT_TRUE(jacobian.has_value());
+  Vector action(active_dh.n_dofs());
+  jacobian->view.vmult(action, ones);
+  EXPECT_NEAR(ones * action, 3.2, 1.e-12);
+
+  const double epsilon = 1.e-7;
+  state.add(epsilon, ones);
+  Vector perturbed(active_dh.n_dofs());
+  model.evaluate_row(target.field_id(), context, perturbed);
+  state.add(-epsilon, ones);
+  perturbed -= residual;
+  perturbed *= 1. / epsilon;
+  perturbed -= action;
+  EXPECT_LT(perturbed.l2_norm(), 2.e-6);
+
+  // IntegrationSupport reads the current support geometry on each assembly.
+  GridTools::transform(
+    [](const Point<2> &point) { return Point<2>(0.5 * point[0], point[1]); },
+    immersed_mesh);
+  residual = 0.;
+  model.evaluate_row(target.field_id(), context, residual);
+  EXPECT_NEAR(ones * residual, 1.6, 1.e-12);
+  const auto rebuilt_jacobian =
+    model.state_matrix_operator(target.field_id(), u.field_id(), context);
+  ASSERT_TRUE(rebuilt_jacobian.has_value());
+  rebuilt_jacobian->view.vmult(action, ones);
+  EXPECT_NEAR(ones * action, 1.6, 1.e-12);
 }
 
 TEST(WeakTerm, LiftedSupportAssemblesBackgroundTraceMass)
