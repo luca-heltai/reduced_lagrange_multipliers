@@ -1317,12 +1317,8 @@ namespace ImmersX
                       "The embedded field dimension cannot exceed the "
                       "background dimension.");
 
-        const auto background_mask =
-          background.space().finite_element().component_mask(
-            background.extractor());
-        const auto embedded_mask =
-          embedded.space().finite_element().component_mask(
-            embedded.extractor());
+        const auto background_mask = background.component_mask();
+        const auto embedded_mask   = embedded.component_mask();
         const dealii::QGauss<embedded_dim> quadrature(
           std::max(background.space().finite_element().degree,
                    embedded.space().finite_element().degree) +

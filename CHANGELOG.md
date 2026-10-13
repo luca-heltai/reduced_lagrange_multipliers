@@ -117,6 +117,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Fixed
 
+- [PR #N](https://github.com/luca-heltai/immersx/pull/N) Preserve every ambient vector component in native nonmatching assembly and give the fiber driver's matrix-only reference independent history.
 - [PR #249](https://github.com/luca-heltai/immersx/pull/249) Used a straight cross-section in the lifted-support benchmark so its expected measure matches the geometry.
 - [PR #247](https://github.com/luca-heltai/immersx/pull/247) Enabled nonlinear weak terms on independent immersed and physical quadrature supports and made lifted quadrature update flags and cross-section geometry explicit.
 - [PR #243](https://github.com/luca-heltai/immersx/pull/243) Use particle-based assembly when deal.II's native nonmatching path cannot handle a distributed immersed mesh or a multi-rank background mesh.

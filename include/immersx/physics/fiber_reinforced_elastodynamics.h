@@ -266,6 +266,7 @@ namespace ImmersX
     MatrixType fiber_effective_matrix;
     VectorType multiplier_storage;
     VectorType matrix_only_displacement_storage;
+    VectorType matrix_only_velocity_storage;
 
     double       current_time_storage     = 0.;
     unsigned int time_step_number_storage = 0;

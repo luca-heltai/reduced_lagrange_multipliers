@@ -366,6 +366,7 @@ namespace ImmersX
     time_step_number_storage = 0;
 
     matrix_only_displacement_storage = matrix_problem_storage.displacement();
+    matrix_only_velocity_storage     = matrix_problem_storage.velocity();
 
     VectorType compatibility;
     VectorType fiber_compatibility;
@@ -503,6 +504,13 @@ namespace ImmersX
     // Keep a matrix-only reference under the same load and time policy.  This
     // is a diagnostic for the additive/excess interpretation, not a second
     // coupled solve and not part of the production state.
+    VectorType matrix_only_rhs;
+    build_effective_rhs(matrix_problem_storage,
+                        matrix_only_displacement_storage,
+                        matrix_only_velocity_storage,
+                        next_time,
+                        dt,
+                        matrix_only_rhs);
     VectorType matrix_only_velocity;
     matrix_only_velocity.reinit(matrix_problem_storage.locally_owned_dofs(),
                                 MPI_COMM_WORLD);
@@ -514,8 +522,9 @@ namespace ImmersX
     SolverGMRES<VectorType> matrix_only_solver(matrix_only_control);
     matrix_only_solver.solve(matrix_effective_matrix,
                              matrix_only_velocity,
-                             matrix_rhs,
+                             matrix_only_rhs,
                              matrix_only_preconditioner);
+    matrix_only_velocity_storage = matrix_only_velocity;
     matrix_only_velocity *= dt;
     matrix_only_displacement_storage += matrix_only_velocity;
 
@@ -825,6 +834,7 @@ namespace ImmersX
 
     ida_storage->solve(state, state_dot);
     matrix_only_displacement_storage = matrix_problem_storage.displacement();
+    matrix_only_velocity_storage     = matrix_problem_storage.velocity();
   }
 
 
