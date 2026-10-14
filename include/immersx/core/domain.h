@@ -24,6 +24,7 @@
 #include <deal.II/distributed/tria.h>
 #include <deal.II/distributed/tria_base.h>
 
+#include <immersx/core/integration_support.h>
 #include <immersx/io/imported_finite_element_fields.h>
 #include <mpi.h>
 
@@ -117,6 +118,20 @@ namespace ImmersX
 
     MPI_Comm
     communicator() const;
+
+    /** Integrate over all active cells owned by this domain. */
+    IntegrationSupport<dim, spacedim>
+    support() const
+    {
+      return IntegrationSupport<dim, spacedim>(triangulation());
+    }
+
+    /** Integrate over active cells with the selected material id. */
+    IntegrationSupport<dim, spacedim>
+    support(const dealii::types::material_id material_id) const
+    {
+      return IntegrationSupport<dim, spacedim>(triangulation(), material_id);
+    }
 
     /** Whether VTK data fields have been imported for this domain. */
     bool

@@ -77,6 +77,21 @@ The same term API supports same-DoFHandler assembly, paired DoFHandlers, and
 nonmatching lifted geometry. The selected traversal and storage are backend
 choices.
 
+A `Domain` can supply a non-owning cell integration support. `support()` selects
+all active cells, while `support(material_id)` selects cells with that deal.II
+material id. Attach it directly or with `.on()`:
+
+```cpp
+auto mass = weak_term(value(u), test(v), domain.support(1));
+auto laplace = weak_term(gradient(u), gradient(test(v)))
+                 .on(domain.support());
+```
+
+The support selects the cells and physical measure. The source and test fields
+must use the same triangulation as the support; matching integrals retain the
+native deal.II `FEValues` path. Explicit cell supports currently apply to
+linear terms.
+
 A `Constraint` is an Interaction assembled from weak terms with one
 independently defined multiplier field. The multiplier has its own FE space
 and is an algebraic field. The constraint contributes its signed weak-term sum

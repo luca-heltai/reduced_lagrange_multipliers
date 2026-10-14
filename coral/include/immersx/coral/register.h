@@ -1297,6 +1297,46 @@ namespace ImmersX::Coral
       "ImmersX::ContinuityConstraint<2>");
     coral::detail::set_type_alias<ConstraintHandle>(
       "ImmersX::LinearConstraintHandle");
+
+    const auto bulk_field_key = "ImmersX::Field<2, " +
+                                std::to_string(spacedim) +
+                                ", dealii::FEValuesExtractors::Scalar>";
+    const auto line_field_key = "ImmersX::Field<1, " +
+                                std::to_string(spacedim) +
+                                ", dealii::FEValuesExtractors::Scalar>";
+    const auto bulk_value_key = "ImmersX::Observable<" + bulk_field_key +
+                                ", ImmersX::detail::ValueOperation>";
+    const auto line_value_key = "ImmersX::Observable<" + line_field_key +
+                                ", ImmersX::detail::ValueOperation>";
+    const auto line_test_key = "ImmersX::TestExpression<" + line_field_key +
+                               ", ImmersX::detail::ValueOperation>";
+    const auto bulk_weak_key =
+      "ImmersX::WeakTerm<" + bulk_value_key + ", " + line_test_key + ">";
+    const auto line_weak_key =
+      "ImmersX::WeakTerm<" + line_value_key + ", " + line_test_key + ">";
+    const auto legacy_constraint_key =
+      "ImmersX::Constraint<ImmersX::ConstraintSum<" + bulk_weak_key + ", " +
+      line_weak_key + ">>";
+    using ConstraintFactory = std::function<
+      Constraint(const BulkField &, const LineField &, const LineField &)>;
+    coral::detail::set_type_alias<ConstraintFactory>(
+      "std::function<" + legacy_constraint_key + " (const " + bulk_field_key +
+      " &, const " + line_field_key + " &, const " + line_field_key + " &)>");
+    const std::string adapter_key =
+      "std::shared_ptr<ImmersX::LinearAdapter<"
+      "dealii::TrilinosWrappers::MPI::Vector, "
+      "dealii::TrilinosWrappers::MPI::BlockVector>>";
+    const auto constraint_handle_key =
+      "ImmersX::ProblemHandle<ImmersX::LinearAdapter<"
+      "dealii::TrilinosWrappers::MPI::Vector, "
+      "dealii::TrilinosWrappers::MPI::BlockVector>, "
+      "ImmersX::ConstraintFields<" +
+      line_field_key + ">>";
+    using AddConstraintFactory = std::function<ConstraintHandle(
+      AdapterHandle &, const Constraint &, const std::string &)>;
+    coral::detail::set_type_alias<AddConstraintFactory>(
+      "std::function<" + constraint_handle_key + " (" + adapter_key +
+      " &, const " + legacy_constraint_key + " &, const std::string &)>");
     coral::NodeObject::register_output_type<AdapterHandle>();
     coral::NodeObject::register_output_type<FieldVector>();
     coral::NodeObject::register_output_type<GlobalVector>();
@@ -1335,13 +1375,11 @@ namespace ImmersX::Coral
     constraint_metadata.class_name  = "Constraint";
     constraint_metadata.method_name = "continuity";
     coral::NodeObject::register_function(
-      std::function<
-        Constraint(const BulkField &, const LineField &, const LineField &)>(
-        [](const BulkField &bulk,
-           const LineField &line,
-           const LineField &multiplier) {
-          return ImmersX::make_continuity_constraint(bulk, line, multiplier);
-        }),
+      ConstraintFactory([](const BulkField &bulk,
+                           const LineField &line,
+                           const LineField &multiplier) {
+        return ImmersX::make_continuity_constraint(bulk, line, multiplier);
+      }),
       {"left_field", "right_field", "multiplier_field"},
       constraint_metadata);
 
@@ -1354,13 +1392,11 @@ namespace ImmersX::Coral
     constraint_add_metadata.class_name  = "LinearExecution";
     constraint_add_metadata.method_name = "add_constraint";
     coral::NodeObject::register_function(
-      std::function<ConstraintHandle(
-        AdapterHandle &, const Constraint &, const std::string &)>(
-        [](AdapterHandle     &adapter,
-           const Constraint  &constraint,
-           const std::string &prefix) {
-          return (*adapter).add(constraint, prefix);
-        }),
+      AddConstraintFactory([](AdapterHandle     &adapter,
+                              const Constraint  &constraint,
+                              const std::string &prefix) {
+        return (*adapter).add(constraint, prefix);
+      }),
       {"adapter", "constraint", "prefix"},
       constraint_add_metadata);
 
