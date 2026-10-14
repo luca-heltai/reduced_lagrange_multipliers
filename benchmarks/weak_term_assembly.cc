@@ -14,11 +14,16 @@
 #include <deal.II/dofs/dof_tools.h>
 
 #include <deal.II/fe/fe_q.h>
+#include <deal.II/fe/fe_system.h>
 
 #include <deal.II/grid/grid_generator.h>
+#include <deal.II/grid/grid_tools.h>
+#include <deal.II/grid/grid_tools_cache.h>
 
 #include <deal.II/lac/dynamic_sparsity_pattern.h>
 #include <deal.II/lac/sparse_matrix.h>
+
+#include <deal.II/non_matching/coupling.h>
 
 #include <deal.II/numerics/matrix_creator.h>
 #include <deal.II/numerics/vector_tools_rhs.h>
@@ -537,6 +542,193 @@ benchmark_dimension(const unsigned int refinements,
                     });
 }
 
+void
+benchmark_nonmatching_support(const unsigned int repetitions)
+{
+  using Vector = dealii::Vector<double>;
+  using Matrix = dealii::SparseMatrix<double>;
+  using Model  = SemiDiscreteModel<Vector, Matrix>;
+  struct ImmersXAssembly
+  {
+    std::shared_ptr<Model>  model;
+    std::shared_ptr<Matrix> matrix;
+  };
+  struct NativeAssembly
+  {
+    std::shared_ptr<SparsityPattern> pattern;
+    std::shared_ptr<Matrix>          matrix;
+  };
+
+  Triangulation<2> bulk_triangulation;
+  GridGenerator::hyper_cube(bulk_triangulation, 0., 1.);
+  bulk_triangulation.refine_global(3);
+  Triangulation<1, 2> embedded_triangulation;
+  GridGenerator::hyper_cube(embedded_triangulation, 0., 1.);
+  GridTools::transform(
+    [](const Point<2> &point) {
+      auto shifted = point;
+      shifted[1] += 0.5;
+      return shifted;
+    },
+    embedded_triangulation);
+  embedded_triangulation.refine_global(3);
+
+  FE_Q<2>          bulk_fe(1);
+  FE_Q<1, 2>       embedded_fe(1);
+  DoFHandler<2>    bulk_dof_handler(bulk_triangulation);
+  DoFHandler<1, 2> embedded_dof_handler(embedded_triangulation);
+  bulk_dof_handler.distribute_dofs(bulk_fe);
+  embedded_dof_handler.distribute_dofs(embedded_fe);
+  AffineConstraints<double> bulk_constraints;
+  AffineConstraints<double> embedded_constraints;
+  bulk_constraints.close();
+  embedded_constraints.close();
+
+  StateLayout layout;
+  const auto  bulk_view =
+    fe_space(bulk_dof_handler, StaticMappingQ1<2>::mapping, bulk_constraints);
+  const auto embedded_view  = fe_space(embedded_dof_handler,
+                                      StaticMappingQ1<1, 2>::mapping,
+                                      embedded_constraints);
+  const auto bulk_field     = bulk_view.field(layout, "bulk");
+  const auto embedded_field = embedded_view.field(layout, "embedded");
+  const IntegrationSupport<1, 2> support(embedded_triangulation);
+  const QGauss<1>                quadrature(2);
+
+  const auto native_assembly = [&] {
+    DynamicSparsityPattern sparsity(bulk_dof_handler.n_dofs(),
+                                    embedded_dof_handler.n_dofs());
+    GridTools::Cache<2, 2> cache(bulk_triangulation,
+                                 StaticMappingQ1<2>::mapping);
+    NonMatching::create_coupling_sparsity_pattern(
+      cache,
+      bulk_dof_handler,
+      embedded_dof_handler,
+      quadrature,
+      sparsity,
+      bulk_constraints,
+      ComponentMask(),
+      ComponentMask(),
+      StaticMappingQ1<1, 2>::mapping,
+      embedded_constraints);
+    auto pattern = std::make_shared<SparsityPattern>();
+    pattern->copy_from(sparsity);
+    auto matrix = std::make_shared<Matrix>(*pattern);
+    NonMatching::create_coupling_mass_matrix(cache,
+                                             bulk_dof_handler,
+                                             embedded_dof_handler,
+                                             quadrature,
+                                             *matrix,
+                                             bulk_constraints,
+                                             ComponentMask(),
+                                             ComponentMask(),
+                                             StaticMappingQ1<1, 2>::mapping,
+                                             embedded_constraints);
+    return NativeAssembly{std::move(pattern), std::move(matrix)};
+  };
+
+  const auto immersed_reverse_assembly = [&] {
+    auto                                model = std::make_shared<Model>();
+    SemidiscreteBuilder<Vector, Matrix> builder(layout, *model);
+    weak_term(value(bulk_field), test(embedded_field), support).add(builder);
+    const StateView<Vector>         state(layout, 0.);
+    const EvaluationContext<Vector> context(0., state);
+    const auto matrix = model->state_matrix_operator(embedded_field.field_id(),
+                                                     bulk_field.field_id(),
+                                                     context);
+    return ImmersXAssembly{std::move(model), matrix->matrix()};
+  };
+  const auto immersed_forward_assembly = [&] {
+    auto                                model = std::make_shared<Model>();
+    SemidiscreteBuilder<Vector, Matrix> builder(layout, *model);
+    weak_term(value(embedded_field), test(bulk_field), support).add(builder);
+    const StateView<Vector>         state(layout, 0.);
+    const EvaluationContext<Vector> context(0., state);
+    const auto matrix = model->state_matrix_operator(bulk_field.field_id(),
+                                                     embedded_field.field_id(),
+                                                     context);
+    return ImmersXAssembly{std::move(model), matrix->matrix()};
+  };
+
+  const auto benchmark_pair = [&](const std::string &name,
+                                  const auto        &immersed_assembly,
+                                  const bool         transpose) {
+    auto         start                    = Clock::now();
+    auto         immersed_assembly_result = immersed_assembly();
+    const auto  &immersed_matrix          = *immersed_assembly_result.matrix;
+    const double cold_imm                 = milliseconds(Clock::now() - start);
+    start                                 = Clock::now();
+    auto         native_matrix            = native_assembly();
+    const double cold_native              = milliseconds(Clock::now() - start);
+    auto         difference = [&](const auto &immersed, const auto &native) {
+      AssertDimension(immersed.m(), transpose ? native.n() : native.m());
+      AssertDimension(immersed.n(), transpose ? native.m() : native.n());
+      double difference_squared = 0.;
+      double native_squared     = 0.;
+      for (unsigned int i = 0; i < immersed.m(); ++i)
+        for (unsigned int j = 0; j < immersed.n(); ++j)
+          {
+            const double expected =
+              transpose ? native.el(j, i) : native.el(i, j);
+            const double delta = immersed.el(i, j) - expected;
+            difference_squared += delta * delta;
+            native_squared += expected * expected;
+          }
+      return std::sqrt(difference_squared / native_squared);
+    };
+    const double relative_error =
+      difference(immersed_matrix, *native_matrix.matrix);
+    AssertThrow(relative_error < 1.e-12,
+                ExcMessage("ImmersX and NonMatching matrices differ: " +
+                           std::to_string(relative_error)));
+
+    std::vector<double> immersed_samples;
+    std::vector<double> native_samples;
+    immersed_samples.reserve(repetitions);
+    native_samples.reserve(repetitions);
+    for (unsigned int repetition = 0; repetition < repetitions; ++repetition)
+      if (repetition % 2 == 0)
+        {
+          start = Clock::now();
+          (void)immersed_assembly();
+          immersed_samples.push_back(milliseconds(Clock::now() - start));
+          start = Clock::now();
+          native_assembly();
+          native_samples.push_back(milliseconds(Clock::now() - start));
+        }
+      else
+        {
+          start = Clock::now();
+          native_assembly();
+          native_samples.push_back(milliseconds(Clock::now() - start));
+          start = Clock::now();
+          (void)immersed_assembly();
+          immersed_samples.push_back(milliseconds(Clock::now() - start));
+        }
+    const auto [immersed_median, immersed_mad] =
+      median_and_mad(immersed_samples);
+    const auto [native_median, native_mad] = median_and_mad(native_samples);
+    std::cout << "{\"case\":\"" << name << "\",\"deal_ii_version\":\""
+              << DEAL_II_PACKAGE_VERSION << "\",\"dimension\":2"
+              << ",\"embedded_dimension\":1,\"ranks\":1,\"bulk_dofs\":"
+              << bulk_dof_handler.n_dofs()
+              << ",\"embedded_dofs\":" << embedded_dof_handler.n_dofs()
+              << ",\"relative_matrix_error\":" << relative_error
+              << ",\"cold_immersx_ms\":" << cold_imm
+              << ",\"cold_dealii_ms\":" << cold_native
+              << ",\"cold_ratio\":" << cold_imm / cold_native
+              << ",\"warm_immersx_median_ms\":" << immersed_median
+              << ",\"warm_immersx_mad_ms\":" << immersed_mad
+              << ",\"warm_dealii_median_ms\":" << native_median
+              << ",\"warm_dealii_mad_ms\":" << native_mad
+              << ",\"warm_ratio\":" << immersed_median / native_median
+              << ",\"repetitions\":" << repetitions << "}\n";
+  };
+
+  benchmark_pair("nonmatching_value_reverse", immersed_reverse_assembly, true);
+  benchmark_pair("nonmatching_value_forward", immersed_forward_assembly, false);
+}
+
 int
 main(int argc, char **argv)
 {
@@ -548,4 +740,5 @@ main(int argc, char **argv)
   benchmark_dimension<1>(refinements, repetitions);
   benchmark_dimension<2>(refinements, repetitions);
   benchmark_dimension<3>(refinements, repetitions);
+  benchmark_nonmatching_support(repetitions);
 }

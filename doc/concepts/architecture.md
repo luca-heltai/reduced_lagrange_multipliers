@@ -99,6 +99,13 @@ supports currently apply to linear terms. `normal()` is available when the
 mesh and fields have the same dimension; embedded surfaces provide
 `conormal()`. A planar two-dimensional boundary also provides `tangent()`.
 
+Matching cell and boundary terms retain affine source offsets and refresh them
+when the constraints' inhomogeneities change. Nonmatching and lifted linear
+pairings currently require homogeneous source constraints and reject nonzero
+offsets, including changes made after assembly. Linear multiplier reaction rows
+also require homogeneous multiplier constraints. Constraint entries, meshes, and
+mappings must remain fixed for cached matching terms.
+
 A `Constraint` is an Interaction assembled from weak terms with one
 independently defined multiplier field. The multiplier has its own FE space
 and is an algebraic field. The constraint contributes its signed weak-term sum
