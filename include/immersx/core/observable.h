@@ -22,6 +22,7 @@
 #include <deal.II/fe/fe_update_flags.h>
 
 #include <immersx/core/fe_space.h>
+#include <immersx/core/integration_support.h>
 
 #include <algorithm>
 #include <any>
@@ -244,6 +245,10 @@ namespace ImmersX
     template <typename Type>
     struct is_lifted_observable : std::false_type
     {};
+
+    template <typename Type>
+    struct is_boundary_normal_observable : std::false_type
+    {};
   } // namespace detail
 
   /** A typed FE expression: a Field, a deal.II view operation, and metadata.
@@ -438,6 +443,129 @@ namespace ImmersX
     template <typename SourceFieldType, typename Operation>
     struct is_linear_observable<Observable<SourceFieldType, Operation>>
       : std::true_type
+    {};
+  } // namespace detail
+
+  /** A field gradient contracted with a boundary normal at face quadrature. */
+  template <typename ObservableType, typename Direction>
+  class BoundaryNormalObservable
+  {
+  public:
+    using source_field_type   = typename ObservableType::source_field_type;
+    using base_operation_type = typename ObservableType::operation_type;
+    using view_type           = typename ObservableType::view_type;
+    using value_type          = double;
+
+    struct operation_type
+    {
+      static constexpr dealii::UpdateFlags update_flags =
+        base_operation_type::update_flags;
+
+      template <typename View>
+      double
+      operator()(const View &, const unsigned int, const unsigned int) const
+      {
+        return 0.;
+      }
+    };
+
+    BoundaryNormalObservable(ObservableType observable, Direction direction)
+      : observable_(std::move(observable))
+      , direction_(std::move(direction))
+    {}
+
+    static constexpr unsigned int
+    dimension()
+    {
+      return ObservableType::dimension();
+    }
+
+    static constexpr unsigned int
+    spacedimension()
+    {
+      return ObservableType::spacedimension();
+    }
+
+    static dealii::UpdateFlags
+    update_flags()
+    {
+      return base_operation_type::update_flags | dealii::update_normal_vectors;
+    }
+
+    const source_field_type &
+    source() const
+    {
+      return observable_.source();
+    }
+
+    FieldId
+    source_field() const
+    {
+      return observable_.source_field();
+    }
+
+    const std::vector<FieldId> &
+    dependencies() const
+    {
+      return observable_.dependencies();
+    }
+
+    double
+    scale() const
+    {
+      return observable_.scale();
+    }
+
+    bool
+    is_frozen() const
+    {
+      return observable_.is_frozen();
+    }
+
+    template <typename VectorType>
+    const VectorType &
+    frozen_values() const
+    {
+      return observable_.template frozen_values<VectorType>();
+    }
+
+    operation_type
+    operation() const
+    {
+      return {};
+    }
+
+    template <typename View, typename FaceValues>
+    double
+    evaluate_face(const View        &view,
+                  const unsigned int basis,
+                  const unsigned int q,
+                  const FaceValues  &face_values) const
+    {
+      return observable_.operation()(view, basis, q) *
+             direction_.evaluate(face_values, q);
+    }
+
+  private:
+    ObservableType observable_;
+    Direction      direction_;
+  };
+
+  namespace detail
+  {
+    template <typename ObservableType, typename Direction>
+    struct is_observable<BoundaryNormalObservable<ObservableType, Direction>>
+      : std::true_type
+    {};
+
+    template <typename ObservableType, typename Direction>
+    struct is_linear_observable<
+      BoundaryNormalObservable<ObservableType, Direction>> : std::true_type
+    {};
+
+    template <typename ObservableType, typename Direction>
+    struct is_boundary_normal_observable<
+      BoundaryNormalObservable<ObservableType, Direction>> : std::true_type
     {};
   } // namespace detail
 
@@ -1462,6 +1590,48 @@ namespace ImmersX
             const double                               coefficient)
   {
     return expression.scaled(coefficient);
+  }
+
+  template <typename SourceFieldType, int dim, int spacedim>
+  auto
+  operator*(Observable<SourceFieldType, detail::GradientOperation> gradient,
+            BoundaryNormalDirection<dim, spacedim>                 direction)
+  {
+    static_assert(SourceFieldType::dimension() == dim &&
+                    SourceFieldType::spacedimension() == spacedim,
+                  "Boundary normal and gradient dimensions must match.");
+    return BoundaryNormalObservable<
+      Observable<SourceFieldType, detail::GradientOperation>,
+      BoundaryNormalDirection<dim, spacedim>>(std::move(gradient),
+                                              std::move(direction));
+  }
+
+  template <typename SourceFieldType, int dim, int spacedim>
+  auto
+  operator*(Observable<SourceFieldType, detail::GradientOperation> gradient,
+            BoundaryConormalDirection<dim, spacedim>               direction)
+  {
+    static_assert(SourceFieldType::dimension() == dim &&
+                    SourceFieldType::spacedimension() == spacedim,
+                  "Boundary conormal and gradient dimensions must match.");
+    return BoundaryNormalObservable<
+      Observable<SourceFieldType, detail::GradientOperation>,
+      BoundaryConormalDirection<dim, spacedim>>(std::move(gradient),
+                                                std::move(direction));
+  }
+
+  template <typename SourceFieldType, int dim, int spacedim>
+  auto
+  operator*(Observable<SourceFieldType, detail::GradientOperation> gradient,
+            BoundaryTangentDirection<dim, spacedim>                direction)
+  {
+    static_assert(SourceFieldType::dimension() == dim &&
+                    SourceFieldType::spacedimension() == spacedim,
+                  "Boundary tangent and gradient dimensions must match.");
+    return BoundaryNormalObservable<
+      Observable<SourceFieldType, detail::GradientOperation>,
+      BoundaryTangentDirection<dim, spacedim>>(std::move(gradient),
+                                               std::move(direction));
   }
 } // namespace ImmersX
 

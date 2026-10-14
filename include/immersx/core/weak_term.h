@@ -442,6 +442,24 @@ namespace ImmersX
           observable, source, target, affine_rhs, affine_data, support);
       }
 
+      template <typename VectorType, typename MatrixType>
+      static MatrixStorage<MatrixType>
+      assemble_on_boundary_support(
+        const ObservableType                            &observable,
+        const TargetExpression                          &target,
+        const BoundaryIntegrationSupport<dim, spacedim> &support,
+        std::shared_ptr<VectorType>                     *affine_rhs = nullptr,
+        std::shared_ptr<AffineData<VectorType, MatrixType>> *affine_data =
+          nullptr)
+      {
+        const auto &source       = observable.source();
+        const auto &target_field = target.source();
+        support.assert_matches(source.dof_handler().get_triangulation());
+        support.assert_matches(target_field.dof_handler().get_triangulation());
+        return assemble_boundary<VectorType, MatrixType>(
+          observable, target, support.boundary_ids(), affine_rhs, affine_data);
+      }
+
       static bool
       geometry_is_nonmatching(const ObservableType   &observable,
                               const TargetExpression &target)
@@ -824,7 +842,10 @@ namespace ImmersX
       assemble_boundary(
         const ObservableType                       &observable,
         const TargetExpression                     &target,
-        const std::set<dealii::types::boundary_id> &boundary_ids)
+        const std::set<dealii::types::boundary_id> &boundary_ids,
+        std::shared_ptr<VectorType>                *affine_rhs = nullptr,
+        std::shared_ptr<AffineData<VectorType, MatrixType>> *affine_data =
+          nullptr)
       {
         if constexpr (SourceField::dimension() != dim)
           {
@@ -863,7 +884,7 @@ namespace ImmersX
             dealii::DynamicSparsityPattern sparsity(
               target_field.locally_owned_dofs().size(),
               source.locally_owned_dofs().size(),
-              target_field.locally_owned_dofs());
+              target_field.locally_relevant_dofs());
             for (const auto &cell :
                  target_field.dof_handler().active_cell_iterators())
               if (cell->is_locally_owned())
@@ -879,6 +900,15 @@ namespace ImmersX
                     true);
                 }
 
+            if (dynamic_cast<
+                  const dealii::parallel::TriangulationBase<dim, spacedim> *>(
+                  &target_field.dof_handler().get_triangulation()) != nullptr)
+              dealii::SparsityTools::distribute_sparsity_pattern(
+                sparsity,
+                target_field.locally_owned_dofs(),
+                target_field.space().mpi_communicator(),
+                target_field.locally_relevant_dofs());
+
             auto matrix = std::make_shared<MatrixType>();
             auto matrix_sparsity =
               initialize_weak_matrix(*matrix,
@@ -886,6 +916,18 @@ namespace ImmersX
                                      source.locally_owned_dofs(),
                                      sparsity,
                                      target_field.space().mpi_communicator());
+            if (affine_data != nullptr)
+              {
+                *affine_data =
+                  std::make_shared<AffineData<VectorType, MatrixType>>();
+                (*affine_data)->source_constraints = &source.constraints();
+                (*affine_data)->target_constraints =
+                  &target_field.constraints();
+                (*affine_data)->locally_owned =
+                  target_field.locally_owned_dofs();
+                (*affine_data)->communicator =
+                  target_field.space().mpi_communicator();
+              }
             dealii::FEFaceValues<dim, spacedim> values(
               target_field.mapping(),
               target_field.space().finite_element(),
@@ -899,16 +941,27 @@ namespace ImmersX
                       boundary_ids.count(cell->face(face)->boundary_id()))
                     {
                       values.reinit(cell, face);
-                      assemble_face_cell(observable,
-                                         source,
-                                         values,
-                                         target,
-                                         values,
-                                         cell,
-                                         cell,
-                                         quadrature,
-                                         *matrix);
+                      assemble_face_cell<VectorType>(observable,
+                                                     source,
+                                                     values,
+                                                     target,
+                                                     values,
+                                                     cell,
+                                                     cell,
+                                                     quadrature,
+                                                     *matrix,
+                                                     affine_data != nullptr &&
+                                                         *affine_data !=
+                                                           nullptr ?
+                                                       affine_data->get() :
+                                                       nullptr);
                     }
+            if (affine_rhs != nullptr && affine_data != nullptr &&
+                *affine_data != nullptr)
+              {
+                *affine_rhs = std::make_shared<VectorType>();
+                (*affine_data)->refresh(**affine_rhs);
+              }
             compress_weak_matrix(*matrix);
             return {std::move(matrix), std::move(matrix_sparsity)};
           }
@@ -1459,22 +1512,24 @@ namespace ImmersX
             matrix);
       }
 
-      template <typename SourceField,
+      template <typename VectorType,
+                typename SourceField,
                 typename SourceValues,
                 typename TargetValues,
                 typename SourceCell,
                 typename TargetCell,
                 typename MatrixType>
       static void
-      assemble_face_cell(const ObservableType              &observable,
-                         const SourceField                 &source,
-                         const SourceValues                &source_values,
-                         const TargetExpression            &target,
-                         const TargetValues                &target_values,
-                         const SourceCell                  &source_cell,
-                         const TargetCell                  &target_cell,
-                         const dealii::Quadrature<dim - 1> &quadrature,
-                         MatrixType                        &matrix)
+      assemble_face_cell(const ObservableType               &observable,
+                         const SourceField                  &source,
+                         const SourceValues                 &source_values,
+                         const TargetExpression             &target,
+                         const TargetValues                 &target_values,
+                         const SourceCell                   &source_cell,
+                         const TargetCell                   &target_cell,
+                         const dealii::Quadrature<dim - 1>  &quadrature,
+                         MatrixType                         &matrix,
+                         AffineData<VectorType, MatrixType> *affine_data)
       {
         const auto &target_field = target.source();
         std::vector<dealii::types::global_dof_index> source_indices(
@@ -1510,12 +1565,30 @@ namespace ImmersX
         for (unsigned int q = 0; q < quadrature.size(); ++q)
           for (unsigned int i = 0; i < target_positions.size(); ++i)
             for (unsigned int j = 0; j < source_positions.size(); ++j)
-              local(i, j) +=
-                observable.scale() * target.scale() *
-                detail::natural_pairing(
-                  observable.operation()(trial_view, source_positions[j], q),
-                  target.operation()(test_view, target_positions[i], q)) *
-                target_values.JxW(q);
+              {
+                const auto trial_value = [&] {
+                  if constexpr (detail::is_boundary_normal_observable<
+                                  ObservableType>::value)
+                    return observable.evaluate_face(trial_view,
+                                                    source_positions[j],
+                                                    q,
+                                                    target_values);
+                  else
+                    return observable.operation()(trial_view,
+                                                  source_positions[j],
+                                                  q);
+                }();
+                local(i, j) +=
+                  observable.scale() * target.scale() *
+                  detail::natural_pairing(
+                    trial_value,
+                    target.operation()(test_view, target_positions[i], q)) *
+                  target_values.JxW(q);
+              }
+
+        if (affine_data != nullptr)
+          affine_data->contributions.push_back(
+            {local, source_execution_indices, target_execution_indices});
 
         target_field.constraints().distribute_local_to_global(
           local,
@@ -2871,6 +2944,23 @@ namespace ImmersX
         observable_, target_, std::move(support));
     }
 
+    template <int support_dim, int support_spacedim>
+    auto
+    on(BoundaryIntegrationSupport<support_dim, support_spacedim> support) const
+    {
+      static_assert(support_dim == TestExpression::dimension(),
+                    "Boundary support dimension must match the test field "
+                    "dimension.");
+      static_assert(support_spacedim == TestExpression::spacedimension(),
+                    "Boundary support and test field must share an "
+                    "embedding dimension.");
+      return WeakTerm<
+        TrialExpression,
+        TestExpression,
+        BoundaryIntegrationSupport<support_dim, support_spacedim>>(
+        observable_, target_, std::move(support));
+    }
+
     WeakTerm
     on_boundary(const dealii::types::boundary_id id) const
     {
@@ -3264,26 +3354,54 @@ namespace ImmersX
           using Assembly = detail::WeakAssembly<TrialExpression, Target>;
           const bool nonmatching_geometry =
             Assembly::geometry_is_nonmatching(observable_, target);
+          if constexpr (detail::is_boundary_normal_observable<
+                          TrialExpression>::value)
+            {
+              constexpr bool has_explicit_boundary_support = std::is_same_v<
+                Support,
+                BoundaryIntegrationSupport<TestExpression::dimension(),
+                                           TestExpression::spacedimension()>>;
+              AssertThrow(has_explicit_boundary_support ||
+                            region.kind == WeakTermRegion::Kind::boundary,
+                          dealii::ExcMessage(
+                            "A normal-contracted weak term requires a "
+                            "boundary support."));
+            }
           if constexpr (!std::is_same_v<Support, InferredIntegrationSupport>)
             {
               AssertThrow(region.kind == WeakTermRegion::Kind::volume,
                           dealii::ExcMessage(
-                            "A cell integration support cannot be combined "
-                            "with a boundary region."));
+                            "An explicit integration support cannot be "
+                            "combined with an on_boundary region."));
               AssertThrow(!nonmatching_geometry,
                           dealii::ExcMessage(
-                            "This cell integration support requires the "
-                            "source and test fields to use its mesh."));
+                            "This integration support requires the source "
+                            "and test fields to use its mesh."));
               using AffineData =
                 typename Assembly::template AffineData<VectorType, MatrixType>;
               std::shared_ptr<AffineData> affine_data;
-              const auto                  storage =
-                Assembly::template assemble_on_support<VectorType, MatrixType>(
-                  observable_,
-                  target,
-                  support_,
-                  &result.affine_rhs,
-                  &affine_data);
+              const auto                  storage = [&] {
+                if constexpr (std::is_same_v<
+                                Support,
+                                BoundaryIntegrationSupport<
+                                  TestExpression::dimension(),
+                                  TestExpression::spacedimension()>>)
+                  return Assembly::template assemble_on_boundary_support<
+                    VectorType,
+                    MatrixType>(observable_,
+                                target,
+                                support_,
+                                &result.affine_rhs,
+                                &affine_data);
+                else
+                  return Assembly::template assemble_on_support<VectorType,
+                                                                MatrixType>(
+                    observable_,
+                    target,
+                    support_,
+                    &result.affine_rhs,
+                    &affine_data);
+              }();
               result.matrix   = storage.matrix;
               result.sparsity = storage.sparsity;
               if (affine_data != nullptr)
@@ -3330,7 +3448,11 @@ namespace ImmersX
                                                        "lifted targets."));
                         return Assembly::template assemble_boundary<VectorType,
                                                                     MatrixType>(
-                          observable_, target, region.boundary_ids);
+                          observable_,
+                          target,
+                          region.boundary_ids,
+                          &result.affine_rhs,
+                          &affine_data);
                       }
                     return Assembly::template assemble<VectorType, MatrixType>(
                       observable_, target, &result.affine_rhs, &affine_data);
@@ -3390,6 +3512,49 @@ namespace ImmersX
   {
     return weak_term(std::move(trial), std::move(test_expression))
       .on(std::move(support));
+  }
+
+  template <typename Trial, typename Test, int dim, int spacedim>
+  auto
+  weak_term(Trial                                     trial,
+            Test                                      test_expression,
+            BoundaryIntegrationSupport<dim, spacedim> support)
+  {
+    return weak_term(std::move(trial), std::move(test_expression))
+      .on(std::move(support));
+  }
+
+  template <typename Trial, typename FieldType, typename Operation>
+  auto
+  operator*(Trial trial, TestExpression<FieldType, Operation> test_expression)
+    -> std::enable_if_t<detail::is_linear_observable<Trial>::value,
+                        WeakTerm<Trial, TestExpression<FieldType, Operation>>>
+  {
+    return weak_term(std::move(trial), std::move(test_expression));
+  }
+
+  template <typename Trial,
+            typename Test,
+            typename Support,
+            int dim,
+            int spacedim>
+  auto
+  operator*(WeakTerm<Trial, Test, Support>    term,
+            IntegrationSupport<dim, spacedim> support)
+  {
+    return term.on(std::move(support));
+  }
+
+  template <typename Trial,
+            typename Test,
+            typename Support,
+            int dim,
+            int spacedim>
+  auto
+  operator*(WeakTerm<Trial, Test, Support>            term,
+            BoundaryIntegrationSupport<dim, spacedim> support)
+  {
+    return term.on(std::move(support));
   }
 
   template <typename Quantity, typename Surface, typename TargetField>

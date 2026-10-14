@@ -11,6 +11,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Added
 
+- [PR #242](https://github.com/luca-heltai/immersx/pull/242) Added boundary integration supports and normal, conormal, and tangential expressions for linear weak terms.
 - [PR #241](https://github.com/luca-heltai/immersx/pull/241) Added cell supports for selecting the integration domain of linear weak terms.
 - [PR #240](https://github.com/luca-heltai/immersx/pull/240) Added an opt-in benchmark for comparing matching mass assembly with deal.II.
 - [PR #236](https://github.com/luca-heltai/immersx/pull/236) Add an explicit forward-Euler elasticity solver with a lumped mass matrix.
@@ -111,6 +112,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 ### Fixed
 
 - [PR #252](https://github.com/luca-heltai/immersx/pull/252) Select all ambient components of embedded vector fields and evolve the fiber driver's matrix-only backward-Euler reference from its own displacement and velocity history.
+- [PR #242](https://github.com/luca-heltai/immersx/pull/242) Include dynamic affine constraint contributions in explicit boundary supports and inferred boundary regions, including normal and conormal contractions.
 - [PR #241](https://github.com/luca-heltai/immersx/pull/241) Keep constrained residual and Jacobian rows condensed for reindexed mixed fields while preserving native diagonals for unreindexed square cell terms.
 - [PR #241](https://github.com/luca-heltai/immersx/pull/241) Preserve and dynamically refresh affine cell contributions in state, frozen-source, and multiplier residuals while retaining native constrained diagonal rows.
 - [PR #241](https://github.com/luca-heltai/immersx/pull/241) Derive locally relevant DoFs for FE-space views by default and retain off-rank matching matrix entries during distributed assembly.

@@ -42,6 +42,19 @@ namespace
 {
   using Clock = std::chrono::steady_clock;
 
+  template <int dim>
+  class FirstCoordinateBoundaryNormal : public Function<dim>
+  {
+  public:
+    double
+    value(const Point<dim> &point, const unsigned int = 0) const override
+    {
+      if (std::abs(point[0] - 1.) < 1.e-12)
+        return 1.;
+      return 0.;
+    }
+  };
+
   double
   milliseconds(const Clock::duration duration)
   {
@@ -104,6 +117,13 @@ benchmark_dimension(const unsigned int refinements,
   const auto         setup_start = Clock::now();
   Triangulation<dim> triangulation;
   GridGenerator::hyper_cube(triangulation, -1., 1.);
+  for (const auto &cell : triangulation.active_cell_iterators())
+    for (const auto face : cell->face_indices())
+      if (cell->face(face)->at_boundary())
+        for (unsigned int d = 0; d < dim; ++d)
+          if (std::abs(std::abs(cell->face(face)->center()[d]) - 1.) < 1.e-12)
+            cell->face(face)->set_boundary_id(
+              2 * d + (cell->face(face)->center()[d] > 0. ? 1 : 0));
   triangulation.refine_global(refinements);
   FE_Q<dim>                 finite_element(1);
   DoFHandler<dim>           dof_handler(triangulation);
@@ -196,6 +216,195 @@ benchmark_dimension(const unsigned int refinements,
             << ",\"warm_dealii_mad_ms\":" << native_rhs_mad
             << ",\"warm_ratio\":" << immersed_rhs_median / native_rhs_median
             << ",\"repetitions\":" << repetitions << "}\n";
+
+  if constexpr (dim > 1)
+    {
+      const auto boundary_id_vector = triangulation.get_boundary_ids();
+      const std::set<types::boundary_id> boundary_ids(
+        boundary_id_vector.begin(), boundary_id_vector.end());
+      const auto boundary_rhs_model = [&] {
+        auto                                model = std::make_shared<Model>();
+        SemidiscreteBuilder<Vector, Matrix> builder(layout, *model);
+        known_term(known_function<dim>(forcing), test(target))
+          .on_boundary(boundary_ids)
+          .add(builder);
+        return model;
+      }();
+      const auto immersed_boundary_rhs_assembly = [&] {
+        Vector result(target.dof_handler().n_dofs());
+        boundary_rhs_model->evaluate_row(target.field_id(),
+                                         rhs_context,
+                                         result);
+        return result;
+      };
+      const auto deal_ii_boundary_rhs_assembly = [&] {
+        Vector result;
+        result.reinit(dof_handler.n_dofs());
+        VectorTools::create_boundary_right_hand_side(
+          StaticMappingQ1<dim>::mapping,
+          dof_handler,
+          QGauss<dim - 1>(finite_element.degree + 1),
+          forcing,
+          result,
+          boundary_ids);
+        return result;
+      };
+      auto       immersed_boundary_rhs   = immersed_boundary_rhs_assembly();
+      const auto native_boundary_rhs     = deal_ii_boundary_rhs_assembly();
+      auto       boundary_rhs_difference = immersed_boundary_rhs;
+      boundary_rhs_difference -= native_boundary_rhs;
+      const double boundary_rhs_relative_error =
+        boundary_rhs_difference.l2_norm() / native_boundary_rhs.l2_norm();
+      AssertThrow(boundary_rhs_relative_error < 1.e-12,
+                  ExcMessage(
+                    "ImmersX and VectorTools boundary right-hand sides "
+                    "differ: " +
+                    std::to_string(boundary_rhs_relative_error)));
+      std::vector<double> immersed_boundary_rhs_samples;
+      std::vector<double> native_boundary_rhs_samples;
+      immersed_boundary_rhs_samples.reserve(repetitions);
+      native_boundary_rhs_samples.reserve(repetitions);
+      for (unsigned int repetition = 0; repetition < repetitions; ++repetition)
+        {
+          if (repetition % 2 == 0)
+            {
+              auto start            = Clock::now();
+              immersed_boundary_rhs = immersed_boundary_rhs_assembly();
+              immersed_boundary_rhs_samples.push_back(
+                milliseconds(Clock::now() - start));
+              start = Clock::now();
+              deal_ii_boundary_rhs_assembly();
+              native_boundary_rhs_samples.push_back(
+                milliseconds(Clock::now() - start));
+            }
+          else
+            {
+              auto start = Clock::now();
+              deal_ii_boundary_rhs_assembly();
+              native_boundary_rhs_samples.push_back(
+                milliseconds(Clock::now() - start));
+              start                 = Clock::now();
+              immersed_boundary_rhs = immersed_boundary_rhs_assembly();
+              immersed_boundary_rhs_samples.push_back(
+                milliseconds(Clock::now() - start));
+            }
+        }
+      const auto [immersed_boundary_rhs_median, immersed_boundary_rhs_mad] =
+        median_and_mad(immersed_boundary_rhs_samples);
+      const auto [native_boundary_rhs_median, native_boundary_rhs_mad] =
+        median_and_mad(native_boundary_rhs_samples);
+      std::cout << "{\"case\":\"rhs_boundary\",\"deal_ii_version\":\""
+                << DEAL_II_PACKAGE_VERSION << "\",\"dimension\":" << dim
+                << ",\"ranks\":1,\"dofs\":" << dof_handler.n_dofs()
+                << ",\"cells\":" << triangulation.n_active_cells()
+                << ",\"relative_rhs_error\":" << boundary_rhs_relative_error
+                << ",\"warm_immersx_median_ms\":"
+                << immersed_boundary_rhs_median
+                << ",\"warm_immersx_mad_ms\":" << immersed_boundary_rhs_mad
+                << ",\"warm_dealii_median_ms\":" << native_boundary_rhs_median
+                << ",\"warm_dealii_mad_ms\":" << native_boundary_rhs_mad
+                << ",\"warm_ratio\":"
+                << immersed_boundary_rhs_median / native_boundary_rhs_median
+                << ",\"repetitions\":" << repetitions << "}\n";
+
+      std::set<types::boundary_id> normal_boundary_ids;
+      for (const auto &cell : triangulation.active_cell_iterators())
+        for (const auto face : cell->face_indices())
+          if (cell->face(face)->at_boundary() &&
+              std::abs(cell->face(face)->center()[0] - 1.) < 1.e-12)
+            normal_boundary_ids.insert(cell->face(face)->boundary_id());
+      AssertThrow(normal_boundary_ids.size() == 1,
+                  ExcMessage("Expected one boundary id at x=1."));
+      const BoundaryIntegrationSupport<dim> boundary_support(
+        triangulation, *normal_boundary_ids.begin());
+      std::vector<Point<dim>> support_points(dof_handler.n_dofs());
+      DoFTools::map_dofs_to_support_points(StaticMappingQ1<dim>::mapping,
+                                           dof_handler,
+                                           support_points);
+      Vector linear_state(dof_handler.n_dofs());
+      for (unsigned int i = 0; i < linear_state.size(); ++i)
+        linear_state[i] = support_points[i][0];
+      const auto immersed_boundary_flux_assembly = [&] {
+        auto                                model = std::make_shared<Model>();
+        SemidiscreteBuilder<Vector, Matrix> builder(layout, *model);
+        (gradient(source) * boundary_support.normal() * test(target) *
+         boundary_support)
+          .add(builder);
+        StateView<Vector> state_view(layout, 0.);
+        state_view.bind(source.field_id(), linear_state);
+        const EvaluationContext<Vector> context(0., state_view);
+        Vector                          result(target.dof_handler().n_dofs());
+        model->evaluate_row(target.field_id(), context, result);
+        return result;
+      };
+      const auto native_boundary_flux_assembly = [&] {
+        Vector result;
+        result.reinit(dof_handler.n_dofs());
+        FirstCoordinateBoundaryNormal<dim> forcing;
+        VectorTools::create_boundary_right_hand_side(
+          StaticMappingQ1<dim>::mapping,
+          dof_handler,
+          QGauss<dim - 1>(finite_element.degree + 1),
+          forcing,
+          result,
+          normal_boundary_ids);
+        return result;
+      };
+      auto       immersed_boundary_flux   = immersed_boundary_flux_assembly();
+      const auto native_boundary_flux     = native_boundary_flux_assembly();
+      auto       boundary_flux_difference = immersed_boundary_flux;
+      boundary_flux_difference -= native_boundary_flux;
+      const double boundary_flux_relative_error =
+        boundary_flux_difference.l2_norm() / native_boundary_flux.l2_norm();
+      AssertThrow(boundary_flux_relative_error < 1.e-12,
+                  ExcMessage(
+                    "ImmersX and VectorTools boundary fluxes differ: " +
+                    std::to_string(boundary_flux_relative_error)));
+      std::vector<double> immersed_boundary_flux_samples;
+      std::vector<double> native_boundary_flux_samples;
+      for (unsigned int repetition = 0; repetition < repetitions; ++repetition)
+        {
+          if (repetition % 2 == 0)
+            {
+              auto start             = Clock::now();
+              immersed_boundary_flux = immersed_boundary_flux_assembly();
+              immersed_boundary_flux_samples.push_back(
+                milliseconds(Clock::now() - start));
+              start = Clock::now();
+              native_boundary_flux_assembly();
+              native_boundary_flux_samples.push_back(
+                milliseconds(Clock::now() - start));
+            }
+          else
+            {
+              auto start = Clock::now();
+              native_boundary_flux_assembly();
+              native_boundary_flux_samples.push_back(
+                milliseconds(Clock::now() - start));
+              start                  = Clock::now();
+              immersed_boundary_flux = immersed_boundary_flux_assembly();
+              immersed_boundary_flux_samples.push_back(
+                milliseconds(Clock::now() - start));
+            }
+        }
+      const auto [immersed_boundary_flux_median, immersed_boundary_flux_mad] =
+        median_and_mad(immersed_boundary_flux_samples);
+      const auto [native_boundary_flux_median, native_boundary_flux_mad] =
+        median_and_mad(native_boundary_flux_samples);
+      std::cout << "{\"case\":\"boundary_flux_q1\",\"deal_ii_version\":\""
+                << DEAL_II_PACKAGE_VERSION << "\",\"dimension\":" << dim
+                << ",\"ranks\":1,\"dofs\":" << dof_handler.n_dofs()
+                << ",\"cells\":" << triangulation.n_active_cells()
+                << ",\"relative_rhs_error\":" << boundary_flux_relative_error
+                << ",\"warm_immersx_median_ms\":"
+                << immersed_boundary_flux_median
+                << ",\"warm_immersx_mad_ms\":" << immersed_boundary_flux_mad
+                << ",\"warm_dealii_median_ms\":" << native_boundary_flux_median
+                << ",\"warm_dealii_mad_ms\":" << native_boundary_flux_mad
+                << ",\"warm_ratio\":"
+                << immersed_boundary_flux_median / native_boundary_flux_median
+                << ",\"repetitions\":" << repetitions << "}\n";
+    }
 
   const auto benchmark_pairing = [&](const std::string &name,
                                      const auto        &trial,

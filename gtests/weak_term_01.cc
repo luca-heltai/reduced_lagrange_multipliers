@@ -7,6 +7,7 @@
 //
 // ---------------------------------------------------------------------
 
+#include <deal.II/base/function_lib.h>
 #include <deal.II/base/quadrature_lib.h>
 
 #include <deal.II/distributed/tria.h>
@@ -26,6 +27,7 @@
 #include <deal.II/lac/vector.h>
 
 #include <deal.II/numerics/matrix_creator.h>
+#include <deal.II/numerics/vector_tools_rhs.h>
 
 #include <gtest/gtest.h>
 #include <immersx/core/contributor.h>
@@ -38,6 +40,46 @@ using namespace ImmersX;
 
 namespace
 {
+  template <typename Type, typename = void>
+  struct has_boundary_normal : std::false_type
+  {};
+
+  template <typename Type>
+  struct has_boundary_normal<
+    Type,
+    std::void_t<decltype(std::declval<const Type &>().normal())>>
+    : std::true_type
+  {};
+
+  template <typename Type, typename = void>
+  struct has_boundary_conormal : std::false_type
+  {};
+
+  template <typename Type>
+  struct has_boundary_conormal<
+    Type,
+    std::void_t<decltype(std::declval<const Type &>().conormal())>>
+    : std::true_type
+  {};
+
+  template <typename Type, typename = void>
+  struct has_boundary_tangent : std::false_type
+  {};
+
+  template <typename Type>
+  struct has_boundary_tangent<
+    Type,
+    std::void_t<decltype(std::declval<const Type &>().tangent())>>
+    : std::true_type
+  {};
+
+  static_assert(has_boundary_normal<BoundaryIntegrationSupport<2>>::value);
+  static_assert(has_boundary_conormal<BoundaryIntegrationSupport<2, 3>>::value);
+  static_assert(has_boundary_tangent<BoundaryIntegrationSupport<2>>::value);
+  static_assert(!has_boundary_normal<BoundaryIntegrationSupport<2, 3>>::value);
+  static_assert(!has_boundary_conormal<BoundaryIntegrationSupport<2>>::value);
+  static_assert(!has_boundary_tangent<BoundaryIntegrationSupport<3>>::value);
+
   struct SquareLaw
   {
     struct Evaluation
@@ -51,6 +93,20 @@ namespace
     {
       AssertDimension(values.size(), 1);
       return {values[0] * values[0], {2. * values[0]}};
+    }
+  };
+
+  class XBoundaryNormal : public Function<2>
+  {
+  public:
+    double
+    value(const Point<2> &point, const unsigned int = 0) const override
+    {
+      if (std::abs(point[0]) < 1.e-12)
+        return -1.;
+      if (std::abs(point[0] - 1.) < 1.e-12)
+        return 1.;
+      return 0.;
     }
   };
 
@@ -181,6 +237,158 @@ TEST(WeakTerm, ExplicitCellSupportFiltersMaterialIds)
   chained_model.evaluate_row(target.field_id(), context, chained_residual);
   chained_residual -= direct_residual;
   EXPECT_LT(chained_residual.l2_norm(), 1.e-12);
+}
+
+TEST(WeakTerm, ExplicitBoundarySupportMatchesBoundaryRegion)
+{
+  Triangulation<2> tria;
+  GridGenerator::hyper_cube(tria, 0., 1.);
+  tria.refine_global(1);
+
+  FE_Q<2>     fe(1);
+  ScalarSpace space(tria, fe);
+  StateLayout layout;
+  const auto  V =
+    fe_space(space.dof_handler, StaticMappingQ1<2>::mapping, space.constraints);
+  const auto source = V.field(layout, "source");
+  const auto target = V.field(layout, "target");
+
+  using Vector = Vector<double>;
+  using Matrix = SparseMatrix<double>;
+  using Model  = SemiDiscreteModel<Vector, Matrix>;
+  const BoundaryIntegrationSupport<2> support(tria, 0);
+  const auto tangential_gradient = gradient(source) * support.tangent();
+  const auto tangential_flux     = tangential_gradient * test(target) * support;
+  (void)tangential_flux;
+  Model                               explicit_model;
+  SemidiscreteBuilder<Vector, Matrix> explicit_builder(layout, explicit_model);
+  weak_term(value(source), test(target), support).add(explicit_builder);
+
+  Model                               region_model;
+  SemidiscreteBuilder<Vector, Matrix> region_builder(layout, region_model);
+  weak_term(value(source), test(target)).on_boundary(0).add(region_builder);
+
+  Model                               sugar_model;
+  SemidiscreteBuilder<Vector, Matrix> sugar_builder(layout, sugar_model);
+  (value(source) * test(target) * support).add(sugar_builder);
+
+  Vector source_values(space.dof_handler.n_dofs());
+  source_values = 1.;
+  StateView<Vector> state_view(layout, 0.);
+  state_view.bind(source.field_id(), source_values);
+  const EvaluationContext<Vector> context(0., state_view);
+  Vector explicit_residual(target.dof_handler().n_dofs());
+  Vector region_residual(target.dof_handler().n_dofs());
+  Vector sugar_residual(target.dof_handler().n_dofs());
+  explicit_model.evaluate_row(target.field_id(), context, explicit_residual);
+  region_model.evaluate_row(target.field_id(), context, region_residual);
+  sugar_model.evaluate_row(target.field_id(), context, sugar_residual);
+
+  region_residual -= explicit_residual;
+  EXPECT_LT(region_residual.l2_norm(), 1.e-12);
+  sugar_residual -= explicit_residual;
+  EXPECT_LT(sugar_residual.l2_norm(), 1.e-12);
+  region_residual = explicit_residual;
+  Functions::ConstantFunction<2> forcing(1.);
+  Vector native_boundary_rhs(target.dof_handler().n_dofs());
+  VectorTools::create_boundary_right_hand_side(StaticMappingQ1<2>::mapping,
+                                               target.dof_handler(),
+                                               QGauss<1>(2),
+                                               forcing,
+                                               native_boundary_rhs,
+                                               {0});
+  region_residual -= native_boundary_rhs;
+  EXPECT_LT(region_residual.l2_norm(), 1.e-12);
+  EXPECT_NEAR(explicit_residual.l1_norm(), 4., 1.e-12);
+
+  const auto normal_direction  = BoundaryIntegrationSupport<2>(tria).normal();
+  const auto tangent_direction = BoundaryIntegrationSupport<2>(tria).tangent();
+  FEFaceValues<2> face_values(StaticMappingQ1<2>::mapping,
+                              fe,
+                              QGauss<1>(2),
+                              update_normal_vectors);
+  bool            found_boundary_face = false;
+  for (const auto &cell : tria.active_cell_iterators())
+    for (const auto face : cell->face_indices())
+      if (cell->face(face)->at_boundary())
+        {
+          face_values.reinit(cell, face);
+          const auto normal  = normal_direction.evaluate(face_values, 0);
+          const auto tangent = tangent_direction.evaluate(face_values, 0);
+          EXPECT_NEAR(normal.norm(), 1., 1.e-12);
+          EXPECT_NEAR(tangent.norm(), 1., 1.e-12);
+          EXPECT_NEAR(normal * tangent, 0., 1.e-12);
+          found_boundary_face = true;
+          break;
+        }
+  EXPECT_TRUE(found_boundary_face);
+}
+
+TEST(WeakTerm, BoundaryNormalFluxExpressionMatchesVectorTools)
+{
+  Triangulation<2> tria;
+  GridGenerator::hyper_cube(tria, 0., 1.);
+  tria.refine_global(1);
+  FE_Q<2>     fe(1);
+  ScalarSpace space(tria, fe);
+  StateLayout layout;
+  const auto  V =
+    fe_space(space.dof_handler, StaticMappingQ1<2>::mapping, space.constraints);
+  const auto source = V.field(layout, "source");
+  const auto target = V.field(layout, "target");
+
+  using Vector = Vector<double>;
+  using Matrix = SparseMatrix<double>;
+  using Model  = SemiDiscreteModel<Vector, Matrix>;
+  const BoundaryIntegrationSupport<2> support(tria, 0);
+  Model                               model;
+  SemidiscreteBuilder<Vector, Matrix> builder(layout, model);
+  (gradient(source) * support.normal() * test(target) * support).add(builder);
+
+  std::vector<Point<2>> support_points(space.dof_handler.n_dofs());
+  DoFTools::map_dofs_to_support_points(StaticMappingQ1<2>::mapping,
+                                       space.dof_handler,
+                                       support_points);
+  Vector source_values(space.dof_handler.n_dofs());
+  for (unsigned int i = 0; i < source_values.size(); ++i)
+    source_values[i] = support_points[i][0];
+
+  StateView<Vector> state_view(layout, 0.);
+  state_view.bind(source.field_id(), source_values);
+  const EvaluationContext<Vector> context(0., state_view);
+  Vector                          immersed_rhs(target.dof_handler().n_dofs());
+  model.evaluate_row(target.field_id(), context, immersed_rhs);
+
+  XBoundaryNormal forcing;
+  Vector          native_rhs(target.dof_handler().n_dofs());
+  VectorTools::create_boundary_right_hand_side(StaticMappingQ1<2>::mapping,
+                                               target.dof_handler(),
+                                               QGauss<1>(2),
+                                               forcing,
+                                               native_rhs,
+                                               {0});
+  immersed_rhs -= native_rhs;
+  EXPECT_LT(immersed_rhs.l2_norm(), 1.e-12);
+}
+
+TEST(WeakTerm, EmbeddedBoundaryConormalExpressionCompiles)
+{
+  Triangulation<1, 2> tria;
+  GridGenerator::hyper_cube(tria, 0., 1.);
+  FE_Q<1, 2>       fe(1);
+  DoFHandler<1, 2> dof_handler(tria);
+  dof_handler.distribute_dofs(fe);
+  AffineConstraints<double> constraints;
+  constraints.close();
+  StateLayout layout;
+  const auto  space =
+    fe_space(dof_handler, StaticMappingQ1<1, 2>::mapping, constraints);
+  const auto                             source = space.field(layout, "source");
+  const auto                             target = space.field(layout, "target");
+  const BoundaryIntegrationSupport<1, 2> support(tria);
+  const auto                             conormal_flux =
+    gradient(source) * support.conormal() * test(target) * support;
+  (void)conormal_flux;
 }
 
 TEST(WeakTerm, NonlinearSquareLawResidualAndJacobian)

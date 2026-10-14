@@ -79,18 +79,25 @@ choices.
 
 A `Domain` can supply a non-owning cell integration support. `support()` selects
 all active cells, while `support(material_id)` selects cells with that deal.II
-material id. Attach it directly or with `.on()`:
+material id. `boundary_support()` selects all boundary ids and
+`boundary_support(id)` selects one id. Attach a support directly or with
+`.on()`:
 
 ```cpp
-auto mass = weak_term(value(u), test(v), domain.support(1));
+auto mass = value(u) * test(v) * domain.support(1);
 auto laplace = weak_term(gradient(u), gradient(test(v)))
                  .on(domain.support());
+auto dGamma = domain.boundary_support(0);
+auto boundary_mass = value(u) * test(v) * dGamma;
+auto normal_flux = gradient(u) * dGamma.normal() * test(v) * dGamma;
 ```
 
-The support selects the cells and physical measure. The source and test fields
-must use the same triangulation as the support; matching integrals retain the
-native deal.II `FEValues` path. Explicit cell supports currently apply to
-linear terms.
+The support selects cells or boundary faces and their physical measure. The
+source and test fields must use the same triangulation as the support; matching
+integrals retain deal.II's native `FEValues` or `FEFaceValues` path. Explicit
+supports currently apply to linear terms. `normal()` is available when the
+mesh and fields have the same dimension; embedded surfaces provide
+`conormal()`. A planar two-dimensional boundary also provides `tangent()`.
 
 A `Constraint` is an Interaction assembled from weak terms with one
 independently defined multiplier field. The multiplier has its own FE space

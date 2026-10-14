@@ -25,6 +25,8 @@ TEST(Domain, GeneratesNamedGrid)
   const auto all_cells     = domain.support();
   const auto material_zero = domain.support(0);
   const auto material_one  = domain.support(1);
+  const auto all_boundary  = domain.boundary_support();
+  const auto boundary_zero = domain.boundary_support(0);
   EXPECT_EQ(&all_cells.triangulation(), &domain.triangulation());
   EXPECT_TRUE(all_cells.includes_cell(domain.triangulation().begin_active()));
   EXPECT_EQ(material_zero.material_id(), 0u);
@@ -32,6 +34,9 @@ TEST(Domain, GeneratesNamedGrid)
     material_zero.includes_cell(domain.triangulation().begin_active()));
   EXPECT_FALSE(
     material_one.includes_cell(domain.triangulation().begin_active()));
+  EXPECT_EQ(&all_boundary.triangulation(), &domain.triangulation());
+  EXPECT_EQ(all_boundary.boundary_ids(), std::set<types::boundary_id>{0});
+  EXPECT_EQ(boundary_zero.boundary_ids(), std::set<types::boundary_id>{0});
 }
 
 

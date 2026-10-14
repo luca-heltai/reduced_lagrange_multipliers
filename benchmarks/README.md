@@ -14,17 +14,22 @@ cmake --build build-bench-debug --target weak_term_assembly_benchmark_debug -j
 
 The executable compares natural ImmersX mass and Poisson weak terms on explicit
 cell supports with `dealii::MatrixCreator::create_mass_matrix` and
-`create_laplace_matrix`. It emits nine JSON lines: Q1 volume mass and Laplace
-matrices, plus constant-source right-hand sides compared with
-`VectorTools::create_right_hand_side`, in 1D, 2D, and 3D. Each pair uses the
-same triangulation, DoFHandler, mapping, `QGauss(degree + 1)`, constraints, and
-serial matrix representation. Each timed matrix assembly includes construction
-of its sparsity pattern and matrix. Common mesh, finite element, and DoF setup
-is reported separately. Matrix cases report cold timings and alternate repeated
-assemblies after an untimed warmup. The RHS case reports warmed repeated
-assemblies. Timings include the median and median absolute deviation (MAD). A
-relative Frobenius matrix or vector difference is checked before timing is
-accepted.
+`create_laplace_matrix`. It emits thirteen JSON lines: Q1 volume mass and
+Laplace matrices and constant volume source right-hand sides in 1D, 2D, and 3D;
+boundary source right-hand sides and normal flux residuals are also compared
+with `VectorTools` in 2D and 3D. deal.II does not support those boundary
+right-hand-side operations in 1D, so those cases are skipped. Each pair uses
+the same triangulation, DoFHandler, mapping, `QGauss(degree + 1)`, constraints,
+and serial matrix representation. Each timed matrix assembly includes
+construction of its sparsity pattern and matrix. Common mesh, finite element,
+and DoF setup is reported separately. Matrix cases report cold timings and
+alternate repeated
+assemblies after an untimed warmup. The RHS cases report warmed repeated
+assemblies. The normal flux case times ImmersX matrix assembly plus matrix
+action, while `VectorTools` times RHS assembly, so those timings measure
+different work. Timings include the median and median absolute deviation
+(MAD). A relative Frobenius matrix or vector difference is checked before
+timing is accepted.
 
 Each JSON object is printed to standard output with the deal.II version, cell
 and DoF counts, warm medians and MADs, and relative matrix or right-hand-side
