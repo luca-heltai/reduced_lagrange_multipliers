@@ -17,7 +17,6 @@
 #include <deal.II/base/patterns.h>
 #include <deal.II/base/quadrature_lib.h>
 
-#include <deal.II/distributed/fully_distributed_tria.h>
 #include <deal.II/distributed/tria.h>
 #include <deal.II/distributed/tria_base.h>
 
@@ -28,11 +27,6 @@
 #include <deal.II/fe/fe_system.h>
 #include <deal.II/fe/fe_values.h>
 #include <deal.II/fe/mapping_q1.h>
-
-#include <deal.II/grid/grid_generator.h>
-#include <deal.II/grid/grid_in.h>
-#include <deal.II/grid/grid_tools.h>
-#include <deal.II/grid/tria_description.h>
 
 #include <deal.II/lac/affine_constraints.h>
 #include <deal.II/lac/dynamic_sparsity_pattern.h>
@@ -97,6 +91,7 @@ namespace ImmersX
           elastic_static_detail::normalize_subsection(subsection))
       , subsection_(elastic_static_detail::normalize_subsection(subsection))
       , domain_parameters(domain_subsection(subsection_))
+      , space_parameters(subsection_ + "Displacement space/", "auto")
       , default_material_properties("default",
                                     elastic_static_detail::normalize_subsection(
                                       subsection) +
@@ -301,9 +296,10 @@ namespace ImmersX
     std::string output_directory = ".";
     std::string output_name      = "elastic_static";
 
-    unsigned int                    fe_degree = 1;
-    DomainParameters<dim, spacedim> domain_parameters;
-    unsigned int                    n_refinement_cycles = 1;
+    unsigned int                                fe_degree = 1;
+    DomainParameters<dim, spacedim>             domain_parameters;
+    FiniteElementSpaceParameters<dim, spacedim> space_parameters;
+    unsigned int                                n_refinement_cycles = 1;
 
     std::set<types::boundary_id> dirichlet_ids{0};
     std::set<types::boundary_id> neumann_ids{};
@@ -356,21 +352,17 @@ namespace ImmersX
       : parameters_(parameters)
       , communicator_(communicator)
       , domain_(parameters_.domain_parameters, communicator_)
-      , tria_(&domain_.triangulation())
-      , fe_(FE_Q<dim, spacedim>(parameters_.fe_degree), spacedim)
-    {
-      dof_handler_ = std::make_unique<DoFHandler<dim, spacedim>>(*tria_);
-    }
+    {}
 
     /** Create the mesh, DoFs, constraints, stiffness matrix, and vectors. */
     void
     setup()
     {
-      AssertThrow(dof_handler_->n_dofs() == 0,
+      AssertThrow(space_ == nullptr,
                   ExcMessage(
                     "ElasticStaticProblem::setup() may only be called once."));
 
-      make_grid();
+      domain_.make_grid();
       setup_system();
       assemble_system(nullptr);
     }
@@ -385,7 +377,7 @@ namespace ImmersX
     refine_global()
     {
       AssertThrow(
-        dof_handler_->n_dofs() != 0,
+        space_ != nullptr,
         ExcMessage("Call setup() before refining the static elasticity mesh."));
       AssertThrow(
         !domain_.uses_fully_distributed_triangulation(),
@@ -394,7 +386,7 @@ namespace ImmersX
           "parallel::fullydistributed::Triangulation because its mesh is "
           "immutable after copy_triangulation()."));
 
-      dof_handler_->clear();
+      space_.reset();
       dynamic_cast<parallel::distributed::Triangulation<dim, spacedim> &>(
         domain_.triangulation())
         .refine_global(1);
@@ -405,25 +397,25 @@ namespace ImmersX
     const dealii::parallel::TriangulationBase<dim, spacedim> &
     triangulation() const
     {
-      return *tria_;
+      return domain_.triangulation();
     }
 
     const dealii::IndexSet &
     locally_owned_dofs() const
     {
-      return locally_owned_dofs_;
+      return space_->locally_owned_dofs();
     }
 
     const dealii::IndexSet &
     locally_relevant_dofs() const
     {
-      return locally_relevant_dofs_;
+      return space_->locally_relevant_dofs();
     }
 
     const dealii::DoFHandler<dim, spacedim> &
     dof_handler() const
     {
-      return *dof_handler_;
+      return space_->dof_handler();
     }
 
     /** Return the Q1 mapping used by this problem's FE evaluations. */
@@ -436,7 +428,7 @@ namespace ImmersX
     const dealii::AffineConstraints<double> &
     constraints() const
     {
-      return constraints_;
+      return space_->constraints();
     }
 
     const MatrixType &
@@ -469,7 +461,7 @@ namespace ImmersX
     {
       AssertThrow(function.n_components == spacedim,
                   ExcDimensionMismatch(function.n_components, spacedim));
-      AssertThrow(dof_handler_->n_dofs() != 0,
+      AssertThrow(space_ != nullptr,
                   ExcMessage(
                     "Call setup() before setting the elasticity forcing."));
       assemble_system(&function);
@@ -479,7 +471,7 @@ namespace ImmersX
     void
     solve()
     {
-      AssertThrow(dof_handler_->n_dofs() != 0,
+      AssertThrow(space_ != nullptr,
                   ExcMessage("Call setup() before solving static elasticity."));
 
       ImmersXLA::MPI::PreconditionAMG                          preconditioner;
@@ -489,10 +481,10 @@ namespace ImmersX
 #endif
       preconditioner.initialize(stiffness_matrix_, data);
 
-      constraints_.distribute(solution_);
+      constraints().distribute(solution_);
       SolverCG<VectorType> solver(parameters_.solver_control);
       solver.solve(stiffness_matrix_, solution_, forcing_, preconditioner);
-      constraints_.distribute(solution_);
+      constraints().distribute(solution_);
       update_locally_relevant_solution();
     }
 
@@ -530,7 +522,7 @@ namespace ImmersX
       AssertThrow(solution_.size() == new_solution.size(),
                   ExcDimensionMismatch(solution_.size(), new_solution.size()));
       solution_ = new_solution;
-      constraints_.distribute(solution_);
+      constraints().distribute(solution_);
       update_locally_relevant_solution();
     }
 
@@ -551,7 +543,7 @@ namespace ImmersX
       std::filesystem::create_directories(parameters_.output_directory);
 
       DataOut<dim, spacedim> data_out;
-      data_out.attach_dof_handler(*dof_handler_);
+      data_out.attach_dof_handler(dof_handler());
       const std::vector<std::string> names(spacedim, "displacement");
       const std::vector<
         DataComponentInterpretation::DataComponentInterpretation>
@@ -562,11 +554,11 @@ namespace ImmersX
                                DataOut<dim, spacedim>::type_dof_data,
                                interpretation);
 
-      Vector<float> subdomain(tria_->n_active_cells());
-      Vector<float> material_id(tria_->n_active_cells());
+      Vector<float> subdomain(triangulation().n_active_cells());
+      Vector<float> material_id(triangulation().n_active_cells());
       for (unsigned int i = 0; i < subdomain.size(); ++i)
-        subdomain(i) = tria_->locally_owned_subdomain();
-      for (const auto &cell : tria_->active_cell_iterators())
+        subdomain(i) = triangulation().locally_owned_subdomain();
+      for (const auto &cell : triangulation().active_cell_iterators())
         material_id(cell->active_cell_index()) = cell->material_id();
       data_out.add_data_vector(subdomain, "subdomain");
       data_out.add_data_vector(material_id, "material_id");
@@ -590,50 +582,45 @@ namespace ImmersX
 
   private:
     void
-    make_grid()
-    {
-      domain_.make_grid();
-      tria_ = &domain_.triangulation();
-    }
-
-    void
     setup_system()
     {
-      dof_handler_->distribute_dofs(fe_);
-
-      locally_owned_dofs_ = dof_handler_->locally_owned_dofs();
-      locally_relevant_dofs_ =
-        DoFTools::extract_locally_relevant_dofs(*dof_handler_);
-
-      constraints_.reinit(locally_owned_dofs_, locally_relevant_dofs_);
-      DoFTools::make_hanging_node_constraints(*dof_handler_, constraints_);
+      space_ = std::make_unique<FiniteElementSpace<dim, spacedim>>(
+        domain_.triangulation(),
+        parameters_.space_parameters.finite_element == "auto" ?
+          std::make_unique<FESystem<dim, spacedim>>(
+            FE_Q<dim, spacedim>(parameters_.fe_degree), spacedim) :
+          FETools::get_fe_by_name<dim, spacedim>(
+            parameters_.space_parameters.finite_element));
+      AssertThrow(
+        space_->finite_element().n_components() == spacedim &&
+          space_->finite_element().is_primitive(),
+        ExcMessage(
+          "The displacement FE must be primitive with spacedim components."));
+      const auto &dofs        = dof_handler();
+      const auto &owned       = locally_owned_dofs();
+      const auto &relevant    = locally_relevant_dofs();
+      auto       &constraints = space_->constraints();
+      constraints.reinit(owned, relevant);
+      DoFTools::make_hanging_node_constraints(dofs, constraints);
       for (const auto boundary_id : parameters_.dirichlet_ids)
-        VectorTools::interpolate_boundary_values(*dof_handler_,
+        VectorTools::interpolate_boundary_values(dofs,
                                                  boundary_id,
                                                  parameters_.get_dirichlet_bc(
                                                    boundary_id),
-                                                 constraints_);
-      constraints_.close();
+                                                 constraints);
+      constraints.close();
 
-      DynamicSparsityPattern sparsity(locally_relevant_dofs_);
-      DoFTools::make_sparsity_pattern(*dof_handler_,
-                                      sparsity,
-                                      constraints_,
-                                      true);
+      DynamicSparsityPattern sparsity(relevant);
+      DoFTools::make_sparsity_pattern(dofs, sparsity, constraints, true);
       SparsityTools::distribute_sparsity_pattern(sparsity,
-                                                 locally_owned_dofs_,
+                                                 owned,
                                                  communicator_,
-                                                 locally_relevant_dofs_);
+                                                 relevant);
 
-      stiffness_matrix_.reinit(locally_owned_dofs_,
-                               locally_owned_dofs_,
-                               sparsity,
-                               communicator_);
-      forcing_.reinit(locally_owned_dofs_, communicator_);
-      solution_.reinit(locally_owned_dofs_, communicator_);
-      locally_relevant_solution_.reinit(locally_owned_dofs_,
-                                        locally_relevant_dofs_,
-                                        communicator_);
+      stiffness_matrix_.reinit(owned, owned, sparsity, communicator_);
+      forcing_.reinit(owned, communicator_);
+      solution_.reinit(owned, communicator_);
+      locally_relevant_solution_.reinit(owned, relevant, communicator_);
       forcing_                   = 0.;
       solution_                  = 0.;
       locally_relevant_solution_ = 0.;
@@ -642,6 +629,8 @@ namespace ImmersX
     void
     assemble_system(const dealii::Function<spacedim> *body_force_override)
     {
+      const auto             &fe_          = space_->finite_element();
+      const auto             &constraints_ = constraints();
       const QGauss<dim>       quadrature(fe_.degree + 1);
       FEValues<dim, spacedim> fe_values(fe_,
                                         quadrature,
@@ -661,7 +650,7 @@ namespace ImmersX
       stiffness_matrix_ = 0.;
       forcing_          = 0.;
 
-      for (const auto &cell : dof_handler_->active_cell_iterators())
+      for (const auto &cell : dof_handler().active_cell_iterators())
         if (cell->is_locally_owned())
           {
             cell_matrix = 0.;
@@ -776,16 +765,10 @@ namespace ImmersX
       locally_relevant_solution_.update_ghost_values();
     }
 
-    const ElasticStaticParameters<dim, spacedim> &parameters_;
-    MPI_Comm                                      communicator_;
-    Domain<dim, spacedim>                         domain_;
-    parallel::TriangulationBase<dim, spacedim>   *tria_;
-    std::unique_ptr<DoFHandler<dim, spacedim>>    dof_handler_;
-    FESystem<dim, spacedim>                       fe_;
-    AffineConstraints<double>                     constraints_;
-
-    IndexSet locally_owned_dofs_;
-    IndexSet locally_relevant_dofs_;
+    const ElasticStaticParameters<dim, spacedim>      &parameters_;
+    MPI_Comm                                           communicator_;
+    Domain<dim, spacedim>                              domain_;
+    std::unique_ptr<FiniteElementSpace<dim, spacedim>> space_;
 
     MatrixType         stiffness_matrix_;
     VectorType         forcing_;
@@ -813,16 +796,12 @@ namespace ImmersX
   contribute(Builder                                   &builder,
              const ElasticStaticProblem<dim, spacedim> &problem)
   {
-    using VectorType = typename ElasticStaticProblem<dim, spacedim>::VectorType;
     const auto displacement_id =
       builder.algebraic_field("displacement",
                               problem.locally_owned_dofs(),
                               problem.locally_relevant_dofs());
-    using Space      = typename ElasticStaticFields<dim, spacedim>::Space;
-    auto       space = std::make_shared<Space>(problem.dof_handler(),
-                                         problem.mapping(),
-                                         problem.constraints(),
-                                         &problem.locally_relevant_dofs());
+    using Space = typename ElasticStaticFields<dim, spacedim>::Space;
+    auto space  = std::make_shared<Space>(finite_element_space_view(problem));
     const auto displacement =
       space->field(displacement_id,
                    "displacement",
@@ -837,24 +816,9 @@ namespace ImmersX
                            });
 
     builder.term(displacement_id, "elastic-static")
-      .residual([displacement_id, &problem](const auto &context) {
-        const auto &state = context.state(displacement_id);
-        dealii::PackagedOperation<VectorType> result;
-        result.reinit_vector = [state](VectorType &vector, const bool omit) {
-          vector.reinit(state, omit);
-        };
-        result.apply = [&problem, &state](VectorType &vector) {
-          problem.stiffness_operator().vmult(vector, state);
-          vector -= problem.forcing();
-        };
-        result.apply_add = [&problem, &state](VectorType &vector) {
-          VectorType contribution;
-          contribution.reinit(state);
-          problem.stiffness_operator().vmult(contribution, state);
-          contribution -= problem.forcing();
-          vector += contribution;
-        };
-        return result;
+      .residual([displacement_id, &problem, stiffness](const auto &context) {
+        return stiffness.view * context.state(displacement_id) -
+               problem.forcing();
       })
       .state(displacement_id, stiffness);
 

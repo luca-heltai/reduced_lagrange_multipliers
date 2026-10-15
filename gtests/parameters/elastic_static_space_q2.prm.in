@@ -1,0 +1,19 @@
+set dimension = 2
+set space dimension = 2
+
+subsection Elastic static
+  set FE degree = 1
+  set Output directory = @TEST_OUTPUT_DIR@/composable/elastic-static-q2
+  subsection Displacement space
+    set Finite element = FESystem<2>[FE_Q<2>(2)^2]
+  end
+  subsection Domain
+    set Initial refinement = 1
+    set Triangulation type = distributed
+  end
+  subsection Functions
+    subsection Right hand side
+      set Function expression = 1; 2
+    end
+  end
+end

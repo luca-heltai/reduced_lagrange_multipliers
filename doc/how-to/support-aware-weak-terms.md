@@ -5,6 +5,45 @@ geometric integration support. The support chooses the cells, faces, or
 physical quadrature points used by the integral. It does not need to own a
 finite-element space.
 
+## Configure a field space
+
+Register space parameters before reading the application parameter file. The
+owning space distributes DoFs on a Domain's distributed triangulation; retain
+both the space and its view while Fields or execution adapters use them:
+
+```cpp
+DomainParameters<1, 2> domain_parameters("/Line/Domain/");
+FiniteElementSpaceParameters<1, 2> multiplier_parameters(
+  "/Line/Multiplier space/", "FE_DGQ<1>(0)");
+initialize_parameters(parameter_file);
+Domain<1, 2> line(domain_parameters);
+line.make_grid();
+FiniteElementSpace<1, 2> multiplier_space(line.triangulation(),
+                                         multiplier_parameters);
+auto multiplier_view = multiplier_space.view();
+auto lambda = multiplier_view.field("lambda");
+```
+
+The `Finite element` entry accepts names understood by
+`dealii::FETools::get_fe_by_name()`. Coupled Poisson exposes this entry under
+`Coupled Poisson/Multiplier space`, defaulting to `FE_DGQ<1>(0)`. Its generated
+regression input `gtests/parameters/coupled_poisson_multiplier_q1.prm` selects
+`FE_DGQ<1>(1)` with nonzero loads.
+
+Static elasticity exposes `Elastic static/Displacement space/Finite element`.
+The default `auto` entry retains `FE degree` and builds `spacedim` copies of `FE_Q`.
+For example, `FESystem<2>[FE_Q<2>(2)^2]` selects quadratic displacement in 2D.
+The element must be primitive with `spacedim` components; assembly quadrature
+uses the selected element's actual degree. Problems still own their native
+matrices, boundary constraints, material data, and accepted solution.
+
+For a new Problem, own its Domain and FiniteElementSpace, update the space's
+constraints for the physical boundary data, and expose the native DoFHandler,
+mapping, constraints, and relevant indices. Contributors can use
+`finite_element_space_view(problem)` without repeating those accessors. Keep
+native residual assembly when it carries affine boundary corrections; changing
+ownership does not require replacing it with a weak term.
+
 ## Cell and boundary supports
 
 Use a domain support to select all cells or one material id. Use a boundary

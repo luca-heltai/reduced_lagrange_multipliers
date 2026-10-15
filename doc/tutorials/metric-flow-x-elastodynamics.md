@@ -8,6 +8,23 @@ The runnable example uses one parameter file:
 tutorials/metric_flow_x_elastodynamics/two_way.prm.in
 ```
 
+MetricFlowX must provide the same build configuration as ImmersX. For a
+Debug-only installation, configure a separate Debug build; a DebugRelease
+build cannot enable that package:
+
+```bash
+cmake -S . -B build-metric-debug -DCMAKE_BUILD_TYPE=Debug \
+  -DMetricFlowX_DIR="$HOME/dualistic/installations/lib/cmake/MetricFlowX"
+cmake --build build-metric-debug -j2
+ctest --test-dir build-metric-debug -R MetricFlowX --output-on-failure
+```
+
+The configure output must report `MetricFlowX support enabled`. CTest checks
+the standalone residual and Jacobians against the native matrices and runs the
+nonzero-inflow coupled example in serial and on two MPI ranks, using degree
+two to check automatic multiplier selection. Coupled cases write to separate
+build-tree output directories.
+
 After configuring and building with MetricFlowX and deal.II SUNDIALS enabled,
 run the generated build-tree input:
 
@@ -41,6 +58,6 @@ MetricFlowX. It represents `a0` as a frozen `FE_DGQ(0)` Observable, so adjacent
 cells can keep different reference areas. The same Observable defines both
 the radial increment and the lift thickness. The multiplier has an independent
 scalar `FiniteElementSpace<1,3>` on the centerline triangulation. Its default
-`FE_DGQ` degree matches the MetricFlowX area degree, and the application checks
-that the local scalar FE basis matches. The IDA adapter advances both Problems,
+`auto` selection follows the parsed MetricFlowX area degree. The application
+checks that the local scalar FE basis matches. The IDA adapter advances both Problems,
 and output includes flow, solid, and multiplier fields.

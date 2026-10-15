@@ -13,6 +13,9 @@
 
 #include <deal.II/dofs/dof_tools.h>
 
+#include <deal.II/fe/fe_q.h>
+#include <deal.II/fe/fe_system.h>
+
 #include <deal.II/lac/affine_constraints.h>
 #include <deal.II/lac/precondition.h>
 #include <deal.II/lac/solver_control.h>
@@ -177,6 +180,9 @@ namespace ImmersX
                        &time_parameters,
                        &fixed_step_parameters,
                        &ida_parameters)
+    , multiplier_parameters(normalize_subsection(subsection) +
+                              "Multiplier space/",
+                            "auto")
   {
     add_parameter("Output directory", output_directory);
     add_parameter("Multiplier output name", multiplier_output_name);
@@ -274,36 +280,29 @@ namespace ImmersX
                fiber_problem_storage.velocity_constraints(),
                &fiber_problem_storage.locally_relevant_dofs()));
 
-    multiplier_dof_handler_storage =
-      std::make_unique<dealii::DoFHandler<1, dim>>(
-        fiber_problem_storage.triangulation());
     const unsigned int degree = parameters.multiplier_degree == 0 ?
                                   fiber_problem_storage.fe().degree :
                                   parameters.multiplier_degree;
-    multiplier_fe_storage =
-      std::make_unique<dealii::FESystem<1, dim>>(dealii::FE_Q<1, dim>(degree),
-                                                 dim);
-    multiplier_dof_handler_storage->distribute_dofs(*multiplier_fe_storage);
-    multiplier_constraints_storage =
-      std::make_unique<dealii::AffineConstraints<double>>();
-    multiplier_constraints_storage->reinit(
-      multiplier_dof_handler_storage->locally_owned_dofs(),
-      dealii::DoFTools::extract_locally_relevant_dofs(
-        *multiplier_dof_handler_storage));
+    multiplier_space_owner    = std::make_unique<FiniteElementSpace<1, dim>>(
+      fiber_problem_storage.triangulation(),
+      parameters.multiplier_parameters.finite_element == "auto" ?
+           std::make_unique<dealii::FESystem<1, dim>>(dealii::FE_Q<1, dim>(degree),
+                                                   dim) :
+           dealii::FETools::get_fe_by_name<1, dim>(
+          parameters.multiplier_parameters.finite_element));
+    AssertThrow(multiplier_space_owner->finite_element().n_components() == dim,
+                ExcMessage("The multiplier FE must have dim components."));
+    auto &constraints = multiplier_space_owner->constraints();
+    constraints.reinit(multiplier_space_owner->locally_owned_dofs(),
+                       multiplier_space_owner->locally_relevant_dofs());
     dealii::DoFTools::make_hanging_node_constraints(
-      *multiplier_dof_handler_storage, *multiplier_constraints_storage);
-    multiplier_constraints_storage->close();
-    multiplier_relevant_storage = std::make_unique<dealii::IndexSet>(
-      dealii::DoFTools::extract_locally_relevant_dofs(
-        *multiplier_dof_handler_storage));
+      multiplier_space_owner->dof_handler(), constraints);
+    constraints.close();
     multiplier_space_storage = std::make_unique<FiniteElementSpaceView<1, dim>>(
-      fe_space(*multiplier_dof_handler_storage,
-               fiber_problem_storage.mapping(),
-               *multiplier_constraints_storage,
-               multiplier_relevant_storage.get()));
+      multiplier_space_owner->view(fiber_problem_storage.mapping()));
 
-    multiplier_storage.reinit(
-      multiplier_dof_handler_storage->locally_owned_dofs(), MPI_COMM_WORLD);
+    multiplier_storage.reinit(multiplier_space_owner->locally_owned_dofs(),
+                              MPI_COMM_WORLD);
     multiplier_storage = 0.;
 
     const auto multiplier_output_field =
@@ -414,7 +413,7 @@ namespace ImmersX
       *fiber_to_multiplier_storage,
       matrix_problem_storage.locally_owned_dofs(),
       fiber_problem_storage.locally_owned_dofs(),
-      multiplier_dof_handler_storage->locally_owned_dofs(),
+      multiplier_space_owner->locally_owned_dofs(),
       MPI_COMM_WORLD,
       parameters.schur_max_steps,
       parameters.schur_tolerance,
@@ -765,18 +764,17 @@ namespace ImmersX
     // The initial-derivative solver observes these local mass matrices, so it
     // must not outlive this function.  The persistent Schur solver is reserved
     // for the backward-Euler path, where it observes member matrices.
-    SchurSolver initial_solver(
-      matrix_mass,
-      fiber_mass,
-      *matrix_coupling_storage,
-      *fiber_to_multiplier_storage,
-      matrix_problem_storage.locally_owned_dofs(),
-      fiber_problem_storage.locally_owned_dofs(),
-      multiplier_dof_handler_storage->locally_owned_dofs(),
-      MPI_COMM_WORLD,
-      parameters.schur_max_steps,
-      parameters.schur_tolerance,
-      parameters.block_tolerance);
+    SchurSolver initial_solver(matrix_mass,
+                               fiber_mass,
+                               *matrix_coupling_storage,
+                               *fiber_to_multiplier_storage,
+                               matrix_problem_storage.locally_owned_dofs(),
+                               fiber_problem_storage.locally_owned_dofs(),
+                               multiplier_space_owner->locally_owned_dofs(),
+                               MPI_COMM_WORLD,
+                               parameters.schur_max_steps,
+                               parameters.schur_tolerance,
+                               parameters.block_tolerance);
 
     VectorType matrix_rhs;
     VectorType fiber_rhs;
@@ -903,7 +901,7 @@ namespace ImmersX
   const typename FiberReinforcedElastodynamics<dim>::VectorType &
   FiberReinforcedElastodynamics<dim>::multiplier() const
   {
-    AssertThrow(multiplier_dof_handler_storage != nullptr, ExcNotInitialized());
+    AssertThrow(multiplier_space_owner != nullptr, ExcNotInitialized());
     return multiplier_storage;
   }
 

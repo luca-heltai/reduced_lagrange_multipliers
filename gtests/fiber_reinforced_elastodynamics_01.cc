@@ -62,7 +62,8 @@ namespace
   void
   configure_problem(FiberReinforcedElastodynamicsParameters<2> &parameters,
                     const bool                                  forcing,
-                    const bool                                  ramp = false)
+                    const bool                                  ramp = false,
+                    const std::string &multiplier_element            = "auto")
   {
     parameters.output_directory = TestPaths::output_directory(
       forcing ? "fiber-reinforced-forced" : "fiber-reinforced-zero");
@@ -73,6 +74,10 @@ namespace
         set dimension       = 2
         set space dimension = 2
         subsection Fiber Reinforced Elastodynamics
+          subsection Multiplier space
+            set Finite element = )") +
+      multiplier_element + R"(
+          end
           subsection Time interval
             set Final time   = 0.02
             set Output time interval = 0.01
@@ -90,7 +95,7 @@ namespace
             end
             subsection Functions
               subsection Body force
-                set Function expression = )") +
+                set Function expression = )" +
       (forcing ? (ramp ? "t; t" : "0; 1") : "0; 0") +
       R"(
                 set Variable names      = x,y,t
@@ -245,6 +250,34 @@ namespace
   }
 #endif
 } // namespace
+
+TEST(FiberReinforcedElastodynamicsValidation, BOTH_ConfigurableMultiplierSpace)
+{
+  ParameterAcceptor::clear();
+  FiberReinforcedElastodynamicsParameters<2> parameters;
+  configure_problem(parameters, true, false, "FESystem<1>[FE_DGQ<1>(0)^2]");
+  FiberReinforcedElastodynamics<2> driver(parameters);
+  driver.setup();
+  EXPECT_EQ(driver.multiplier().size(),
+            2 * driver.fiber_problem().triangulation().n_global_active_cells());
+  driver.set_initial_conditions();
+  driver.advance_one_timestep();
+  EXPECT_GT(driver.matrix_problem().displacement().l2_norm(), 0.);
+  EXPECT_GT(driver.fiber_problem().displacement().l2_norm(), 0.);
+  EXPECT_LT(driver.residuals().velocity_constraint, 1.e-8);
+  EXPECT_LT(driver.residuals().matrix_velocity, 1.e-8);
+  EXPECT_LT(driver.residuals().fiber_velocity, 1.e-8);
+}
+
+TEST(FiberReinforcedElastodynamicsValidation, RejectsWrongMultiplierComponents)
+{
+  ParameterAcceptor::clear();
+  FiberReinforcedElastodynamicsParameters<2> parameters;
+  configure_problem(parameters, false);
+  parameters.multiplier_parameters.finite_element = "FE_Q<1>(1)";
+  FiberReinforcedElastodynamics<2> driver(parameters);
+  EXPECT_THROW(driver.setup(), dealii::ExceptionBase);
+}
 
 TEST(FiberReinforcedElastodynamicsValidation, ZeroPreservation)
 {

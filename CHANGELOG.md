@@ -11,6 +11,8 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Added
 
+- [PR #254](https://github.com/luca-heltai/immersx/pull/254) Allow parameter files to select the coupled Poisson multiplier, static elasticity displacement, and fiber velocity multiplier finite elements while preserving degree-based defaults.
+
 - [PR #249](https://github.com/luca-heltai/immersx/pull/249) Added a how-to guide for choosing weak-term integration supports.
 - [PR #247](https://github.com/luca-heltai/immersx/pull/247) Added background-to-background weak terms over independent codimension-one supports, including nonlinear terms with frozen inputs.
 - [PR #246](https://github.com/luca-heltai/immersx/pull/246) Added geometric quadrature supports for fixed tensor-product lifts and linear weak-term assembly on a distributed bulk mesh.
@@ -118,6 +120,8 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 ### Fixed
 
 - [PR #264](https://github.com/luca-heltai/immersx/pull/264) Prevent the Navier–Stokes tutorial from timing out in Debug builds by reusing finite-element evaluations during nonlinear Jacobian assembly.
+- [PR #254](https://github.com/luca-heltai/immersx/pull/254) Register MetricFlowX time parameters before reading input and provide a mixed-flow preconditioner for coupled IDA solves. Exercise standalone and nonzero-inflow coupled applications in serial and MPI.
+- [PR #253](https://github.com/luca-heltai/immersx/pull/253) Preserve every ambient vector component in native nonmatching assembly and give the fiber driver's matrix-only reference independent history.
 - [PR #252](https://github.com/luca-heltai/immersx/pull/252) Select all ambient components of embedded vector fields and evolve the fiber driver's matrix-only backward-Euler reference from its own displacement and velocity history.
 - [PR #249](https://github.com/luca-heltai/immersx/pull/249) Use a straight cross-section in the lifted-support benchmark and preserve frozen-input mesh/mapping checks in the nonlinear input cache.
 - [PR #247](https://github.com/luca-heltai/immersx/pull/247) Retain off-rank independent-support Jacobian entries and reject frozen inputs on incompatible background meshes or mappings.

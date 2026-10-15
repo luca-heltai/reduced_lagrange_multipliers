@@ -88,7 +88,8 @@ prepare_parameter_outputs(const std::filesystem::path &parameter_file)
 static void
 run_application(const char                  *exe,
                 const std::filesystem::path &parameter_file,
-                const std::filesystem::path &run_directory)
+                const std::filesystem::path &run_directory,
+                const std::filesystem::path &log = {})
 {
   std::error_code error;
   std::filesystem::create_directories(run_directory, error);
@@ -97,9 +98,11 @@ run_application(const char                  *exe,
   prepare_parameter_outputs(parameter_file);
 
   const auto executable = ImmersX::TestPaths::binary_path(executable_name(exe));
-  const std::string cmd = "cd " + shell_quote(run_directory.string()) + " && " +
-                          shell_quote(executable.string()) + " " +
-                          shell_quote(parameter_file.string());
+  const std::string cmd =
+    "cd " + shell_quote(run_directory.string()) + " && " +
+    shell_quote(executable.string()) + " " +
+    shell_quote(parameter_file.string()) +
+    (log.empty() ? "" : " > " + shell_quote(log.string()) + " 2>&1");
   const int ret = std::system(cmd.c_str());
   EXPECT_EQ(ret, 0) << "Command failed: " << cmd;
 }
@@ -383,6 +386,37 @@ TEST(AppExecutables, TutorialPoisson)
         has_solution |= contents.find("Name=\"solution\"") != std::string::npos;
       }
   EXPECT_TRUE(has_solution);
+}
+
+TEST(AppExecutables, CoupledPoissonConfigurableMultiplier)
+{
+  const auto directory =
+    ImmersX::TestPaths::output_path("composable/coupled-poisson-q1");
+  const auto log = directory / "application.log";
+  run_application("coupled_poisson",
+                  ImmersX::TestPaths::binary_path(
+                    "gtests/parameters/coupled_poisson_multiplier_q1.prm"),
+                  directory,
+                  log);
+  std::ifstream     log_input(log);
+  const std::string diagnostics((std::istreambuf_iterator<char>(log_input)),
+                                std::istreambuf_iterator<char>());
+  // Two cells with two discontinuous DoFs each, rather than the DG0 default.
+  EXPECT_NE(diagnostics.find("multiplier_dofs = 4"), std::string::npos)
+    << diagnostics;
+  EXPECT_TRUE(
+    std::filesystem::is_regular_file(directory / "multiplier_q1.pvd"));
+  std::ifstream input(directory / "multiplier_q1-0.0.vtu");
+  ASSERT_TRUE(input.good());
+  const std::string contents((std::istreambuf_iterator<char>(input)),
+                             std::istreambuf_iterator<char>());
+  EXPECT_NE(contents.find("Name=\"lagrange_multiplier\""), std::string::npos);
+}
+
+TEST(AppExecutables, ElasticStaticConfigurableSpace)
+{
+  run_app_with_parameter("elastic_static_adapter",
+                         "gtests/parameters/elastic_static_space_q2.prm");
 }
 
 TEST(AppExecutables, CoupledPoisson)

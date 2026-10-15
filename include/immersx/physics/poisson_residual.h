@@ -43,16 +43,12 @@ namespace ImmersX
   PoissonFields<dim, spacedim>
   contribute(Builder &builder, const PoissonSolver<dim, spacedim> &problem)
   {
-    using VectorType = typename PoissonSolver<dim, spacedim>::VectorType;
     const auto solution_id =
       builder.algebraic_field("solution",
                               problem.locally_owned_dofs(),
                               problem.locally_relevant_dofs());
-    using Space         = typename PoissonFields<dim, spacedim>::Space;
-    auto       space    = std::make_shared<Space>(problem.dof_handler(),
-                                         problem.mapping(),
-                                         problem.constraints(),
-                                         &problem.locally_relevant_dofs());
+    using Space = typename PoissonFields<dim, spacedim>::Space;
+    auto space  = std::make_shared<Space>(finite_element_space_view(problem));
     const auto solution = space->field(solution_id,
                                        "solution",
                                        dealii::FEValuesExtractors::Scalar(0));
@@ -65,24 +61,8 @@ namespace ImmersX
                            });
 
     builder.term(solution_id, "poisson")
-      .residual([solution_id, &problem](const auto &context) {
-        const auto &state = context.state(solution_id);
-        dealii::PackagedOperation<VectorType> result;
-        result.reinit_vector = [state](VectorType &vector, const bool omit) {
-          vector.reinit(state, omit);
-        };
-        result.apply = [&problem, &state](VectorType &vector) {
-          problem.system_matrix().vmult(vector, state);
-          vector -= problem.system_rhs();
-        };
-        result.apply_add = [&problem, &state](VectorType &vector) {
-          VectorType contribution;
-          contribution.reinit(state);
-          problem.system_matrix().vmult(contribution, state);
-          contribution -= problem.system_rhs();
-          vector += contribution;
-        };
-        return result;
+      .residual([solution_id, &problem, matrix](const auto &context) {
+        return matrix.view * context.state(solution_id) - problem.system_rhs();
       })
       .state(solution_id, matrix);
 

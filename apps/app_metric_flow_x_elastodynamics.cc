@@ -58,7 +58,6 @@ namespace
     using FieldVector  = MetricFlowX::VectorType;
     using GlobalVector = ImmersXLA::MPI::BlockVector;
     using Adapter      = IDAAdapter<FieldVector, GlobalVector>;
-    using SolidField   = Field<3, 3, FEValuesExtractors::Vector>;
     using WallLift     = TensorProductLift<1, 2, 3, 3>;
 
     ParameterAcceptor::clear();
@@ -71,38 +70,36 @@ namespace
                                                  &fixed_step,
                                                  &ida_parameters);
     WallLift                    wall_lift("/MetricFlowX vessel wall lift/");
-    auto                       &prm = ParameterAcceptor::prm;
-    prm.enter_subsection("MetricFlowSystem<1, 3>");
-    const auto default_lambda_element =
-      "FE_DGQ(" + std::to_string(prm.get_integer("Finite element degree")) +
-      ")";
-    prm.leave_subsection();
     FiniteElementSpaceParameters<1, 3> lambda_parameters(
-      "/MetricFlowX multiplier space/", default_lambda_element);
+      "/MetricFlowX multiplier space/", "auto");
 
     initialize_parameters(parameter_file);
     flow_problem.initialize_params(parameter_file);
 
     flow_problem.setup();
-    auto lambda_space =
-      std::make_shared<FiniteElementSpace<1, 3>>(flow_problem.triangulation(),
-                                                 lambda_parameters);
-    const auto *area_fe = dynamic_cast<const FE_DGQ<1, 3> *>(
+    if (lambda_parameters.finite_element == "auto")
+      lambda_parameters.finite_element =
+        "FE_DGQ(" +
+        std::to_string(flow_problem.finite_element().base_element(0).degree) +
+        ")";
+    FiniteElementSpace<1, 3> lambda_space(flow_problem.triangulation(),
+                                          lambda_parameters);
+    const auto              *area_fe = dynamic_cast<const FE_DGQ<1, 3> *>(
       &flow_problem.finite_element().base_element(0));
     const auto *lambda_fe =
-      dynamic_cast<const FE_DGQ<1, 3> *>(&lambda_space->finite_element());
+      dynamic_cast<const FE_DGQ<1, 3> *>(&lambda_space.finite_element());
     AssertThrow(area_fe != nullptr && lambda_fe != nullptr &&
                   area_fe->degree == lambda_fe->degree &&
                   area_fe->n_dofs_per_cell() == lambda_fe->n_dofs_per_cell(),
                 ExcMessage("The multiplier FE must have the same local "
                            "basis as MetricFlowX area."));
-    const auto lambda_view = lambda_space->view();
-    const auto lambda      = lambda_view.field("lambda");
-    const auto imported = std::make_shared<ImportedFiniteElementFields<1, 3>>(
+    const auto                        lambda_view = lambda_space.view();
+    const auto                        lambda      = lambda_view.field("lambda");
+    ImportedFiniteElementFields<1, 3> imported(
       metric_flow_parameter("Vtk file path for mesh input"),
       flow_problem.triangulation(),
       MPI_COMM_WORLD);
-    const auto a0 = imported->field("a0");
+    const auto a0 = imported.field("a0");
     const auto A0 = frozen(a0.field(), a0.coefficients());
 
     SolidProblem solid_problem(solid_parameters);

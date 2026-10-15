@@ -30,10 +30,10 @@ namespace
     using GlobalVector = ImmersX::ImmersXLA::MPI::BlockVector;
     using Adapter      = ImmersX::IDAAdapter<FieldVector, GlobalVector>;
 
+    Problem                         problem(MPI_COMM_WORLD);
     ImmersX::TimeIntervalParameters time_parameters(
       "/MetricFlowSystem<1, 3>/Time interval/");
     ImmersX::IDAParameters ida_parameters("/MetricFlowSystem<1, 3>/IDA/");
-    Problem                problem(MPI_COMM_WORLD);
     problem.initialize_params(parameter_file);
     problem.setup();
 

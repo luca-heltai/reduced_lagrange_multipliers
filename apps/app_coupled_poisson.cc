@@ -10,10 +10,6 @@
 #include <deal.II/base/mpi.h>
 #include <deal.II/base/parameter_acceptor.h>
 
-#include <deal.II/dofs/dof_tools.h>
-
-#include <deal.II/fe/fe_dgq.h>
-
 #include <deal.II/numerics/data_out.h>
 
 #include <immersx/core/constraint.h>
@@ -54,6 +50,8 @@ namespace
     PoissonParameters<2>                bulk_parameters;
     PoissonParameters<1, 2> embedded_parameters("/Embedded Poisson/");
     LinearSolverParameters  adapter_parameters;
+    FiniteElementSpaceParameters<1, 2> multiplier_parameters(
+      "/Coupled Poisson/Multiplier space/", "FE_DGQ<1>(0)");
     initialize_parameters(parameter_file);
 
     bulk_parameters.output_directory = application_parameters.output_directory;
@@ -80,23 +78,12 @@ namespace
     const auto bulk     = adapter.add(bulk_problem, "bulk");
     const auto embedded = adapter.add(embedded_problem, "embedded");
 
-    // The multiplier has its own FE/DoFHandler, while sharing the embedded
-    // geometry with the line problem.  This deliberately exercises the
-    // paired-DoFHandler weak-term path rather than particle search.
-    FE_DGQ<1, 2>     multiplier_fe(0);
-    DoFHandler<1, 2> multiplier_dh(embedded_problem.triangulation());
-    multiplier_dh.distribute_dofs(multiplier_fe);
-    const auto multiplier_owned = multiplier_dh.locally_owned_dofs();
-    const auto multiplier_relevant =
-      DoFTools::extract_locally_relevant_dofs(multiplier_dh);
-    AffineConstraints<double> multiplier_constraints;
-    multiplier_constraints.reinit(multiplier_owned, multiplier_relevant);
-    multiplier_constraints.close();
-
-    const auto multiplier_view = fe_space(multiplier_dh,
-                                          StaticMappingQ1<1, 2>::mapping,
-                                          multiplier_constraints,
-                                          multiplier_relevant);
+    // Independent multiplier DoFs share the embedded geometry.
+    FiniteElementSpace<1, 2> multiplier_space(embedded_problem.triangulation(),
+                                              multiplier_parameters);
+    AssertThrow(multiplier_space.finite_element().n_components() == 1,
+                ExcMessage("The multiplier FE must be scalar."));
+    const auto multiplier_view = multiplier_space.view();
     const auto bulk_field      = bulk.fields().solution;
     const auto embedded_field  = embedded.fields().solution;
     const auto multiplier      = multiplier_view.field("lambda");
@@ -117,7 +104,7 @@ namespace
     std::filesystem::create_directories(
       application_parameters.output_directory);
     dealii::DataOut<1, 2> multiplier_output;
-    multiplier_output.attach_dof_handler(multiplier_dh);
+    multiplier_output.attach_dof_handler(multiplier_space.dof_handler());
     multiplier_output.add_data_vector(
       adapter.field(state, coupling.fields().multiplier),
       "lagrange_multiplier",
@@ -144,7 +131,9 @@ namespace
     adapter.evaluate_residual(state, residual);
     const double residual_norm = residual.l2_norm();
     if (dealii::Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
-      std::cout << "coupled_residual = " << residual_norm << '\n';
+      std::cout << "multiplier_dofs = "
+                << multiplier_space.dof_handler().n_dofs() << '\n'
+                << "coupled_residual = " << residual_norm << '\n';
 
     AssertThrow(std::isfinite(residual_norm) && residual_norm < 1.e-7,
                 dealii::ExcMessage(
