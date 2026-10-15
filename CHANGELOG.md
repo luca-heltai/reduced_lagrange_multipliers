@@ -113,6 +113,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Fixed
 
+- [PR #264](https://github.com/luca-heltai/immersx/pull/264) Prevent the Navier–Stokes tutorial from timing out in Debug builds by reusing finite-element evaluations during nonlinear Jacobian assembly.
 - [PR #252](https://github.com/luca-heltai/immersx/pull/252) Select all ambient components of embedded vector fields and evolve the fiber driver's matrix-only backward-Euler reference from its own displacement and velocity history.
 - [PR #244](https://github.com/luca-heltai/immersx/pull/244) Assemble nonlinear residuals into owned-only vectors, retain off-rank matching and lifted Jacobian entries, and reject frozen inputs on incompatible meshes or mappings.
 - [PR #244](https://github.com/luca-heltai/immersx/pull/244) Use ghosted imported inputs and owned-only outputs in distributed frozen-field tests.
