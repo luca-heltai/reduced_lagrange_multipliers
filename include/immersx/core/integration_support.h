@@ -98,6 +98,15 @@ namespace ImmersX
   struct InferredIntegrationSupport
   {};
 
+  template <typename Type>
+  struct is_integration_support : std::false_type
+  {};
+
+  template <int dim, int spacedim>
+  struct is_integration_support<IntegrationSupport<dim, spacedim>>
+    : std::true_type
+  {};
+
   template <int dim, int spacedim>
   struct BoundaryNormalDirection
   {

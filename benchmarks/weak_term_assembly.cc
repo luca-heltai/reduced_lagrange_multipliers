@@ -13,6 +13,7 @@
 #include <deal.II/dofs/dof_handler.h>
 #include <deal.II/dofs/dof_tools.h>
 
+#include <deal.II/fe/fe_dgq.h>
 #include <deal.II/fe/fe_q.h>
 #include <deal.II/fe/fe_system.h>
 
@@ -22,6 +23,10 @@
 
 #include <deal.II/lac/dynamic_sparsity_pattern.h>
 #include <deal.II/lac/sparse_matrix.h>
+
+#include <deal.II/meshworker/copy_data.h>
+#include <deal.II/meshworker/mesh_loop.h>
+#include <deal.II/meshworker/scratch_data.h>
 
 #include <deal.II/non_matching/coupling.h>
 
@@ -57,6 +62,29 @@ namespace
       if (std::abs(point[0] - 1.) < 1.e-12)
         return 1.;
       return 0.;
+    }
+  };
+
+  struct ProductPlusGradientOffset
+  {
+    double
+    evaluate(const double        first,
+             const Tensor<1, 2> &gradient,
+             const double        offset) const
+    {
+      return first * (1. + gradient[0]) + offset;
+    }
+
+    double
+    linearize(const double        first,
+              const Tensor<1, 2> &gradient,
+              const double,
+              const double        first_direction,
+              const Tensor<1, 2> &gradient_direction,
+              const double) const
+    {
+      return first_direction * (1. + gradient[0]) +
+             first * gradient_direction[0];
     }
   };
 
@@ -543,6 +571,317 @@ benchmark_dimension(const unsigned int refinements,
 }
 
 void
+benchmark_heterogeneous_nonlinear(const unsigned int refinements,
+                                  const unsigned int repetitions)
+{
+  using Vector = dealii::Vector<double>;
+  using Matrix = dealii::SparseMatrix<double>;
+  using Model  = SemiDiscreteModel<Vector, Matrix>;
+
+  const auto       setup_start = Clock::now();
+  Triangulation<2> triangulation;
+  GridGenerator::hyper_cube(triangulation);
+  triangulation.refine_global(refinements);
+  for (const auto &cell : triangulation.active_cell_iterators())
+    cell->set_material_id(cell->center()[0] < 0.5 ? 1 : 0);
+
+  FE_Q<2>       first_fe(1);
+  FE_Q<2>       second_fe(2);
+  FE_DGQ<2>     frozen_fe(0);
+  DoFHandler<2> first_dh(triangulation), second_dh(triangulation),
+    frozen_dh(triangulation);
+  first_dh.distribute_dofs(first_fe);
+  second_dh.distribute_dofs(second_fe);
+  frozen_dh.distribute_dofs(frozen_fe);
+  AffineConstraints<double> first_constraints, second_constraints,
+    frozen_constraints;
+  first_constraints.close();
+  second_constraints.close();
+  frozen_constraints.close();
+
+  StateLayout layout;
+  const auto  first_space =
+    fe_space(first_dh, StaticMappingQ1<2>::mapping, first_constraints);
+  const auto second_space =
+    fe_space(second_dh, StaticMappingQ1<2>::mapping, second_constraints);
+  const auto frozen_space =
+    fe_space(frozen_dh, StaticMappingQ1<2>::mapping, frozen_constraints);
+  const auto first  = first_space.field(layout, "first");
+  const auto target = first_space.field(layout, "target");
+  const auto second = second_space.field(layout, "second");
+  const auto offset = frozen_space.field("offset");
+  Vector     frozen_coefficients(frozen_dh.n_dofs());
+  for (unsigned int i = 0; i < frozen_coefficients.size(); ++i)
+    frozen_coefficients[i] = 0.25 + 0.1 * i;
+
+  const auto                          observable = transform(value(first),
+                                    gradient(second),
+                                    frozen(offset, frozen_coefficients),
+                                    ProductPlusGradientOffset{});
+  const IntegrationSupport<2>         support(triangulation, 1);
+  auto                                model = std::make_shared<Model>();
+  SemidiscreteBuilder<Vector, Matrix> builder(layout, *model);
+  weak_term(observable, test(target), support).add(builder);
+
+  Vector first_state(first_dh.n_dofs()), second_state(second_dh.n_dofs()),
+    target_state(first_dh.n_dofs());
+  for (unsigned int i = 0; i < first_state.size(); ++i)
+    first_state[i] = 0.5 + 0.2 * i;
+  for (unsigned int i = 0; i < second_state.size(); ++i)
+    second_state[i] = 1. + 0.05 * i;
+  StateView<Vector> state_view(layout, 0.);
+  state_view.bind(first.field_id(), first_state);
+  state_view.bind(second.field_id(), second_state);
+  state_view.bind(target.field_id(), target_state);
+  const EvaluationContext<Vector> context(0., state_view);
+  const QGauss<2>                 quadrature(3);
+
+  struct Scratch
+  {
+    Scratch(const Mapping<2>       &mapping,
+            const FiniteElement<2> &first_fe,
+            const FiniteElement<2> &second_fe,
+            const FiniteElement<2> &frozen_fe,
+            const FiniteElement<2> &target_fe,
+            const Quadrature<2>    &quadrature)
+      : first(mapping, first_fe, quadrature, update_values | update_JxW_values)
+      , second(mapping, second_fe, quadrature, update_gradients)
+      , frozen(mapping, frozen_fe, quadrature, update_values)
+      , target(mapping,
+               target_fe,
+               quadrature,
+               update_values | update_JxW_values)
+    {}
+
+    MeshWorker::ScratchData<2> first, second, frozen, target;
+  };
+  Scratch      scratch(StaticMappingQ1<2>::mapping,
+                  first_fe,
+                  second_fe,
+                  frozen_fe,
+                  first_fe,
+                  quadrature);
+  const double setup_ms = milliseconds(Clock::now() - setup_start);
+
+  struct NativeAssembly
+  {
+    std::shared_ptr<SparsityPattern> first_sparsity, second_sparsity;
+    std::shared_ptr<Matrix>          first_jacobian, second_jacobian;
+    Vector                           residual;
+  };
+  const auto native_assembly = [&] {
+    DynamicSparsityPattern first_dynamic(target.dof_handler().n_dofs(),
+                                         first.dof_handler().n_dofs());
+    DynamicSparsityPattern second_dynamic(target.dof_handler().n_dofs(),
+                                          second.dof_handler().n_dofs());
+    DoFTools::make_sparsity_pattern(target.dof_handler(),
+                                    first.dof_handler(),
+                                    first_dynamic);
+    DoFTools::make_sparsity_pattern(target.dof_handler(),
+                                    second.dof_handler(),
+                                    second_dynamic);
+    auto first_pattern  = std::make_shared<SparsityPattern>();
+    auto second_pattern = std::make_shared<SparsityPattern>();
+    first_pattern->copy_from(first_dynamic);
+    second_pattern->copy_from(second_dynamic);
+    auto   first_matrix  = std::make_shared<Matrix>(*first_pattern);
+    auto   second_matrix = std::make_shared<Matrix>(*second_pattern);
+    Vector residual(target.dof_handler().n_dofs());
+
+    MeshWorker::CopyData<2, 1, 3> copy;
+    const auto                    cell_worker = [&](const auto &cell,
+                                 auto       &worker_scratch,
+                                 auto       &data) {
+      if (cell->material_id() != 1)
+        return;
+      const auto &first_values = worker_scratch.first.reinit(cell);
+      const auto  second_cell =
+        cell->as_dof_handler_iterator(second.dof_handler());
+      const auto frozen_cell =
+        cell->as_dof_handler_iterator(offset.dof_handler());
+      const auto target_cell =
+        cell->as_dof_handler_iterator(target.dof_handler());
+      const auto &second_values = worker_scratch.second.reinit(second_cell);
+      const auto &frozen_fe_values = worker_scratch.frozen.reinit(frozen_cell);
+      const auto &target_values = worker_scratch.target.reinit(target_cell);
+      data.reinit(0, first_fe.n_dofs_per_cell(), first_fe.n_dofs_per_cell());
+      data.reinit(1, first_fe.n_dofs_per_cell(), second_fe.n_dofs_per_cell());
+      data.vectors[0].reinit(first_fe.n_dofs_per_cell());
+      data.local_dof_indices[2].resize(first_fe.n_dofs_per_cell());
+      auto &first_indices  = data.local_dof_indices[0];
+      auto &second_indices = data.local_dof_indices[1];
+      auto &target_indices = data.local_dof_indices[2];
+      std::vector<types::global_dof_index> frozen_indices(
+        frozen_fe.n_dofs_per_cell());
+      cell->get_dof_indices(first_indices);
+      second_cell->get_dof_indices(second_indices);
+      frozen_cell->get_dof_indices(frozen_indices);
+      target_cell->get_dof_indices(target_indices);
+
+      for (unsigned int q = 0; q < quadrature.size(); ++q)
+        {
+          double       first_value = 0.;
+          Tensor<1, 2> second_gradient;
+          for (unsigned int j = 0; j < first_indices.size(); ++j)
+            first_value +=
+              first_state[first_indices[j]] * first_values.shape_value(j, q);
+          for (unsigned int j = 0; j < second_indices.size(); ++j)
+            second_gradient +=
+              second_state[second_indices[j]] * second_values.shape_grad(j, q);
+          const double integrand = first_value * (1. + second_gradient[0]) +
+                                   frozen_coefficients[frozen_indices[0]] *
+                                     frozen_fe_values.shape_value(0, q);
+          for (unsigned int i = 0; i < target_indices.size(); ++i)
+            {
+              const double test_value = target_values.shape_value(i, q);
+              data.vectors[0][i] +=
+                integrand * test_value * target_values.JxW(q);
+              for (unsigned int j = 0; j < first_indices.size(); ++j)
+                data.matrices[0](i, j) += (1. + second_gradient[0]) *
+                                          first_values.shape_value(j, q) *
+                                          test_value * target_values.JxW(q);
+              for (unsigned int j = 0; j < second_indices.size(); ++j)
+                data.matrices[1](i, j) += first_value *
+                                          second_values.shape_grad(j, q)[0] *
+                                          test_value * target_values.JxW(q);
+            }
+        }
+    };
+    const auto copier = [&](const auto &data) {
+      first_constraints.distribute_local_to_global(data.vectors[0],
+                                                   data.local_dof_indices[2],
+                                                   residual);
+      first_constraints.distribute_local_to_global(data.matrices[0],
+                                                   data.local_dof_indices[2],
+                                                   first_constraints,
+                                                   data.local_dof_indices[0],
+                                                   *first_matrix);
+      first_constraints.distribute_local_to_global(data.matrices[1],
+                                                   data.local_dof_indices[2],
+                                                   second_constraints,
+                                                   data.local_dof_indices[1],
+                                                   *second_matrix);
+    };
+    MeshWorker::mesh_loop(first.dof_handler().active_cell_iterators(),
+                          cell_worker,
+                          copier,
+                          scratch,
+                          copy,
+                          MeshWorker::assemble_own_cells,
+                          {},
+                          {},
+                          1,
+                          1);
+    return NativeAssembly{std::move(first_pattern),
+                          std::move(second_pattern),
+                          std::move(first_matrix),
+                          std::move(second_matrix),
+                          std::move(residual)};
+  };
+  Vector     immersed_residual(target.dof_handler().n_dofs());
+  const auto immersed_assembly = [&] {
+    immersed_residual = 0.;
+    model->evaluate_row(target.field_id(), context, immersed_residual);
+    auto first_jacobian  = model->state_matrix_operator(target.field_id(),
+                                                       first.field_id(),
+                                                       context);
+    auto second_jacobian = model->state_matrix_operator(target.field_id(),
+                                                        second.field_id(),
+                                                        context);
+    AssertThrow(first_jacobian.has_value() && second_jacobian.has_value(),
+                ExcMessage("Missing heterogeneous Jacobian."));
+    return std::pair{std::move(first_jacobian), std::move(second_jacobian)};
+  };
+  const auto immersed_result     = immersed_assembly();
+  const auto native_result       = native_assembly();
+  Vector     residual_difference = immersed_residual;
+  residual_difference -= native_result.residual;
+  const double residual_error =
+    residual_difference.l2_norm() /
+    std::max(native_result.residual.l2_norm(), 1.e-300);
+  const double first_jacobian_error =
+    relative_matrix_difference(*immersed_result.first->matrix(),
+                               *native_result.first_jacobian);
+  const double second_jacobian_error =
+    relative_matrix_difference(*immersed_result.second->matrix(),
+                               *native_result.second_jacobian);
+  Vector direction_first(first_state.size()),
+    direction_second(second_state.size());
+  for (unsigned int i = 0; i < direction_first.size(); ++i)
+    direction_first[i] = 0.3 + 0.07 * i;
+  for (unsigned int i = 0; i < direction_second.size(); ++i)
+    direction_second[i] = 0.8 - 0.025 * i;
+  Vector immersed_first_action(target.dof_handler().n_dofs()),
+    immersed_second_action(target.dof_handler().n_dofs()),
+    native_first_action(target.dof_handler().n_dofs()),
+    native_second_action(target.dof_handler().n_dofs());
+  immersed_result.first->view.vmult(immersed_first_action, direction_first);
+  immersed_result.second->view.vmult(immersed_second_action, direction_second);
+  native_result.first_jacobian->vmult(native_first_action, direction_first);
+  native_result.second_jacobian->vmult(native_second_action, direction_second);
+  immersed_first_action -= native_first_action;
+  immersed_second_action -= native_second_action;
+  const double jacobian_action_error =
+    std::sqrt(immersed_first_action.norm_sqr() +
+              immersed_second_action.norm_sqr()) /
+    std::max(std::sqrt(native_first_action.norm_sqr() +
+                       native_second_action.norm_sqr()),
+             1.e-300);
+  AssertThrow(residual_error < 1.e-12 && first_jacobian_error < 1.e-12 &&
+                second_jacobian_error < 1.e-12 &&
+                jacobian_action_error < 1.e-12,
+              ExcMessage(
+                "ImmersX and MeshWorker heterogeneous results differ."));
+
+  // Both paths return the residual and both Jacobians. MeshWorker fuses them
+  // into one cell traversal; ImmersX exposes separate residual and Jacobian
+  // assembly calls, so the ratio measures each public path's end-to-end cost.
+  immersed_assembly();
+  native_assembly();
+  std::vector<double> immersed_samples, native_samples;
+  immersed_samples.reserve(repetitions);
+  native_samples.reserve(repetitions);
+  for (unsigned int repetition = 0; repetition < repetitions; ++repetition)
+    if (repetition % 2 == 0)
+      {
+        auto start = Clock::now();
+        (void)immersed_assembly();
+        immersed_samples.push_back(milliseconds(Clock::now() - start));
+        start = Clock::now();
+        (void)native_assembly();
+        native_samples.push_back(milliseconds(Clock::now() - start));
+      }
+    else
+      {
+        auto start = Clock::now();
+        (void)native_assembly();
+        native_samples.push_back(milliseconds(Clock::now() - start));
+        start = Clock::now();
+        (void)immersed_assembly();
+        immersed_samples.push_back(milliseconds(Clock::now() - start));
+      }
+  const auto [immersed_median, immersed_mad] = median_and_mad(immersed_samples);
+  const auto [native_median, native_mad]     = median_and_mad(native_samples);
+  std::cout << "{\"case\":\"heterogeneous_nonlinear_q1_q2_dgq0\","
+            << "\"deal_ii_version\":\"" << DEAL_II_PACKAGE_VERSION
+            << "\",\"dimension\":2,\"ranks\":1,\"dofs_q1\":"
+            << first_dh.n_dofs() << ",\"dofs_q2\":" << second_dh.n_dofs()
+            << ",\"cells\":" << triangulation.n_active_cells()
+            << ",\"quadrature_points_per_cell\":" << quadrature.size()
+            << ",\"setup_ms\":" << setup_ms
+            << ",\"relative_residual_error\":" << residual_error
+            << ",\"relative_q1_jacobian_error\":" << first_jacobian_error
+            << ",\"relative_q2_jacobian_error\":" << second_jacobian_error
+            << ",\"relative_jacobian_action_error\":" << jacobian_action_error
+            << ",\"warm_immersx_median_ms\":" << immersed_median
+            << ",\"warm_immersx_mad_ms\":" << immersed_mad
+            << ",\"warm_dealii_meshworker_median_ms\":" << native_median
+            << ",\"warm_dealii_meshworker_mad_ms\":" << native_mad
+            << ",\"warm_ratio\":" << immersed_median / native_median
+            << ",\"repetitions\":" << repetitions << "}\n";
+}
+
+void
 benchmark_nonmatching_support(const unsigned int repetitions)
 {
   using Vector = dealii::Vector<double>;
@@ -740,5 +1079,6 @@ main(int argc, char **argv)
   benchmark_dimension<1>(refinements, repetitions);
   benchmark_dimension<2>(refinements, repetitions);
   benchmark_dimension<3>(refinements, repetitions);
+  benchmark_heterogeneous_nonlinear(refinements, repetitions);
   benchmark_nonmatching_support(repetitions);
 }
