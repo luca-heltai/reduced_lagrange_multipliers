@@ -8,9 +8,14 @@ The runnable example uses one parameter file:
 tutorials/metric_flow_x_elastodynamics/two_way.prm.in
 ```
 
-MetricFlowX must provide the same build configuration as ImmersX. For a
-Debug-only installation, configure a separate Debug build; a DebugRelease
-build cannot enable that package:
+MetricFlowX must provide the same build configuration as ImmersX.
+DebugRelease requires a dual-variant package exporting
+`MetricFlowX::metric_flow_x_Debug` and
+`MetricFlowX::metric_flow_x_Release`. ImmersX links each library and its
+tests to the matching concrete target, keeping the deal.II variants separate.
+Older packages exporting only `MetricFlowX::metric_flow_x` remain supported
+in compatible single-variant builds; incompatible packages are disabled.
+For a Debug-only installation, configure a separate Debug build:
 
 ```bash
 cmake -S . -B build-metric-debug -DCMAKE_BUILD_TYPE=Debug \

@@ -108,7 +108,7 @@ foreach(_build_type ${_d2_build_types})
       if(IMMERSX_WITH_METRIC_FLOW_X AND
          _public_header STREQUAL "immersx/physics/metric_flow_x.h")
         target_link_libraries(${_public_header_target}
-                              MetricFlowX::metric_flow_x)
+                              ${IMMERSX_METRIC_FLOW_X_TARGET_${_build_type}})
       endif()
       DEAL_II_SETUP_TARGET(${_public_header_target} ${_BUILD_TYPE})
       list(APPEND _public_header_targets ${_public_header_target})
