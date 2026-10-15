@@ -13,6 +13,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 - [PR #254](https://github.com/luca-heltai/immersx/pull/254) Allow parameter files to select the coupled Poisson multiplier, static elasticity displacement, and fiber velocity multiplier finite elements while preserving degree-based defaults.
 
+- [PR #251](https://github.com/luca-heltai/immersx/pull/251) Add a performance history page with native comparisons, commit coverage, diagnostic regressions, and an archived benchmark pipeline that runs before documentation builds. Keep changed benchmark sources and explicit timing scopes in separate comparison series without relabelling historical data. Restrict official archive writes and Pages deployment to trusted master events, and verify batch provenance before writing.
 - [PR #249](https://github.com/luca-heltai/immersx/pull/249) Added a how-to guide for choosing weak-term integration supports.
 - [PR #247](https://github.com/luca-heltai/immersx/pull/247) Added background-to-background weak terms over independent codimension-one supports, including nonlinear terms with frozen inputs.
 - [PR #246](https://github.com/luca-heltai/immersx/pull/246) Added geometric quadrature supports for fixed tensor-product lifts and linear weak-term assembly on a distributed bulk mesh.

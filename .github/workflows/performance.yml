@@ -1,0 +1,90 @@
+name: Performance measurements
+
+on:
+  workflow_call:
+    inputs:
+      official:
+        type: boolean
+        default: false
+      retry:
+        type: boolean
+        default: false
+      commit:
+        type: string
+        default: ''
+      runner:
+        description: Trusted callers only; PR callers must use GitHub-hosted runners
+        type: string
+        default: ubuntu-24.04
+      environment:
+        description: Measurement environment identity, distinct for each controlled machine
+        type: string
+        default: github-hosted-diagnostic
+      stable:
+        description: True only for a controlled dedicated runner
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  measure:
+    # Untrusted callers cannot select a dedicated runner.
+    runs-on: ${{ github.ref == 'refs/heads/master' && contains(fromJSON('["push", "schedule", "workflow_dispatch"]'), github.event_name) && inputs.runner || 'ubuntu-24.04' }}
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Test the harness
+        run: python3 -m unittest discover -s scripts/performance/tests -v
+      - name: Read persistent history
+        run: python3 scripts/performance/archive.py read --output "$RUNNER_TEMP/history"
+      - name: Plan every unmeasured first-parent commit
+        env:
+          OFFICIAL: ${{ inputs.official && github.ref == 'refs/heads/master' && contains(fromJSON('["push", "schedule", "workflow_dispatch"]'), github.event_name) }}
+          RETRY: ${{ inputs.retry }}
+          COMMIT: ${{ inputs.commit }}
+        run: |
+          options=()
+          if [ "$OFFICIAL" != true ]; then options+=(--preview); fi
+          if [ "$RETRY" = true ]; then options+=(--retry); fi
+          if [ -n "$COMMIT" ]; then options+=(--commit "$COMMIT"); fi
+          mkdir -p "$RUNNER_TEMP/batch"
+          python3 scripts/performance/pipeline.py plan \
+            --archive "$RUNNER_TEMP/history" --output "$RUNNER_TEMP/batch/plan.json" "${options[@]}"
+      - name: Measure in the CI deal.II environment
+        env:
+          IMAGE: dealii/dealii:v9.7.1-noble
+          ENVIRONMENT: ${{ inputs.environment }}
+          STABLE: ${{ inputs.stable }}
+        run: |
+          docker pull "$IMAGE"
+          digest=$(docker image inspect "$IMAGE" --format '{{index .RepoDigests 0}}')
+          docker run --rm --user root \
+            -e GITHUB_RUN_ID -e GITHUB_RUN_ATTEMPT -e GITHUB_REPOSITORY \
+            -e OMPI_ALLOW_RUN_AS_ROOT=1 -e OMPI_ALLOW_RUN_AS_ROOT_CONFIRM=1 \
+            -v "$GITHUB_WORKSPACE:/repo" \
+            -v "$GITHUB_WORKSPACE/scripts/performance:/harness:ro" \
+            -v "$RUNNER_TEMP/batch:/batch" \
+            "$digest" bash -c 'git config --global --add safe.directory /repo; options=(); if [ "$3" = true ]; then options+=(--stable); fi; python3 /harness/pipeline.py measure --repo /repo --plan /batch/plan.json --output /batch --environment "$2" --image "$1" "${options[@]}"' _ "$digest" "$ENVIRONMENT" "$STABLE"
+      - name: Preserve partial results, raw output and plan
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-batch-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/batch
+          retention-days: 30
+          if-no-files-found: error
+      - name: Report numerical or execution failures
+        run: |
+          python3 - <<'PY'
+          import json, os, pathlib
+          directory = pathlib.Path(os.environ['RUNNER_TEMP']) / 'batch'
+          plan = json.loads((directory / 'plan.json').read_text())
+          results = [json.loads(p.read_text()) for p in (directory / 'attempts').glob('*.json')]
+          assert len(results) == len(plan['selected']), 'Missing measurement attempts'
+          assert all(r['status'] == 'passed' for r in results), 'Benchmark validation failed; see archived attempts'
+          PY

@@ -16,6 +16,8 @@ want to complete.
   architectural ideas behind the examples.
 - [Look up the reference](reference/index): check executable capabilities,
   parameter groups, and the generated C++ API.
+- [Performance history](performance/index): inspect native comparisons, commit
+  regressions, validation failures, and gaps in benchmark coverage.
 - [Contribute](developer/index): build, test, document, and extend the project.
 
 The [API reference](api/library_root) is generated from the public
@@ -33,6 +35,8 @@ concepts/index
 reference/index
 dealiiX-platform/index
 developer/index
+performance/index
+performance/pipeline
 changes
 about/index
 ```

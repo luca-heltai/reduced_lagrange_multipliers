@@ -48,6 +48,14 @@ if ! command -v sphinx-build >/dev/null 2>&1; then
   exit 1
 fi
 
+PERFORMANCE_REPORT="${IMMERSX_PERFORMANCE_REPORT:-${BUILD_DIR}/performance-empty}"
+if [ -z "${IMMERSX_PERFORMANCE_REPORT:-}" ]; then
+  python3 "${SCRIPT_DIR}/performance/pipeline.py" export \
+    --archive "${BUILD_DIR}/performance-empty-archive" --output "${PERFORMANCE_REPORT}"
+fi
+# Fail before building rather than silently substituting historical results.
+test -f "${PERFORMANCE_REPORT}/history.json"
+
 mkdir -p "${BUILD_DIR}" "${DOXYGEN_OUT}" "${API_STUB_DIR}"
 rm -rf "${SITE_DIR}" "${API_STUB_DIR}"
 mkdir -p "${API_STUB_DIR}"
@@ -73,5 +81,8 @@ sphinx-build \
   -W \
   "${DOCS_SOURCE_DIR}" \
   "${SITE_DIR}"
+
+mkdir -p "${SITE_DIR}/performance/data"
+cp -R "${PERFORMANCE_REPORT}/." "${SITE_DIR}/performance/data/"
 
 echo "Documentation site generated in ${SITE_DIR}"

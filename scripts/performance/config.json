@@ -1,0 +1,8 @@
+{
+  "harness_version": 2,
+  "timing_contract": "source-isolated; absent timing_scope is legacy-unspecified",
+  "build_type": "Release",
+  "refinements": 3,
+  "repetitions": 9,
+  "quadrature_recipe": "CP8: matching Q1 QGauss(2); heterogeneous QGauss(3); nonmatching/trace fixed benchmark rules; lifted representative=3 section=2 degree=0 thickness=0.05"
+}
