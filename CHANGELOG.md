@@ -11,6 +11,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Added
 
+- [PR #268](https://github.com/luca-heltai/immersx/pull/268) Backport deal.II's expanded SUNDIALS IDA controls, inequality constraints, N_Vector operations, and expert setup access. Use the backport in IDAAdapter and allow configuration before solver initialization.
 - [PR #263](https://github.com/luca-heltai/immersx/pull/263) Allow lifted Poisson modal data to use imported point/cell field aliases, nonlinear expressions, coordinates, time zero, and `pi`/`E`, evaluated from retained ghosted Domain data without another application FE space.
 - [PR #263](https://github.com/luca-heltai/immersx/pull/263) Expose the 3D scalar primitive execution path and modal lift/data, imported-radius, multiplier, coefficient-output, and lifted-output nodes in Coral, with a runnable component-level graph.
 - [PR #263](https://github.com/luca-heltai/immersx/pull/263) Add the compositional `LiftedPoisson` application with configurable bulk and modal FE spaces, imported radii, section-weighted modal constraints, Schur/AL solves, adaptive bulk refinement, and native/lifted output.

@@ -46,6 +46,10 @@ set(_public_headers
     immersx/core/state.h
     immersx/core/state_history.h
     immersx/core/sundials_ida_adapter.h
+    immersx/compatibility/dealii_9_9/ida.h
+    immersx/compatibility/dealii_9_9/n_vector.h
+    immersx/compatibility/dealii_9_9/n_vector.templates.h
+    immersx/compatibility/dealii_9_9/utilities.h
     immersx/core/sundials_kinsol_adapter.h
     immersx/core/time_parameters.h
     immersx/core/linear_adapter.h

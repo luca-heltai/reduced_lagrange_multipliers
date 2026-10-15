@@ -39,6 +39,7 @@ set(IMMERSX_INTEGRATION_TEST_SUITES
     FoundationalApplications
     TractionParameters
     DistributedIDA
+    SundialsCompatibility
     DistributedLiftedQuadrature
     ElasticStaticDimensions
     ElasticStaticExecution

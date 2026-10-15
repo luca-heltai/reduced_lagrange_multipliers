@@ -1,4 +1,41 @@
-# deal.II 9.9 compatibility: DoFHandlerCoupling
+# deal.II 9.9 compatibility
+
+## SUNDIALS IDA
+
+`ida.h`, `ida.templates.h`, `n_vector.h`, `n_vector.templates.h`, and
+`utilities.h` are snapshots of
+[deal.II PR #20260](https://github.com/dealii/dealii/pull/20260),
+commit `607797ef9f3df61760000e5c07430567e6ddd955`. The original paths are
+`include/deal.II/sundials/{ida.h,n_vector.h,n_vector.templates.h,utilities.h}` and
+`source/sundials/ida.cc`. Upstream SPDX and copyright notices are retained.
+This is an open-PR snapshot, not a claim that these APIs shipped in 9.9.
+
+Local packaging changes:
+
+- Move declarations into `ImmersX::Compatibility::SUNDIALS` and use unique
+  include guards, so installed IDA/KINSOL wrappers can coexist with this code.
+- Include the IDA implementation as `ida.templates.h`, without upstream
+  explicit instantiations, and make the two non-template N_Vector functions
+  inline. Applications can instantiate their own supported vector types.
+- Use local N_Vector and callback-exception helpers. Copying `utilities.h`
+  avoids introducing `dealii::SUNDIALS::Utilities`, which shadows
+  `dealii::Utilities` in installed deal.II 9.7.1 N_Vector templates. Qualify
+  the new minimum-quotient MPI reduction explicitly for the same reason.
+- Replace `AssertIDA(status)` with the equivalent namespace-local
+  `Assert(status >= 0, ExcIDAError(status))`.
+- Include IDA/IDAS through the upstream header's existing configuration guard
+  rather than unconditionally including IDAS in the implementation.
+- Apply the repository formatter.
+
+`IDAAdapter`, `IDAParameters::additional_data()`, and
+`TimeParameters::ida_parameters()` use this implementation. The installed
+KINSOL implementation is unchanged. Solver controls, constraints, setup hooks,
+and accessors follow the pinned upstream implementation and SUNDIALS version
+guards. Direct `AdditionalData` defaults follow upstream (including the
+`1e-15` minimum step); ImmersX parameter defaults remain unchanged.
+See `doc/developer/design/time-residual-sundials.md` for adapter usage.
+
+## DoFHandlerCoupling
 
 `dof_handler_coupling.h` is copied from
 [deal.II PR #18888](https://github.com/dealii/dealii/pull/18888), commit
