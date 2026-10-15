@@ -12,6 +12,7 @@ imported-fields
 configuration
 boundary-conditions
 reduced-coupling
+support-aware-weak-terms
 lifted-integration
 coral-backend
 testing

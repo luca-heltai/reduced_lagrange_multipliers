@@ -434,8 +434,11 @@ benchmark_dimension(const unsigned int refinements,
                 << ",\"warm_immersx_mad_ms\":" << immersed_boundary_flux_mad
                 << ",\"warm_dealii_median_ms\":" << native_boundary_flux_median
                 << ",\"warm_dealii_mad_ms\":" << native_boundary_flux_mad
-                << ",\"warm_ratio\":"
-                << immersed_boundary_flux_median / native_boundary_flux_median
+                << ",\"timing_equivalent\":false"
+                << ",\"native_timing_ratio\":null"
+                << ",\"timing_note\":\"ImmersX evaluates the linear weak term "
+                   "through its prepared matrix path; deal.II assembles the "
+                   "boundary RHS directly.\""
                 << ",\"repetitions\":" << repetitions << "}\n";
     }
 

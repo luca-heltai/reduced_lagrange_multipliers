@@ -1,3 +1,4 @@
+#include <deal.II/base/function.h>
 #include <deal.II/base/mpi.h>
 #include <deal.II/base/parameter_acceptor.h>
 
@@ -6,14 +7,18 @@
 #include <deal.II/dofs/dof_tools.h>
 
 #include <deal.II/fe/fe_q.h>
+#include <deal.II/fe/fe_system.h>
 
 #include <deal.II/grid/grid_generator.h>
+
+#include <deal.II/numerics/vector_tools.h>
 
 #include <gtest/gtest.h>
 #include <immersx/core/contributor.h>
 #include <immersx/core/domain.h>
 #include <immersx/core/fe_space.h>
 #include <immersx/core/lifted_integration_support.h>
+#include <immersx/core/observable_lift.h>
 #include <immersx/core/state.h>
 #include <immersx/core/weak_term.h>
 
@@ -282,4 +287,132 @@ TEST(LiftedIntegrationSupport, BOTH_AssemblesBulkMassOnPhysicalQuadrature)
   ones = 1.;
   ones.compress(VectorOperation::insert);
   EXPECT_NEAR(residual * ones, global_measure, 1.e-10);
+}
+
+TEST(LiftedIntegrationSupport, BOTH_SourceBulkLiftSamplesPhysicalPoints)
+{
+  ParameterAcceptor::clear();
+  DomainParameters<1, 3> representative_parameters(
+    "/Lifted source-bulk domain/");
+  representative_parameters.name_of_grid       = "hyper_cube";
+  representative_parameters.arguments_for_grid = "-1: 1: false";
+  representative_parameters.initial_refinement = 2;
+  Domain<1, 3> representative_domain(representative_parameters);
+  representative_domain.make_grid();
+
+  TensorProductLift<1, 2, 3, 3> vector_lift("/Lifted source-bulk geometry/");
+  vector_lift.section.inclusion_degree      = 0;
+  vector_lift.section.inclusion_type        = "hyper_cube";
+  vector_lift.section.selected_coefficients = {0};
+  vector_lift.section.n_q_points            = 2;
+  vector_lift.representative_n_q_points     = 2;
+  vector_lift.thickness                     = "0.25";
+  const auto support = representative_domain.lift(vector_lift);
+
+  parallel::distributed::Triangulation<3> background(MPI_COMM_WORLD);
+  GridGenerator::hyper_cube(background, -1., 1.);
+  background.refine_global(1);
+  FESystem<3>   bulk_element(FE_Q<3>(2), 3);
+  DoFHandler<3> bulk_dof_handler(background);
+  bulk_dof_handler.distribute_dofs(bulk_element);
+  AffineConstraints<double> bulk_constraints;
+  bulk_constraints.close();
+  const auto bulk_space =
+    fe_space(bulk_dof_handler, StaticMappingQ1<3>::mapping, bulk_constraints);
+
+  FE_Q<1, 3>       line_element(1);
+  DoFHandler<1, 3> line_dof_handler(representative_domain.triangulation());
+  line_dof_handler.distribute_dofs(line_element);
+  AffineConstraints<double> line_constraints;
+  line_constraints.close();
+  const auto line_space = fe_space(line_dof_handler,
+                                   StaticMappingQ1<1, 3>::mapping,
+                                   line_constraints);
+
+  StateLayout layout;
+  const auto  bulk =
+    bulk_space.field(layout, "bulk", FEValuesExtractors::Vector(0));
+  const auto line = line_space.field(layout, "line");
+
+  using Vector = ImmersXLA::MPI::Vector;
+  using Matrix = ImmersXLA::MPI::SparseMatrix;
+  using Model  = SemiDiscreteModel<Vector, Matrix>;
+  Model                               model;
+  SemidiscreteBuilder<Vector, Matrix> builder(layout, model);
+  const auto lifted_line = lift(value(line), vector_lift);
+  weak_term(value(bulk), test(lifted_line)).add(builder);
+
+  const auto lift_points = lifted_line.lifted_points();
+  ASSERT_FALSE(lift_points.empty());
+  const auto direction = lift_points.front().mode_vector;
+  ASSERT_NEAR(direction.norm(), 1., 1.e-12);
+
+  class TransverseQuadratic : public Function<3>
+  {
+  public:
+    explicit TransverseQuadratic(const Tensor<1, 3> &direction)
+      : Function<3>(3)
+      , direction_(direction)
+    {}
+
+    double
+    value(const Point<3>    &point,
+          const unsigned int component = 0) const override
+    {
+      return direction_[component] *
+             (1. + point[1] * point[1] + point[2] * point[2]);
+    }
+
+  private:
+    const Tensor<1, 3> direction_;
+  } function(direction);
+
+  Vector bulk_values;
+  bulk_values.reinit(bulk.locally_owned_dofs(), MPI_COMM_WORLD);
+  VectorTools::interpolate(bulk_dof_handler, function, bulk_values);
+
+  StateView<Vector> state_view(layout, 0.);
+  state_view.bind(bulk.field_id(), bulk_values);
+  const EvaluationContext<Vector> context(0., state_view);
+  const auto                      matrix =
+    model.state_matrix_operator(line.field_id(), bulk.field_id(), context);
+  ASSERT_TRUE(matrix.has_value());
+
+  Vector line_ones;
+  line_ones.reinit(line.locally_owned_dofs(), MPI_COMM_WORLD);
+  line_ones = 1.;
+  line_ones.compress(VectorOperation::insert);
+  Vector coupled_values;
+  coupled_values.reinit(line.locally_owned_dofs(), MPI_COMM_WORLD);
+  matrix->view.vmult(coupled_values, bulk_values);
+  const double coupled_integral = line_ones * coupled_values;
+
+  // Independently integrate the exact bulk polynomial at the support's
+  // physical points. The representative curve has zero transverse values.
+  double      local_physical_integral       = 0.;
+  double      local_representative_integral = 0.;
+  const auto &support_points = support.locally_owned_quadrature_points();
+  ASSERT_EQ(lift_points.size(), support_points.size());
+  for (std::size_t q = 0; q < support_points.size(); ++q)
+    {
+      const auto &point        = support_points[q];
+      const auto &lifted_point = lift_points[q];
+      EXPECT_EQ(point.stable_id, lifted_point.stable_id);
+      EXPECT_NEAR(point.weight, lifted_point.weight, 1.e-12);
+      EXPECT_NEAR(direction * lifted_point.mode_vector, 1., 1.e-12);
+      local_physical_integral += point.weight *
+                                 (direction * lifted_point.mode_vector) *
+                                 (1. + point.point[1] * point.point[1] +
+                                  point.point[2] * point.point[2]);
+      local_representative_integral +=
+        point.weight * (direction * lifted_point.mode_vector) *
+        (1. + point.representative_point[1] * point.representative_point[1] +
+         point.representative_point[2] * point.representative_point[2]);
+    }
+  const double physical_integral =
+    Utilities::MPI::sum(local_physical_integral, MPI_COMM_WORLD);
+  const double representative_integral =
+    Utilities::MPI::sum(local_representative_integral, MPI_COMM_WORLD);
+  EXPECT_GT(physical_integral, representative_integral + 1.e-6);
+  EXPECT_NEAR(coupled_integral, physical_integral, 1.e-10);
 }
