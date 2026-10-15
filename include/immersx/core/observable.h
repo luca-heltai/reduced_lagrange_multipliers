@@ -319,6 +319,12 @@ namespace ImmersX
       return spacedimension();
     }
 
+    unsigned int
+    polynomial_degree() const
+    {
+      return source_.space().finite_element().degree;
+    }
+
     FieldId
     source_field() const
     {
@@ -520,6 +526,12 @@ namespace ImmersX
     is_frozen() const
     {
       return observable_.is_frozen();
+    }
+
+    unsigned int
+    polynomial_degree() const
+    {
+      return observable_.polynomial_degree();
     }
 
     template <typename VectorType>
@@ -883,6 +895,18 @@ namespace ImmersX
     spacedimension()
     {
       return source_field_type::spacedimension();
+    }
+
+    unsigned int
+    polynomial_degree() const
+    {
+      unsigned int result = 0;
+      std::apply(
+        [&result](const auto &...input) {
+          ((result = std::max(result, input.polynomial_degree())), ...);
+        },
+        inputs_);
+      return result;
     }
 
     const source_field_type &

@@ -14,11 +14,14 @@ cmake --build build-bench-debug --target weak_term_assembly_benchmark_debug -j
 
 The executable compares natural ImmersX mass and Poisson weak terms on explicit
 cell supports with `dealii::MatrixCreator::create_mass_matrix` and
-`create_laplace_matrix`. It emits thirteen JSON lines: Q1 volume mass and
+`create_laplace_matrix`. It emits fourteen JSON lines: Q1 volume mass and
 Laplace matrices and constant volume source right-hand sides in 1D, 2D, and 3D;
 boundary source right-hand sides and normal flux residuals are also compared
-with `VectorTools` in 2D and 3D. deal.II does not support those boundary
-right-hand-side operations in 1D, so those cases are skipped. Each pair uses
+with `VectorTools` in 2D and 3D. One additional nonlinear case compares a
+heterogeneous Q1/Q2 expression with a frozen DGQ0 input against an independent
+`MeshWorker::mesh_loop` residual/Jacobian assembly. deal.II does not support
+those boundary right-hand-side operations in 1D, so those cases are skipped.
+Each pair uses
 the same triangulation, DoFHandler, mapping, `QGauss(degree + 1)`, constraints,
 and serial matrix representation. Each timed matrix assembly includes
 construction of its sparsity pattern and matrix. Common mesh, finite element,
@@ -37,6 +40,17 @@ error. Matrix cases also report common setup time and cold timings. Timings are
 diagnostic and are not CI pass/fail thresholds. The current benchmark covers
 matching Q1 cell supports in 1D, 2D, and 3D. Additional forms should use the
 same paired setup and numerical comparison before their timings are reported.
+
+The `heterogeneous_nonlinear_q1_q2_dgq0` case integrates
+`(u * (1 + grad(w)[0]) + c) * test(v)` on cells selected by material id, with
+Q1 `u` and `v`, Q2 `w`, and frozen DGQ0 `c`. Its MeshWorker reference assembles
+the residual and both active-field Jacobians with deal.II cell traversal,
+FEValues scratch data, affine-constraint scatter, and copy machinery. It reports
+relative residual, matrix, and matrix-action errors before warmed timing
+samples. Both paths return the residual and both Jacobians; MeshWorker fuses
+their work in one cell pass while ImmersX uses separate residual and per-field
+Jacobian calls. The ratio therefore compares the end-to-end public assembly
+paths and records this traversal difference, rather than equal pass counts.
 
 The installed deal.II package used for the baseline is `9.8.0-rc1`. Its
 headers provide `MatrixCreator::create_mass_matrix`,
