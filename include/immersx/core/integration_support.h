@@ -20,6 +20,7 @@
 #include <optional>
 #include <set>
 #include <type_traits>
+#include <utility>
 
 namespace ImmersX
 {
@@ -93,6 +94,37 @@ namespace ImmersX
     const dealii::Triangulation<dim, spacedim> *triangulation_ = nullptr;
     std::optional<dealii::types::material_id>   material_id_;
   };
+
+
+  /** Detect supports that provide locally owned physical quadrature points.
+   *
+   * The point records expose `point`, `weight`, `stable_id`, and `owner_rank`.
+   * This structural contract lets assembly consume geometry-only supports
+   * without requiring them to own a mesh or a DoFHandler.
+   */
+  template <typename Support, typename = void>
+  struct is_physical_quadrature_support : std::false_type
+  {};
+
+  template <typename Support>
+  struct is_physical_quadrature_support<
+    Support,
+    std::void_t<decltype(Support::intrinsic_dimension),
+                decltype(std::declval<const Support &>()
+                           .locally_owned_quadrature_points()[0]
+                           .point),
+                decltype(std::declval<const Support &>()
+                           .locally_owned_quadrature_points()[0]
+                           .weight),
+                decltype(std::declval<const Support &>()
+                           .locally_owned_quadrature_points()[0]
+                           .stable_id),
+                decltype(std::declval<const Support &>()
+                           .locally_owned_quadrature_points()[0]
+                           .owner_rank),
+                decltype(std::declval<const Support &>().mpi_communicator())>>
+    : std::true_type
+  {};
 
   /** Marker used when a weak term infers its historical integration region. */
   struct InferredIntegrationSupport
