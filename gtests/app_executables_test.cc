@@ -235,8 +235,11 @@ TEST(AppExecutables, NavierStokes)
 
   const auto output_directory =
     ImmersX::TestPaths::output_path("tutorial-output/navier-stokes-2d");
-  EXPECT_TRUE(
-    std::filesystem::exists(output_directory / "transient_stokes.pvd"));
+  const auto records =
+    read_pvd_records(output_directory / "transient_stokes.pvd");
+  ASSERT_EQ(records.size(), 6u);
+  for (unsigned int step = 0; step < records.size(); ++step)
+    EXPECT_NEAR(records[step].first, 0.02 * step, 1.e-12);
   bool has_velocity = false;
   bool has_pressure = false;
   for (const auto &entry :

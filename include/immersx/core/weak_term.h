@@ -1849,6 +1849,48 @@ namespace ImmersX
         const auto &input_field = observable.source();
         const auto  input_cell =
           source_cell->as_dof_handler_iterator(input_field.dof_handler());
+        const auto evaluate = [&](const auto        &values,
+                                  const unsigned int quadrature_index) {
+          std::vector<dealii::types::global_dof_index> indices(
+            input_cell->get_fe().n_dofs_per_cell());
+          input_cell->get_dof_indices(indices);
+          const auto &coefficients =
+            observable.is_frozen() ?
+              observable.template frozen_values<VectorType>() :
+              context.state(observable.source_field());
+          std::vector<dealii::types::global_dof_index> execution_indices;
+          execution_indices.reserve(indices.size());
+          std::vector<unsigned int> positions;
+          positions.reserve(indices.size());
+          for (unsigned int i = 0; i < indices.size(); ++i)
+            if (observable.source().has_execution_index(indices[i]))
+              {
+                positions.push_back(i);
+                execution_indices.push_back(
+                  observable.source().execution_index(indices[i]));
+              }
+          std::vector<double> execution_values(execution_indices.size());
+          observable.source().constraints().get_dof_values(
+            coefficients,
+            execution_indices.begin(),
+            execution_values.begin(),
+            execution_values.end());
+
+          const auto &view   = values[input_field.extractor()];
+          Value       result = Value{};
+          for (unsigned int i = 0; i < positions.size(); ++i)
+            result +=
+              execution_values[i] *
+              observable.operation()(view, positions[i], quadrature_index);
+          return observable.scale() * result;
+        };
+        // Matching fields can share the cell FEValues, including its mapping
+        // data and all quadrature points. Other FE/mapping pairs still need
+        // evaluation at the physical quadrature point.
+        if (&input_field.mapping() == &source_values.get_mapping() &&
+            &input_field.space().finite_element() == &source_values.get_fe())
+          return evaluate(source_values, q);
+
         const auto input_reference_point =
           input_field.mapping().transform_real_to_unit_cell(
             input_cell, source_values.quadrature_point(q));
@@ -1861,37 +1903,7 @@ namespace ImmersX
           input_quadrature,
           dealii::update_values | observable.update_flags());
         input_values.reinit(input_cell);
-        std::vector<dealii::types::global_dof_index> indices(
-          input_cell->get_fe().n_dofs_per_cell());
-        input_cell->get_dof_indices(indices);
-        const auto &coefficients =
-          observable.is_frozen() ?
-            observable.template frozen_values<VectorType>() :
-            context.state(observable.source_field());
-        std::vector<dealii::types::global_dof_index> execution_indices;
-        execution_indices.reserve(indices.size());
-        std::vector<unsigned int> positions;
-        positions.reserve(indices.size());
-        for (unsigned int i = 0; i < indices.size(); ++i)
-          if (observable.source().has_execution_index(indices[i]))
-            {
-              positions.push_back(i);
-              execution_indices.push_back(
-                observable.source().execution_index(indices[i]));
-            }
-        std::vector<double> execution_values(execution_indices.size());
-        observable.source().constraints().get_dof_values(
-          coefficients,
-          execution_indices.begin(),
-          execution_values.begin(),
-          execution_values.end());
-
-        const auto &view   = input_values[input_field.extractor()];
-        Value       result = Value{};
-        for (unsigned int i = 0; i < positions.size(); ++i)
-          result +=
-            execution_values[i] * observable.operation()(view, positions[i], 0);
-        return observable.scale() * result;
+        return evaluate(input_values, 0);
       }
 
       template <typename ObservableType_, typename Cell, typename SourceValues>
@@ -1911,6 +1923,11 @@ namespace ImmersX
         const auto  input_cell =
           source_cell->as_dof_handler_iterator(input_field.dof_handler());
         AssertIndexRange(basis, input_cell->get_fe().n_dofs_per_cell());
+        if (&input_field.mapping() == &source_values.get_mapping() &&
+            &input_field.space().finite_element() == &source_values.get_fe())
+          return observable.operation()(source_values[input_field.extractor()],
+                                        basis,
+                                        q);
         const auto input_reference_point =
           input_field.mapping().transform_real_to_unit_cell(
             input_cell, source_values.quadrature_point(q));
@@ -2174,23 +2191,26 @@ namespace ImmersX
               dealii::FullMatrix<double> local(target_positions.size(),
                                                column_positions.size());
               for (unsigned int q = 0; q < quadrature.size(); ++q)
-                for (unsigned int i = 0; i < target_positions.size(); ++i)
-                  for (unsigned int j = 0; j < column_positions.size(); ++j)
-                    local(i, j) +=
-                      target.scale() *
-                      natural_pairing(
-                        derivative_at<VectorType>(observable,
-                                                  context,
-                                                  field,
-                                                  source_cell,
-                                                  source_values,
-                                                  q,
-                                                  column_positions[j],
-                                                  context.time()),
-                        target.operation()(target_view,
-                                           target_positions[i],
-                                           q)) *
-                      target_values.JxW(q);
+                for (unsigned int j = 0; j < column_positions.size(); ++j)
+                  {
+                    const auto derivative =
+                      derivative_at<VectorType>(observable,
+                                                context,
+                                                field,
+                                                source_cell,
+                                                source_values,
+                                                q,
+                                                column_positions[j],
+                                                context.time());
+                    for (unsigned int i = 0; i < target_positions.size(); ++i)
+                      local(i, j) +=
+                        target.scale() *
+                        natural_pairing(derivative,
+                                        target.operation()(target_view,
+                                                           target_positions[i],
+                                                           q)) *
+                        target_values.JxW(q);
+                  }
               target_field.constraints().distribute_local_to_global(
                 local,
                 target_execution_indices,

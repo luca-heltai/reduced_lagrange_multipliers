@@ -82,6 +82,8 @@ namespace
 
   struct SquareLaw
   {
+    unsigned int *evaluations = nullptr;
+
     struct Evaluation
     {
       double              value;
@@ -92,7 +94,23 @@ namespace
     evaluate(const std::vector<double> &values) const
     {
       AssertDimension(values.size(), 1);
+      if (evaluations != nullptr)
+        ++*evaluations;
       return {values[0] * values[0], {2. * values[0]}};
+    }
+  };
+
+  class CountingInverseMapping : public MappingQ1<2>
+  {
+  public:
+    mutable unsigned int inverse_calls = 0;
+
+    Point<2>
+    transform_real_to_unit_cell(const Triangulation<2>::cell_iterator &cell,
+                                const Point<2> &point) const override
+    {
+      ++inverse_calls;
+      return MappingQ1<2>::transform_real_to_unit_cell(cell, point);
     }
   };
 
@@ -389,6 +407,45 @@ TEST(WeakTerm, EmbeddedBoundaryConormalExpressionCompiles)
   const auto                             conormal_flux =
     gradient(source) * support.conormal() * test(target) * support;
   (void)conormal_flux;
+}
+
+TEST(WeakTerm, NonlinearJacobianReusesCellEvaluation)
+{
+  Triangulation<2> tria;
+  GridGenerator::hyper_cube(tria);
+  FE_Q<2>                fe(2);
+  ScalarSpace            space(tria, fe);
+  CountingInverseMapping mapping;
+  StateLayout            layout;
+  const auto V      = fe_space(space.dof_handler, mapping, space.constraints);
+  const auto source = V.field(layout, "source");
+  const auto target = V.field(layout, "target");
+  using Vector      = Vector<double>;
+  using Matrix      = SparseMatrix<double>;
+  SemiDiscreteModel<Vector, Matrix>   model;
+  SemidiscreteBuilder<Vector, Matrix> builder(layout, model);
+  unsigned int                        evaluations = 0;
+  weak_term(transform(value(source), SquareLaw{&evaluations}), test(target))
+    .add(builder);
+
+  Vector state(space.dof_handler.n_dofs());
+  state = 1.;
+  Vector            target_state(state.size());
+  StateView<Vector> state_view(layout, 0.);
+  state_view.bind(source.field_id(), state);
+  state_view.bind(target.field_id(), target_state);
+  const EvaluationContext<Vector> context(0., state_view);
+  const auto                      jacobian =
+    model.state_operator(target.field_id(), source.field_id(), context);
+  Vector action(state.size());
+  jacobian.vmult(action, state);
+
+  // A pointwise derivative depends on the trial basis, not the test basis.
+  const QGauss<2> quadrature(fe.degree + 1);
+  EXPECT_EQ(evaluations,
+            tria.n_active_cells() * quadrature.size() * fe.n_dofs_per_cell());
+  EXPECT_EQ(mapping.inverse_calls, 0u);
+  EXPECT_GT(action.l2_norm(), 0.);
 }
 
 TEST(WeakTerm, NonlinearSquareLawResidualAndJacobian)
