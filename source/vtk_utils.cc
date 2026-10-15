@@ -108,6 +108,12 @@ namespace ImmersX
             auto reader = vtkSmartPointer<vtkUnstructuredGridReader>::New();
             reader->SetFileName(filename.c_str());
             reader->ReadAllScalarsOn();
+            reader->ReadAllVectorsOn();
+            reader->ReadAllTensorsOn();
+            reader->ReadAllNormalsOn();
+            reader->ReadAllTCoordsOn();
+            reader->ReadAllColorScalarsOn();
+            reader->ReadAllFieldsOn();
             reader->Update();
             return copy_output(reader->GetOutput());
           }

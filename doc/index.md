@@ -30,6 +30,7 @@ ownership boundaries used throughout the documentation.
 
 getting-started/index
 how-to/index
+how-to/local-co-refinement
 tutorials/index
 concepts/index
 reference/index

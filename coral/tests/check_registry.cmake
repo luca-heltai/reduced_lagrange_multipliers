@@ -18,6 +18,7 @@ if(NOT EXISTS "${REGISTRY}")
   message(FATAL_ERROR "Coral did not produce registry '${REGISTRY}'.")
 endif()
 file(READ "${REGISTRY}" _registry)
+include("${CMAKE_CURRENT_LIST_DIR}/check_co_refinement_registry.cmake")
 
 if(VTK_AVAILABLE)
   set(_vtk_variant_count 0)

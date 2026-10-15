@@ -1,0 +1,112 @@
+cmake_minimum_required(VERSION 3.18)
+
+# Included after the plugin registry has been loaded by check_registry.cmake.
+string(JSON _co_report_kind GET "${_registry}"
+  "ImmersX::LocalCoRefinementReport" node_type)
+if(NOT _co_report_kind STREQUAL "output_only")
+  message(FATAL_ERROR "The co-refinement report must be output-only.")
+endif()
+string(JSON _co_report_hash GET "${_registry}"
+  "ImmersX::LocalCoRefinementReport" type)
+string(JSON _co_parameter_base GET "${_registry}"
+  "dealii::ParameterAcceptor" type)
+foreach(_dim RANGE 1 ${SPACEDIM})
+  foreach(_type
+      "ImmersX::DomainParameters<${_dim},${SPACEDIM}>"
+      "ImmersX::RefinementParameters<${_dim}>")
+    string(JSON _base GET "${_registry}" "${_type}" base)
+    if(NOT _base STREQUAL _co_parameter_base)
+      message(FATAL_ERROR "${_type} must derive from ParameterAcceptor.")
+    endif()
+  endforeach()
+  string(JSON _kind GET "${_registry}"
+    "ImmersX::OwnedDomain<${_dim},${SPACEDIM}>" node_type)
+  if(NOT _kind STREQUAL "output_only")
+    message(FATAL_ERROR "The owning domain handle must be output-only.")
+  endif()
+endforeach()
+
+set(_co_pairs)
+string(JSON _co_registry_size LENGTH "${_registry}")
+math(EXPR _co_registry_last "${_co_registry_size} - 1")
+foreach(_i RANGE 0 ${_co_registry_last})
+  string(JSON _key MEMBER "${_registry}" ${_i})
+  string(JSON _operation ERROR_VARIABLE _error
+    GET "${_registry}" "${_key}" operation)
+  # Some SDK versions also emit the unqualified legacy operation alias.
+  if(_error OR NOT _operation STREQUAL "Co-refine domains" OR
+     _key STREQUAL "Co-refine domains")
+    continue()
+  endif()
+  string(JSON _variant GET "${_registry}" "${_key}" variant_name)
+  if(NOT _variant MATCHES "^Space ([1-3])D, embedded ([1-3])D in ([1-3])D$")
+    message(FATAL_ERROR "Unexpected co-refinement variant: ${_variant}")
+  endif()
+  set(_d1 "${CMAKE_MATCH_1}")
+  set(_d2 "${CMAKE_MATCH_2}")
+  set(_ambient "${CMAKE_MATCH_3}")
+  if(_d1 GREATER SPACEDIM OR _d2 GREATER SPACEDIM OR
+     NOT _ambient EQUAL SPACEDIM)
+    message(FATAL_ERROR "Co-refinement violates the plugin dimension policy.")
+  endif()
+  if("${_d1},${_d2}" IN_LIST _co_pairs)
+    message(FATAL_ERROR "Duplicate co-refinement variant: ${_variant}")
+  endif()
+  list(APPEND _co_pairs "${_d1},${_d2}")
+  string(JSON _inputs LENGTH "${_registry}" "${_key}" inputs)
+  string(JSON _outputs LENGTH "${_registry}" "${_key}" outputs)
+  string(JSON _return GET "${_registry}" "${_key}" output_type)
+  if(NOT _inputs EQUAL 3 OR NOT _outputs EQUAL 3 OR
+     NOT _return STREQUAL _co_report_hash)
+    message(FATAL_ERROR "Co-refinement must have three inputs and three outputs.")
+  endif()
+  foreach(_port RANGE 0 1)
+    string(JSON _input GET "${_registry}" "${_key}" inputs ${_port})
+    string(JSON _output GET "${_registry}" "${_key}" outputs ${_port})
+    if(NOT _input EQUAL _port OR NOT _output EQUAL _port)
+      message(FATAL_ERROR "Co-refinement must pass both mutable domains through.")
+    endif()
+  endforeach()
+  string(JSON _report_output GET "${_registry}" "${_key}" outputs 2)
+  if(NOT _report_output EQUAL -1)
+    message(FATAL_ERROR "The final co-refinement output must be the report.")
+  endif()
+  foreach(_port RANGE 0 2)
+    if(_port EQUAL 0)
+      set(_type "ImmersX::OwnedDomain<${_d1},${SPACEDIM}>")
+    elseif(_port EQUAL 1)
+      set(_type "ImmersX::OwnedDomain<${_d2},${SPACEDIM}>")
+    elseif(_port EQUAL 2)
+      set(_type "ImmersX::RefinementParameters<${_d2}>")
+    endif()
+    string(JSON _expected GET "${_registry}" "${_type}" type)
+    string(JSON _actual GET "${_registry}" "${_key}" arguments ${_port} type)
+    string(JSON _connection GET "${_registry}" "${_key}"
+      arguments ${_port} connection_type)
+    if(_port LESS 2)
+      set(_expected_connection "pass_through")
+    elseif(_port EQUAL 2)
+      set(_expected_connection "input")
+    endif()
+    if(NOT _actual STREQUAL _expected OR
+       NOT _connection STREQUAL _expected_connection)
+      message(FATAL_ERROR "Incorrect co-refinement input type at port ${_port}.")
+    endif()
+  endforeach()
+endforeach()
+list(LENGTH _co_pairs _co_pair_count)
+math(EXPR _co_expected_count "${SPACEDIM} * ${SPACEDIM}")
+if(NOT _co_pair_count EQUAL _co_expected_count)
+  message(FATAL_ERROR "Missing co-refinement dimension pairs.")
+endif()
+foreach(_operation
+    "Co-refinement intersecting pairs"
+    "Co-refinement lower violations"
+    "Co-refinement upper violations"
+    "Co-refinement satisfied"
+    "Require satisfied co-refinement")
+  string(FIND "${_registry}" "\"operation\": \"${_operation}\"" _found)
+  if(_found EQUAL -1)
+    message(FATAL_ERROR "Missing co-refinement report operation: ${_operation}")
+  endif()
+endforeach()

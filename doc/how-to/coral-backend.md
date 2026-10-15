@@ -317,6 +317,67 @@ representative point at `(0.5, 0.5, 0.5)`, so the installed graph does not
 depend on a source-tree VTK point-cloud file. It exposes the reduced DoF count,
 coupling-matrix norm, solution norms, and a finiteness check after `run`.
 
+## Local co-refinement
+
+The plugins expose `Co-refine domains` for every pair of positive intrinsic
+dimensions up to the plugin's ambient dimension, including reversed space and
+embedded roles. This operation calls `LocalCoRefinement<d1,d2,spacedim>::run()`;
+it does not duplicate the refinement algorithm.
+
+Use this graph order:
+
+```text
+Initialize parameters (both domains, refinement, FE space, adapter, output)
+  |
+  +-> Create domain (space) ----+
+  +-> Create domain (embedded) -+-> Co-refine domains
+  +-> refinement parameters ---+       |
+                                       +-> space -> Create finite element space
+                                       +-> embedded
+                                       +-> report
+```
+
+Connect `ImmersX::RefinementParameters<d2>` to the third input. Its constructor
+accepts a subsection path, for example `/Co-refinement/`, so independent
+co-refinement operations can use separate parameter groups. The default C++
+constructor still uses `Local refinement parameters`.
+
+The three outputs, in order, are the updated owning space handle (port 0),
+the updated owning embedded handle (port 1), and an
+`ImmersX::LocalCoRefinementReport` (port 2). Both domains are finalized before
+any output becomes available. Do not insert `Generate domain` before this
+operation: it finalizes the mesh too early. Do not reuse a finalized domain in
+another co-refinement operation or attach application FE spaces before refinement.
+
+Report operations expose the global intersecting-pair, lower-violation, and
+upper-violation counts, and `Co-refinement satisfied` returns a Boolean.
+Remaining violations are nonfatal. Connect the report to
+`Require satisfied co-refinement` only when the graph should fail on remaining
+violations. Neither satisfaction check proves geometric coverage: zero
+intersecting pairs also satisfy the bounds.
+
+The installed example consists of:
+
+```text
+local_co_refinement_2d.json
+local_co_refinement_2d.prm
+local_co_refinement_space_2d.vtk
+local_co_refinement_embedded_2d.vtk
+```
+
+It uses `both` with bounds `0.5` and `2`, and unequal embedded segments that
+require refinement of both meshes. Both final backends are
+`fullydistributed`. After refinement, the graph reads the embedded
+discontinuous `radius` field and uses the retained affine bulk `rhs` field in
+the primitive Poisson solve. The explicit report check requires both size
+bounds to hold. Run it from the installed examples directory with the same
+Coral command shown above, replacing `poisson_2d.json` with
+`local_co_refinement_2d.json`. Use the same graph on every MPI rank and
+`THREADS=1` for collective execution.
+
+See [Local co-refinement](local-co-refinement.md) for bounds, level caps,
+pre/post-refinement, and field-transfer semantics.
+
 ## Tests
 
 When the Coral executable target is available, CTest registers one registry
@@ -342,7 +403,8 @@ ctest --test-dir build-coral -R 'ImmersX.Coral.Graph' \
 
 The tests check the generated graphviz files and the configured native output
 for Poisson, static elasticity, elastodynamics, both coupled workflows, fiber
-reinforcement, and ReducedPoisson.
+reinforcement, and ReducedPoisson. The co-refinement graph runs with one rank
+and, when an MPI launcher is available, two ranks.
 
 The registry tests do not replace numerical application tests. Graph execution
 also requires a working MPI runtime because the current distributed ImmersX

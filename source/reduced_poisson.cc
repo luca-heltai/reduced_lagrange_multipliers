@@ -862,8 +862,8 @@ namespace ImmersX
             constraints.distribute(solution_block.block(0));
             reduced_coupling.get_coupling_constraints().distribute(
               solution_block.block(1));
-            // solution.update_ghost_values();
-            locally_relevant_solution = solution_block;
+            solution                  = solution_block;
+            locally_relevant_solution = solution;
 
             if (par.estimate_condition_number)
               {

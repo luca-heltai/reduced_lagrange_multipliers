@@ -1,0 +1,25 @@
+# vtk DataFile Version 3.0
+Two unequal segments with point and discontinuous cell properties
+ASCII
+DATASET UNSTRUCTURED_GRID
+POINTS 3 double
+0 0 0.1
+0 0 0.82
+0 0 0.9
+CELLS 2 6
+2 0 1
+2 1 2
+CELL_TYPES 2
+3
+3
+POINT_DATA 3
+SCALARS height double 1
+LOOKUP_TABLE default
+1.1
+1.82
+1.9
+CELL_DATA 2
+SCALARS radius double 1
+LOOKUP_TABLE default
+0.01
+0.02

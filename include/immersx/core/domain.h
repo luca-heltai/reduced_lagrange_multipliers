@@ -110,9 +110,31 @@ namespace ImmersX
     Domain &
     operator=(const Domain &) = delete;
 
-    /** Read or generate the mesh and apply scaling and refinement. */
+    /** Prepare and finalize a mesh without coupled local refinement. */
     void
     make_grid();
+
+    /** Read the mesh and initial fields before coupled refinement.
+     *
+     * A fullydistributed domain is prepared on a replicated serial mesh.
+     * Set serial=true to do the same for an embedded distributed domain.
+     * Call finalize_grid() only after all mesh adjustments. This must happen
+     * before attaching application DoFHandlers or requesting field views.
+     * Preparing an already populated domain throws rather than discarding it.
+     */
+    void
+    prepare_grid(bool serial = false);
+
+    /** Partition the prepared mesh and transfer its refined input fields. */
+    void
+    finalize_grid();
+
+    bool
+    grid_is_prepared() const;
+
+    /** Mesh used during preparation; serial or parallel::distributed. */
+    dealii::Triangulation<dim, spacedim> &
+    refinement_triangulation();
 
     TriangulationType &
     triangulation();
@@ -188,11 +210,16 @@ namespace ImmersX
     void
     import_vtk_fields_if_requested();
 
+    struct SerialFields;
+
     const DomainParameters<dim, spacedim> &parameters_;
     MPI_Comm                               communicator_;
     TriangulationVariant                   triangulation_storage_;
     TriangulationType                     *triangulation_ = nullptr;
     std::unique_ptr<ImportedFields>        vtk_fields_;
+    std::unique_ptr<dealii::Triangulation<dim, spacedim>> serial_triangulation_;
+    std::unique_ptr<SerialFields>                         serial_fields_;
+    bool grid_prepared_ = false;
   };
 } // namespace ImmersX
 

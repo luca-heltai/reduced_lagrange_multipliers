@@ -23,6 +23,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <map>
 
 namespace ImmersX
 {
@@ -99,18 +100,22 @@ namespace ImmersX
                   dealii::ExcMessage(
                     "Imported fields require a target triangulation with the "
                     "same number of active cells as the VTK mesh."));
+      std::map<
+        dealii::CellId,
+        typename dealii::Triangulation<dim, spacedim>::active_cell_iterator>
+        serial_cells;
+      for (const auto &cell : serial_triangulation.active_cell_iterators())
+        serial_cells.emplace(cell->id(), cell);
       for (const auto &target_cell :
            target_triangulation.active_cell_iterators())
         if (target_cell->is_locally_owned())
           {
-            auto serial_cell = serial_triangulation.begin_active();
-            while (serial_cell != serial_triangulation.end() &&
-                   serial_cell->id() != target_cell->id())
-              ++serial_cell;
-            AssertThrow(serial_cell != serial_triangulation.end(),
+            const auto found = serial_cells.find(target_cell->id());
+            AssertThrow(found != serial_cells.end(),
                         dealii::ExcMessage(
                           "Imported fields require matching active-cell "
                           "identifiers on the target triangulation."));
+            const auto serial_cell = found->second;
             for (const auto vertex : serial_cell->vertex_indices())
               AssertThrow(
                 serial_cell->vertex(vertex).distance(
@@ -168,6 +173,30 @@ namespace ImmersX
                 dealii::ExcMessage(
                   "Importing finite-element fields requires VTK support."));
 #endif
+  }
+
+  template <int dim, int spacedim>
+  ImportedFiniteElementFields<dim, spacedim>::ImportedFiniteElementFields(
+    const DoFHandlerType         &serial_dof_handler,
+    const dealii::Vector<double> &serial_coefficients,
+    const FieldCatalog           &catalog,
+    const TriangulationType      &triangulation,
+    const MPI_Comm                communicator)
+    : storage_(std::make_shared<Storage>(triangulation, communicator))
+  {
+    assert_same_mesh(serial_dof_handler.get_triangulation(), triangulation);
+    storage_->catalog = catalog;
+    storage_->space   = std::make_unique<FiniteElementSpace<dim, spacedim>>(
+      triangulation, serial_dof_handler.get_fe().clone());
+    storage_->space_view = std::make_unique<SpaceView>(storage_->space->view());
+    storage_->coefficients = std::make_shared<VectorType>();
+    storage_->coefficients->reinit(storage_->space->locally_owned_dofs(),
+                                   communicator);
+    ReducedFieldUtils::serial_vector_to_distributed_vector(
+      serial_dof_handler,
+      storage_->space->dof_handler(),
+      serial_coefficients,
+      *storage_->coefficients);
   }
 
   template <int dim, int spacedim>

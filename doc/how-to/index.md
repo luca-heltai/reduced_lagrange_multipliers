@@ -14,6 +14,7 @@ boundary-conditions
 reduced-coupling
 support-aware-weak-terms
 lifted-integration
+local-co-refinement
 coral-backend
 testing
 vascular-tree-elasticity

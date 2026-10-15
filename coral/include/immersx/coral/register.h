@@ -1973,7 +1973,15 @@ namespace ImmersX::Coral
 
   template <int dim, int spacedim>
   inline void
+  register_primitive_domain_types();
+
+  template <int dim, int spacedim>
+  inline void
   register_primitive_types();
+
+  template <int spacedim>
+  inline void
+  register_local_co_refinement_types();
 
   template <int spacedim>
   void
@@ -1984,6 +1992,7 @@ namespace ImmersX::Coral
 #ifdef DEAL_II_WITH_VTK
     register_vtk_types<1, spacedim>();
 #endif
+    register_primitive_domain_types<1, spacedim>();
     register_function_types<spacedim>();
     register_field_types<1, spacedim>();
     register_poisson_types<1, spacedim>();
@@ -1994,6 +2003,7 @@ namespace ImmersX::Coral
 #ifdef DEAL_II_WITH_VTK
         register_vtk_types<2, spacedim>();
 #endif
+        register_primitive_domain_types<2, spacedim>();
         register_field_types<2, spacedim>();
         register_poisson_types<2, spacedim>();
         register_elastic_static_types<2, spacedim>();
@@ -2017,6 +2027,7 @@ namespace ImmersX::Coral
 #ifdef DEAL_II_WITH_VTK
         register_vtk_types<3, spacedim>();
 #endif
+        register_primitive_domain_types<3, spacedim>();
         register_field_types<3, spacedim>();
         register_poisson_types<3, spacedim>();
         register_elastic_static_types<3, spacedim>();
@@ -2029,6 +2040,7 @@ namespace ImmersX::Coral
             register_reduced_poisson_types();
           }
       }
+    register_local_co_refinement_types<spacedim>();
   }
 
   template <int spacedim>
@@ -2105,6 +2117,7 @@ namespace ImmersX::Coral
   }
 } // namespace ImmersX::Coral
 
+#include <immersx/coral/local_co_refinement.h>
 #include <immersx/coral/register_primitives.h>
 
 #endif // immersx_coral_register_h

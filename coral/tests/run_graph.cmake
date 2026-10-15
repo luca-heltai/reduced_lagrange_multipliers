@@ -88,9 +88,16 @@ set(_environment
   "THREADS=1"
   "DYLD_LIBRARY_PATH=${CORAL_LIBRARY_DIRECTORY}"
   "LD_LIBRARY_PATH=${CORAL_LIBRARY_DIRECTORY}")
+set(_mpi_command)
+if(DEFINED MPI_RANKS AND MPI_RANKS GREATER 1)
+  if(NOT DEFINED MPIEXEC)
+    message(FATAL_ERROR "MPIEXEC is required for a multi-rank graph")
+  endif()
+  set(_mpi_command "${MPIEXEC}" -np "${MPI_RANKS}")
+endif()
 execute_process(
   COMMAND ${CMAKE_COMMAND} -E env ${_environment}
-          "${CORAL_EXECUTABLE}"
+          ${_mpi_command} "${CORAL_EXECUTABLE}"
           -p "${PLUGIN}" run "${WORKING_DIRECTORY}/${_graph_name}"
           --graph "${WORKING_DIRECTORY}/${_graph_stem}.dot"
   WORKING_DIRECTORY "${WORKING_DIRECTORY}"

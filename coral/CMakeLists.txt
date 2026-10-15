@@ -224,6 +224,33 @@ foreach(_build_type ${_d2_build_types})
           PROPERTIES LABELS "integration;quick;mpi"
                      TIMEOUT 300)
 
+        find_program(_immersx_coral_mpiexec NAMES mpirun mpiexec)
+        set(_co_refinement_ranks 1)
+        if(_immersx_coral_mpiexec)
+          list(APPEND _co_refinement_ranks 2)
+        endif()
+        foreach(_ranks IN LISTS _co_refinement_ranks)
+          set(_co_refinement_test
+            "ImmersX.Coral.Graph.LocalCoRefinement2D.${_ranks}Rank${_postfix}")
+          add_test(NAME "${_co_refinement_test}"
+            COMMAND ${CMAKE_COMMAND}
+                    -DCORAL_EXECUTABLE=$<TARGET_FILE:coral::coral>
+                    -DPLUGIN=$<TARGET_FILE:${_plugin}>
+                    -DGRAPH_SOURCE=${CMAKE_CURRENT_SOURCE_DIR}/examples/local_co_refinement_2d.json
+                    -DPARAMETERS_SOURCE=${CMAKE_CURRENT_SOURCE_DIR}/examples/local_co_refinement_2d.prm
+                    "-DINPUT_FILES=${CMAKE_CURRENT_SOURCE_DIR}/examples/local_co_refinement_space_2d.vtk;${CMAKE_CURRENT_SOURCE_DIR}/examples/local_co_refinement_embedded_2d.vtk"
+                    -DWORKING_DIRECTORY=${CMAKE_CURRENT_BINARY_DIR}/graph_local_co_refinement_2d_${_ranks}${_postfix}
+                    -DCORAL_LIBRARY_DIRECTORY=${_coral_core_directory}
+                    -DOUTPUT_FILE=output/solution.pvd
+                    -DMPIEXEC=${_immersx_coral_mpiexec}
+                    -DMPI_RANKS=${_ranks}
+                    -P "${CMAKE_CURRENT_SOURCE_DIR}/tests/run_graph.cmake")
+          set_tests_properties("${_co_refinement_test}"
+            PROPERTIES LABELS "integration;quick;mpi"
+                       PROCESSORS ${_ranks}
+                       TIMEOUT 300)
+        endforeach()
+
         set(_static_graph_working_directory
           "${CMAKE_CURRENT_BINARY_DIR}/graph_elastic_static_2d${_postfix}")
         add_test(NAME "ImmersX.Coral.Graph.ElasticStatic2D${_postfix}"

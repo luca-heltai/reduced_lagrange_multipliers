@@ -10,6 +10,8 @@
 #include <immersx/algebra/linear_algebra.h>
 #include <immersx/core/reduced_field_utils.h>
 
+#include <map>
+
 namespace ImmersX
 {
   namespace ReducedFieldUtils
@@ -82,20 +84,27 @@ namespace ImmersX
         std::vector<dealii::types::global_dof_index> parallel_dof_indices(
           parallel_dh.get_fe().n_dofs_per_cell());
 
-        auto serial_cell   = serial_dh.begin_active();
+        std::map<
+          dealii::CellId,
+          typename dealii::DoFHandler<dim, spacedim>::active_cell_iterator>
+          serial_cells;
+        for (const auto &cell : serial_dh.active_cell_iterators())
+          serial_cells.emplace(cell->id(), cell);
         auto parallel_cell = parallel_dh.begin_active();
         for (; parallel_cell != parallel_dh.end(); ++parallel_cell)
           if (parallel_cell->is_locally_owned())
             {
-              while (serial_cell != serial_dh.end() &&
-                     serial_cell->id() < parallel_cell->id())
-                ++serial_cell;
-
+              // Active iteration is level-wise, not ordered by CellId on a
+              // locally refined mesh. Also retain a checked failure for input
+              // meshes with missing cells instead of a debug iterator
+              // assertion.
+              const auto found = serial_cells.find(parallel_cell->id());
               AssertThrow(
-                serial_cell != serial_dh.end(),
+                found != serial_cells.end(),
                 dealii::ExcMessage(
                   "The serial DoFHandler has no active cell with CellId " +
                   parallel_cell->id().to_string() + "."));
+              const auto serial_cell = found->second;
               AssertThrow(
                 serial_cell->id() == parallel_cell->id(),
                 dealii::ExcMessage(

@@ -30,6 +30,8 @@ set(_public_headers
     immersx/core/constraint.h
     immersx/core/contributor.h
     immersx/core/domain.h
+    immersx/grid/local_co_refinement.h
+    immersx/grid/local_co_refinement_parameters.h
     immersx/core/fe_space.h
     immersx/core/field.h
     immersx/core/field_contributor.h
@@ -228,6 +230,9 @@ FOREACH(_build_type ${_d2_build_types})
     list(APPEND _validation_mpi_suites
          "FiberReinforcedElastodynamicsValidation.BOTH_ConfigurableMultiplierSpace")
     string(JOIN ":" _unit_mpi_filter ${_unit_mpi_suites})
+    # Local co-refinement uses the same assertions in serial and MPI. Include
+    # its BOTH_ cases in the authoritative integration MPI run.
+    list(APPEND _integration_mpi_suites "LocalCoRefinement.BOTH_*")
     string(JOIN ":" _integration_mpi_filter ${_integration_mpi_suites})
     string(JOIN ":" _validation_mpi_filter ${_validation_mpi_suites})
     string(JOIN ":" _application_mpi_filter ${_application_mpi_suites})
@@ -260,8 +265,9 @@ FOREACH(_build_type ${_d2_build_types})
       set(_serial_test
           "ImmersX${${_build_type}_ctest_suffix}.${_category}.Serial")
       add_test(NAME ${_serial_test}
-               COMMAND $<TARGET_FILE:${_exe}>
-                       --gtest_filter=${_category_filter}-*.MPI_*)
+               COMMAND ${CMAKE_COMMAND} -E env
+                       "GTEST_FILTER=${_category_filter}-*.MPI_*"
+                       $<TARGET_FILE:${_exe}>)
       set(_labels "${_category}")
       if(_category_quick)
         list(APPEND _labels quick)
@@ -274,9 +280,10 @@ FOREACH(_build_type ${_d2_build_types})
         set(_mpi_test
             "ImmersX${${_build_type}_ctest_suffix}.${_category}.MPI")
         add_test(NAME ${_mpi_test}
-                 COMMAND ${_immersx_mpiexec} -np 2
-                         $<TARGET_FILE:${_exe}>
-                         --gtest_filter=${_category_mpi_filter})
+                 COMMAND ${CMAKE_COMMAND} -E env
+                         "GTEST_FILTER=${_category_mpi_filter}"
+                         ${_immersx_mpiexec} -np 2
+                         $<TARGET_FILE:${_exe}>)
         set_tests_properties(${_mpi_test}
                              PROPERTIES LABELS "${_labels};mpi"
                                         TIMEOUT ${_category_timeout})

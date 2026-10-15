@@ -1,0 +1,37 @@
+set dimension = 3
+set space dimension = 3
+set reduced dimension = 1
+
+subsection Reduced Poisson
+  set FE degree = 1
+  set Dirichlet boundary ids = 0
+  set Output directory = @TEST_OUTPUT_DIR@/reduced-poisson-co-refinement-both
+  set Output name = both
+  subsection Grid generation
+    set Grid generator = hyper_cube
+    set Grid generator arguments = -1:1:false
+  end
+  subsection Right hand side
+    set Function expression = 1
+  end
+end
+subsection Tensor product coupling
+  subsection Cross section
+    set Maximum inclusion degree = 0
+    set Selected indices = 0
+  end
+  subsection Representative domain
+    set Finite element degree = 1
+    set Reduced grid name = @IMMERSX_BINARY_DIR@/gtests/parameters/co_refinement_two_segments.vtk
+    set Input file fields = *
+    set Thickness = radius
+    set Reduced right hand side = height
+  end
+  subsection Local refinement parameters
+    set Refinement strategy = both
+    set Lower factor = 0.5
+    set Upper factor = 2
+    set Refinement factor = 0
+    set Max refinement level = 6
+  end
+end

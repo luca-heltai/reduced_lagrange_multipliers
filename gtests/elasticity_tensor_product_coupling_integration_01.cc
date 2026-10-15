@@ -218,6 +218,12 @@ TEST(ElasticityCouplingIntegrationValidation,
                    std::abs(problem.velocity.block(0)[line.index] - 1.));
       }
 
+  // Co-refinement can leave a rank without prescribed boundary DoFs. Retain
+  // the nonzero-data oracle and check every owned row across all ranks.
+  nonzero_boundary_lines =
+    Utilities::MPI::sum(nonzero_boundary_lines, MPI_COMM_WORLD);
+  boundary_velocity_error =
+    Utilities::MPI::max(boundary_velocity_error, MPI_COMM_WORLD);
   ASSERT_GT(nonzero_boundary_lines, 0u);
   EXPECT_LT(boundary_velocity_error, 1.e-3);
 }

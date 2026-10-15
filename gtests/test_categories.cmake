@@ -50,6 +50,7 @@ set(IMMERSX_INTEGRATION_TEST_SUITES
     Elastodynamics
     ImportedFiniteElementFields
     Domain
+    LocalCoRefinement
     LegacyInclusions
     LiftedIntegrationSupport
     LinearAdapter
