@@ -48,6 +48,9 @@ data/*
 !data/tests/
 data/tests/*
 !data/tests/*.in
+!data/lifted_elasticity/
+data/lifted_elasticity/*
+!data/lifted_elasticity/*.in
 data/**/*.prm
 execute/*
 compile_commands.json

@@ -1268,10 +1268,10 @@ namespace ImmersX::Coral
        "solution"});
   }
 
+  template <int spacedim = 2>
   inline void
   register_linear_execution_types()
   {
-    constexpr int spacedim  = 2;
     using Adapter           = LinearAdapterFor<2, spacedim>;
     using AdapterParameters = ImmersX::LinearAdapterParameters;
     using FieldVector       = ImmersXLA::MPI::Vector;
@@ -1983,6 +1983,17 @@ namespace ImmersX::Coral
   inline void
   register_local_co_refinement_types();
 
+  template <int dim, int spacedim>
+  void
+  register_primitive_field_operations();
+
+  template <int dim, int spacedim>
+  void
+  register_primitive_finite_element_space_types();
+
+  void
+  register_lifted_elasticity_operations();
+
   template <int spacedim>
   void
   register_immersx_types()
@@ -2038,6 +2049,13 @@ namespace ImmersX::Coral
             register_fiber_reinforced_types<3>();
             register_fiber_reinforced_composition_types<3>();
             register_reduced_poisson_types();
+            register_owned_finite_element_space_types<1, spacedim>();
+            register_linear_execution_types<spacedim>();
+            register_linear_output_handler_types<3, spacedim>();
+            register_primitive_types<3, spacedim>();
+            register_primitive_finite_element_space_types<1, spacedim>();
+            register_primitive_field_operations<1, spacedim>();
+            register_lifted_elasticity_operations();
           }
       }
     register_local_co_refinement_types<spacedim>();

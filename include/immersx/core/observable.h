@@ -351,6 +351,8 @@ namespace ImmersX
     {
       Observable result = *this;
       result.source_    = source_.with_id(id);
+      if (!result.is_frozen())
+        result.dependencies_ = {id};
       return result;
     }
 

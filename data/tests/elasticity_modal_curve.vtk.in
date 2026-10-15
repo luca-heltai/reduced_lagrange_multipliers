@@ -1,0 +1,20 @@
+# vtk DataFile Version 3.0
+Oblique modal elasticity curve with varying radius
+ASCII
+DATASET UNSTRUCTURED_GRID
+POINTS 3 DOUBLE
+-0.4 -0.3 -0.2
+0.1 0.2 0.1
+0.4 0.4 0.3
+CELLS 2 6
+2 0 1
+2 1 2
+CELL_TYPES 2
+3
+3
+POINT_DATA 3
+SCALARS radius double
+LOOKUP_TABLE default
+0.08
+0.12
+0.09

@@ -1,0 +1,42 @@
+set dimension = 3
+set space dimension = 3
+
+subsection Lifted elasticity
+  set Coupling = multiplier
+  set Modal data expressions = 0.01, -0.02, 0.03
+  subsection Refinement
+    set Number of refinement cycles = 2
+  end
+  set Refinement strategy = global
+  set Output directory = @TEST_OUTPUT_DIR@/lifted_elasticity/multiplier_3d
+  subsection Domain
+    set Initial refinement = 2
+    set Triangulation type = distributed
+  end
+  subsection Immersed domain
+    set Grid generator = @TEST_DATA_DIR@/tests/one_cylinder.vtk
+    set Initial refinement = 0
+    set Triangulation type = fullydistributed
+  end
+  subsection Lift
+    set Thickness = 0.1
+    subsection Cross section
+      set Selected modes = 0, 1, 2
+    end
+  end
+  subsection Co-refinement
+    set Refinement strategy = both
+    set Lower factor = 0.1
+    set Upper factor = 2
+  end
+  subsection Linear adapter
+    set Solver = iterative
+    set Preconditioner = augmented_lagrangian
+    set Tolerance = 1.e-11
+  end
+  subsection Functions
+    subsection Right hand side
+      set Function expression = 1; -2; 0.5
+    end
+  end
+end

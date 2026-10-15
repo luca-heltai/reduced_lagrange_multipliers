@@ -3598,7 +3598,9 @@ namespace ImmersX
 
       template <typename VectorType, typename MatrixType>
       static MatrixStorage<MatrixType>
-      assemble(const ObservableType &observable, const TargetLift &target)
+      assemble(const ObservableType        &observable,
+               const TargetLift            &target,
+               std::shared_ptr<VectorType> *affine_rhs = nullptr)
       {
         using SourceField = typename ObservableType::source_field_type;
         static_assert(SourceField::dimension() == SourceField::spacedimension(),
@@ -3613,6 +3615,13 @@ namespace ImmersX
                     dealii::ExcMessage(
                       "A lifted weak term needs a distributed source mesh."));
 
+        if (affine_rhs != nullptr)
+          {
+            *affine_rhs = std::make_shared<VectorType>();
+            (*affine_rhs)
+              ->reinit(target_field.locally_owned_dofs(),
+                       target_field.space().mpi_communicator());
+          }
         const auto         points = target.lifted_points();
         const unsigned int local_target_dofs =
           points.empty() ? 0u : points.front().dof_indices.size();
@@ -3626,6 +3635,8 @@ namespace ImmersX
           AssertDimension(point.dof_indices.size(), n_target_dofs);
         const unsigned int n_properties =
           1 + 2 * n_target_dofs + SourceField::spacedimension();
+        std::vector<dealii::types::global_dof_index> target_indices(
+          n_target_dofs);
 
         ParticleCouplingParameters<SourceField::spacedimension()>
           particle_parameters(
@@ -3686,10 +3697,14 @@ namespace ImmersX
               source_cell->get_dof_indices(source_indices);
               const auto &data = particle.get_properties();
               for (unsigned int i = 0; i < n_target_dofs; ++i)
-                for (unsigned int j = 0; j < n_source_dofs; ++j)
-                  sparsity.add(source_indices[j],
-                               static_cast<dealii::types::global_dof_index>(
-                                 data[1 + i]));
+                target_indices[i] =
+                  static_cast<dealii::types::global_dof_index>(data[1 + i]);
+              source.constraints().add_entries_local_to_global(
+                source_indices,
+                target_field.constraints(),
+                target_indices,
+                sparsity,
+                true);
             }
         dealii::SparsityTools::distribute_sparsity_pattern(
           sparsity,
@@ -3705,9 +3720,6 @@ namespace ImmersX
                                  target_field.locally_owned_dofs(),
                                  sparsity,
                                  source.space().mpi_communicator());
-
-        std::vector<dealii::types::global_dof_index> target_indices(
-          n_target_dofs);
         for (const auto &particle : distribution.get_particles())
           if (particle.get_surrounding_cell()->is_locally_owned())
             {
@@ -3741,6 +3753,19 @@ namespace ImmersX
               for (unsigned int j = 0; j < n_target_dofs; ++j)
                 target_indices[j] =
                   static_cast<dealii::types::global_dof_index>(data[1 + j]);
+              if (affine_rhs != nullptr)
+                {
+                  dealii::Vector<double> shift(n_target_dofs);
+                  for (unsigned int j = 0; j < n_target_dofs; ++j)
+                    for (unsigned int i = 0; i < n_source_dofs; ++i)
+                      if (source.constraints().is_constrained(
+                            source_indices[i]))
+                        shift[j] -=
+                          local(i, j) * source.constraints().get_inhomogeneity(
+                                          source_indices[i]);
+                  target_field.constraints().distribute_local_to_global(
+                    shift, target_indices, **affine_rhs);
+                }
               source.constraints().distribute_local_to_global(
                 local,
                 source_indices,
@@ -3749,6 +3774,8 @@ namespace ImmersX
                 *result.matrix);
             }
         compress_weak_matrix(*result.matrix);
+        if (affine_rhs != nullptr)
+          (*affine_rhs)->compress(dealii::VectorOperation::add);
         result.matrix = ImmersX::detail::transpose_matrix(result.matrix);
         return result;
       }
@@ -4245,7 +4272,35 @@ namespace ImmersX
       using Model          = SemiDiscreteModel<VectorType, MatrixType>;
       const auto target_id = target_.source().field_id();
       auto       term      = builder.term(target_id, "weak_term");
-      if constexpr (!detail::is_linear_observable<TrialExpression>::value)
+      if constexpr (detail::is_lifted_observable<TrialExpression>::value &&
+                    trial_field_type::dimension() <
+                      TestExpression::source_field_type::dimension())
+        {
+          static_assert(
+            std::is_same_v<TestExpression, decltype(test(target_.source()))>,
+            "A lifted reaction currently pairs with a value test.");
+          const auto bulk = value(target_.source());
+          using Assembly =
+            detail::LiftedTargetWeakAssembly<decltype(bulk), TrialExpression>;
+          const auto storage =
+            Assembly::template assemble<VectorType, MatrixType>(bulk,
+                                                                observable_);
+          auto reaction_matrix = detail::transpose_matrix(storage.matrix);
+          *reaction_matrix *= observable_.scale() * target_.scale();
+          auto reaction        = builder.matrix_operator(*reaction_matrix);
+          reaction.materialize = [reaction_matrix] { return reaction_matrix; };
+          reaction.materialize_into =
+            [reaction_matrix](MatrixType &destination) {
+              detail::copy_matrix(destination, *reaction_matrix);
+            };
+          term
+            .residual(
+              [reaction, observable = observable_](const auto &context) {
+                return reaction.view * context.state(observable.source_field());
+              })
+            .state(observable_.source_field(), reaction);
+        }
+      else if constexpr (!detail::is_linear_observable<TrialExpression>::value)
         {
           if constexpr (detail::is_lifted_observable<TrialExpression>::value)
             AssertThrow((std::is_same_v<Support, InferredIntegrationSupport>),
@@ -4630,11 +4685,34 @@ namespace ImmersX
           using Assembly =
             detail::LiftedTargetWeakAssembly<TrialExpression, Target>;
           const auto storage =
-            Assembly::template assemble<VectorType, MatrixType>(observable_,
-                                                                target);
+            Assembly::template assemble<VectorType, MatrixType>(
+              observable_, target, &result.affine_rhs);
           result.matrix               = storage.matrix;
           result.sparsity             = storage.sparsity;
           result.operator_with_matrix = builder.matrix_operator(*result.matrix);
+          const auto constraints =
+            std::make_shared<dealii::AffineConstraints<double>>();
+          constraints->copy_from(observable_.source().constraints());
+          result.affine_rhs_factory = [rhs    = result.affine_rhs,
+                                       source = observable_.source(),
+                                       constraints] {
+            unsigned int changed = source.constraints().n_constraints() !=
+                                   constraints->n_constraints();
+            for (const auto &line : source.constraints().get_lines())
+              if (!constraints->is_constrained(line.index) ||
+                  constraints->get_inhomogeneity(line.index) !=
+                    line.inhomogeneity ||
+                  *constraints->get_constraint_entries(line.index) !=
+                    line.entries)
+                changed = 1;
+            AssertThrow(
+              dealii::Utilities::MPI::max(changed,
+                                          source.space().mpi_communicator()) ==
+                0,
+              dealii::ExcMessage(
+                "Lifted affine constraints changed after static assembly; rebuild the weak term."));
+            return rhs;
+          };
         }
       else
         {

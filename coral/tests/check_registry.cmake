@@ -19,6 +19,7 @@ if(NOT EXISTS "${REGISTRY}")
 endif()
 file(READ "${REGISTRY}" _registry)
 include("${CMAKE_CURRENT_LIST_DIR}/check_co_refinement_registry.cmake")
+include("${CMAKE_CURRENT_LIST_DIR}/check_lifted_elasticity_registry.cmake")
 
 if(VTK_AVAILABLE)
   set(_vtk_variant_count 0)

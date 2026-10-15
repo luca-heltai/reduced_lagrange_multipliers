@@ -416,3 +416,180 @@ TEST(LiftedIntegrationSupport, BOTH_SourceBulkLiftSamplesPhysicalPoints)
   EXPECT_GT(physical_integral, representative_integral + 1.e-6);
   EXPECT_NEAR(coupled_integral, physical_integral, 1.e-10);
 }
+
+TEST(LiftedIntegrationSupport,
+     BOTH_SelectedVectorModesPreserveAmplitudeAndRegistration)
+{
+  ParameterAcceptor::clear();
+  LiftedLineFixture             fixture;
+  FiniteElementSpace<1, 3>      space(fixture.domain.triangulation(),
+                                 std::make_unique<FE_Q<1, 3>>(1));
+  const auto                    view = space.view();
+  TensorProductLift<1, 2, 3, 3> geometry("/Selected vector modes/");
+  geometry.thickness                     = "0.1";
+  geometry.section.inclusion_degree      = 1;
+  geometry.section.selected_coefficients = {1, 4, 7};
+  const auto observable =
+    lift(value(view.field("coefficient")), geometry).with_id(FieldId(42));
+  ReferenceCrossSection<1, 3, 3> section(geometry.section);
+  Tensor<1, 3>                   tangent;
+  tangent[0]           = 1.;
+  unsigned int nonunit = 0;
+  for (unsigned int slot = 0; slot < 3; ++slot)
+    {
+      const auto selected = observable.mode(slot);
+      EXPECT_EQ(selected.source().id(), FieldId(42));
+      ASSERT_EQ(selected.dependencies().size(), 1u);
+      EXPECT_EQ(selected.dependencies().front(), FieldId(42));
+      for (const auto &point : selected.lifted_points())
+        {
+          const auto expected =
+            section.get_transformed_mode_values(point.section_qpoint, tangent);
+          ASSERT_EQ(point.mode_values.size(), 3u);
+          for (unsigned int d = 0; d < 3; ++d)
+            {
+              EXPECT_NEAR(point.mode_vector[d], expected[3 * slot + d], 1.e-14);
+              EXPECT_NEAR(point.mode_values[d], expected[3 * slot + d], 1.e-14);
+            }
+          if (std::abs(point.mode_vector.norm() - 1.) > 1.e-4)
+            ++nonunit;
+        }
+    }
+  EXPECT_GT(Utilities::MPI::sum(nonunit, MPI_COMM_WORLD), 0u);
+  EXPECT_THROW(observable.mode(3), ExceptionBase);
+}
+
+TEST(LiftedIntegrationSupport,
+     BOTH_RejectsChangedStaticAffineConstraintsCollectively)
+{
+  ParameterAcceptor::clear();
+  LiftedLineFixture             fixture;
+  TensorProductLift<1, 2, 3, 3> geometry("/Static affine lift/");
+  geometry.thickness                     = "0.1";
+  geometry.section.selected_coefficients = {0};
+  FiniteElementSpace<1, 3> line_space(fixture.domain.triangulation(),
+                                      std::make_unique<FE_Q<1, 3>>(1));
+  parallel::distributed::Triangulation<3> mesh(MPI_COMM_WORLD);
+  GridGenerator::hyper_cube(mesh, -2., 2.);
+  mesh.refine_global(1);
+  FiniteElementSpace<3> bulk_space(mesh,
+                                   std::make_unique<FESystem<3>>(FE_Q<3>(1),
+                                                                 3));
+  auto                 &constraints = bulk_space.constraints();
+  constraints.clear();
+  constraints.reinit(bulk_space.locally_owned_dofs(),
+                     bulk_space.locally_relevant_dofs());
+  if (bulk_space.locally_relevant_dofs().is_element(0))
+    constraints.add_line(0);
+  constraints.close();
+  const auto  bulk_view = bulk_space.view();
+  const auto  line_view = line_space.view();
+  StateLayout layout;
+  const auto  bulk =
+    bulk_view.field(layout, "bulk", FEValuesExtractors::Vector(0));
+  const auto line = line_view.field(layout, "line");
+  using V         = ImmersXLA::MPI::Vector;
+  using M         = ImmersXLA::MPI::SparseMatrix;
+  SemiDiscreteModel<V, M>   model;
+  SemidiscreteBuilder<V, M> builder(layout, model);
+  weak_term(value(bulk), test(lift(value(line), geometry).mode(0)))
+    .add(builder);
+  V state, residual;
+  detail::initialize_weak_vector(state,
+                                 bulk.locally_owned_dofs(),
+                                 MPI_COMM_WORLD);
+  detail::initialize_weak_vector(residual,
+                                 line.locally_owned_dofs(),
+                                 MPI_COMM_WORLD);
+  state = 1.;
+  StateView<V> view(layout, 0.);
+  view.bind(bulk.id(), state);
+  EvaluationContext<V> context(0., view);
+  EXPECT_NO_THROW(model.evaluate_row(line.id(), context, residual));
+  if (bulk.locally_owned_dofs().is_element(0))
+    constraints.set_inhomogeneity(0, 0.1);
+  EXPECT_THROW(model.evaluate_row(line.id(), context, residual), ExceptionBase);
+}
+
+TEST(LiftedIntegrationSupport, BOTH_VectorLiftHangingNodesAndAffineSourceShift)
+{
+  ParameterAcceptor::clear();
+  LiftedLineFixture             fixture;
+  TensorProductLift<1, 2, 3, 3> geometry("/Hanging affine vector lift/");
+  geometry.thickness                     = "0.1";
+  geometry.section.selected_coefficients = {0};
+  FiniteElementSpace<1, 3> line_space(fixture.domain.triangulation(),
+                                      std::make_unique<FE_Q<1, 3>>(1));
+  parallel::distributed::Triangulation<3> mesh(MPI_COMM_WORLD);
+  GridGenerator::hyper_cube(mesh, -1., 1.);
+  mesh.refine_global(1);
+  for (const auto &cell : mesh.active_cell_iterators())
+    if (cell->is_locally_owned() && cell->center()[0] < 0.)
+      cell->set_refine_flag();
+  mesh.execute_coarsening_and_refinement();
+  FiniteElementSpace<3> bulk_space(mesh,
+                                   std::make_unique<FESystem<3>>(FE_Q<3>(1),
+                                                                 3));
+  auto                 &constraints = bulk_space.constraints();
+  constraints.clear();
+  constraints.reinit(bulk_space.locally_owned_dofs(),
+                     bulk_space.locally_relevant_dofs());
+  DoFTools::make_hanging_node_constraints(bulk_space.dof_handler(),
+                                          constraints);
+  EXPECT_GT(Utilities::MPI::sum(constraints.n_constraints(), MPI_COMM_WORLD),
+            0u);
+  Functions::ConstantFunction<3> exact(std::vector<double>{0.1, -0.2, 0.3});
+  VectorTools::interpolate_boundary_values(bulk_space.dof_handler(),
+                                           0,
+                                           exact,
+                                           constraints);
+  constraints.close();
+  const auto  bulk_view = bulk_space.view();
+  const auto  line_view = line_space.view();
+  StateLayout layout;
+  const auto  bulk =
+    bulk_view.field(layout, "bulk", FEValuesExtractors::Vector(0));
+  const auto line   = line_view.field(layout, "line");
+  const auto lifted = lift(value(line), geometry).mode(0);
+  using V           = ImmersXLA::MPI::Vector;
+  using M           = ImmersXLA::MPI::SparseMatrix;
+  SemiDiscreteModel<V, M>   model;
+  SemidiscreteBuilder<V, M> builder(layout, model);
+  weak_term(value(bulk), test(lifted)).add(builder);
+  V state, residual, expected;
+  detail::initialize_weak_vector(state,
+                                 bulk.locally_owned_dofs(),
+                                 MPI_COMM_WORLD);
+  detail::initialize_weak_vector(residual,
+                                 line.locally_owned_dofs(),
+                                 MPI_COMM_WORLD);
+  detail::initialize_weak_vector(expected,
+                                 line.locally_owned_dofs(),
+                                 MPI_COMM_WORLD);
+  VectorTools::interpolate(bulk.dof_handler(), exact, state);
+  constraints.distribute(state);
+  StateView<V> view(layout, 0.);
+  view.bind(bulk.id(), state);
+  EvaluationContext<V> context(0., view);
+  model.evaluate_row(line.id(), context, residual);
+  // Integrate the exact physical constant, including contributions whose
+  // source shape functions have been eliminated by inhomogeneous constraints.
+  Tensor<1, 3> constant;
+  constant[0] = 0.1;
+  constant[1] = -0.2;
+  constant[2] = 0.3;
+  for (const auto &point : lifted.lifted_points())
+    {
+      dealii::Vector<double> local(point.dof_indices.size());
+      for (unsigned int i = 0; i < local.size(); ++i)
+        local[i] = point.weight * point.source_basis_values[i] *
+                   (constant * point.mode_vector);
+      line.constraints().distribute_local_to_global(local,
+                                                    point.dof_indices,
+                                                    expected);
+    }
+  expected.compress(VectorOperation::add);
+  EXPECT_GT(expected.l2_norm(), 1.e-5);
+  residual -= expected;
+  EXPECT_LT(residual.l2_norm(), 1.e-12);
+}
