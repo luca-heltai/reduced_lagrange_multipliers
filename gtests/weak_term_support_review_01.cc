@@ -49,9 +49,37 @@ namespace
     }
   };
 
+  struct PhysicalSupport
+  {
+    static constexpr int intrinsic_dimension = 1;
+    static constexpr int ambient_dimension   = 2;
+
+    struct PointData
+    {
+      Point<2>      point;
+      double        weight;
+      std::uint64_t stable_id;
+      unsigned int  owner_rank;
+    };
+
+    std::vector<PointData> points;
+
+    const auto &
+    locally_owned_quadrature_points() const
+    {
+      return points;
+    }
+
+    MPI_Comm
+    mpi_communicator() const
+    {
+      return MPI_COMM_WORLD;
+    }
+  };
+
   template <unsigned int components, typename VectorType, typename MatrixType>
   void
-  check_nonlinear_owned_storage()
+  check_nonlinear_owned_storage(const bool independent_support = false)
   {
     parallel::distributed::Triangulation<2> mesh(MPI_COMM_WORLD);
     GridGenerator::hyper_cube(mesh);
@@ -174,6 +202,32 @@ namespace
     native.vmult(perturbed, direction);
     perturbed -= action;
     EXPECT_LT(perturbed.l2_norm(), 1.e-12);
+
+    if (independent_support)
+      {
+        Triangulation<1, 2> support_mesh;
+        CellData<1>         cell;
+        cell.vertices = {{0, 1}};
+        support_mesh.create_triangulation(
+          {Point<2>(0.1, 0.11), Point<2>(0.9, 0.89)}, {cell}, SubCellData());
+        support_mesh.refine_global(4);
+        check_support(IntegrationSupport<1, 2>(support_mesh));
+
+        // Rank zero supplies the points; ParticleHandler must route them to
+        // both background partitions before either assembly path uses them.
+        PhysicalSupport physical_support;
+        if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
+          for (unsigned int q = 0; q < 64; ++q)
+            {
+              const double t = (q + 0.5) / 64.;
+              physical_support.points.push_back(
+                {Point<2>(0.1 + 0.8 * t, 0.11 + 0.78 * t),
+                 std::hypot(0.8, 0.78) / 64.,
+                 q,
+                 0});
+            }
+        check_support(physical_support);
+      }
   }
 
   template <unsigned int components, typename VectorType, typename MatrixType>
@@ -267,6 +321,13 @@ namespace
                        ExceptionBase);
         };
         check_support(IntegrationSupport<2>(mesh));
+        Triangulation<1, 2> support_mesh;
+        CellData<1>         cell;
+        cell.vertices = {{0, 1}};
+        support_mesh.create_triangulation(
+          {Point<2>(0.1, 0.11), Point<2>(0.9, 0.89)}, {cell}, SubCellData());
+        support_mesh.refine_global(4);
+        check_support(IntegrationSupport<1, 2>(support_mesh));
       }
   }
 } // namespace
@@ -293,6 +354,30 @@ TEST(WeakTerm, BOTH_NonlinearOwnedVectorStorage)
   check_nonlinear_owned_storage<2,
                                 ImmersXLA::MPI::Vector,
                                 ImmersXLA::MPI::SparseMatrix>();
+}
+
+TEST(WeakTerm, NonlinearSupportJacobiansSerialScalar)
+{
+  check_nonlinear_owned_storage<1, Vector<double>, SparseMatrix<double>>(true);
+}
+
+TEST(WeakTerm, NonlinearSupportJacobiansSerialVector)
+{
+  check_nonlinear_owned_storage<2, Vector<double>, SparseMatrix<double>>(true);
+}
+
+TEST(WeakTerm, BOTH_NonlinearSupportJacobiansAcrossPartitions)
+{
+  check_nonlinear_owned_storage<1,
+                                ImmersXLA::MPI::Vector,
+                                ImmersXLA::MPI::SparseMatrix>(true);
+}
+
+TEST(WeakTerm, BOTH_NonlinearVectorSupportJacobiansAcrossPartitions)
+{
+  check_nonlinear_owned_storage<2,
+                                ImmersXLA::MPI::Vector,
+                                ImmersXLA::MPI::SparseMatrix>(true);
 }
 
 TEST(WeakTerm, FrozenInputOnDifferentMeshOrMappingIsRejected)
