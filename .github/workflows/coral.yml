@@ -75,7 +75,7 @@ jobs:
             coral_backend_immersx_1_debug \
             coral_backend_immersx_2_debug \
             coral_backend_immersx_3_debug \
-            --parallel
+            --parallel 2
           test -f build_coral_debug/coral/libcoral_backend_immersx_1_debug.so
           test -f build_coral_debug/coral/libcoral_backend_immersx_2_debug.so
           test -f build_coral_debug/coral/libcoral_backend_immersx_3_debug.so
@@ -156,7 +156,7 @@ jobs:
             coral_backend_immersx_1 \
             coral_backend_immersx_2 \
             coral_backend_immersx_3 \
-            --parallel
+            --parallel 2
           test -f build_coral_release/coral/libcoral_backend_immersx_1.so
           test -f build_coral_release/coral/libcoral_backend_immersx_2.so
           test -f build_coral_release/coral/libcoral_backend_immersx_3.so
