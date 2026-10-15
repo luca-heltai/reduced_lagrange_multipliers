@@ -158,6 +158,43 @@ TEST(DistributedIDA, ApplicationConsistentInitialConditions) // NOLINT
   EXPECT_DOUBLE_EQ(initial_dot_norm, std::sqrt(8.));
 }
 
+TEST(DistributedIDA, BackportedControlsAndConstraints) // NOLINT
+{
+  TimeIntervalParameters time;
+  IDAParameters          parameters;
+  time.final_time                              = 0.01;
+  time.output_time_interval                    = 0.01;
+  parameters.ignore_algebraic_terms_for_errors = false;
+  Adapter    adapter(time, parameters, MPI_COMM_SELF);
+  const auto field        = add_identity_field(adapter, 1);
+  auto       state        = adapter.make_state();
+  auto       dot          = adapter.make_state();
+  auto       constraints  = adapter.make_state();
+  state                   = 2.;
+  dot                     = -2.;
+  constraints             = 2.;
+  auto data               = adapter.additional_data();
+  data.maximum_step_size  = 0.001;
+  data.initial_step_size  = 0.001;
+  data.absolute_tolerance = 1.e-8;
+  data.relative_tolerance = 1.e-8;
+  adapter.set_additional_data(data);
+  unsigned int setup_count      = 0;
+  adapter.solver().custom_setup = [&](void *memory) {
+    ++setup_count;
+    EXPECT_EQ(memory, adapter.solver().get_ida_memory());
+  };
+  adapter.solver().get_constraint_vector = [&]() -> GlobalVector & {
+    return constraints;
+  };
+  EXPECT_THROW(adapter.set_additional_data(data), dealii::ExceptionBase);
+  EXPECT_GE(adapter.solve(state, dot), 10u);
+  EXPECT_EQ(setup_count, 1u);
+  EXPECT_NEAR(adapter.field(state, field.fields())[0],
+              2. * std::exp(-time.final_time),
+              1.e-6);
+}
+
 TEST(DistributedIDA, IDACalcICFallbackRemainsAvailable) // NOLINT
 {
   TimeIntervalParameters time_parameters;

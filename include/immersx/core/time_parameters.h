@@ -17,7 +17,7 @@
 #include <deal.II/base/patterns.h>
 
 #ifdef DEAL_II_WITH_SUNDIALS
-#  include <deal.II/sundials/ida.h>
+#  include <immersx/compatibility/dealii_9_9/ida.h>
 #endif
 
 #include <string>
@@ -120,11 +120,11 @@ namespace ImmersX
 
 #ifdef DEAL_II_WITH_SUNDIALS
     template <typename GlobalVectorType>
-    typename dealii::SUNDIALS::IDA<GlobalVectorType>::AdditionalData
+    typename Compatibility::SUNDIALS::IDA<GlobalVectorType>::AdditionalData
     additional_data(const TimeIntervalParameters &interval) const
     {
       using AdditionalData =
-        typename dealii::SUNDIALS::IDA<GlobalVectorType>::AdditionalData;
+        typename Compatibility::SUNDIALS::IDA<GlobalVectorType>::AdditionalData;
 
       AdditionalData data;
       const auto     correction_type = [](const std::string &value) {
@@ -243,11 +243,11 @@ namespace ImmersX
     /** Build the deal.II IDA execution configuration from parsed values. */
 #ifdef DEAL_II_WITH_SUNDIALS
     template <typename GlobalVectorType>
-    typename dealii::SUNDIALS::IDA<GlobalVectorType>::AdditionalData
+    typename Compatibility::SUNDIALS::IDA<GlobalVectorType>::AdditionalData
     ida_parameters() const
     {
       using AdditionalData =
-        typename dealii::SUNDIALS::IDA<GlobalVectorType>::AdditionalData;
+        typename Compatibility::SUNDIALS::IDA<GlobalVectorType>::AdditionalData;
 
       AdditionalData data;
       const auto     correction_type = [](const std::string &value) {

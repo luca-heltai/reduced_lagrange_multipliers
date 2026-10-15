@@ -34,7 +34,7 @@
 #include <vector>
 
 #ifdef DEAL_II_WITH_SUNDIALS
-#  include <deal.II/sundials/ida.h>
+#  include <immersx/compatibility/dealii_9_9/ida.h>
 #endif
 
 #ifdef DEAL_II_WITH_SUNDIALS
@@ -63,7 +63,7 @@ namespace ImmersX
     using RestartFunction =
       std::function<bool(const double, GlobalVectorType &, GlobalVectorType &)>;
     using AdditionalData =
-      typename dealii::SUNDIALS::IDA<GlobalVectorType>::AdditionalData;
+      typename Compatibility::SUNDIALS::IDA<GlobalVectorType>::AdditionalData;
     IDAAdapter(const TimeIntervalParameters &time_parameters,
                const IDAParameters          &ida_parameters,
                const MPI_Comm                communicator,
@@ -79,6 +79,17 @@ namespace ImmersX
                         dealii::TimerOutput::summary,
                         dealii::TimerOutput::wall_times)
     {}
+
+    /** Configure IDA controls before solver() or solve() connects callbacks. */
+    void
+    set_additional_data(const AdditionalData &data)
+    {
+      AssertThrow(!connected_,
+                  dealii::ExcMessage(
+                    "IDAAdapter controls must be configured before solver "
+                    "initialization."));
+      additional_data_ = data;
+    }
 
     const AdditionalData &
     additional_data() const
@@ -118,7 +129,7 @@ namespace ImmersX
             << composition_.n_fields() << " semantic field(s)." << std::endl;
     }
 
-    dealii::SUNDIALS::IDA<GlobalVectorType> &
+    Compatibility::SUNDIALS::IDA<GlobalVectorType> &
     solver()
     {
       finalize();
@@ -342,7 +353,7 @@ namespace ImmersX
           if (ida_data.reset_type == AdditionalData::use_y_diff)
             ida_data.reset_type = AdditionalData::none;
         }
-      ida_ = std::make_unique<dealii::SUNDIALS::IDA<GlobalVectorType>>(
+      ida_ = std::make_unique<Compatibility::SUNDIALS::IDA<GlobalVectorType>>(
         ida_data, composition_.communicator());
       ida_->reinit_vector = [this](GlobalVectorType &vector) {
         composition_.reinit(vector);
@@ -563,15 +574,15 @@ namespace ImmersX
         }
     }
 
-    Composition                                              composition_;
-    LinearSolveFunction                                      solve_;
-    const TimeIntervalParameters                            &time_parameters_;
-    const IDAParameters                                     &ida_parameters_;
-    mutable std::optional<AdditionalData>                    additional_data_;
-    std::unique_ptr<dealii::SUNDIALS::IDA<GlobalVectorType>> ida_;
-    mutable dealii::ConditionalOStream                       pcout;
-    mutable dealii::TimerOutput                              computing_timer;
-    std::optional<Operator>                                  current_jacobian_;
+    Composition                           composition_;
+    LinearSolveFunction                   solve_;
+    const TimeIntervalParameters         &time_parameters_;
+    const IDAParameters                  &ida_parameters_;
+    mutable std::optional<AdditionalData> additional_data_;
+    std::unique_ptr<Compatibility::SUNDIALS::IDA<GlobalVectorType>> ida_;
+    mutable dealii::ConditionalOStream                              pcout;
+    mutable dealii::TimerOutput         computing_timer;
+    std::optional<Operator>             current_jacobian_;
     std::optional<Operator>             current_preconditioner_;
     OutputFunction                      output_;
     ConsistentInitialConditionsFunction compute_consistent_initial_conditions_;

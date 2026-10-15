@@ -62,6 +62,41 @@ tolerances, differential/algebraic error handling, and initial-condition
 correction settings. The adapter combines the two into deal.II's IDA
 `AdditionalData`; the generic fixed-step controls are not used by IDA.
 
+The adapter uses the pinned compatibility implementation of
+[deal.II PR #20260](https://github.com/dealii/dealii/pull/20260), not the
+installed IDA wrapper. Its type is
+`ImmersX::Compatibility::SUNDIALS::IDA<GlobalVector>`. Existing parameter-file
+settings and defaults are unchanged. To set the additional upstream controls,
+copy the assembled configuration before calling `solver()` or `solve()`:
+
+```cpp
+auto controls = ida.additional_data();
+controls.maximum_step_size = 0.01;
+controls.maximum_number_of_steps = 2000;
+controls.linear_tolerance_factor = 0.05;
+ida.set_additional_data(controls);
+```
+
+The compatibility `AdditionalData::add_parameters()` exposes all upstream
+controls when used directly with a `ParameterHandler`; the adapter's
+`IDAParameters` continues to expose its existing parameter-file subset.
+Adaptivity controls require SUNDIALS 6.2 or newer; the constraint-failure limit
+requires 7.6 or newer.
+
+After registering contributors, `ida.solver()` exposes the constraint and
+expert setup callbacks. For inequality constraints, create an execution vector
+with `ida.make_state()`, fill it through `ida.field()`, and return it from
+`ida.solver().get_constraint_vector`. Entries encode unconstrained (0),
+nonnegative/nonpositive (+1/-1), or strictly positive/negative (+2/-2) values.
+Keep the vector alive through the solve and resize it after any layout change.
+An all-zero constraint vector means no constraints.
+
+`ida.solver().custom_setup` runs on every reset, after the wrapper installs its
+callbacks and before initial-condition correction. `get_ida_memory()` permits
+IDA queries; it is null before the first reset. Both that pointer and
+`get_sun_context()` (SUNDIALS 6+) are invalidated by reset. Do not replace
+wrapper-owned user data or callbacks.
+
 The optional
 `set_compute_consistent_initial_conditions(time, state, state_dot)` callback
 can update both vectors when the correction type is `use_y_diff`. The optional
