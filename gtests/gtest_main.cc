@@ -23,9 +23,14 @@
 int
 main(int argc, char *argv[])
 {
-  dealii::Utilities::MPI::MPI_InitFinalize mpi_initialization(argc, argv, 1);
   testing::InitGoogleTest(&argc, argv);
 
+  // List the complete registry without initializing MPI or solver backends.
+  // This also lets every process in a discovery job exit without collectives.
+  if (::testing::GTEST_FLAG(list_tests))
+    return RUN_ALL_TESTS();
+
+  dealii::Utilities::MPI::MPI_InitFinalize mpi_initialization(argc, argv, 1);
   const auto n_ranks = dealii::Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD);
 
   if (n_ranks == 1)
@@ -42,7 +47,7 @@ main(int argc, char *argv[])
 
       ::testing::GTEST_FLAG(filter) = filter;
     }
-  else
+  else if (n_ranks > 1)
     {
       constexpr const char *mpi_test_pattern  = "*.MPI_*";
       constexpr const char *both_test_pattern = "*.BOTH_*";

@@ -478,6 +478,191 @@ namespace ImmersX
           observable, source, target, affine_rhs, affine_data, support);
       }
 
+      template <typename VectorType, typename MatrixType, typename Support>
+      static MatrixStorage<MatrixType>
+      assemble_on_physical_support(const ObservableType   &observable,
+                                   const TargetExpression &target,
+                                   const Support          &support)
+      {
+        static_assert(is_physical_quadrature_support<Support>::value,
+                      "Expected a physical quadrature support.");
+        static_assert(SourceField::dimension() == spacedim &&
+                        TargetField::dimension() == spacedim,
+                      "Physical quadrature weak terms currently require "
+                      "full-dimensional bulk fields.");
+
+        const auto &source       = observable.source();
+        const auto &target_field = target.source();
+        const auto &source_tria  = source.dof_handler().get_triangulation();
+        const auto &target_tria =
+          target_field.dof_handler().get_triangulation();
+        AssertThrow(static_cast<const void *>(&source_tria) ==
+                      static_cast<const void *>(&target_tria),
+                    dealii::ExcMessage(
+                      "Physical quadrature assembly currently requires the "
+                      "source and test fields to share a background mesh."));
+        const auto *background =
+          dynamic_cast<const dealii::parallel::TriangulationBase<spacedim> *>(
+            &target_tria);
+        AssertThrow(background != nullptr,
+                    dealii::ExcMessage(
+                      "Physical quadrature assembly requires a distributed "
+                      "background triangulation."));
+        int communicator_relation = MPI_UNEQUAL;
+        AssertThrow(MPI_Comm_compare(support.mpi_communicator(),
+                                     target_field.space().mpi_communicator(),
+                                     &communicator_relation) == MPI_SUCCESS &&
+                      (communicator_relation == MPI_IDENT ||
+                       communicator_relation == MPI_CONGRUENT),
+                    dealii::ExcMessage(
+                      "The lifted support and bulk mesh must use "
+                      "congruent MPI communicators."));
+
+        const auto &points = support.locally_owned_quadrature_points();
+        std::vector<dealii::Point<spacedim>> positions;
+        std::vector<std::vector<double>>     properties;
+        positions.reserve(points.size());
+        properties.reserve(points.size());
+        for (const auto &point : points)
+          {
+            positions.push_back(point.point);
+            properties.push_back({point.weight});
+          }
+
+        static std::atomic<std::uint64_t>    parameter_sequence{0};
+        ParticleCouplingParameters<spacedim> parameters(
+          "/ImmersX/weak term/lifted support/" +
+          std::to_string(parameter_sequence.fetch_add(1)));
+        ParticleCoupling<spacedim> distribution(parameters);
+        distribution.initialize_particle_handler(*background,
+                                                 target_field.mapping(),
+                                                 1);
+        // Particle IDs are execution-only here. Generated IDs keep insertion
+        // collective when a rank has no points; stable IDs remain in support.
+        distribution.insert_points(positions, properties);
+
+        dealii::DynamicSparsityPattern sparsity(
+          target_field.dof_handler().n_dofs(),
+          source.dof_handler().n_dofs(),
+          target_field.locally_relevant_dofs());
+        std::vector<dealii::types::global_dof_index> source_indices(
+          source.space().finite_element().n_dofs_per_cell());
+        std::vector<dealii::types::global_dof_index> target_indices(
+          target_field.space().finite_element().n_dofs_per_cell());
+        for (const auto &particle : distribution.get_particles())
+          if (particle.get_surrounding_cell()->is_locally_owned())
+            {
+              const typename TargetField::space_type::DoFHandlerType::
+                cell_iterator target_cell(*particle.get_surrounding_cell(),
+                                          &target_field.dof_handler());
+              const auto      source_cell =
+                target_cell->as_dof_handler_iterator(source.dof_handler());
+              source_cell->get_dof_indices(source_indices);
+              target_cell->get_dof_indices(target_indices);
+              const auto source_execution =
+                execution_indices(source, source_indices);
+              const auto target_execution =
+                execution_indices(target_field, target_indices);
+              target_field.constraints().add_entries_local_to_global(
+                target_execution,
+                source.constraints(),
+                source_execution,
+                sparsity,
+                true);
+            }
+        dealii::SparsityTools::distribute_sparsity_pattern(
+          sparsity,
+          target_field.locally_owned_dofs(),
+          target_field.space().mpi_communicator(),
+          target_field.locally_relevant_dofs());
+
+        auto matrix = std::make_shared<MatrixType>();
+        auto matrix_sparsity =
+          initialize_weak_matrix(*matrix,
+                                 target_field.locally_owned_dofs(),
+                                 source.locally_owned_dofs(),
+                                 sparsity,
+                                 target_field.space().mpi_communicator());
+
+        const auto scale = observable.scale() * target.scale();
+        for (const auto &particle : distribution.get_particles())
+          if (particle.get_surrounding_cell()->is_locally_owned())
+            {
+              const typename TargetField::space_type::DoFHandlerType::
+                cell_iterator target_cell(*particle.get_surrounding_cell(),
+                                          &target_field.dof_handler());
+              const auto      source_cell =
+                target_cell->as_dof_handler_iterator(source.dof_handler());
+              const auto reference =
+                source.mapping().transform_real_to_unit_cell(
+                  source_cell, particle.get_location());
+              const dealii::Quadrature<dim> point_quadrature(
+                std::vector<dealii::Point<dim>>{reference});
+              dealii::FEValues<dim, spacedim> source_point_values(
+                source.mapping(),
+                source.space().finite_element(),
+                point_quadrature,
+                observable.update_flags());
+              const auto target_reference =
+                target_field.mapping().transform_real_to_unit_cell(
+                  target_cell, particle.get_location());
+              const dealii::Quadrature<dim> target_point_quadrature(
+                std::vector<dealii::Point<dim>>{target_reference});
+              dealii::FEValues<dim, spacedim> target_point_values(
+                target_field.mapping(),
+                target_field.space().finite_element(),
+                target_point_quadrature,
+                target.update_flags());
+              source_point_values.reinit(source_cell);
+              target_point_values.reinit(target_cell);
+              source_cell->get_dof_indices(source_indices);
+              target_cell->get_dof_indices(target_indices);
+              std::vector<unsigned int> source_positions;
+              std::vector<unsigned int> target_positions;
+              std::vector<dealii::types::global_dof_index>
+                source_execution_indices;
+              std::vector<dealii::types::global_dof_index>
+                target_execution_indices;
+              for (unsigned int j = 0; j < source_indices.size(); ++j)
+                if (source.has_execution_index(source_indices[j]))
+                  {
+                    source_positions.push_back(j);
+                    source_execution_indices.push_back(
+                      source.execution_index(source_indices[j]));
+                  }
+              for (unsigned int i = 0; i < target_indices.size(); ++i)
+                if (target_field.has_execution_index(target_indices[i]))
+                  {
+                    target_positions.push_back(i);
+                    target_execution_indices.push_back(
+                      target_field.execution_index(target_indices[i]));
+                  }
+              dealii::FullMatrix<double> local(target_positions.size(),
+                                               source_positions.size());
+              const auto &trial_view = source_point_values[source.extractor()];
+              const auto &test_view =
+                target_point_values[target_field.extractor()];
+              for (unsigned int i = 0; i < target_positions.size(); ++i)
+                for (unsigned int j = 0; j < source_positions.size(); ++j)
+                  local(i, j) =
+                    scale *
+                    detail::natural_pairing(
+                      observable.operation()(trial_view,
+                                             source_positions[j],
+                                             0),
+                      target.operation()(test_view, target_positions[i], 0)) *
+                    particle.get_properties()[0];
+              target_field.constraints().distribute_local_to_global(
+                local,
+                target_execution_indices,
+                source.constraints(),
+                source_execution_indices,
+                *matrix);
+            }
+        compress_weak_matrix(*matrix);
+        return {std::move(matrix), std::move(matrix_sparsity)};
+      }
+
       template <typename VectorType, typename MatrixType>
       static MatrixStorage<MatrixType>
       assemble_on_boundary_support(
@@ -3263,6 +3448,25 @@ namespace ImmersX
         observable_, target_, std::move(support));
     }
 
+    template <typename PhysicalSupport,
+              std::enable_if_t<is_physical_quadrature_support<
+                                 std::decay_t<PhysicalSupport>>::value,
+                               int> = 0>
+    auto
+    on(PhysicalSupport support) const
+    {
+      static_assert(PhysicalSupport::ambient_dimension ==
+                      TestExpression::spacedimension(),
+                    "Physical support and test field must share an "
+                    "embedding dimension.");
+      static_assert(PhysicalSupport::intrinsic_dimension <=
+                      TestExpression::dimension(),
+                    "Physical support dimension cannot exceed the test "
+                    "field dimension.");
+      return WeakTerm<TrialExpression, TestExpression, PhysicalSupport>(
+        observable_, target_, std::move(support));
+    }
+
     WeakTerm
     on_boundary(const dealii::types::boundary_id id) const
     {
@@ -3726,11 +3930,15 @@ namespace ImmersX
                 typename Assembly::template AffineData<VectorType, MatrixType>;
               std::shared_ptr<AffineData> affine_data;
               const auto                  storage = [&] {
-                if constexpr (std::is_same_v<
-                                Support,
-                                BoundaryIntegrationSupport<
-                                  TestExpression::dimension(),
-                                  TestExpression::spacedimension()>>)
+                if constexpr (is_physical_quadrature_support<Support>::value)
+                  return Assembly::template assemble_on_physical_support<
+                    VectorType,
+                    MatrixType>(observable_, target, support_);
+                else if constexpr (std::is_same_v<
+                                     Support,
+                                     BoundaryIntegrationSupport<
+                                       TestExpression::dimension(),
+                                       TestExpression::spacedimension()>>)
                   return Assembly::template assemble_on_boundary_support<
                     VectorType,
                     MatrixType>(observable_,
@@ -3881,6 +4089,19 @@ namespace ImmersX
       .on(std::move(support));
   }
 
+  template <typename Trial,
+            typename Test,
+            typename Support,
+            std::enable_if_t<
+              is_physical_quadrature_support<std::decay_t<Support>>::value,
+              int> = 0>
+  auto
+  weak_term(Trial trial, Test test_expression, Support support)
+  {
+    return weak_term(std::move(trial), std::move(test_expression))
+      .on(std::move(support));
+  }
+
   template <typename Trial, typename FieldType, typename Operation>
   auto
   operator*(Trial trial, TestExpression<FieldType, Operation> test_expression)
@@ -3898,6 +4119,19 @@ namespace ImmersX
   auto
   operator*(WeakTerm<Trial, Test, Support>    term,
             IntegrationSupport<dim, spacedim> support)
+  {
+    return term.on(std::move(support));
+  }
+
+  template <typename Trial,
+            typename Test,
+            typename CurrentSupport,
+            typename Support,
+            std::enable_if_t<
+              is_physical_quadrature_support<std::decay_t<Support>>::value,
+              int> = 0>
+  auto
+  operator*(WeakTerm<Trial, Test, CurrentSupport> term, Support support)
   {
     return term.on(std::move(support));
   }

@@ -12,6 +12,7 @@ imported-fields
 configuration
 boundary-conditions
 reduced-coupling
+lifted-integration
 coral-backend
 testing
 vascular-tree-elasticity

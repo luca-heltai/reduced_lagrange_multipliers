@@ -34,6 +34,7 @@ set(_public_headers
     immersx/core/field.h
     immersx/core/field_contributor.h
     immersx/core/integration_support.h
+    immersx/core/lifted_integration_support.h
     immersx/core/input_field_selector.h
     immersx/core/known_term.h
     immersx/core/reduced_field_catalog.h
@@ -165,6 +166,27 @@ FOREACH(_build_type ${_d2_build_types})
     target_include_directories(${_exe} PRIVATE ${GTEST_INCLUDE_DIRS})
     LIST(APPEND IMMERSX_TEST_TARGETS ${_exe})
 
+    add_test(
+      NAME "ImmersX${${_build_type}_ctest_suffix}.TestCategoryCoverage"
+      COMMAND ${CMAKE_COMMAND}
+              "-DTEST_EXECUTABLE=$<TARGET_FILE:${_exe}>"
+              "-DCATEGORY_FILE=${CMAKE_CURRENT_SOURCE_DIR}/test_categories.cmake"
+              -P "${CMAKE_CURRENT_SOURCE_DIR}/check_test_categories.cmake")
+    set_tests_properties(
+      "ImmersX${${_build_type}_ctest_suffix}.TestCategoryCoverage"
+      PROPERTIES LABELS "unit;quick" TIMEOUT 60)
+
+    add_test(
+      NAME "ImmersX${${_build_type}_ctest_suffix}.TestCategoryGuard"
+      COMMAND ${CMAKE_COMMAND}
+              "-DTEST_EXECUTABLE=$<TARGET_FILE:${_exe}>"
+              "-DCATEGORY_FILE=${CMAKE_CURRENT_SOURCE_DIR}/test_categories.cmake"
+              "-DTEST_OUTPUT_DIR=${CMAKE_CURRENT_BINARY_DIR}/category-guard-${_build_type}"
+              -P "${CMAKE_CURRENT_SOURCE_DIR}/test_category_coverage_guard.cmake")
+    set_tests_properties(
+      "ImmersX${${_build_type}_ctest_suffix}.TestCategoryGuard"
+      PROPERTIES LABELS "unit;quick" TIMEOUT 60)
+
     set(_unit_patterns)
     foreach(_suite ${IMMERSX_UNIT_TEST_SUITES})
       list(APPEND _unit_patterns "${_suite}.*")
@@ -187,19 +209,19 @@ FOREACH(_build_type ${_d2_build_types})
     string(JOIN ":" _application_filter ${_application_patterns})
     set(_unit_mpi_suites)
     foreach(_suite ${IMMERSX_UNIT_TEST_SUITES})
-      list(APPEND _unit_mpi_suites "${_suite}.MPI_*")
+      list(APPEND _unit_mpi_suites "${_suite}.MPI_*" "${_suite}.BOTH_*")
     endforeach()
     set(_integration_mpi_suites)
     foreach(_suite ${IMMERSX_INTEGRATION_TEST_SUITES})
-      list(APPEND _integration_mpi_suites "${_suite}.MPI_*")
+      list(APPEND _integration_mpi_suites "${_suite}.MPI_*" "${_suite}.BOTH_*")
     endforeach()
     set(_validation_mpi_suites)
     foreach(_suite ${IMMERSX_VALIDATION_TEST_SUITES})
-      list(APPEND _validation_mpi_suites "${_suite}.MPI_*")
+      list(APPEND _validation_mpi_suites "${_suite}.MPI_*" "${_suite}.BOTH_*")
     endforeach()
     set(_application_mpi_suites)
     foreach(_suite ${IMMERSX_APPLICATION_TEST_SUITES})
-      list(APPEND _application_mpi_suites "${_suite}.MPI_*")
+      list(APPEND _application_mpi_suites "${_suite}.MPI_*" "${_suite}.BOTH_*")
     endforeach()
     string(JOIN ":" _unit_mpi_filter ${_unit_mpi_suites})
     string(JOIN ":" _integration_mpi_filter ${_integration_mpi_suites})
@@ -225,7 +247,7 @@ FOREACH(_build_type ${_d2_build_types})
         set(_category_filter "${_validation_filter}")
         set(_category_mpi_filter "${_validation_mpi_filter}")
         set(_category_timeout 1200)
-      else()
+      elseif(_category STREQUAL "application")
         set(_category_filter "${_application_filter}")
         set(_category_mpi_filter "${_application_mpi_filter}")
         set(_category_timeout 1200)
@@ -314,7 +336,7 @@ if(IMMERSX_WITH_METRIC_FLOW_X)
         add_test(NAME ${_metric_flow_x_mpi_test}
                  COMMAND ${_immersx_mpiexec} -np 2
                          $<TARGET_FILE:${_metric_flow_x_test_target}>
-                         --gtest_filter=MetricFlowX.MPI_*)
+                         --gtest_filter=MetricFlowX.MPI_*:MetricFlowX.BOTH_*)
         set_tests_properties(${_metric_flow_x_mpi_test}
                              PROPERTIES LABELS "integration;quick;mpi"
                                         TIMEOUT 300)

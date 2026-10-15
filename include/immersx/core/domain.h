@@ -19,21 +19,28 @@
 #include <deal.II/base/config.h>
 
 #include <deal.II/base/parameter_acceptor.h>
+#include <deal.II/base/point.h>
 
 #include <deal.II/distributed/fully_distributed_tria.h>
 #include <deal.II/distributed/tria.h>
 #include <deal.II/distributed/tria_base.h>
 
 #include <immersx/core/integration_support.h>
+#include <immersx/coupling/tensor_product_lift.h>
 #include <immersx/io/imported_finite_element_fields.h>
 #include <mpi.h>
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <variant>
+#include <vector>
 
 namespace ImmersX
 {
+  template <int reduced_dim, int surface_dim, int spacedim, int n_components>
+  class LiftedIntegrationSupport;
+
   inline std::string
   domain_subsection(const std::string &subsection)
   {
@@ -133,6 +140,18 @@ namespace ImmersX
       return IntegrationSupport<dim, spacedim>(triangulation(), material_id);
     }
 
+    /** Build a geometric integration support from a tensor-product lift. */
+    template <int surface_dim, int n_components>
+    LiftedIntegrationSupport<dim, surface_dim, spacedim, n_components>
+    lift(const TensorProductLift<dim, surface_dim, spacedim, n_components>
+           &descriptor) const;
+
+    template <int surface_dim, int n_components>
+    LiftedIntegrationSupport<dim, surface_dim, spacedim, n_components>
+    lift(const TensorProductLift<dim, surface_dim, spacedim, n_components>
+                                          &descriptor,
+         FixedThicknessEvaluator<spacedim> thickness_evaluator) const;
+
     /** Integrate over every boundary face of this domain. */
     BoundaryIntegrationSupport<dim, spacedim>
     boundary_support() const
@@ -176,5 +195,7 @@ namespace ImmersX
     std::unique_ptr<ImportedFields>        vtk_fields_;
   };
 } // namespace ImmersX
+
+#include <immersx/core/lifted_integration_support.h>
 
 #endif // immersx_domain_h
