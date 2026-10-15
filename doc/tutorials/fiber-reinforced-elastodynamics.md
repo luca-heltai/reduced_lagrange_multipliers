@@ -48,6 +48,16 @@ fiber.velocity       differential
 coupling.lambda      algebraic
 ```
 
+The multiplier owns a `FiniteElementSpace` on the fiber Domain. By default,
+`Multiplier FE degree = 0` follows the fiber degree; a positive value selects
+an independent continuous degree. To choose another element, set
+`Fiber Reinforced Elastodynamics/Multiplier space/Finite element`, for example
+`FESystem<1>[FE_DGQ<1>(0)^2]` for a cellwise constant 2D vector multiplier.
+An explicit element name overrides `Multiplier FE degree` and must have `dim`
+components. The default `auto` keeps the degree-based behavior. The choice must
+still yield a solvable constraint system; not every trial/multiplier pair is
+stable.
+
 The application registers these contributors with `IDAAdapter`, accepts the
 displacement and velocity fields after accepted steps, and writes the two
 Problem outputs plus the multiplier on its own FE space. The application

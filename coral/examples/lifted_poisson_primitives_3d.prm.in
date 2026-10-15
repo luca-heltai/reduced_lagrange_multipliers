@@ -1,0 +1,39 @@
+subsection Lifted graph
+  subsection Background
+    set Grid generator = hyper_cube
+    set Grid generator arguments = -1:1:false
+    set Initial refinement = 2
+  end
+  subsection Representative
+    set Grid generator = @IMMERSX_BINARY_DIR@/gtests/parameters/co_refinement_two_segments.vtk
+    subsection VTK support
+      set Read fields = true
+    end
+  end
+  subsection Background space
+    set Finite element = FE_Q<3>(1)
+  end
+  subsection Modal space
+    set Finite element = FESystem<1,3>[FE_Q<1,3>(1)^3]
+  end
+  subsection Lift
+    subsection Cross section
+      set Maximum inclusion degree = 1
+      set Selected indices = 0,1,2
+    end
+  end
+  subsection Co-refinement
+    set Refinement strategy = both
+    set Lower factor = 0.2
+    set Upper factor = 3
+    set Max refinement level = 6
+  end
+  subsection Solver
+    set Solver = iterative
+    set Preconditioner = augmented_lagrangian
+    set Tolerance = 1e-10
+  end
+  subsection Output
+    set Output directory = @LIFTED_GRAPH_OUTPUT@
+  end
+end

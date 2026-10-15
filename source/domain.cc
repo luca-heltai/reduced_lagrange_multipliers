@@ -15,7 +15,10 @@
 #include <deal.II/grid/grid_tools.h>
 #include <deal.II/grid/tria.h>
 
+#include <deal.II/numerics/solution_transfer.h>
+
 #include <immersx/core/domain.h>
+#include <immersx/io/vtk_utils.h>
 
 #if DEAL_II_VERSION_GTE(9, 8, 0) && defined(DEAL_II_WITH_VTK)
 #  include <deal.II/vtk/utilities.h>
@@ -23,6 +26,16 @@
 #  include <immersx/compatibility/dealii_9_8/grid_in.h>
 #  ifdef DEAL_II_WITH_VTK
 #    include <immersx/compatibility/dealii_9_8/vtk/utilities.h>
+#  endif
+#endif
+
+#ifdef DEAL_II_WITH_VTK
+#  include <vtkGenericDataObjectReader.h>
+#  include <vtkUnstructuredGrid.h>
+#  include <vtkVersionMacros.h>
+#  if VTK_MAJOR_VERSION > 9 || \
+    (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION >= 3)
+#    include <vtkCleanUnstructuredGrid.h>
 #  endif
 #endif
 
@@ -45,6 +58,51 @@ namespace ImmersX
       dealii::Triangulation<dim, spacedim> serial_tria;
 
 #ifdef DEAL_II_WITH_VTK
+      // Legacy readers otherwise retain only the first SCALARS array. Read all
+      // arrays so selecting an id field does not depend on its file ordering.
+      std::string extension =
+        std::filesystem::path(filename).extension().string();
+      std::transform(extension.begin(),
+                     extension.end(),
+                     extension.begin(),
+                     [](unsigned char c) { return std::tolower(c); });
+      if (extension == ".vtk")
+        {
+          std::ifstream input(filename);
+          AssertThrow(input.good(), dealii::ExcIO());
+          auto reader = vtkSmartPointer<vtkGenericDataObjectReader>::New();
+          reader->SetFileName(filename.c_str());
+          reader->ReadAllScalarsOn();
+          reader->ReadAllVectorsOn();
+          reader->ReadAllTensorsOn();
+          reader->ReadAllNormalsOn();
+          reader->ReadAllTCoordsOn();
+          reader->ReadAllColorScalarsOn();
+          reader->ReadAllFieldsOn();
+          reader->Update();
+#  if DEAL_II_VERSION_GTE(9, 8, 0)
+          namespace vtk_api = dealii::VTKWrappers;
+#  else
+          namespace vtk_api = ImmersX::VTKWrappers;
+#  endif
+          auto grid = vtk_api::internal::convert_to_unstructured_grid(
+            reader->GetOutput());
+#  if VTK_MAJOR_VERSION > 9 || \
+    (VTK_MAJOR_VERSION == 9 && VTK_MINOR_VERSION >= 3)
+          auto cleaner = vtkSmartPointer<vtkCleanUnstructuredGrid>::New();
+          cleaner->SetToleranceIsAbsolute(false);
+          cleaner->SetTolerance(0.);
+          cleaner->SetInputData(grid);
+          cleaner->Update();
+          grid->ShallowCopy(cleaner->GetOutput());
+#  endif
+          vtk_api::unstructured_grid_to_dealii_triangulation(*grid,
+                                                             serial_tria,
+                                                             material_id_field,
+                                                             boundary_id_field);
+          tria.copy_triangulation(serial_tria);
+          return;
+        }
 #  if DEAL_II_VERSION_GTE(9, 8, 0)
       dealii::VTKWrappers::read_tria(
         filename, serial_tria, true, 0., material_id_field, boundary_id_field);
@@ -129,6 +187,70 @@ namespace ImmersX
     }
   } // namespace
 
+
+  // Serial input fields live only during preparation. Keep the serial vector
+  // attached to the same mesh through every refinement, then redistribute by
+  // CellId when the final triangulation has been constructed.
+  template <int dim, int spacedim>
+  struct Domain<dim, spacedim>::SerialFields
+  {
+    dealii::DoFHandler<dim, spacedim>                     dof_handler;
+    std::unique_ptr<dealii::FiniteElement<dim, spacedim>> fe;
+    dealii::Vector<double>                                coefficients;
+    FieldCatalog                                          catalog;
+    std::unique_ptr<
+      dealii::SolutionTransfer<dim, dealii::Vector<double>, spacedim>>
+                                       transfer;
+    boost::signals2::scoped_connection before;
+    boost::signals2::scoped_connection after;
+
+    SerialFields(const std::string                    &filename,
+                 dealii::Triangulation<dim, spacedim> &tria)
+      : dof_handler(tria)
+    {
+#ifdef DEAL_II_WITH_VTK
+      dealii::Triangulation<dim, spacedim> input_tria;
+      dealii::DoFHandler<dim, spacedim>    input_dh(input_tria);
+      dealii::Vector<double>               input_values;
+      VTKUtils::read_vtk(filename, input_dh, input_values, catalog);
+      fe = input_dh.get_fe().clone();
+      dof_handler.distribute_dofs(*fe);
+      coefficients.reinit(dof_handler.n_dofs());
+      AssertDimension(input_tria.n_active_cells(), tria.n_active_cells());
+      std::vector<dealii::types::global_dof_index> src(fe->n_dofs_per_cell());
+      std::vector<dealii::types::global_dof_index> dst(src.size());
+      auto input_cell = input_dh.begin_active();
+      for (const auto &cell : dof_handler.active_cell_iterators())
+        {
+          AssertThrow(cell->id() == input_cell->id(),
+                      dealii::ExcMessage(
+                        "Input fields require matching CellIds."));
+          input_cell->get_dof_indices(src);
+          cell->get_dof_indices(dst);
+          for (unsigned int i = 0; i < src.size(); ++i)
+            coefficients[dst[i]] = input_values[src[i]];
+          ++input_cell;
+        }
+      before = tria.signals.pre_refinement.connect([this]() {
+        transfer = std::make_unique<
+          dealii::SolutionTransfer<dim, dealii::Vector<double>, spacedim>>(
+          dof_handler);
+        transfer->prepare_for_coarsening_and_refinement(coefficients);
+      });
+      after  = tria.signals.post_refinement.connect([this]() {
+        dof_handler.distribute_dofs(*fe);
+        dealii::Vector<double> values(dof_handler.n_dofs());
+        transfer->interpolate(values);
+        coefficients.swap(values);
+        transfer.reset();
+      });
+#else
+      (void)filename;
+      AssertThrow(false,
+                  dealii::ExcMessage("Reading fields requires VTK support."));
+#endif
+    }
+  };
 
   template <int dim, int spacedim>
   DomainParameters<dim, spacedim>::DomainParameters(
@@ -233,55 +355,166 @@ namespace ImmersX
   void
   Domain<dim, spacedim>::make_grid()
   {
-    if (uses_fully_distributed_triangulation())
+    prepare_grid();
+    finalize_grid();
+  }
+
+  template <int dim, int spacedim>
+  void
+  Domain<dim, spacedim>::prepare_grid(const bool serial)
+  {
+    AssertThrow(!grid_prepared_ && triangulation_->n_global_active_cells() == 0,
+                dealii::ExcMessage(
+                  "Cannot prepare an already populated Domain."));
+    if (serial || uses_fully_distributed_triangulation())
       {
-        dealii::Triangulation<dim, spacedim> serial_tria(
-          typename dealii::Triangulation<dim, spacedim>::MeshSmoothing(
-            dealii::Triangulation<dim, spacedim>::smoothing_on_refinement |
-            dealii::Triangulation<dim, spacedim>::smoothing_on_coarsening));
-
-        make_grid_in(parameters_, serial_tria);
-        if (parameters_.grid_scale != 1.)
-          dealii::GridTools::scale(parameters_.grid_scale, serial_tria);
-        AssertThrow(
-          !parameters_.read_vtk_fields || parameters_.initial_refinement == 0,
-          dealii::ExcMessage(
-            "Domain cannot transfer imported VTK fields through initial "
-            "refinement on a fullydistributed triangulation. Use the "
-            "distributed backend or set Initial refinement to zero."));
-        serial_tria.refine_global(parameters_.initial_refinement);
-
-        auto &fully_distributed =
-          std::get<FullyDistributedTriangulation>(triangulation_storage_);
-        if constexpr (dim == 1)
-          fully_distributed.set_partitioner(
-            [](dealii::Triangulation<dim, spacedim> &tria,
-               const unsigned int                    n_partitions) {
-              dealii::GridTools::partition_triangulation_zorder(n_partitions,
-                                                                tria,
-                                                                false);
-            },
-            dealii::TriangulationDescription::Settings::default_setting);
-
-        for (const auto manifold_id : serial_tria.get_manifold_ids())
-          if (manifold_id != dealii::numbers::flat_manifold_id)
-            fully_distributed.set_manifold(
-              manifold_id, serial_tria.get_manifold(manifold_id));
-        fully_distributed.copy_triangulation(serial_tria);
-        import_vtk_fields_if_requested();
-        return;
+        serial_triangulation_ =
+          std::make_unique<dealii::Triangulation<dim, spacedim>>(
+            typename dealii::Triangulation<dim, spacedim>::MeshSmoothing(
+              dealii::Triangulation<dim, spacedim>::smoothing_on_refinement |
+              dealii::Triangulation<dim, spacedim>::smoothing_on_coarsening));
+        make_grid_in(parameters_, *serial_triangulation_);
+        if (parameters_.read_vtk_fields &&
+            std::filesystem::is_regular_file(parameters_.name_of_grid))
+          {
+            std::string extension =
+              std::filesystem::path(parameters_.name_of_grid)
+                .extension()
+                .string();
+            std::transform(extension.begin(),
+                           extension.end(),
+                           extension.begin(),
+                           [](unsigned char c) { return std::tolower(c); });
+            if (extension == ".vtk" || extension == ".vtu" ||
+                extension == ".pvtu")
+              serial_fields_ =
+                std::make_unique<SerialFields>(parameters_.name_of_grid,
+                                               *serial_triangulation_);
+          }
       }
-
-    auto &distributed =
-      std::get<DistributedTriangulation>(triangulation_storage_);
-    make_grid_in(parameters_, distributed);
+    else if (!uses_fully_distributed_triangulation())
+      {
+        make_grid_in(parameters_, *triangulation_);
+        import_vtk_fields_if_requested();
+      }
+    grid_prepared_ = true;
+    auto &tria     = refinement_triangulation();
     if (parameters_.grid_scale != 1.)
-      dealii::GridTools::scale(parameters_.grid_scale, distributed);
-    import_vtk_fields_if_requested();
-    // Imported fields are connected to the distributed triangulation before
-    // refinement, so their SolutionTransfer hooks interpolate them onto the
-    // refined mesh just as in the existing reduced-grid code.
-    distributed.refine_global(parameters_.initial_refinement);
+      dealii::GridTools::scale(parameters_.grid_scale, tria);
+    tria.refine_global(parameters_.initial_refinement);
+  }
+
+  template <int dim, int spacedim>
+  void
+  Domain<dim, spacedim>::finalize_grid()
+  {
+    AssertThrow(grid_prepared_,
+                dealii::ExcMessage("Prepare the Domain before finalizing it."));
+    if (serial_triangulation_)
+      {
+        if (uses_fully_distributed_triangulation())
+          {
+            auto &fully_distributed =
+              std::get<FullyDistributedTriangulation>(triangulation_storage_);
+            if constexpr (dim == 1)
+              fully_distributed.set_partitioner(
+                [](dealii::Triangulation<dim, spacedim> &tria,
+                   const unsigned int                    n_partitions) {
+                  dealii::GridTools::partition_triangulation_zorder(
+                    n_partitions, tria, false);
+                },
+                dealii::TriangulationDescription::Settings::default_setting);
+          }
+        for (const auto manifold_id : serial_triangulation_->get_manifold_ids())
+          if (manifold_id != dealii::numbers::flat_manifold_id)
+            triangulation_->set_manifold(
+              manifold_id, serial_triangulation_->get_manifold(manifold_id));
+        if (uses_fully_distributed_triangulation())
+          triangulation_->copy_triangulation(*serial_triangulation_);
+        else if (!uses_fully_distributed_triangulation())
+          {
+            // p4est cannot copy a refined serial mesh. Reconstruct its coarse
+            // mesh and replay the retained hierarchy before attaching fields.
+            const auto &[vertices, cells, subcells] =
+              dealii::GridTools::get_coarse_mesh_description(
+                *serial_triangulation_);
+            triangulation_->create_triangulation(vertices, cells, subcells);
+            bool changed = true;
+            while (changed)
+              {
+                unsigned int marked = 0;
+                for (const auto &cell : triangulation_->active_cell_iterators())
+                  if (cell->is_locally_owned())
+                    {
+                      const auto source =
+                        serial_triangulation_->create_cell_iterator(cell->id());
+                      if (source->has_children())
+                        {
+                          cell->set_refine_flag();
+                          ++marked;
+                        }
+                    }
+                changed =
+                  dealii::Utilities::MPI::sum(marked, communicator_) > 0;
+                if (changed)
+                  triangulation_->execute_coarsening_and_refinement();
+              }
+            for (const auto &cell : triangulation_->active_cell_iterators())
+              if (!cell->is_artificial())
+                {
+                  const auto source =
+                    serial_triangulation_->create_cell_iterator(cell->id());
+                  AssertThrow(
+                    source->is_active(),
+                    dealii::ExcMessage(
+                      "Serial refinement is incompatible with p4est balancing."));
+                  cell->set_material_id(source->material_id());
+                  cell->set_manifold_id(source->manifold_id());
+                  for (const auto f : cell->face_indices())
+                    {
+                      cell->face(f)->set_manifold_id(
+                        source->face(f)->manifold_id());
+                      if (cell->face(f)->at_boundary())
+                        cell->face(f)->set_boundary_id(
+                          source->face(f)->boundary_id());
+                    }
+                }
+          }
+        AssertThrow(
+          triangulation_->n_global_active_cells() ==
+            serial_triangulation_->n_global_active_cells(),
+          dealii::ExcMessage(
+            "Finalization must preserve the prepared active-cell hierarchy."));
+        if (serial_fields_)
+          vtk_fields_ =
+            std::make_unique<ImportedFields>(serial_fields_->dof_handler,
+                                             serial_fields_->coefficients,
+                                             serial_fields_->catalog,
+                                             *triangulation_,
+                                             communicator_);
+        serial_fields_.reset();
+        serial_triangulation_.reset();
+      }
+    grid_prepared_ = false;
+  }
+
+  template <int dim, int spacedim>
+  bool
+  Domain<dim, spacedim>::grid_is_prepared() const
+  {
+    return grid_prepared_;
+  }
+
+  template <int dim, int spacedim>
+  dealii::Triangulation<dim, spacedim> &
+  Domain<dim, spacedim>::refinement_triangulation()
+  {
+    AssertThrow(grid_prepared_,
+                dealii::ExcMessage(
+                  "The Domain is not prepared for refinement."));
+    if (serial_triangulation_)
+      return *serial_triangulation_;
+    return *triangulation_;
   }
 
 

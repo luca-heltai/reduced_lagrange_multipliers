@@ -101,6 +101,48 @@ end
   }
 } // namespace
 
+TEST(ElasticStaticProblem, BOTH_ConfigurableDisplacementSpace)
+{
+  using namespace ImmersX;
+  dealii::ParameterAcceptor::clear();
+  ElasticStaticParameters<2> parameters;
+  initialize_parameters(
+    TestPaths::parameter_path("gtests/parameters/elastic_static_space_q2.prm"));
+  EXPECT_EQ(parameters.fe_degree, 1u);
+  ElasticStaticProblem<2> problem(parameters);
+  problem.setup();
+  EXPECT_EQ(problem.dof_handler().get_fe().degree, 2u);
+  EXPECT_EQ(problem.dof_handler().get_fe().n_components(), 2u);
+  EXPECT_GT(problem.forcing().l2_norm(), 0.);
+  problem.solve();
+
+  LinearSolverParameters                                             solver;
+  LinearAdapter<ImmersXLA::MPI::Vector, ImmersXLA::MPI::BlockVector> adapter(
+    solver, MPI_COMM_WORLD);
+  const auto fields = adapter.add(problem);
+  auto       state  = adapter.make_state();
+  adapter.solve(state);
+  auto difference = problem.solution();
+  difference -= adapter.field(state, fields.fields().displacement);
+  EXPECT_LT(difference.l2_norm(), 1.e-9);
+
+  problem.refine_global();
+  EXPECT_EQ(problem.dof_handler().get_fe().degree, 2u);
+  EXPECT_GT(problem.forcing().l2_norm(), 0.);
+  problem.solve();
+  EXPECT_GT(problem.solution().l2_norm(), 0.);
+}
+
+TEST(ElasticStaticProblem, RejectsWrongDisplacementComponents)
+{
+  using namespace ImmersX;
+  dealii::ParameterAcceptor::clear();
+  ElasticStaticParameters<2> parameters;
+  parameters.space_parameters.finite_element = "FE_Q<2>(2)";
+  ElasticStaticProblem<2> problem(parameters);
+  EXPECT_THROW(problem.setup(), dealii::ExceptionBase);
+}
+
 TEST(ElasticStaticProblem, ParameterParsingAndOverrides)
 {
   using namespace ImmersX;

@@ -36,11 +36,13 @@ Symbolic and active geometry dependencies are not supported.
 The support exposes geometry for direct integration and for weak-term assembly
 that evaluates its fields at physical points. The assembly path distributes
 the points to a distributed bulk mesh with `ParticleCoupling`; trial and test
-fields must share that bulk triangulation, and the lifted points must lie in
-its locally searchable domain. Linear and nonlinear weak terms can use the
-support, including nonlinear observables with frozen inputs. No synthetic
-Field or DoFHandler is created on the lifted geometry. Trial and test fields
-on separate bulk meshes are not supported.
+fields must share that bulk triangulation and mapping, and the lifted points
+must lie in its locally searchable domain. Linear terms and nonlinear
+observables with frozen finite-element inputs can use the same support.
+Frozen inputs must share the source mesh and mapping.
+No synthetic Field or DoFHandler is created on the lifted geometry. Trial and
+test fields on separate bulk meshes are not supported. Shape derivatives of
+the lift geometry are not included in the weak-term Jacobian.
 
 ```cpp
 auto dV = centerline.lift(lift);
@@ -58,9 +60,17 @@ build-debug/benchmarks/lifted_integration_support_benchmark_debug \
   --refinements=4 --repetitions=9
 ```
 
-The JSON result reports mesh and support setup, the first bulk mass assembly,
-and medians and median absolute deviations for warm geometry rebuilds and
-repeated bulk assembly. It also reports the global quadrature-point count and
-lifted measure. deal.II has no equivalent Domain-lift support-generation or
-cut-surface bulk assembly operation, so the benchmark does not report a timing
-ratio against a different operation.
+The JSON result separates representative-mesh setup, support generation,
+background-mesh/DoF setup, cold and warm bulk mass assembly, and matrix
+application. Every timed MPI region starts after a barrier and reports the
+maximum rank wall time. Assembly includes matrix materialization; application
+uses the matrix just assembled. Numerical checks compare the global measure
+and constant-field action with the straight-strip area. No equivalent native
+Domain-lift or bulk-bulk trace assembler is available, so the native timing
+ratio remains N/A. See `benchmarks/README.md` for the additive JSON fields.
+
+Lifted quadrature is not split at background-cell interfaces. Refine the
+representative mesh and cross-section to resolve geometry and piecewise FE
+traces; increasing only the Gauss order need not give monotone convergence.
+See [Choose where a weak term is integrated](support-aware-weak-terms) for
+the independent-support convergence test and fixed-geometry limits.

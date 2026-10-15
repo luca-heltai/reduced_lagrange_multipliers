@@ -67,7 +67,7 @@ subsection Metric Flow Parameters
 end
 
 subsection Functions
-  set Inflow function = 1e-7*sin(100*pi*t)
+  set Inflow function = 1e-7*sin(314.1592653589793*t)
 end
 
 subsection MetricFlowSystem<1, 3>

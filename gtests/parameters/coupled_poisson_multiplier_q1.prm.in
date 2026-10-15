@@ -1,0 +1,34 @@
+set dimension = 2
+set space dimension = 2
+set reduced dimension = 1
+
+subsection Coupled Poisson
+  set Output directory = @TEST_OUTPUT_DIR@/composable/coupled-poisson-q1
+  set Multiplier output name = multiplier_q1
+  subsection Multiplier space
+    set Finite element = FE_DGQ<1>(1)
+  end
+end
+
+subsection Poisson
+  set Output name = bulk
+  subsection Domain
+    set Initial refinement = 2
+    set Grid generator arguments = -1: 1: false
+  end
+  subsection Right hand side
+    set Function expression = 1
+  end
+end
+
+subsection Embedded Poisson
+  set Output name = embedded
+  set Dirichlet boundary ids = 0,1
+  subsection Domain
+    set Initial refinement = 1
+    set Grid generator arguments = -1: 1: false
+  end
+  subsection Right hand side
+    set Function expression = 2
+  end
+end

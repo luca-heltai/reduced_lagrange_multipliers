@@ -12,13 +12,6 @@
 
 #include <deal.II/base/parameter_acceptor.h>
 
-#include <deal.II/dofs/dof_handler.h>
-
-#include <deal.II/fe/fe_q.h>
-#include <deal.II/fe/fe_system.h>
-
-#include <deal.II/lac/affine_constraints.h>
-
 #include <immersx/algebra/lagrange_multiplier_schur_solver.h>
 #include <immersx/algebra/linear_algebra.h>
 #include <immersx/core/constraint.h>
@@ -50,8 +43,9 @@ namespace ImmersX
     FixedStepParameters    fixed_step_parameters;
     IDAParameters          ida_parameters;
 
-    ElastodynamicsParameters<dim, dim> matrix_parameters;
-    ElastodynamicsParameters<1, dim>   fiber_parameters;
+    ElastodynamicsParameters<dim, dim>   matrix_parameters;
+    ElastodynamicsParameters<1, dim>     fiber_parameters;
+    FiniteElementSpaceParameters<1, dim> multiplier_parameters;
 
     std::string output_directory = "./output/fiber_reinforced_elastodynamics";
     std::string multiplier_output_name = "velocity_multiplier";
@@ -238,11 +232,7 @@ namespace ImmersX
                                     VectorType,
                                     ImmersXLA::MPI::PreconditionJacobi>;
 
-    std::unique_ptr<dealii::FESystem<1, dim>>   multiplier_fe_storage;
-    std::unique_ptr<dealii::DoFHandler<1, dim>> multiplier_dof_handler_storage;
-    std::unique_ptr<dealii::IndexSet>           multiplier_relevant_storage;
-    std::unique_ptr<dealii::AffineConstraints<double>>
-      multiplier_constraints_storage;
+    std::unique_ptr<FiniteElementSpace<1, dim>>       multiplier_space_owner;
     std::unique_ptr<FiniteElementSpaceView<dim, dim>> matrix_space_storage;
     std::unique_ptr<FiniteElementSpaceView<1, dim>>   fiber_space_storage;
     std::unique_ptr<FiniteElementSpaceView<1, dim>>   multiplier_space_storage;

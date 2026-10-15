@@ -434,8 +434,11 @@ benchmark_dimension(const unsigned int refinements,
                 << ",\"warm_immersx_mad_ms\":" << immersed_boundary_flux_mad
                 << ",\"warm_dealii_median_ms\":" << native_boundary_flux_median
                 << ",\"warm_dealii_mad_ms\":" << native_boundary_flux_mad
-                << ",\"warm_ratio\":"
-                << immersed_boundary_flux_median / native_boundary_flux_median
+                << ",\"timing_equivalent\":false"
+                << ",\"native_timing_ratio\":null"
+                << ",\"timing_note\":\"ImmersX evaluates the linear weak term "
+                   "through its prepared matrix path; deal.II assembles the "
+                   "boundary RHS directly.\""
                 << ",\"repetitions\":" << repetitions << "}\n";
     }
 
@@ -790,6 +793,9 @@ benchmark_heterogeneous_nonlinear(const unsigned int refinements,
                                                         context);
     AssertThrow(first_jacobian.has_value() && second_jacobian.has_value(),
                 ExcMessage("Missing heterogeneous Jacobian."));
+    AssertThrow(first_jacobian->matrix() != nullptr &&
+                  second_jacobian->matrix() != nullptr,
+                ExcMessage("Heterogeneous Jacobians were not materialized."));
     return std::pair{std::move(first_jacobian), std::move(second_jacobian)};
   };
   const auto immersed_result     = immersed_assembly();
@@ -878,6 +884,8 @@ benchmark_heterogeneous_nonlinear(const unsigned int refinements,
             << ",\"warm_dealii_meshworker_median_ms\":" << native_median
             << ",\"warm_dealii_meshworker_mad_ms\":" << native_mad
             << ",\"warm_ratio\":" << immersed_median / native_median
+            << ",\"timing_scope\":\"end_to_end_residual_and_two_jacobians\""
+            << ",\"immersx_assembly_calls\":3,\"native_cell_traversals\":1"
             << ",\"repetitions\":" << repetitions << "}\n";
 }
 
@@ -1104,19 +1112,20 @@ benchmark_independent_trace(const unsigned int refinements,
     auto                                model = std::make_shared<Model>();
     SemidiscreteBuilder<Vector, Matrix> builder(layout, *model);
     (value(u) * test(u) * support).add(builder);
-    return model;
+    const StateView<Vector>         state(layout, 0.);
+    const EvaluationContext<Vector> context(0., state);
+    const auto                      op =
+      model->state_matrix_operator(u.field_id(), u.field_id(), context);
+    AssertThrow(op.has_value(), ExcMessage("Trace assembly has no operator."));
+    const auto matrix = op->matrix();
+    AssertThrow(matrix != nullptr,
+                ExcMessage("Trace assembly did not materialize a matrix."));
+    return std::make_pair(model, matrix);
   };
-  const auto              cold_start = Clock::now();
-  auto                    model      = assemble();
-  const auto              cold_ms    = milliseconds(Clock::now() - cold_start);
-  const StateView<Vector> state_view(layout, 0.);
-  const EvaluationContext<Vector> context(0., state_view);
-  const auto                      matrix_operator =
-    model->state_matrix_operator(u.field_id(), u.field_id(), context);
-  AssertThrow(
-    matrix_operator.has_value() && matrix_operator->is_materializable(),
-    ExcMessage("Trace benchmark did not produce a materialized matrix."));
-  const auto assembled_matrix = matrix_operator->matrix();
+  const auto cold_start       = Clock::now();
+  auto       model            = assemble();
+  const auto cold_ms          = milliseconds(Clock::now() - cold_start);
+  const auto assembled_matrix = model.second;
 
   Vector ones(dof_handler.n_dofs());
   ones = 1.;
@@ -1148,7 +1157,7 @@ benchmark_independent_trace(const unsigned int refinements,
       model                     = assemble();
       assembly_samples.push_back(milliseconds(Clock::now() - assembly_start));
       const auto action_start = Clock::now();
-      assembled_matrix->vmult(action, ones);
+      model.second->vmult(action, ones);
       action_samples.push_back(milliseconds(Clock::now() - action_start));
     }
   const auto [assembly_median, assembly_mad] = median_and_mad(assembly_samples);
@@ -1212,7 +1221,6 @@ benchmark_rotated_trace_surface_3d(const unsigned int repetitions)
   auto                                model = std::make_shared<Model>();
   SemidiscreteBuilder<Vector, Matrix> builder(layout, *model);
   (value(u) * test(u) * support).add(builder);
-  const double assembly_ms = milliseconds(Clock::now() - assembly_start);
   const StateView<Vector>         state_view(layout, 0.);
   const EvaluationContext<Vector> context(0., state_view);
   const auto                      matrix_operator =
@@ -1220,8 +1228,9 @@ benchmark_rotated_trace_surface_3d(const unsigned int repetitions)
   AssertThrow(matrix_operator.has_value() &&
                 matrix_operator->is_materializable(),
               ExcMessage("3D trace benchmark did not produce a matrix."));
-  const auto matrix = matrix_operator->matrix();
-  Vector     ones(dof_handler.n_dofs());
+  const auto   matrix      = matrix_operator->matrix();
+  const double assembly_ms = milliseconds(Clock::now() - assembly_start);
+  Vector       ones(dof_handler.n_dofs());
   ones = 1.;
   Vector     action(dof_handler.n_dofs());
   const auto action_start = Clock::now();
@@ -1241,8 +1250,6 @@ benchmark_rotated_trace_surface_3d(const unsigned int repetitions)
       model                 = std::make_shared<Model>();
       SemidiscreteBuilder<Vector, Matrix> warm_builder(layout, *model);
       (value(u) * test(u) * support).add(warm_builder);
-      assembly_samples.push_back(milliseconds(Clock::now() - warm_start));
-
       const auto warm_matrix = [&] {
         const StateView<Vector>         warm_state(layout, 0.);
         const EvaluationContext<Vector> warm_context(0., warm_state);
@@ -1254,6 +1261,7 @@ benchmark_rotated_trace_surface_3d(const unsigned int repetitions)
           ExcMessage("Warm 3D trace assembly did not produce a matrix."));
         return warm_operator->matrix();
       }();
+      assembly_samples.push_back(milliseconds(Clock::now() - warm_start));
       const auto warm_action_start = Clock::now();
       warm_matrix->vmult(action, ones);
       action_samples.push_back(milliseconds(Clock::now() - warm_action_start));

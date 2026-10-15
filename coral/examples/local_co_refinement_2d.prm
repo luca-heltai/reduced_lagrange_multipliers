@@ -1,0 +1,39 @@
+subsection Primitive domain
+  set Grid generator = local_co_refinement_space_2d.vtk
+  set Initial refinement = 0
+  set Triangulation type = fullydistributed
+  subsection VTK support
+    set Read fields = true
+  end
+end
+
+subsection Embedded domain
+  set Grid generator = local_co_refinement_embedded_2d.vtk
+  set Initial refinement = 0
+  set Triangulation type = fullydistributed
+  subsection VTK support
+    set Read fields = true
+  end
+end
+
+subsection Co-refinement
+  set Refinement strategy = both
+  set Lower factor = 0.5
+  set Upper factor = 2
+  set Max refinement level = 6
+end
+
+subsection Primitive space
+  set Finite element = FE_Q<2>(1)
+end
+
+subsection Primitive adapter
+  set Solver = iterative
+  set Preconditioner = none
+  set Maximum iterations = 1000
+  set Tolerance = 1.e-12
+end
+
+subsection Primitive output
+  set Output directory = output
+end

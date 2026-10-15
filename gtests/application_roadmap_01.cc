@@ -215,6 +215,8 @@ TEST(ApplicationRoadmap, P2G0UsesPrescribedConstraintAndReaction)
     end
   )");
   initialize_poisson_parameters("p2-g0", parameters);
+  // Q1 multipliers on this mesh need more than the single free Q1 bulk DoF.
+  parameters.fe_degree = 2;
 
   PoissonSolver<2> problem(parameters);
   setup(problem);
@@ -255,6 +257,9 @@ TEST(ApplicationRoadmap, P2G0UsesPrescribedConstraintAndReaction)
   EXPECT_TRUE(std::isfinite(
     adapter.field(state, coupling.fields().multiplier).l2_norm()));
   EXPECT_TRUE(output_has_field(parameters.output_directory, "multiplier"));
+  auto residual = adapter.make_state();
+  adapter.evaluate_residual(state, residual);
+  EXPECT_LT(residual.l2_norm(), 1.e-9);
 }
 
 TEST(ApplicationRoadmap, P1G1UsesFrozenForcingOnAnIndependentMesh)
@@ -333,6 +338,7 @@ TEST(ApplicationRoadmap, P2G1UsesPrescribedConstraintOnAnIndependentMesh)
     end
   )");
   initialize_poisson_parameters("p2-g1", parameters);
+  parameters.fe_degree = 2;
 
   PoissonSolver<2> problem(parameters);
   setup(problem);
@@ -381,6 +387,9 @@ TEST(ApplicationRoadmap, P2G1UsesPrescribedConstraintOnAnIndependentMesh)
   EXPECT_TRUE(std::isfinite(
     adapter.field(state, coupling.fields().multiplier).l2_norm()));
   EXPECT_TRUE(output_has_field(parameters.output_directory, "multiplier"));
+  auto residual = adapter.make_state();
+  adapter.evaluate_residual(state, residual);
+  EXPECT_LT(residual.l2_norm(), 1.e-9);
 }
 
 void
@@ -533,9 +542,10 @@ TEST(ApplicationRoadmap, P2G3UsesPrescribedLiftedLineMotion)
   ElasticStaticParameters<3> parameters("/P2 G3 solid/");
   parameters.output_directory =
     TestPaths::output_directory("application-roadmap/p2-g3");
-  parameters.output_name                          = "p2-g3";
-  parameters.fe_degree                            = 1;
-  parameters.domain_parameters.initial_refinement = 1;
+  parameters.output_name = "p2-g3";
+  parameters.fe_degree   = 1;
+  // Resolve radial motion instead of constraining a single central vector DoF.
+  parameters.domain_parameters.initial_refinement = 2;
   parameters.dirichlet_ids                        = {0, 2, 4};
   parameters.domain_parameters.name_of_grid       = "hyper_cube";
   parameters.domain_parameters.arguments_for_grid = "-1: 1: false";
@@ -604,6 +614,9 @@ TEST(ApplicationRoadmap, P2G3UsesPrescribedLiftedLineMotion)
     adapter.field(state, coupling.fields().multiplier).l2_norm()));
   EXPECT_TRUE(output_has_field(parameters.output_directory, "displacement"));
   EXPECT_TRUE(output_has_field(parameters.output_directory, "multiplier"));
+  auto residual = adapter.make_state();
+  adapter.evaluate_residual(state, residual);
+  EXPECT_LT(residual.l2_norm(), 1.e-9);
 }
 
 #ifdef DEAL_II_WITH_SUNDIALS
@@ -851,8 +864,9 @@ check_p3g1_tied_elasticity(const std::string &output_prefix)
                                                 const std::string &subsection) {
     parameters.output_directory =
       TestPaths::output_directory("application-roadmap/" + subsection);
-    parameters.output_name                          = subsection;
-    parameters.fe_degree                            = 1;
+    parameters.output_name = subsection;
+    // Keep the Q1 multiplier coarser than the unconstrained primal spaces.
+    parameters.fe_degree                            = 2;
     parameters.domain_parameters.initial_refinement = 2;
     parameters.dirichlet_ids                        = {0, 1, 2, 3};
     parameters.domain_parameters.name_of_grid       = "hyper_cube";
@@ -921,6 +935,9 @@ check_p3g1_tied_elasticity(const std::string &output_prefix)
     output_has_field(second_parameters.output_directory, "displacement"));
   EXPECT_TRUE(
     output_has_field(second_parameters.output_directory, "multiplier_0"));
+  auto residual = adapter.make_state();
+  adapter.evaluate_residual(state, residual);
+  EXPECT_LT(residual.l2_norm(), 1.e-9);
 }
 
 TEST(ApplicationRoadmap, BOTH_P3G1UsesNonmatchingTiedElasticity)

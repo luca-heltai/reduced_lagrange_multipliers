@@ -101,6 +101,7 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <type_traits>
 
 
 namespace ImmersX
@@ -238,6 +239,45 @@ namespace ImmersX
     /** Check that the multiplier solution norm is finite. */
     bool
     multiplier_solution_is_finite() const;
+
+    /** Native read-only data for independent discretization comparisons. */
+    const DoFHandler<spacedim> &
+    bulk_dof_handler() const
+    {
+      return dh;
+    }
+
+    template <int representative_dimension = reduced_dim,
+              std::enable_if_t<(representative_dimension > 0), int> = 0>
+    const auto &
+    representative_dof_handler() const
+    {
+      return reduced_coupling.get_dof_handler();
+    }
+
+    const LA::MPI::SparseMatrix &
+    assembled_coupling() const
+    {
+      return coupling_matrix;
+    }
+
+    const auto &
+    bulk_values() const
+    {
+      return solution.block(0);
+    }
+
+    const auto &
+    modal_values() const
+    {
+      return solution.block(1);
+    }
+
+    const auto &
+    modal_rhs() const
+    {
+      return system_rhs.block(1);
+    }
 
     void
     refine_and_transfer();

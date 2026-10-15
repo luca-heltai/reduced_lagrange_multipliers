@@ -30,6 +30,8 @@ set(_public_headers
     immersx/core/constraint.h
     immersx/core/contributor.h
     immersx/core/domain.h
+    immersx/grid/local_co_refinement.h
+    immersx/grid/local_co_refinement_parameters.h
     immersx/core/fe_space.h
     immersx/core/field.h
     immersx/core/field_contributor.h
@@ -223,7 +225,14 @@ FOREACH(_build_type ${_d2_build_types})
     foreach(_suite ${IMMERSX_APPLICATION_TEST_SUITES})
       list(APPEND _application_mpi_suites "${_suite}.MPI_*" "${_suite}.BOTH_*")
     endforeach()
+    list(APPEND _integration_mpi_suites
+         "ElasticStaticProblem.BOTH_ConfigurableDisplacementSpace")
+    list(APPEND _validation_mpi_suites
+         "FiberReinforcedElastodynamicsValidation.BOTH_ConfigurableMultiplierSpace")
     string(JOIN ":" _unit_mpi_filter ${_unit_mpi_suites})
+    # Local co-refinement uses the same assertions in serial and MPI. Include
+    # its BOTH_ cases in the authoritative integration MPI run.
+    list(APPEND _integration_mpi_suites "LocalCoRefinement.BOTH_*")
     string(JOIN ":" _integration_mpi_filter ${_integration_mpi_suites})
     string(JOIN ":" _validation_mpi_filter ${_validation_mpi_suites})
     string(JOIN ":" _application_mpi_filter ${_application_mpi_suites})
@@ -256,8 +265,9 @@ FOREACH(_build_type ${_d2_build_types})
       set(_serial_test
           "ImmersX${${_build_type}_ctest_suffix}.${_category}.Serial")
       add_test(NAME ${_serial_test}
-               COMMAND $<TARGET_FILE:${_exe}>
-                       --gtest_filter=${_category_filter}-*.MPI_*)
+               COMMAND ${CMAKE_COMMAND} -E env
+                       "GTEST_FILTER=${_category_filter}-*.MPI_*"
+                       $<TARGET_FILE:${_exe}>)
       set(_labels "${_category}")
       if(_category_quick)
         list(APPEND _labels quick)
@@ -270,9 +280,10 @@ FOREACH(_build_type ${_d2_build_types})
         set(_mpi_test
             "ImmersX${${_build_type}_ctest_suffix}.${_category}.MPI")
         add_test(NAME ${_mpi_test}
-                 COMMAND ${_immersx_mpiexec} -np 2
-                         $<TARGET_FILE:${_exe}>
-                         --gtest_filter=${_category_mpi_filter})
+                 COMMAND ${CMAKE_COMMAND} -E env
+                         "GTEST_FILTER=${_category_mpi_filter}"
+                         ${_immersx_mpiexec} -np 2
+                         $<TARGET_FILE:${_exe}>)
         set_tests_properties(${_mpi_test}
                              PROPERTIES LABELS "${_labels};mpi"
                                         TIMEOUT ${_category_timeout})
@@ -325,22 +336,50 @@ if(IMMERSX_WITH_METRIC_FLOW_X)
       set(_metric_flow_x_serial_test
           "ImmersX${${_build_type}_ctest_suffix}.integration.MetricFlowX.Serial")
       add_test(NAME ${_metric_flow_x_serial_test}
-               COMMAND $<TARGET_FILE:${_metric_flow_x_test_target}>
-                       --gtest_filter=MetricFlowX.*-*.MPI_*)
+               COMMAND $<TARGET_FILE:${_metric_flow_x_test_target}>)
       set_tests_properties(${_metric_flow_x_serial_test}
-                           PROPERTIES LABELS "integration;quick" TIMEOUT 300)
+                           PROPERTIES LABELS "integration;quick" TIMEOUT 300
+                                      ENVIRONMENT "GTEST_FILTER=MetricFlowX.*-*.MPI_*")
       find_program(_immersx_mpiexec NAMES mpirun mpiexec)
       if(_immersx_mpiexec)
         set(_metric_flow_x_mpi_test
             "ImmersX${${_build_type}_ctest_suffix}.integration.MetricFlowX.MPI")
         add_test(NAME ${_metric_flow_x_mpi_test}
                  COMMAND ${_immersx_mpiexec} -np 2
-                         $<TARGET_FILE:${_metric_flow_x_test_target}>
-                         --gtest_filter=MetricFlowX.MPI_*:MetricFlowX.BOTH_*)
+                         $<TARGET_FILE:${_metric_flow_x_test_target}>)
         set_tests_properties(${_metric_flow_x_mpi_test}
                              PROPERTIES LABELS "integration;quick;mpi"
-                                        TIMEOUT 300)
+                                        TIMEOUT 300
+                                        ENVIRONMENT "GTEST_FILTER=MetricFlowX.MPI_*:MetricFlowX.BOTH_*")
       endif()
+      foreach(_mode Serial MPI)
+        if(_mode STREQUAL "MPI" AND NOT _immersx_mpiexec)
+          continue()
+        endif()
+        set(_coupled_name
+            "ImmersX${${_build_type}_ctest_suffix}.application.MetricFlowXCoupled.${_mode}")
+        set(_saved_output_dir "${TEST_OUTPUT_DIR}")
+        set(TEST_OUTPUT_DIR "${_saved_output_dir}/${_build_type}/metric-coupled-${_mode}")
+        set(_coupled_input "${CMAKE_CURRENT_BINARY_DIR}/parameters/metric_coupled_${_build_type}_${_mode}.prm")
+        configure_file(
+          "${CMAKE_CURRENT_SOURCE_DIR}/parameters/metric_flow_x_elastodynamics.prm.in"
+          "${_coupled_input}" @ONLY)
+        set(TEST_OUTPUT_DIR "${_saved_output_dir}")
+        set(_coupled_mpiexec "")
+        set(_coupled_labels "application")
+        if(_mode STREQUAL "MPI")
+          set(_coupled_mpiexec "${_immersx_mpiexec}")
+          set(_coupled_labels "application;mpi")
+        endif()
+        add_test(NAME "${_coupled_name}"
+          COMMAND "${CMAKE_COMMAND}"
+            "-DTEST_EXECUTABLE=$<TARGET_FILE:metric_flow_x_elastodynamics${${_build_type}_postfix}>"
+            "-DPARAMETER_FILE=${_coupled_input}"
+            "-DMPIEXEC=${_coupled_mpiexec}"
+            -P "${CMAKE_CURRENT_SOURCE_DIR}/run_metric_flow_x_coupled.cmake")
+        set_tests_properties("${_coupled_name}" PROPERTIES
+                             TIMEOUT 600 LABELS "${_coupled_labels}")
+      endforeach()
       list(APPEND IMMERSX_TEST_TARGETS ${_metric_flow_x_test_target})
       if(IMMERSX_INSTALL_TESTS)
         install(TARGETS ${_metric_flow_x_test_target}

@@ -17,3 +17,6 @@ Imported point and cell fields can be named in expressions. A variable radius,
 for example, is a field in the input mesh and is selected by the `Input file
 fields` option before it is used by `Thickness`. Distributed point ownership
 and search are handled by the particle-coupling infrastructure.
+
+For joint refinement of the bulk and representative meshes in elasticity and
+reduced Poisson, see [local co-refinement](local-co-refinement.md).

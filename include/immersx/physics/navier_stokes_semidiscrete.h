@@ -117,10 +117,7 @@ namespace ImmersX
                            });
 
     auto space = std::make_shared<FiniteElementSpaceView<dim, spacedim>>(
-      problem.dof_handler(),
-      problem.mapping(),
-      problem.constraints(),
-      &problem.locally_relevant_dofs());
+      finite_element_space_view(problem));
     const auto u = navier_stokes_detail::make_block_field(
       *space,
       velocity_id,

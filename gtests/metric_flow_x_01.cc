@@ -85,19 +85,21 @@ TEST(MetricFlowX, FeatureMacroIsEnabled)
   SUCCEED();
 }
 
-TEST(MetricFlowX, MPI_RegistersOneMixedStateField) // NOLINT
+TEST(MetricFlowX, BOTH_RegistersOneMixedStateField)
 {
   dealii::ParameterAcceptor::clear();
-  Problem problem(MPI_COMM_WORLD);
+  Problem                         problem(MPI_COMM_WORLD);
+  ImmersX::TimeIntervalParameters time_parameters(
+    "/MetricFlowSystem<1, 3>/Time interval/");
+  ImmersX::IDAParameters ida_parameters("/MetricFlowSystem<1, 3>/IDA/");
   initialize_problem(problem);
-  ImmersX::TimeIntervalParameters time_parameters;
-  ImmersX::IDAParameters          ida_parameters;
 
   Adapter    adapter(time_parameters, ida_parameters, MPI_COMM_WORLD);
   const auto fields =
     adapter.add(ImmersX::metric_flow_x(problem), "blood-flow");
 
   EXPECT_TRUE(fields.fields().state.is_valid());
+  EXPECT_TRUE(adapter.has_local_preconditioner(fields.fields().state));
   EXPECT_EQ(adapter.differential_components(), problem.differential_dofs());
   EXPECT_EQ(fields.fields().area.name(), "area");
   EXPECT_EQ(fields.fields().velocity.name(), "velocity");
@@ -113,13 +115,14 @@ TEST(MetricFlowX, MPI_RegistersOneMixedStateField) // NOLINT
   EXPECT_EQ(state.n_blocks(), 1u);
 }
 
-TEST(MetricFlowX, MPI_ResidualMatchesNativeAndPreservesAdditivity) // NOLINT
+TEST(MetricFlowX, BOTH_ResidualMatchesNativeAndPreservesAdditivity)
 {
   dealii::ParameterAcceptor::clear();
-  Problem problem(MPI_COMM_WORLD);
+  Problem                         problem(MPI_COMM_WORLD);
+  ImmersX::TimeIntervalParameters time_parameters(
+    "/MetricFlowSystem<1, 3>/Time interval/");
+  ImmersX::IDAParameters ida_parameters("/MetricFlowSystem<1, 3>/IDA/");
   initialize_problem(problem);
-  ImmersX::TimeIntervalParameters time_parameters;
-  ImmersX::IDAParameters          ida_parameters;
 
   Adapter    adapter(time_parameters, ida_parameters, MPI_COMM_WORLD);
   const auto fields =
@@ -144,13 +147,14 @@ TEST(MetricFlowX, MPI_ResidualMatchesNativeAndPreservesAdditivity) // NOLINT
     EXPECT_NEAR(difference[index], 2.5, 1.e-12);
 }
 
-TEST(MetricFlowX, MPI_JacobianActionsMatchNativeMatrices) // NOLINT
+TEST(MetricFlowX, BOTH_JacobianActionsMatchNativeMatrices)
 {
   dealii::ParameterAcceptor::clear();
-  Problem problem(MPI_COMM_WORLD);
+  Problem                         problem(MPI_COMM_WORLD);
+  ImmersX::TimeIntervalParameters time_parameters(
+    "/MetricFlowSystem<1, 3>/Time interval/");
+  ImmersX::IDAParameters ida_parameters("/MetricFlowSystem<1, 3>/IDA/");
   initialize_problem(problem);
-  ImmersX::TimeIntervalParameters time_parameters;
-  ImmersX::IDAParameters          ida_parameters;
 
   Adapter    adapter(time_parameters, ida_parameters, MPI_COMM_WORLD);
   const auto fields =
@@ -192,13 +196,14 @@ TEST(MetricFlowX, MPI_JacobianActionsMatchNativeMatrices) // NOLINT
   EXPECT_NEAR(difference.l2_norm(), 0., 1.e-10);
 }
 
-TEST(MetricFlowX, MPI_IDAVerticalSmoke) // NOLINT
+TEST(MetricFlowX, BOTH_IDAVerticalSmoke)
 {
   dealii::ParameterAcceptor::clear();
-  Problem problem(MPI_COMM_WORLD);
+  Problem                         problem(MPI_COMM_WORLD);
+  ImmersX::TimeIntervalParameters time_parameters(
+    "/MetricFlowSystem<1, 3>/Time interval/");
+  ImmersX::IDAParameters ida_parameters("/MetricFlowSystem<1, 3>/IDA/");
   initialize_problem(problem);
-  ImmersX::TimeIntervalParameters time_parameters;
-  ImmersX::IDAParameters          ida_parameters;
 
   Adapter    adapter(time_parameters, ida_parameters, MPI_COMM_WORLD);
   const auto fields =
@@ -216,16 +221,20 @@ TEST(MetricFlowX, MPI_IDAVerticalSmoke) // NOLINT
       (void)state;
     });
 
+  const auto initial_state = state;
   EXPECT_GT(adapter.solve(state, state_dot), 0u);
+  state -= initial_state;
+  EXPECT_GT(state.l2_norm(), 1.e-12);
 }
 
-TEST(MetricFlowX, MPI_NativeStateInitializesPositiveArea) // NOLINT
+TEST(MetricFlowX, BOTH_NativeStateInitializesPositiveArea)
 {
   dealii::ParameterAcceptor::clear();
-  Problem problem(MPI_COMM_WORLD);
+  Problem                         problem(MPI_COMM_WORLD);
+  ImmersX::TimeIntervalParameters time_parameters(
+    "/MetricFlowSystem<1, 3>/Time interval/");
+  ImmersX::IDAParameters ida_parameters("/MetricFlowSystem<1, 3>/IDA/");
   initialize_problem(problem);
-  ImmersX::TimeIntervalParameters time_parameters;
-  ImmersX::IDAParameters          ida_parameters;
 
   auto state = problem.make_state();
   problem.compute_initial_solution(state, 0.);

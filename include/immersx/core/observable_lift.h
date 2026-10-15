@@ -81,7 +81,7 @@ namespace ImmersX
 
     LiftedObservable(SourceObservable source, const Lift &lift)
       : source_(std::move(source))
-      , support_(lift.parameters())
+      , support_(std::make_shared<Support>(lift.parameters()))
     {
       build_points();
     }
@@ -90,9 +90,9 @@ namespace ImmersX
                      const Lift                        &lift,
                      SourceThicknessEvaluator<spacedim> thickness_evaluator)
       : source_(std::move(source))
-      , support_(lift.parameters())
+      , support_(std::make_shared<Support>(lift.parameters()))
     {
-      support_.set_thickness_evaluator(std::move(thickness_evaluator));
+      support_->set_thickness_evaluator(std::move(thickness_evaluator));
       build_points();
     }
 
@@ -104,7 +104,7 @@ namespace ImmersX
                      const Lift         &lift,
                      ThicknessObservable thickness)
       : source_(std::move(source))
-      , support_(lift.parameters())
+      , support_(std::make_shared<Support>(lift.parameters()))
     {
       AssertThrow(thickness.dependencies().empty(),
                   dealii::ExcMessage(
@@ -190,6 +190,27 @@ namespace ImmersX
     {
       LiftedObservable result = *this;
       result.source_          = source_.with_id(id);
+      return result;
+    }
+
+    /** Select one cross-section basis function without changing its amplitude.
+     *
+     * Separate scalar fields can share a representative FE space while each
+     * carries an independent modal coefficient. The index is a slot in the
+     * configured selected coefficients, not a global basis index.
+     */
+    LiftedObservable
+    mode(const unsigned int slot) const
+    {
+      AssertThrow(slot < support_->reference_cross_section().n_selected_basis(),
+                  dealii::ExcMessage("Invalid selected-mode slot."));
+      LiftedObservable result = *this;
+      result.mode_slot_       = slot;
+      result.points_.clear();
+      result.point_indices_.clear();
+      result.point_owned_.clear();
+      result.point_relevant_.clear();
+      result.build_points();
       return result;
     }
 
@@ -980,7 +1001,7 @@ namespace ImmersX
     build_points()
     {
       const auto &field      = source();
-      const auto &quadrature = support_.representative_quadrature();
+      const auto &quadrature = support_->representative_quadrature();
       const auto  flags = dealii::update_values | dealii::update_JxW_values |
                          dealii::update_quadrature_points;
       dealii::FEValues<reduced_dim, spacedim> values(
@@ -1002,11 +1023,11 @@ namespace ImmersX
                 const double thickness =
                   thickness_evaluator_ ?
                     thickness_evaluator_(cell->id(), representative_point, 0.) :
-                    support_.thickness(representative_point, 0.);
+                    support_->thickness(representative_point, 0.);
                 AssertThrow(std::isfinite(thickness) && thickness > 0.,
                             dealii::ExcMessage(
                               "Lift thickness must be finite and positive."));
-                const auto transformed = support_.transform(
+                const auto transformed = support_->transform(
                   representative_point, tangent, values.JxW(q), thickness, q);
                 for (unsigned int section_q = 0; section_q < transformed.size();
                      ++section_q)
@@ -1029,26 +1050,49 @@ namespace ImmersX
                     if constexpr (vector_lift)
                       {
                         point.mode_vector = 0.;
-                        for (unsigned int mode = 0;
-                             mode * spacedim < lifted.mode_values.size();
-                             ++mode)
-                          for (unsigned int component = 0; component < spacedim;
-                               ++component)
-                            point.mode_vector[component] +=
-                              lifted.mode_values[mode * spacedim + component];
+                        if (mode_slot_ != dealii::numbers::invalid_unsigned_int)
+                          {
+                            AssertIndexRange(mode_slot_,
+                                             lifted.mode_values.size() /
+                                               spacedim);
+                            for (unsigned int component = 0;
+                                 component < spacedim;
+                                 ++component)
+                              point.mode_vector[component] =
+                                lifted.mode_values[mode_slot_ * spacedim +
+                                                   component];
+                          }
+                        else
+                          for (unsigned int mode = 0;
+                               mode * spacedim < lifted.mode_values.size();
+                               ++mode)
+                            for (unsigned int component = 0;
+                                 component < spacedim;
+                                 ++component)
+                              point.mode_vector[component] +=
+                                lifted.mode_values[mode * spacedim + component];
                         for (unsigned int i = 0; i < indices.size(); ++i)
                           point.basis_values[i] = view.value(i, q);
-                        const double mode_norm = point.mode_vector.norm();
-                        AssertThrow(mode_norm > 0.,
-                                    dealii::ExcMessage(
-                                      "A vector lift requires a nonzero mode "
-                                      "direction."));
-                        point.mode_vector /= mode_norm;
+                        if (mode_slot_ == dealii::numbers::invalid_unsigned_int)
+                          {
+                            const double mode_norm = point.mode_vector.norm();
+                            AssertThrow(
+                              mode_norm > 0.,
+                              dealii::ExcMessage(
+                                "A vector lift requires a nonzero mode "
+                                "direction."));
+                            point.mode_vector /= mode_norm;
+                          }
                       }
                     else
                       for (unsigned int i = 0; i < indices.size(); ++i)
                         point.basis_values[i] =
-                          view.value(i, q) * lifted.mode_values.front();
+                          view.value(i, q) *
+                          lifted.mode_values
+                            [mode_slot_ ==
+                                 dealii::numbers::invalid_unsigned_int ?
+                               0 :
+                               mode_slot_];
                     point.source_basis_values.resize(indices.size());
                     for (unsigned int i = 0; i < indices.size(); ++i)
                       point.source_basis_values[i] = view.value(i, q);
@@ -1073,6 +1117,16 @@ namespace ImmersX
                         point.source_basis_values = std::move(source_basis);
                       }
                     point.mode_values = lifted.mode_values;
+                    if (mode_slot_ != dealii::numbers::invalid_unsigned_int)
+                      {
+                        const unsigned int width = vector_lift ? spacedim : 1;
+                        AssertIndexRange(mode_slot_,
+                                         lifted.mode_values.size() / width);
+                        point.mode_values.assign(lifted.mode_values.begin() +
+                                                   mode_slot_ * width,
+                                                 lifted.mode_values.begin() +
+                                                   (mode_slot_ + 1) * width);
+                      }
                     points_.push_back(std::move(point));
                   }
               }
@@ -1090,8 +1144,9 @@ namespace ImmersX
         point_indices_.push_back(offset + i);
     }
 
-    SourceObservable source_;
-    Support          support_;
+    SourceObservable         source_;
+    std::shared_ptr<Support> support_;
+    unsigned int             mode_slot_ = dealii::numbers::invalid_unsigned_int;
     std::function<
       double(const dealii::CellId &, const dealii::Point<spacedim> &, double)>
                                                  thickness_evaluator_;

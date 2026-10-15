@@ -1,0 +1,45 @@
+subsection Background
+  set Grid generator = hyper_cube
+  set Grid generator arguments = -1: 1: false
+  set Initial refinement = 2
+  set Triangulation type = distributed
+end
+
+subsection Coefficient domain
+  set Grid generator = hyper_cube
+  set Grid generator arguments = -0.5: 0.5: false
+  set Initial refinement = 1
+  set Triangulation type = fullydistributed
+end
+
+subsection Displacement space
+  set Finite element = FESystem[FE_Q(1)^3]
+end
+
+subsection Modal space
+  set Finite element = FESystem[FE_Q(1)^3]
+end
+
+subsection Co-refinement
+  set Refinement strategy = both
+  set Lower factor = 0.1
+  set Upper factor = 2
+end
+
+subsection Lift
+  set Thickness = 0.1
+  subsection Cross section
+    set Selected modes = 0, 1, 2
+  end
+end
+
+subsection Execution
+  set Solver = iterative
+  set Preconditioner = schur
+  set Maximum iterations = 500
+  set Tolerance = 1.e-12
+end
+
+subsection Output
+  set Output directory = @LIFTED_ELASTICITY_OUTPUT@
+end

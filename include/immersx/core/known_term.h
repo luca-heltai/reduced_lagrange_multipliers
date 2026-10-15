@@ -130,7 +130,6 @@ namespace ImmersX
     {
       if constexpr (has_distributed_reinit<VectorType, FieldType>::value)
         vector.reinit(field.locally_owned_dofs(),
-                      field.locally_relevant_dofs(),
                       field.space().mpi_communicator());
       else
         vector.reinit(field.dof_handler().n_dofs());

@@ -1,0 +1,7 @@
+example,strategy,lower,upper,space_pre,embedded_pre,space_post,embedded_post,cap,space_cells,embedded_cells,pairs,lower_violations,upper_violations
+space,space,0.5,2,1,0,0,0,7,145,30,124,0,27
+embedded,embedded,0.5,2,4,0,0,0,7,256,36,133,26,0
+both,both,0.5,2,2,0,0,0,7,169,42,133,0,0
+both-wide,both,0.2,3,2,0,0,0,7,76,30,96,0,0
+both-post,both,0.5,2,2,1,1,1,7,1042,178,527,0,0
+both-capped,both,0.5,2,0,2,0,0,1,4,120,130,130,0

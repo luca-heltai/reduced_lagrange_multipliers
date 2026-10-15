@@ -2,59 +2,153 @@ name: Documentation
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
   workflow_dispatch:
+    inputs:
+      retry:
+        description: Retry failed commits as well as missing commits
+        type: boolean
+        default: false
+      commit:
+        description: Optional full monitored master SHA to remeasure
+        type: string
+        default: ''
+  schedule:
+    - cron: '23 3 * * *'
 
+# The default queue can replace pending runs. The persistent ledger, not this
+# concurrency group, is responsible for recovering every monitored commit.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: documentation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  performance:
+    uses: ./.github/workflows/performance.yml
+    with:
+      official: ${{ github.ref == 'refs/heads/master' && contains(fromJSON('["push", "schedule", "workflow_dispatch"]'), github.event_name) }}
+      retry: ${{ inputs.retry == true }}
+      commit: ${{ inputs.commit || '' }}
 
+  publish-history:
+    needs: performance
+    if: ${{ !cancelled() && github.ref == 'refs/heads/master' && contains(fromJSON('["push", "schedule", "workflow_dispatch"]'), github.event_name) }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
     steps:
-    - uses: actions/checkout@v5
-    - uses: actions/configure-pages@v5
+      - uses: actions/checkout@v5
+        with:
+          # Only trusted master runs receive persisted write credentials.
+          persist-credentials: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: performance-batch-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/batch
+      - name: Publish append-only history
+        if: github.ref == 'refs/heads/master' && contains(fromJSON('["push", "schedule", "workflow_dispatch"]'), github.event_name)
+        run: |
+          python3 scripts/performance/archive.py publish \
+            --incoming "$RUNNER_TEMP/batch" --plan "$RUNNER_TEMP/batch/plan.json"
 
-    - uses: actions/setup-python@v6
-      with:
-        python-version: "3.12"
+  archive:
+    needs: [performance, publish-history]
+    if: ${{ !cancelled() && (needs.publish-history.result == 'success' || needs.publish-history.result == 'skipped') }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: performance-batch-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/batch
+      - name: Generate report before documentation
+        run: |
+          python3 scripts/performance/archive.py read --output "$RUNNER_TEMP/history"
+          python3 scripts/performance/pipeline.py merge \
+            --archive "$RUNNER_TEMP/preview" --incoming "$RUNNER_TEMP/batch" --plan "$RUNNER_TEMP/batch/plan.json"
+          # PRs use only their own experimental batch, never relabel old data.
+          if [ "$GITHUB_EVENT_NAME" != pull_request ] && [ "$GITHUB_REF" = refs/heads/master ]; then
+            archive="$RUNNER_TEMP/history"
+          else
+            archive="$RUNNER_TEMP/preview"
+          fi
+          python3 scripts/performance/pipeline.py export --archive "$archive" \
+            --plan "$archive/plan.json" --output "$RUNNER_TEMP/report"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: performance-report-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/report
+          retention-days: 30
 
-    - name: Install system dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y doxygen graphviz
-
-    - name: Install Sphinx dependencies
-      run: pip install -r doc/requirements.txt
-
-    - name: Build documentation site
-      run: ./scripts/build_doc.sh
-
-    - uses: actions/upload-pages-artifact@v4
-      with:
-        path: build/docs/site
+  build:
+    needs: archive
+    if: ${{ !cancelled() && needs.archive.result == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          name: performance-report-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/performance-report
+      - name: Verify report source
+        run: |
+          python3 - <<'PY'
+          import json, os, subprocess
+          with open(os.environ['RUNNER_TEMP'] + '/performance-report/history.json') as f:
+              report = json.load(f)
+          assert report['source_sha'] == subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          PY
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz
+      - name: Build documentation site
+        env:
+          IMMERSX_PERFORMANCE_REPORT: ${{ runner.temp }}/performance-report
+        run: ./scripts/build_doc.sh
+      - name: Check the performance viewer under a project URL prefix
+        run: |
+          python3 -m pip install playwright==1.63.0
+          python3 -m playwright install --with-deps chromium
+          python3 scripts/performance/tests/viewer.py
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: build/docs/site
 
   deploy:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+    if: ${{ !cancelled() && needs.build.result == 'success' && github.ref == 'refs/heads/master' && contains(fromJSON('["push", "schedule", "workflow_dispatch"]'), github.event_name) }}
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
-    - name: Deploy to GitHub Pages
-      id: deployment
-      uses: actions/deploy-pages@v4
-        
+      - name: Reject a superseded source revision
+        id: fresh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          head=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/master" --jq .object.sha)
+          if [ "$head" = "$GITHUB_SHA" ]; then echo 'current=true' >> "$GITHUB_OUTPUT"; fi
+      - name: Deploy to GitHub Pages
+        if: steps.fresh.outputs.current == 'true'
+        id: deployment
+        uses: actions/deploy-pages@v4

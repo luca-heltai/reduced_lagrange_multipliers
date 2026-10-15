@@ -21,6 +21,7 @@
 
 #include <deal.II/lac/affine_constraints.h>
 #include <deal.II/lac/la_parallel_vector.h>
+#include <deal.II/lac/vector.h>
 
 #include <deal.II/numerics/solution_transfer.h>
 
@@ -183,6 +184,16 @@ namespace ImmersX
     ImportedFiniteElementFields(const std::string       &vtk_filename,
                                 const TriangulationType &triangulation,
                                 MPI_Comm communicator = MPI_COMM_WORLD);
+
+    /** Transfer already refined serial fields onto the matching final mesh.
+     * No input file is reread. The catalog and every FE component are retained.
+     */
+    ImportedFiniteElementFields(
+      const DoFHandlerType         &serial_dof_handler,
+      const dealii::Vector<double> &serial_coefficients,
+      const FieldCatalog           &catalog,
+      const TriangulationType      &triangulation,
+      MPI_Comm                      communicator = MPI_COMM_WORLD);
 
     const TriangulationType &
     triangulation() const

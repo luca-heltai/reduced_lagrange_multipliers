@@ -1,0 +1,51 @@
+subsection Lifted Poisson
+  set Modal data = 1; 0.1; 0.2
+  set Radius field = radius
+  set Refinement cycles = 2
+  set Compute errors = true
+  set Refinement strategy = fixed_fraction
+  subsection Background
+    set Grid generator = hyper_cube
+    set Grid generator arguments = -1:1:false
+    set Initial refinement = 2
+  end
+  subsection Representative
+    set Grid generator = @IMMERSX_BINARY_DIR@/gtests/parameters/co_refinement_two_segments.vtk
+    subsection VTK support
+      set Read fields = true
+    end
+  end
+  subsection Background space
+    set Finite element = FE_Q<3>(1)
+  end
+  subsection Modal space
+    set Finite element = FESystem<1,3>[FE_Q<1,3>(1)^3]
+  end
+  subsection Lift
+    subsection Cross section
+      set Maximum inclusion degree = 1
+      set Selected indices = 0,1,2
+    end
+  end
+  subsection Co-refinement
+    set Refinement strategy = both
+    set Lower factor = 0.2
+    set Upper factor = 3
+    set Max refinement level = 6
+  end
+  subsection Forcing
+    set Function expression = 1+x
+  end
+  subsection Boundary
+    set Function expression = 0.3+x
+  end
+  subsection Exact solution
+    set Function expression = 0.3+x
+  end
+  subsection Solver
+    set Solver = direct
+  end
+  subsection Output
+    set Output directory = @TEST_OUTPUT_DIR@/lifted-poisson-app
+  end
+end

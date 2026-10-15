@@ -625,7 +625,6 @@ namespace ImmersX::Coral
   inline void
   register_primitive_types()
   {
-    register_primitive_domain_types<dim, spacedim>();
     register_owned_finite_element_space_types<dim, spacedim>();
     register_primitive_finite_element_space_types<dim, spacedim>();
     register_primitive_field_operations<dim, spacedim>();

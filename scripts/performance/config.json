@@ -1,0 +1,9 @@
+{
+  "harness_version": 4,
+  "particle_penalty_ranks": [1, 2],
+  "timing_contract": "source-isolated; absent timing_scope is legacy-unspecified",
+  "build_type": "Release",
+  "refinements": 3,
+  "repetitions": 9,
+  "quadrature_recipe": "CP8: matching Q1 QGauss(2); heterogeneous QGauss(3); nonmatching/trace fixed benchmark rules; lifted representative=3 section=2 degree=0 thickness=0.05; particle_penalty Q1 QGauss(3) on partition-crossing tilted independently refined supports, gamma=2.75; distributed background and matrices; maximum-rank wall time"
+}

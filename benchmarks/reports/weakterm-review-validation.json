@@ -1,0 +1,207 @@
+{
+  "source_revision": "1e00b166f1471453e196fe91af34e5af1453701d",
+  "local_configuration": "See weakterm-review-manifest.json for the macOS DebugRelease build and compiler commands.",
+  "focused_tests": [
+    {
+      "deal_ii_version": "9.8.0-rc1",
+      "build_type": "Debug",
+      "ranks": 1,
+      "passed": 56,
+      "log_sha256": "0e5a4148382629e7e176b9007884685988c1c1d2980466333d064fd25529a8ec"
+    },
+    {
+      "deal_ii_version": "9.8.0-rc1",
+      "build_type": "Debug",
+      "ranks": 2,
+      "passed": 15,
+      "log_sha256": "c4089be17260127fe22e583de5c3cadab8234ee0b607dea0c0417357107aa800"
+    },
+    {
+      "deal_ii_version": "9.8.0-rc1",
+      "build_type": "Release",
+      "ranks": 1,
+      "passed": 56,
+      "log_sha256": "5cf68420a5758c97ee87dfa81fb25f36864c5816d6a7db161d0a1b3610eea1e8"
+    },
+    {
+      "deal_ii_version": "9.8.0-rc1",
+      "build_type": "Release",
+      "ranks": 2,
+      "passed": 15,
+      "log_sha256": "1958e09ab7c964348c5fa6813fe8c61782ab3b22eb65fbc05f5f3c45560dc295"
+    },
+    {
+      "deal_ii_version": "9.7.1",
+      "build_type": "Debug",
+      "ranks": 1,
+      "passed": 56,
+      "log_sha256": "07544a8ee9803ef9aebfe722e1d8b9e9e699954e1f9c3c4b4105178abaf61ccb"
+    },
+    {
+      "deal_ii_version": "9.7.1",
+      "build_type": "Debug",
+      "ranks": 2,
+      "passed": 15,
+      "log_sha256": "45006e403aa5b094e4e37688628dc97cc0ebb7d9cbadbc2c3b56ead0290b25f7"
+    },
+    {
+      "deal_ii_version": "9.7.1",
+      "build_type": "Release",
+      "ranks": 1,
+      "passed": 56,
+      "log_sha256": "3d0012fcf1de6e894114b0a78fc811d3dcc12be75272abd1ec052710442d2d86"
+    },
+    {
+      "deal_ii_version": "9.7.1",
+      "build_type": "Release",
+      "ranks": 2,
+      "passed": 15,
+      "log_sha256": "5dd982a29405671ffb8b4c3bfc99fbfd9d0fea42dcbea7719f656b617cabf60a"
+    }
+  ],
+  "focused_commands": {
+    "serial": "GTEST_FILTER='WeakTerm.*:WeakTermNonmatching.*:LiftedIntegrationSupport.*:ImportedFiniteElementFields.*' <build>/gtests/gtests<suffix>",
+    "mpi": "mpirun -np 2 env GTEST_FILTER='WeakTerm.MPI_*:WeakTerm.BOTH_*:WeakTermNonmatching.MPI_*:LiftedIntegrationSupport.BOTH_*:ImportedFiniteElementFields.MPI_*:ImportedFiniteElementFields.BOTH_*:PoissonPrimitives.BOTH_*' <build>/gtests/gtests<suffix>",
+    "suffixes": {
+      "Debug": "_debug",
+      "Release": ""
+    },
+    "observed_serial_filter": "WeakTerm.*:WeakTermNonmatching.*:LiftedIntegrationSupport.*:ImportedFiniteElementFields.*-*.MPI_*",
+    "working_directories": [
+      "repository root (macOS focused runs)",
+      "build/gtests (macOS CTest)",
+      "/tmp (macOS focused runs)",
+      "/build (Linux focused runs)"
+    ]
+  },
+  "macos_ctest": {
+    "quick": {
+      "command": "ctest --test-dir build -L quick --output-on-failure",
+      "passed": 28,
+      "failed": 0
+    },
+    "full": {
+      "command": "ctest --test-dir build --output-on-failure",
+      "passed": 34,
+      "failed": 2,
+      "failed_tests": [
+        "ImmersX.Debug.validation.Serial",
+        "ImmersX.Release.validation.Serial"
+      ]
+    },
+    "aggregates": {
+      "Debug": {
+        "serial_executed": 328,
+        "mpi_executed": 108,
+        "failed": 1,
+        "skipped": 2,
+        "disabled": 3
+      },
+      "Release": {
+        "serial_executed": 327,
+        "mpi_executed": 108,
+        "failed": 1,
+        "skipped": 2,
+        "disabled": 3
+      }
+    },
+    "compiled_suites_classified": 81,
+    "known_failure": {
+      "test": "FiberReinforcedElastodynamicsValidation.CoupledResidualAndExcessResponse",
+      "diagnostic": "matrix_only_displacement_difference() is 0; expected > 1e-12",
+      "reproduced_on_base_revision": "84bef0b967f04f440626230515e2135feaead9e2",
+      "baseline_build_type": "Debug",
+      "baseline_command": "GTEST_FILTER='FiberReinforcedElastodynamicsValidation.CoupledResidualAndExcessResponse' /tmp/immersx-review-baseline-debug/gtests/gtests_debug",
+      "scope": "The test and fiber driver are unchanged; no tolerance or oracle was weakened."
+    },
+    "skipped_application_tests": [
+      "AppExecutables.CoupledElasticity",
+      "AppExecutables.PseudoCoupling1D"
+    ],
+    "skip_reason": "lib1dsolver.a is unavailable in the local configuration."
+  },
+  "independent_support_convergence": {
+    "test": "WeakTerm.IndependentSupportConvergesForPiecewiseFETrace",
+    "quantity": "absolute trace mass energy error",
+    "reference": "MatrixCreator::create_mass_matrix on an interface-fitted 1D mesh",
+    "support_cells_by_level": [
+      1,
+      2,
+      4,
+      8,
+      16,
+      32,
+      64,
+      128,
+      256
+    ],
+    "errors_by_level": [
+      0.006668124625623717,
+      0.06569269711847792,
+      0.031713511305968556,
+      0.004422351801801172,
+      0.0002493863105299532,
+      0.00011805267183739865,
+      0.00011954791028756517,
+      2.0997357024876706e-05,
+      1.3398390183994024e-06
+    ],
+    "monotone_convergence_required": false
+  },
+  "linux_compatibility": {
+    "image": "dealii/dealii:v9.7.1-noble",
+    "local_image_id": "sha256:28a40c95e76879c717a96ea3f5c87cc00ec1d7a4ce9d250ab936fb723eab6995",
+    "architecture": "aarch64",
+    "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0",
+    "mpi": "Open MPI 4.1.6",
+    "deal_ii_revision": "dfff93f072b477d83183acbb4c0958b37930e157",
+    "configure": "cmake -S /src -B /build -G Ninja -DCMAKE_BUILD_TYPE=DebugRelease -DCMAKE_CXX_FLAGS=-fopenmp -DIMMERSX_BUILD_BENCHMARKS=ON -DIMMERSX_BUILD_CORAL_PLUGINS=OFF",
+    "build_commands": [
+      "cmake --build /build --target gtests_debug weak_term_assembly_benchmark weak_term_assembly_benchmark_debug lifted_integration_support_benchmark lifted_integration_support_benchmark_debug -j6",
+      "cmake --build /build --target gtests -j6"
+    ],
+    "mounts": {
+      "/src": "repository (read-only)",
+      "/build": "/tmp/immersx-review-dealii-9.7.1"
+    },
+    "environment": {
+      "OMPI_ALLOW_RUN_AS_ROOT": "1",
+      "OMPI_ALLOW_RUN_AS_ROOT_CONFIRM": "1"
+    },
+    "benchmark_commands": [
+      "/build/benchmarks/weak_term_assembly_benchmark<suffix> --refinements=2 --repetitions=3",
+      "mpirun -np 2 /build/benchmarks/lifted_integration_support_benchmark<suffix> --refinements=3 --repetitions=3"
+    ],
+    "benchmark_smoke_checks": [
+      {
+        "file": "weakterm-smoke_debug.jsonl",
+        "records": 18,
+        "repetitions": 3,
+        "maximum_reference_error": 2.22045e-16,
+        "sha256": "1d21aee627e5bd5787c642c5e58aca2447e90041c0636bc9ecfb8b4a2af33e35"
+      },
+      {
+        "file": "weakterm-smoke.jsonl",
+        "records": 18,
+        "repetitions": 3,
+        "maximum_reference_error": 2.22045e-16,
+        "sha256": "011309de1d923669dff072df8777b35b948a3319963430e5bb6a2aa84881757b"
+      },
+      {
+        "file": "lifted-smoke_debug.jsonl",
+        "records": 1,
+        "repetitions": 3,
+        "maximum_reference_error": 8.32667e-17,
+        "sha256": "a7c974891ae58d508127dc1a8d3455770af292739d76a1e627074acbf312fb67"
+      },
+      {
+        "file": "lifted-smoke.jsonl",
+        "records": 1,
+        "repetitions": 3,
+        "maximum_reference_error": 1.11022e-16,
+        "sha256": "d38e34cfa72dd05f163e3f511dc54baa685c5dfbdf769ccd9e58628352c0dab7"
+      }
+    ],
+    "scope": "Focused Debug/Release serial and two-rank tests and benchmark checks; not the full Linux CTest manifest."
+  }
+}

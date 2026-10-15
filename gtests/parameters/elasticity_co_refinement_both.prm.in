@@ -1,0 +1,42 @@
+set dimension = 2
+set space dimension = 3
+set reduced dimension = 1
+
+subsection Immersed Problem
+  set Coupling type = TensorProduct
+  set Initial refinement = 0
+  set Dirichlet boundary ids = 0
+  set Output directory = @TEST_OUTPUT_DIR@/elasticity-co-refinement-both
+  set Output name = both
+  subsection Grid generation
+    set Domain type = generate
+    set Triangulation type = distributed
+    set Grid generator = hyper_cube
+    set Grid generator arguments = -1:1:false
+  end
+  subsection Material properties
+    subsection default
+      set Lame lambda = 1
+      set Lame mu = 1
+    end
+  end
+end
+subsection Tensor product coupling
+  subsection Cross section
+    set Maximum inclusion degree = 0
+  end
+  subsection Representative domain
+    set Finite element degree = 1
+    set Reduced grid name = @IMMERSX_BINARY_DIR@/gtests/parameters/co_refinement_two_segments.vtk
+    set Input file fields = *
+    set Thickness = radius
+    set Reduced right hand side = height; 0; 0
+  end
+  subsection Local refinement parameters
+    set Refinement strategy = both
+    set Lower factor = 0.5
+    set Upper factor = 2
+    set Refinement factor = 0
+    set Max refinement level = 6
+  end
+end

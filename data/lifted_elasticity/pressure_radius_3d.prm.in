@@ -1,0 +1,35 @@
+set dimension = 3
+set space dimension = 3
+
+subsection Lifted elasticity
+  set Coupling = pressure
+  set Modal data expressions = 0.01, -0.02, 0.03
+  set Radius field = radius
+  set Output directory = @TEST_OUTPUT_DIR@/lifted_elasticity/pressure_radius_3d
+  subsection Domain
+    set Initial refinement = 2
+  end
+  subsection Immersed domain
+    set Grid generator = @TEST_DATA_DIR@/tests/one_cylinder_properties.vtk
+    set Initial refinement = 0
+    set Triangulation type = fullydistributed
+    subsection VTK support
+      set Read fields = true
+    end
+  end
+  subsection Lift
+    subsection Cross section
+      set Selected modes = 0, 1, 2
+    end
+  end
+  subsection Co-refinement
+    set Refinement strategy = both
+    set Lower factor = 0.1
+    set Upper factor = 2
+  end
+  subsection Functions
+    subsection Right hand side
+      set Function expression = 1; -2; 0.5
+    end
+  end
+end
