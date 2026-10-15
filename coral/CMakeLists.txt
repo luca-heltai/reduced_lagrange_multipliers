@@ -3,6 +3,26 @@ cmake_minimum_required(VERSION 3.18)
 set(_immersx_coral_include_dir "${CMAKE_CURRENT_SOURCE_DIR}/include")
 set(_immersx_coral_install_dir "${CMAKE_INSTALL_LIBDIR}/immersx/coral")
 
+function(immersx_configure_lifted_poisson_graph input_directory output_directory)
+  set(LIFTED_GRAPH_PARAMETERS
+    "${input_directory}/lifted_poisson_primitives_3d.prm")
+  set(LIFTED_GRAPH_OUTPUT "${output_directory}")
+  set(LIFTED_GRAPH_MODAL_DATA "0.3;0;0")
+  set(LIFTED_GRAPH_DATA_FIELDS "")
+  if(DEAL_II_WITH_SYMENGINE)
+    set(LIFTED_GRAPH_MODAL_DATA "1+r*r+0.01*h;0.1*r;0.2*r")
+    set(LIFTED_GRAPH_DATA_FIELDS "r=cell:radius,h=point:height")
+  endif()
+  configure_file(examples/lifted_poisson_primitives_3d.prm.in
+    "${LIFTED_GRAPH_PARAMETERS}" @ONLY)
+  configure_file(examples/lifted_poisson_primitives_3d.json.in
+    "${input_directory}/lifted_poisson_primitives_3d.json" @ONLY)
+endfunction()
+
+immersx_configure_lifted_poisson_graph(
+  "${CMAKE_CURRENT_BINARY_DIR}/examples"
+  "${CMAKE_CURRENT_BINARY_DIR}/lifted_poisson_output")
+
 function(immersx_configure_lifted_elasticity_graph input_directory output_directory)
   set(LIFTED_ELASTICITY_PARAMETERS
     "${input_directory}/lifted_elasticity_3d.prm")
@@ -373,6 +393,33 @@ foreach(_build_type ${_d2_build_types})
       endif()
 
       if(IMMERSX_ENABLE_CORAL_GRAPH_TESTS AND _spacedim EQUAL 3)
+        find_program(_immersx_coral_mpiexec NAMES mpirun mpiexec REQUIRED)
+        foreach(_ranks 1 2)
+          set(_lifted_working_directory
+            "${CMAKE_CURRENT_BINARY_DIR}/graph_lifted_poisson_3d_${_ranks}${_postfix}")
+          set(_lifted_inputs
+            "${CMAKE_CURRENT_BINARY_DIR}/lifted_inputs_${_ranks}${_postfix}")
+          immersx_configure_lifted_poisson_graph(
+            "${_lifted_inputs}" "${_lifted_working_directory}/output")
+          add_test(NAME "ImmersX.Coral.Graph.LiftedPoisson3D.${_ranks}Rank${_postfix}"
+            COMMAND ${CMAKE_COMMAND}
+              -DCORAL_EXECUTABLE=$<TARGET_FILE:coral::coral>
+              -DPLUGIN=$<TARGET_FILE:${_plugin}>
+              -DGRAPH_SOURCE=${_lifted_inputs}/lifted_poisson_primitives_3d.json
+              -DPARAMETERS_SOURCE=${_lifted_inputs}/lifted_poisson_primitives_3d.prm
+              -DWORKING_DIRECTORY=${_lifted_working_directory}
+              -DCORAL_LIBRARY_DIRECTORY=${_coral_core_directory}
+              -DMPIEXEC=${_immersx_coral_mpiexec}
+              -DMPI_RANKS=${_ranks}
+              -DEXPECTED_OUTPUTS=output/u.pvd,output/lambda.pvd,output/lifted.vtu
+              -P "${CMAKE_CURRENT_SOURCE_DIR}/tests/run_graph.cmake")
+          set_tests_properties("ImmersX.Coral.Graph.LiftedPoisson3D.${_ranks}Rank${_postfix}"
+            PROPERTIES LABELS "integration;quick" TIMEOUT 300)
+          if(_ranks GREATER 1)
+            set_property(TEST "ImmersX.Coral.Graph.LiftedPoisson3D.${_ranks}Rank${_postfix}"
+              APPEND PROPERTY LABELS mpi)
+          endif()
+        endforeach()
         find_program(_immersx_coral_mpiexec NAMES mpirun mpiexec)
         set(_lifted_elasticity_ranks 1)
         if(_immersx_coral_mpiexec)

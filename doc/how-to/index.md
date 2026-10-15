@@ -12,6 +12,8 @@ imported-fields
 configuration
 boundary-conditions
 reduced-coupling
+lifted-poisson
+lifted-static-elasticity
 support-aware-weak-terms
 lifted-integration
 local-co-refinement

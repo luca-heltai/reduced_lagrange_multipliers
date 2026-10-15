@@ -162,6 +162,9 @@ namespace ImmersX
           locally_owned_native[native_index] = values[execution_index];
         }
 
+      // Execution stores independent coefficients; hanging-node values are
+      // reconstructed only when evaluating or exporting the FE function.
+      space_.constraints().distribute(locally_owned_native);
       VectorType native;
       native.reinit(space_.locally_owned_dofs(),
                     space_.locally_relevant_dofs(),

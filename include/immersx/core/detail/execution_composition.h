@@ -690,6 +690,7 @@ namespace ImmersX::detail
     }
 
     /** Build a global block-factorization preconditioner using a Schur solve.
+     * The inner solve uses tolerance as a relative residual reduction.
      */
     Operator
     schur_preconditioner(const FieldId           multiplier,
@@ -796,11 +797,11 @@ namespace ImmersX::detail
         // The Schur complement can reach a lucky breakdown: an Arnoldi vector
         // becomes exactly zero after the exact solution has been found.
         // deal.II's default delayed classical Gram-Schmidt divides by a zero
-        // norm in that case, while modified Gram-Schmidt stops. The default
-        // tolerance of 1e-9 is sufficient because this solve only builds a
-        // preconditioner and a tighter value stagnates just above the
-        // tolerance on nearly singular Schur complements.
-        dealii::SolverControl control(maximum_iterations, tolerance);
+        // norm in that case, while modified Gram-Schmidt stops.
+        // A relative reduction keeps this preconditioner usable for small
+        // correction right-hand sides. An absolute tolerance can return zero
+        // for a nonzero vector and cause false FGMRES happy breakdown.
+        dealii::ReductionControl control(maximum_iterations, 0., tolerance);
         typename dealii::SolverGMRES<FieldVectorType>::AdditionalData data;
         data.orthogonalization_strategy = dealii::LinearAlgebra::
           OrthogonalizationStrategy::modified_gram_schmidt;

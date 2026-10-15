@@ -56,6 +56,7 @@ set(IMMERSX_INTEGRATION_TEST_SUITES
     LiftedIntegrationSupport
     LinearAdapter
     PoissonPrimitives
+    LiftedPoisson
     KINSOLAdapter
     TimeIntervalParameters
     ReducedCoupling
@@ -88,6 +89,7 @@ set(IMMERSX_APPLICATION_TEST_SUITES
     Poisson
     PoissonExecution
     PrescribedPoisson
+    LiftedPoissonApplication
     ReducedPoisson)
 
 set(_immersx_category_suites

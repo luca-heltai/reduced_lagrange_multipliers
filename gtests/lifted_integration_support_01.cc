@@ -593,3 +593,95 @@ TEST(LiftedIntegrationSupport, BOTH_VectorLiftHangingNodesAndAffineSourceShift)
   residual -= expected;
   EXPECT_LT(residual.l2_norm(), 1.e-12);
 }
+
+TEST(LiftedIntegrationSupport,
+     BOTH_VectorLiftExplicitAffineUpdatesAndStructureGuard)
+{
+  ParameterAcceptor::clear();
+  LiftedLineFixture             fixture;
+  TensorProductLift<1, 2, 3, 3> geometry("/Updated vector affine lift/");
+  geometry.thickness                     = "0.1";
+  geometry.section.selected_coefficients = {0};
+  FiniteElementSpace<1, 3> line_space(fixture.domain.triangulation(),
+                                      std::make_unique<FE_Q<1, 3>>(1));
+  parallel::distributed::Triangulation<3> mesh(MPI_COMM_WORLD);
+  GridGenerator::hyper_cube(mesh, -2., 2.);
+  mesh.refine_global(1);
+  FiniteElementSpace<3> bulk_space(mesh,
+                                   std::make_unique<FESystem<3>>(FE_Q<3>(1),
+                                                                 3));
+  auto                 &constraints = bulk_space.constraints();
+  constraints.clear();
+  constraints.reinit(bulk_space.locally_owned_dofs(),
+                     bulk_space.locally_relevant_dofs());
+  for (const auto i : bulk_space.locally_relevant_dofs())
+    constraints.add_line(i);
+  constraints.close();
+  const auto  bulk_view = bulk_space.view();
+  const auto  line_view = line_space.view();
+  StateLayout layout;
+  const auto  bulk =
+    bulk_view.field(layout, "bulk", FEValuesExtractors::Vector(0));
+  const auto line   = line_view.field(layout, "line");
+  const auto lifted = lift(value(line), geometry).mode(0);
+  using V           = ImmersXLA::MPI::Vector;
+  using M           = ImmersXLA::MPI::SparseMatrix;
+  SemiDiscreteModel<V, M>   model;
+  SemidiscreteBuilder<V, M> builder(layout, model);
+  weak_term(value(bulk), test(lifted))
+    .with_lifted_affine_updates()
+    .add(builder);
+  V state, residual, expected;
+  detail::initialize_weak_vector(state,
+                                 bulk.locally_owned_dofs(),
+                                 MPI_COMM_WORLD);
+  detail::initialize_weak_vector(residual,
+                                 line.locally_owned_dofs(),
+                                 MPI_COMM_WORLD);
+  detail::initialize_weak_vector(expected,
+                                 line.locally_owned_dofs(),
+                                 MPI_COMM_WORLD);
+  state = 0.;
+  StateView<V> view(layout, 0.);
+  view.bind(bulk.id(), state);
+  EvaluationContext<V> context(0., view);
+  model.evaluate_row(line.id(), context, residual);
+  EXPECT_DOUBLE_EQ(residual.l2_norm(), 0.);
+  Tensor<1, 3> constant;
+  constant[0] = 0.1;
+  constant[1] = -0.2;
+  constant[2] = 0.3;
+  for (const auto &cell : bulk.dof_handler().active_cell_iterators())
+    if (!cell->is_artificial())
+      {
+        std::vector<types::global_dof_index> indices(
+          cell->get_fe().n_dofs_per_cell());
+        cell->get_dof_indices(indices);
+        for (unsigned int i = 0; i < indices.size(); ++i)
+          constraints.set_inhomogeneity(
+            indices[i],
+            constant[cell->get_fe().system_to_component_index(i).first]);
+      }
+  EXPECT_NO_THROW(model.evaluate_row(line.id(), context, residual));
+  for (const auto &point : lifted.lifted_points())
+    {
+      dealii::Vector<double> local(point.dof_indices.size());
+      for (unsigned int i = 0; i < local.size(); ++i)
+        local[i] = point.weight * point.source_basis_values[i] *
+                   (constant * point.mode_vector);
+      line.constraints().distribute_local_to_global(local,
+                                                    point.dof_indices,
+                                                    expected);
+    }
+  expected.compress(VectorOperation::add);
+  EXPECT_GT(expected.l2_norm(), 1.e-5);
+  residual -= expected;
+  EXPECT_LT(residual.l2_norm(), 1.e-12);
+  // Offsets may change, but an already condensed matrix cannot follow a new
+  // set of constraint masters or constrained DoFs.
+  constraints.clear();
+  constraints.reinit(bulk_space.locally_owned_dofs(),
+                     bulk_space.locally_relevant_dofs());
+  constraints.close();
+  EXPECT_THROW(model.evaluate_row(line.id(), context, residual), ExceptionBase);
+}

@@ -463,9 +463,40 @@ namespace ImmersX
               dealii::SolverFGMRES<GlobalVectorType> solver(control,
                                                             right_data);
               solver.solve(operator_view, state, residual, preconditioner);
-              pcout << "LinearAdapter: FGMRES converged in "
-                    << control.last_step() << " iteration(s), residual "
-                    << control.last_value() << "." << std::endl;
+              // Inexact saddle-point preconditioners can trigger an apparent
+              // happy breakdown before the physical residual is small. Check
+              // the original operator and solve correction equations, rather
+              // than accepting the projected Hessenberg residual alone.
+              auto         defect     = composition_.make_state();
+              unsigned int iterations = control.last_step();
+              for (unsigned int correction_step = 0;
+                   correction_step < 3 &&
+                   iterations < parameters_.maximum_iterations;
+                   ++correction_step)
+                {
+                  operator_view.vmult(defect, state);
+                  defect.sadd(-1., 1., residual);
+                  if (defect.l2_norm() <= parameters_.tolerance)
+                    break;
+                  auto correction = composition_.make_state();
+                  control.set_max_steps(parameters_.maximum_iterations -
+                                        iterations);
+                  solver.solve(operator_view,
+                               correction,
+                               defect,
+                               preconditioner);
+                  iterations += control.last_step();
+                  state += correction;
+                }
+              operator_view.vmult(defect, state);
+              defect.sadd(-1., 1., residual);
+              AssertThrow(
+                defect.l2_norm() <= parameters_.tolerance,
+                dealii::ExcMessage(
+                  "FGMRES did not satisfy the true residual tolerance."));
+              pcout << "LinearAdapter: FGMRES converged in " << iterations
+                    << " iteration(s), true residual " << defect.l2_norm()
+                    << "." << std::endl;
             }
           else
             {

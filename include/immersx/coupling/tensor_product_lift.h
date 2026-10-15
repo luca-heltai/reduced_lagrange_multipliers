@@ -364,10 +364,13 @@ namespace ImmersX
       ReferenceCrossSection<cross_section_dim, spacedim, n_components>;
     using Point = TensorProductLiftPoint<surface_dim, spacedim>;
 
-    explicit TensorProductLiftSupport(const Parameters &parameters)
+    explicit TensorProductLiftSupport(const Parameters  &parameters,
+                                      const unsigned int representative_degree =
+                                        dealii::numbers::invalid_unsigned_int)
       : parameters_(parameters)
       , section_(std::make_shared<Section>(parameters_.section))
-      , representative_quadrature_(make_representative_quadrature())
+      , representative_quadrature_(
+          make_representative_quadrature(representative_degree))
     {
       AssertThrow(parameters_.representative_n_repetitions > 0,
                   dealii::ExcMessage(
@@ -522,12 +525,16 @@ namespace ImmersX
     }
 
     dealii::Quadrature<reduced_dim>
-    make_representative_quadrature() const
+    make_representative_quadrature(
+      const unsigned int representative_degree) const
     {
-      const unsigned int n_points =
-        parameters_.representative_n_q_points == 0 ?
-          2 * parameters_.section.inclusion_degree + 1 :
-          parameters_.representative_n_q_points;
+      const unsigned int degree =
+        representative_degree == dealii::numbers::invalid_unsigned_int ?
+          parameters_.section.inclusion_degree :
+          representative_degree;
+      const unsigned int n_points = parameters_.representative_n_q_points == 0 ?
+                                      2 * degree + 1 :
+                                      parameters_.representative_n_q_points;
       return detail::make_tensor_product_quadrature<reduced_dim>(
         parameters_.representative_quadrature_type,
         n_points,

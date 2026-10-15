@@ -258,6 +258,12 @@ namespace ImmersX
                                relevant_dofs[0]);
 
     reduced_coupling.assemble_coupling_sparsity(dsp, dh, constraints);
+    // A lifted point is owned by its containing cell, not necessarily by all
+    // of that cell's DoFs. Export ghost-row graph entries before assembly.
+    SparsityTools::distribute_sparsity_pattern(dsp,
+                                               owned_dofs[0],
+                                               mpi_communicator,
+                                               relevant_dofs[0]);
 
     coupling_matrix.reinit(owned_dofs[0], owned_dofs[1], dsp, mpi_communicator);
 

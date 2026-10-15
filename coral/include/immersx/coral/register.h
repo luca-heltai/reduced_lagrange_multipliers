@@ -1272,13 +1272,13 @@ namespace ImmersX::Coral
   inline void
   register_linear_execution_types()
   {
-    using Adapter           = LinearAdapterFor<2, spacedim>;
+    using Adapter           = LinearAdapterFor<spacedim, spacedim>;
     using AdapterParameters = ImmersX::LinearAdapterParameters;
     using FieldVector       = ImmersXLA::MPI::Vector;
     using GlobalVector      = ImmersXLA::MPI::BlockVector;
     using AdapterHandle     = std::shared_ptr<Adapter>;
     using BulkField =
-      ImmersX::Field<2, spacedim, dealii::FEValuesExtractors::Scalar>;
+      ImmersX::Field<spacedim, spacedim, dealii::FEValuesExtractors::Scalar>;
     using LineField =
       ImmersX::Field<1, spacedim, dealii::FEValuesExtractors::Scalar>;
     using Constraint =
@@ -1289,17 +1289,18 @@ namespace ImmersX::Coral
     using ConstraintFields = ImmersX::ConstraintFields<LineField>;
     using ConstraintHandle = ImmersX::ProblemHandle<Adapter, ConstraintFields>;
 
-    coral::detail::set_type_alias<Adapter>("ImmersX::LinearAdapter<2>");
+    coral::detail::set_type_alias<Adapter>("ImmersX::LinearAdapter<" +
+                                           std::to_string(spacedim) + ">");
     coral::detail::set_type_alias<AdapterHandle>("ImmersX::LinearExecution");
     coral::detail::set_type_alias<FieldVector>("ImmersX::LinearFieldVector");
     coral::detail::set_type_alias<GlobalVector>("ImmersX::LinearState");
-    coral::detail::set_type_alias<Constraint>(
-      "ImmersX::ContinuityConstraint<2>");
+    coral::detail::set_type_alias<Constraint>("ImmersX::ContinuityConstraint<" +
+                                              std::to_string(spacedim) + ">");
     coral::detail::set_type_alias<ConstraintHandle>(
       "ImmersX::LinearConstraintHandle");
 
-    const auto bulk_field_key = "ImmersX::Field<2, " +
-                                std::to_string(spacedim) +
+    const auto bulk_field_key = "ImmersX::Field<" + std::to_string(spacedim) +
+                                ", " + std::to_string(spacedim) +
                                 ", dealii::FEValuesExtractors::Scalar>";
     const auto line_field_key = "ImmersX::Field<1, " +
                                 std::to_string(spacedim) +
@@ -1348,7 +1349,7 @@ namespace ImmersX::Coral
     register_parameter_type<ImmersX::OutputHandlerParameters>(
       "ImmersX::OutputHandlerParameters");
     register_linear_output_handler_types<1, spacedim>();
-    register_linear_output_handler_types<2, spacedim>();
+    register_linear_output_handler_types<spacedim, spacedim>();
 
     coral::RegistryMetadata adapter_metadata;
     adapter_metadata.operation    = "Create linear execution";
@@ -1983,6 +1984,12 @@ namespace ImmersX::Coral
   inline void
   register_local_co_refinement_types();
 
+  inline void
+  register_lifted_poisson_types();
+
+  inline void
+  register_lifted_factory_keys();
+
   template <int dim, int spacedim>
   void
   register_primitive_field_operations();
@@ -1998,6 +2005,8 @@ namespace ImmersX::Coral
   void
   register_immersx_types()
   {
+    if constexpr (spacedim == 3)
+      register_lifted_factory_keys();
     register_common_types();
     register_initialize_parameter_types();
 #ifdef DEAL_II_WITH_VTK
@@ -2051,6 +2060,7 @@ namespace ImmersX::Coral
             register_reduced_poisson_types();
             register_owned_finite_element_space_types<1, spacedim>();
             register_linear_execution_types<spacedim>();
+            register_lifted_poisson_types();
             register_linear_output_handler_types<3, spacedim>();
             register_primitive_types<3, spacedim>();
             register_primitive_finite_element_space_types<1, spacedim>();
@@ -2135,6 +2145,7 @@ namespace ImmersX::Coral
   }
 } // namespace ImmersX::Coral
 
+#include <immersx/coral/lifted_poisson.h>
 #include <immersx/coral/local_co_refinement.h>
 #include <immersx/coral/register_primitives.h>
 
