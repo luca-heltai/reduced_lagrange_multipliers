@@ -128,6 +128,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 ### Fixed
 
 - [PR #264](https://github.com/luca-heltai/immersx/pull/264) Prevent the Navier–Stokes tutorial from timing out in Debug builds by reusing finite-element evaluations during nonlinear Jacobian assembly.
+- [PR #259](https://github.com/luca-heltai/immersx/pull/259) Use compiler-independent Coral report-operation keys so co-refinement graphs load on Linux and macOS.
 - [PR #259](https://github.com/luca-heltai/immersx/pull/259) Retain the reduced Poisson augmented-Lagrangian solution in the accepted solution vector as well as the output vector, so solution diagnostics reflect the nonzero solve.
 - [PR #254](https://github.com/luca-heltai/immersx/pull/254) Register MetricFlowX time parameters before reading input and provide a mixed-flow preconditioner for coupled IDA solves. Exercise standalone and nonzero-inflow coupled applications in serial and MPI.
 - [PR #253](https://github.com/luca-heltai/immersx/pull/253) Preserve every ambient vector component in native nonmatching assembly and give the fiber driver's matrix-only reference independent history.

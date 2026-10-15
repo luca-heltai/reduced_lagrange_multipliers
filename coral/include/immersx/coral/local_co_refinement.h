@@ -68,7 +68,18 @@ namespace ImmersX::Coral
   inline void
   register_local_co_refinement_types()
   {
-    using Report = ImmersX::LocalCoRefinementReport;
+    using Report           = ImmersX::LocalCoRefinementReport;
+    using CountReader      = std::function<unsigned long long(const Report &)>;
+    using SatisfiedReader  = std::function<bool(const Report &)>;
+    using RequireSatisfied = std::function<void(const Report &)>;
+    // Serialized graph keys must not depend on compiler-specific function
+    // names.
+    coral::detail::set_type_alias<CountReader>(
+      "std::function<unsigned long long (const ImmersX::LocalCoRefinementReport &)>");
+    coral::detail::set_type_alias<SatisfiedReader>(
+      "std::function<bool (const ImmersX::LocalCoRefinementReport &)>");
+    coral::detail::set_type_alias<RequireSatisfied>(
+      "std::function<void (const ImmersX::LocalCoRefinementReport &)>");
     coral::detail::set_type_alias<Report>("ImmersX::LocalCoRefinementReport");
     coral::NodeObject::register_output_type<Report>();
     coral::detail::set_type_alias<unsigned long long>("unsigned long long");
@@ -79,10 +90,9 @@ namespace ImmersX::Coral
           std::make_pair("lower violations", &Report::lower_violations),
           std::make_pair("upper violations", &Report::upper_violations)})
       coral::NodeObject::register_function(
-        std::function<unsigned long long(const Report &)>(
-          [member = entry.second](const Report &report) {
-            return report.*member;
-          }),
+        CountReader([member = entry.second](const Report &report) {
+          return report.*member;
+        }),
         {"report"},
         method_metadata("Co-refinement " + std::string(entry.first),
                         "Co-refinement " + std::string(entry.first),
@@ -92,8 +102,7 @@ namespace ImmersX::Coral
                         entry.first));
 
     coral::NodeObject::register_function(
-      std::function<bool(const Report &)>(
-        [](const Report &report) { return report.satisfied(); }),
+      SatisfiedReader([](const Report &report) { return report.satisfied(); }),
       {"report"},
       method_metadata(
         "Co-refinement satisfied",
@@ -103,7 +112,7 @@ namespace ImmersX::Coral
         "LocalCoRefinementReport",
         "satisfied"));
     coral::NodeObject::register_function(
-      std::function<void(const Report &)>([](const Report &report) {
+      RequireSatisfied([](const Report &report) {
         AssertThrow(report.satisfied(),
                     dealii::ExcMessage(
                       "Co-refinement diameter bounds are not satisfied."));

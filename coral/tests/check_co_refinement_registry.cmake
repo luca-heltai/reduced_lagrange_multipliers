@@ -105,8 +105,16 @@ foreach(_operation
     "Co-refinement upper violations"
     "Co-refinement satisfied"
     "Require satisfied co-refinement")
-  string(FIND "${_registry}" "\"operation\": \"${_operation}\"" _found)
-  if(_found EQUAL -1)
-    message(FATAL_ERROR "Missing co-refinement report operation: ${_operation}")
+  if(_operation STREQUAL "Co-refinement satisfied")
+    set(_signature "std::function<bool (const ImmersX::LocalCoRefinementReport &)>")
+  elseif(_operation STREQUAL "Require satisfied co-refinement")
+    set(_signature "std::function<void (const ImmersX::LocalCoRefinementReport &)>")
+  elseif(_operation MATCHES "^Co-refinement (intersecting pairs|lower violations|upper violations)$")
+    set(_signature "std::function<unsigned long long (const ImmersX::LocalCoRefinementReport &)>")
+  endif()
+  string(JSON _actual_operation GET "${_registry}"
+    "${_operation}::${_signature}" operation)
+  if(NOT _actual_operation STREQUAL _operation)
+    message(FATAL_ERROR "Missing stable co-refinement operation: ${_operation}")
   endif()
 endforeach()
