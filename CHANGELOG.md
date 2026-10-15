@@ -11,6 +11,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Added
 
+- [PR #247](https://github.com/luca-heltai/immersx/pull/247) Added background-to-background weak terms over independent codimension-one supports, including nonlinear terms with frozen inputs.
 - [PR #246](https://github.com/luca-heltai/immersx/pull/246) Added geometric quadrature supports for fixed tensor-product lifts and linear weak-term assembly on a distributed bulk mesh.
 - [PR #244](https://github.com/luca-heltai/immersx/pull/244) Added support-aware nonlinear weak terms over multiple finite element spaces and frozen inputs.
 - [PR #243](https://github.com/luca-heltai/immersx/pull/243) Added explicit embedded-mesh integration supports and native deal.II nonmatching mass assembly for value pairings.
@@ -116,6 +117,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 - [PR #264](https://github.com/luca-heltai/immersx/pull/264) Prevent the Navier–Stokes tutorial from timing out in Debug builds by reusing finite-element evaluations during nonlinear Jacobian assembly.
 - [PR #252](https://github.com/luca-heltai/immersx/pull/252) Select all ambient components of embedded vector fields and evolve the fiber driver's matrix-only backward-Euler reference from its own displacement and velocity history.
+- [PR #247](https://github.com/luca-heltai/immersx/pull/247) Retain off-rank independent-support Jacobian entries and reject frozen inputs on incompatible background meshes or mappings.
 - [PR #246](https://github.com/luca-heltai/immersx/pull/246) Request Jacobians for lifted geometry, preserve off-rank physical-support matrix entries, and route quadrature points collectively when a rank has no points.
 - [PR #244](https://github.com/luca-heltai/immersx/pull/244) Assemble nonlinear residuals into owned-only vectors, retain off-rank matching and lifted Jacobian entries, and reject frozen inputs on incompatible meshes or mappings.
 - [PR #244](https://github.com/luca-heltai/immersx/pull/244) Use ghosted imported inputs and owned-only outputs in distributed frozen-field tests.
@@ -192,6 +194,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 ### Testing and CI
 
 - [PR #248](https://github.com/luca-heltai/immersx/pull/248) Run pull-request tests for stacked branches targeting any branch.
+- [PR #247](https://github.com/luca-heltai/immersx/pull/247) Test replicated and fully distributed embedded support routing, scalar/vector nonlinear actions, transposes, and finite differences across partitions.
 - [PR #246](https://github.com/luca-heltai/immersx/pull/246) Classify the compiled GoogleTest registry, reject missing or overlapping categories, discover tests without MPI initialization, and include shared tests in MPI runs.
 - [PR #244](https://github.com/luca-heltai/immersx/pull/244) Added a MeshWorker reference and a paired nonlinear residual/Jacobian benchmark for heterogeneous weak terms with frozen inputs.
 - [PR #232](https://github.com/luca-heltai/immersx/pull/232) Build and test Coral plugins against the `dealiix-tutorial` Coral branch.

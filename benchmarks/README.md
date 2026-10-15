@@ -14,7 +14,7 @@ cmake --build build-bench-debug --target weak_term_assembly_benchmark_debug -j
 
 The executable compares natural ImmersX mass and Poisson weak terms on explicit
 cell supports with `dealii::MatrixCreator::create_mass_matrix` and
-`create_laplace_matrix`. It emits fourteen JSON lines: Q1 volume mass and
+`create_laplace_matrix`. It emits JSON lines: Q1 volume mass and
 Laplace matrices and constant volume source right-hand sides in 1D, 2D, and 3D;
 boundary source right-hand sides and normal flux residuals are also compared
 with `VectorTools` in 2D and 3D. One additional nonlinear case compares a
@@ -69,3 +69,16 @@ MPI collectives, which also lets it run in environments where `MPI_Init_thread`
 cannot initialize the MPI shared-memory transport. Distributed benchmarks must
 initialize MPI, synchronize before timing, and report the maximum rank wall
 time.
+
+The `independent_background_trace_mass` and
+`independent_rotated_trace_surface_3d` cases measure ImmersX assembly and
+operator application for background-background Q1 trace mass matrices over an
+independent immersed line and rotated planar surface. The line case reports
+setup, cold assembly, warm assembly, and operator application separately. The
+rotated surface case reports cold and warm assembly and operator application.
+Both cases check the integrated measure against its analytic value; the line
+case also checks the quadratic x moment. The installed deal.II API has no native
+bulk-bulk trace-matrix assembler for this geometry, so these cases report no
+native timing ratio. Their results are ImmersX-only timings, not comparisons
+with `NonMatching::create_coupling_mass_matrix`, which assembles a different
+rectangular operation.
