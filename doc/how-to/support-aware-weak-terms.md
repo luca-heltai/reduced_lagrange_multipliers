@@ -81,8 +81,20 @@ physical weights are located in the background mesh, and each field is
 evaluated on its own background `DoFHandler`. The current path supports
 codimension-one supports and fields on the same background triangulation and
 mapping. It uses `QGauss(p + 2)` on each support cell without splitting that
-cell at background-cell boundaries, so refine the support mesh where it crosses
-many background cells.
+cell at background-cell boundaries. This approximates a piecewise FE trace,
+not exact integration over mesh intersections. A Gauss rule exact for a global
+polynomial need not integrate a trace whose derivatives jump at those
+interfaces. Refine support cells until the integral or operator action
+stabilizes; increasing only the background resolution does not control this
+error.
+
+`WeakTerm.IndependentSupportConvergesForPiecewiseFETrace` checks a Q1 trace
+with three slope jumps against `MatrixCreator::create_mass_matrix` on a fitted
+1D mesh. After eight support refinements, the energy error must be below
+`1e-5` and one thousandth of the coarse error. Individual levels need not
+improve monotonically. Constant-field and global-polynomial checks remain
+separate measure and mapping checks. No intersection subdivision or Nitsche
+assembler is provided.
 
 The same physical-point assembly accepts composed observables, including
 nonlinear expressions with frozen finite-element inputs:
@@ -96,8 +108,20 @@ The residual and Jacobian use the current active state and the frozen input
 coefficients. Frozen FE inputs must share the source mesh and mapping.
 Independent and lifted linear pairings currently require homogeneous source
 constraints and reject offsets changed after assembly.
-Rebuild a mutable support after changing its geometric inputs.
-The geometric shape derivative is not included in the weak-term Jacobian.
+The three-argument `fe_space(dof_handler, mapping, constraints)` view extracts
+locally relevant DoFs. Pass an explicit set when one is already available.
+Distributed nonlinear evaluation needs locally relevant ghost values in active
+states and frozen coefficient vectors. `ImportedFiniteElementFields` exposes
+owned coefficients; import them into a ghosted vector before calling
+`frozen(field, coefficients)`. That call copies the vector. Recreate the
+observable to change its frozen coefficients.
+
+An ordinary `IntegrationSupport` is a non-owning mesh view. A new assembly
+reads its current geometry; a materialized linear operator is a snapshot and
+must be assembled again after a geometry change. A lifted support stores
+generated points: call `rebuild()` before reassembling. Geometry must stay fixed
+during each residual/Jacobian evaluation. The geometric shape derivative is
+not included in the weak-term Jacobian.
 
 ## Use a lifted support
 

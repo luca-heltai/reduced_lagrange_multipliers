@@ -38,9 +38,10 @@ accepted.
 Each JSON object is printed to standard output with the deal.II version, cell
 and DoF counts, warm medians and MADs, and relative matrix or right-hand-side
 error. Matrix cases also report common setup time and cold timings. Timings are
-diagnostic and are not CI pass/fail thresholds. The current benchmark covers
-matching Q1 cell supports in 1D, 2D, and 3D. Additional forms should use the
-same paired setup and numerical comparison before their timings are reported.
+diagnostic and are not CI pass/fail thresholds. The matching cases cover
+Q1 cell supports in 1D, 2D, and 3D; nonmatching and independent-support cases
+are described below. Additional forms should use the same paired setup and
+numerical comparison before their timings are reported.
 
 The `heterogeneous_nonlinear_q1_q2_dgq0` case integrates
 `(u * (1 + grad(w)[0]) + c) * test(v)` on cells selected by material id, with
@@ -84,4 +85,32 @@ native timing ratio. Their results are ImmersX-only timings, not comparisons
 with `NonMatching::create_coupling_mass_matrix`, which assembles a different
 rectangular operation.
 
-Recorded Debug and Release benchmark reports are in the reports directory.
+All independent trace assembly timers include `matrix()` materialization.
+The current explicit linear path assembles eagerly in `add()`; the explicit
+materialization also keeps the timing correct if that path becomes deferred.
+Warm application uses the newly assembled matrix, not the first matrix.
+The serial benchmark does not initialize MPI and must not be launched with
+multiple ranks. Use `lifted_integration_support_benchmark` for distributed
+measurements; it synchronizes before each timed region and reduces elapsed
+times with the MPI maximum.
+
+### Additive JSON fields in the review follow-up
+
+Existing case names and timing fields are preserved. The nonlinear record adds
+`timing_scope: "end_to_end_residual_and_two_jacobians"`,
+`immersx_assembly_calls: 3`, and `native_cell_traversals: 1`. These describe
+equivalent outputs, not equivalent traversal counts.
+
+The lifted record adds `deal_ii_version`, `background_setup_ms`,
+`background_dofs`, `cold_operator_action_ms`, `operator_action_median_ms`,
+`operator_action_mad_ms`, `analytical_action_error`, and
+`timing_scope: "barrier_then_max_rank_wall_time"`. Its existing `setup_ms`
+still means representative-mesh setup; `cold_support_build_ms` measures
+support generation, and `first_bulk_assembly_ms` includes materialization.
+Warm assembly constructs a fresh model and matrix each time; it does not
+measure application of a retained operator. Native ratios remain N/A where
+no equivalent native operation exists.
+
+Consumers must tolerate absent optional fields in historical CP8 records.
+Recorded Debug and Release reports and their provenance are in
+`benchmarks/reports/`.

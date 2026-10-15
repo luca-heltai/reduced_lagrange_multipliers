@@ -1,5 +1,23 @@
 # Weak-term benchmark report
 
+## Historical review follow-up measurements
+
+The `*-review-*.jsonl`, `weakterm-review-manifest.json`, and
+`weakterm-review-validation.json` files are retained byte for byte from the
+original review follow-up. The measured source revision is
+`1e00b166f1471453e196fe91af34e5af1453701d`, not the repaired head or the
+later commit that adds the reports. The manifest records its source tree,
+artifact checksums, commands, compiler and host configuration.
+
+These six JSONL files contain 40 records: 18 serial cases in each mode and
+one lifted case at one and two ranks in each mode. They use 40 repetitions,
+three serial refinements and four lifted refinements. Their timings are
+historical diagnostic measurements, not performance gates or a scaling study.
+Validation claims in the retained JSON refer to that original source revision;
+they are not new validation of the repaired stack.
+
+## Historical CP8 measurements
+
 These are historical reports retained from the original stack, not measurements
 of the repaired head. Their files do not record an immutable source SHA; do not
 assign them a new SHA. Fresh measurements must record their source SHA.
@@ -16,9 +34,9 @@ repetitions:
 Run `weak_term_assembly_benchmark --refinements=3 --repetitions=40` from a
 Debug or Release build with `IMMERSX_BUILD_BENCHMARKS=ON` to repeat the cases.
 Timings on a repaired head are separate measurements.
-Each record includes the mesh size, quadrature, numerical error, cold timing,
-warm median, median absolute deviation, and native timing ratio when the
-operations match.
+Records include numerical errors and warm medians/MADs. Mesh, quadrature,
+setup, cold and application fields vary by case; an absent field does not mean
+zero time. Native ratios are reported only for comparable outputs.
 
 The `boundary_flux_q1` result records absolute timings and errors but has no
 ratio: ImmersX evaluates the weak term through its prepared matrix path, while

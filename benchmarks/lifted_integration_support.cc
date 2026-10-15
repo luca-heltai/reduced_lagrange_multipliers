@@ -73,9 +73,22 @@ namespace
 int
 main(int argc, char **argv)
 {
-  Utilities::MPI::MPI_InitFinalize mpi(argc, argv, 1);
   const unsigned int refinements = argument(argc, argv, "refinements", 4);
   const unsigned int repetitions = argument(argc, argv, "repetitions", 9);
+  // Do not pass benchmark options to PETSc: its unused-option diagnostics
+  // otherwise contaminate the JSONL stream at MPI finalization.
+  std::vector<char *> runtime_arguments;
+  for (int i = 0; i < argc; ++i)
+    {
+      const std::string option(argv[i]);
+      if (option.rfind("--refinements=", 0) != 0 &&
+          option.rfind("--repetitions=", 0) != 0)
+        runtime_arguments.push_back(argv[i]);
+    }
+  int runtime_argc = static_cast<int>(runtime_arguments.size());
+  runtime_arguments.push_back(nullptr);
+  char                           **runtime_argv = runtime_arguments.data();
+  Utilities::MPI::MPI_InitFinalize mpi(runtime_argc, runtime_argv, 1);
   AssertThrow(repetitions > 0,
               ExcMessage("The benchmark needs at least one repetition."));
 
@@ -92,12 +105,14 @@ main(int argc, char **argv)
   lift.section.inclusion_degree  = 0;
   lift.section.n_q_points        = 2;
 
+  MPI_Barrier(domain.communicator());
   const auto setup_start = Clock::now();
   domain.make_grid();
   const double local_setup_ms = milliseconds(Clock::now() - setup_start);
   const double setup_ms =
     Utilities::MPI::max(local_setup_ms, domain.communicator());
 
+  MPI_Barrier(domain.communicator());
   const auto   cold_start    = Clock::now();
   auto         support       = domain.lift(lift);
   const double local_cold_ms = milliseconds(Clock::now() - cold_start);
@@ -119,10 +134,12 @@ main(int argc, char **argv)
               ExcMessage("Lifted support measure differs from the expected "
                          "straight-strip measure."));
 
+  support.rebuild(); // Untimed warmup.
   std::vector<double> rebuild_samples;
   rebuild_samples.reserve(repetitions);
   for (unsigned int repetition = 0; repetition < repetitions; ++repetition)
     {
+      MPI_Barrier(domain.communicator());
       const auto start = Clock::now();
       support.rebuild();
       const double local_ms = milliseconds(Clock::now() - start);
@@ -132,6 +149,8 @@ main(int argc, char **argv)
   const auto [rebuild_median_ms, rebuild_mad_ms] =
     median_and_mad(rebuild_samples);
 
+  MPI_Barrier(domain.communicator());
+  const auto                              background_setup_start = Clock::now();
   parallel::distributed::Triangulation<3> background(domain.communicator());
   GridGenerator::hyper_cube(background, -1.1, 1.1);
   background.refine_global(refinements);
@@ -141,8 +160,9 @@ main(int argc, char **argv)
   AffineConstraints<double> constraints;
   DoFTools::make_hanging_node_constraints(dof_handler, constraints);
   constraints.close();
+  const auto relevant = DoFTools::extract_locally_relevant_dofs(dof_handler);
   const auto space =
-    fe_space(dof_handler, StaticMappingQ1<3>::mapping, constraints);
+    fe_space(dof_handler, StaticMappingQ1<3>::mapping, constraints, relevant);
   StateLayout layout;
   const auto  source = space.field(layout, "bulk-source");
   const auto  target = space.field(layout, "bulk-target");
@@ -150,34 +170,66 @@ main(int argc, char **argv)
   using Matrix       = ImmersXLA::MPI::SparseMatrix;
   using Model        = SemiDiscreteModel<Vector, Matrix>;
 
-  const auto assemble_once = [&]() {
-    Model                               model;
-    SemidiscreteBuilder<Vector, Matrix> builder(layout, model);
-    const auto                          start = Clock::now();
+  const double background_setup_ms =
+    Utilities::MPI::max(milliseconds(Clock::now() - background_setup_start),
+                        domain.communicator());
+  std::shared_ptr<Model>  model;
+  std::shared_ptr<Matrix> assembled_matrix;
+  const auto              assemble_once = [&]() {
+    MPI_Barrier(domain.communicator());
+    const auto start = Clock::now();
+    model            = std::make_shared<Model>();
+    SemidiscreteBuilder<Vector, Matrix> builder(layout, *model);
     weak_term(value(source), test(target), support).add(builder);
     const StateView<Vector>         state_view(layout, 0.);
     const EvaluationContext<Vector> context(0., state_view);
-    const auto matrix = model.state_matrix_operator(target.field_id(),
-                                                    source.field_id(),
-                                                    context);
+    const auto matrix = model->state_matrix_operator(target.field_id(),
+                                                     source.field_id(),
+                                                     context);
     AssertThrow(matrix.has_value(),
                 ExcMessage("The lifted weak term did not expose a matrix."));
-    AssertThrow(matrix->matrix() != nullptr,
+    assembled_matrix = matrix->matrix();
+    AssertThrow(assembled_matrix != nullptr,
                 ExcMessage(
                   "The lifted weak-term matrix was not materialized."));
     return Utilities::MPI::max(milliseconds(Clock::now() - start),
                                domain.communicator());
   };
-  const double        first_assembly_ms = assemble_once();
-  std::vector<double> assembly_samples;
+  const double first_assembly_ms = assemble_once();
+  Vector       ones, action;
+  ones.reinit(source.locally_owned_dofs(), domain.communicator());
+  action.reinit(target.locally_owned_dofs(), domain.communicator());
+  ones = 1.;
+  ones.compress(VectorOperation::insert);
+  const auto apply_once = [&]() {
+    MPI_Barrier(domain.communicator());
+    const auto start = Clock::now();
+    assembled_matrix->vmult(action, ones);
+    return Utilities::MPI::max(milliseconds(Clock::now() - start),
+                               domain.communicator());
+  };
+  const double first_action_ms = apply_once();
+  const double action_error    = std::abs(ones * action - measure);
+  AssertThrow(action_error < 1.e-10,
+              ExcMessage(
+                "Lifted mass action differs from the support measure."));
+  assemble_once();
+  apply_once();
+  std::vector<double> assembly_samples, action_samples;
   assembly_samples.reserve(repetitions);
   for (unsigned int repetition = 0; repetition < repetitions; ++repetition)
-    assembly_samples.push_back(assemble_once());
+    {
+      assembly_samples.push_back(assemble_once());
+      action_samples.push_back(apply_once());
+    }
   const auto [assembly_median_ms, assembly_mad_ms] =
     median_and_mad(assembly_samples);
 
+  const auto [action_median_ms, action_mad_ms] = median_and_mad(action_samples);
+
   if (Utilities::MPI::this_mpi_process(domain.communicator()) == 0)
     std::cout << "{\"case\":\"lifted_geometry_rebuild\","
+              << "\"deal_ii_version\":\"" << DEAL_II_PACKAGE_VERSION << "\","
               << "\"dimension\":2,\"representative_dimension\":1,"
               << "\"spacedimension\":3,\"ranks\":"
               << Utilities::MPI::n_mpi_processes(domain.communicator())
@@ -190,6 +242,13 @@ main(int argc, char **argv)
               << ",\"first_bulk_assembly_ms\":" << first_assembly_ms
               << ",\"warm_bulk_assembly_median_ms\":" << assembly_median_ms
               << ",\"warm_bulk_assembly_mad_ms\":" << assembly_mad_ms
+              << ",\"background_setup_ms\":" << background_setup_ms
+              << ",\"background_dofs\":" << dof_handler.n_dofs()
+              << ",\"cold_operator_action_ms\":" << first_action_ms
+              << ",\"operator_action_median_ms\":" << action_median_ms
+              << ",\"operator_action_mad_ms\":" << action_mad_ms
+              << ",\"analytical_action_error\":" << action_error
+              << ",\"timing_scope\":\"barrier_then_max_rank_wall_time\""
               << ",\"repetitions\":" << repetitions
               << ",\"native_reference\":\"unavailable\","
               << "\"immersx_over_dealii_ratio\":\"N/A\"}" << std::endl;

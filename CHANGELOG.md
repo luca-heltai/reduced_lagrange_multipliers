@@ -76,6 +76,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Changed
 
+- [PR #250](https://github.com/luca-heltai/immersx/pull/250) Include matrix materialization in trace assembly timings and report synchronized maximum-rank MPI timings with explicit setup, action, and operation-count metadata.
 - [PR #249](https://github.com/luca-heltai/immersx/pull/249) Reuse trial and test basis values during linear assembly and input FEValues across cells with a shared mapping during nonlinear assembly.
 - [PR #237](https://github.com/luca-heltai/immersx/pull/237) Replace custom MetricFlowX coupling with structural finite-element observables and cell integration.
 - [PR #226](https://github.com/luca-heltai/immersx/pull/226) Associated boundary conditions with semantic fields.
@@ -174,6 +175,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Documentation
 
+- [PR #250](https://github.com/luca-heltai/immersx/pull/250) Explain support-refinement error control, ghosted frozen inputs, and geometry snapshots for independent supports.
 - [PR #249](https://github.com/luca-heltai/immersx/pull/249) Document cell, boundary, independent immersed, and lifted weak-term supports, and distinguish historical reports from new measurements.
 - [PR #248](https://github.com/luca-heltai/immersx/pull/248) Document reverse-chronological changelog ordering and checks for missing entries from merged PRs.
 - [PR #232](https://github.com/luca-heltai/immersx/pull/232) Allow pull requests without a related issue to omit the closing reference.
@@ -201,6 +203,8 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Testing and CI
 
+- [PR #250](https://github.com/luca-heltai/immersx/pull/250) Retain original review benchmark reports and their immutable measured source provenance without relabelling them as repaired-head measurements.
+- [PR #250](https://github.com/luca-heltai/immersx/pull/250) Check boundary mass against MatrixCreator and piecewise FE trace convergence against a fitted one-dimensional mass matrix, while retaining distributed nonlinear and frozen-input regressions.
 - [PR #249](https://github.com/luca-heltai/immersx/pull/249) Compare lifted source-to-bulk assembly with an independent physical-quadrature reference using owned writable vectors, and retain historical Debug/Release benchmark records without relabeling their source.
 - [PR #248](https://github.com/luca-heltai/immersx/pull/248) Run pull-request tests for stacked branches targeting any branch.
 - [PR #247](https://github.com/luca-heltai/immersx/pull/247) Test replicated and fully distributed embedded support routing, scalar/vector nonlinear actions, transposes, and finite differences across partitions.
