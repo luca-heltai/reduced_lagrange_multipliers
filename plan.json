@@ -1,0 +1,24 @@
+{
+  "baseline": "c98c5ac3284c273f9f65f500153c091968c1b641",
+  "commits": [
+    "c98c5ac3284c273f9f65f500153c091968c1b641"
+  ],
+  "configuration": {
+    "build_type": "Release",
+    "harness_version": 4,
+    "particle_penalty_ranks": [
+      1,
+      2
+    ],
+    "quadrature_recipe": "CP8: matching Q1 QGauss(2); heterogeneous QGauss(3); nonmatching/trace fixed benchmark rules; lifted representative=3 section=2 degree=0 thickness=0.05; particle_penalty Q1 QGauss(3) on partition-crossing tilted independently refined supports, gamma=2.75; distributed background and matrices; maximum-rank wall time",
+    "refinements": 3,
+    "repetitions": 9,
+    "timing_contract": "source-isolated; absent timing_scope is legacy-unspecified"
+  },
+  "harness_sha": "c98c5ac3284c273f9f65f500153c091968c1b641",
+  "schema_version": 1,
+  "selected": [
+    "c98c5ac3284c273f9f65f500153c091968c1b641"
+  ],
+  "source_sha": "c98c5ac3284c273f9f65f500153c091968c1b641"
+}
