@@ -112,7 +112,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Fixed
 
-- [PR #N](https://github.com/luca-heltai/immersx/pull/N) Prevent the Navier–Stokes tutorial from timing out in Debug builds by reusing finite-element evaluations during nonlinear Jacobian assembly.
+- [PR #264](https://github.com/luca-heltai/immersx/pull/264) Prevent the Navier–Stokes tutorial from timing out in Debug builds by reusing finite-element evaluations during nonlinear Jacobian assembly.
 - [PR #252](https://github.com/luca-heltai/immersx/pull/252) Select all ambient components of embedded vector fields and evolve the fiber driver's matrix-only backward-Euler reference from its own displacement and velocity history.
 - [PR #243](https://github.com/luca-heltai/immersx/pull/243) Reject unsupported inhomogeneous source constraints in nonmatching and lifted linear pairings, including offsets changed after assembly, and reject inhomogeneous linear multiplier reactions.
 - [PR #243](https://github.com/luca-heltai/immersx/pull/243) Retain relevant rows in nonmatching coupling sparsity.
