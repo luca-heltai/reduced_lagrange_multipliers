@@ -12,7 +12,9 @@ import tempfile
 import threading
 
 from playwright.sync_api import sync_playwright
-from test_history import attempt, report
+from test_history import attempt, report, CONFIG
+from test_particle_penalty import penalty_raw
+from history import normalize
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -35,6 +37,15 @@ def main():
                 page.on("pageerror", lambda error: errors.append(str(error)))
                 downloaded = page.request.get(url.replace("index.html", "data/history.json"))
                 assert downloaded.ok and downloaded.json()["schema_version"] == 1
+                real_mpi = [r for r in downloaded.json()['rows'] if r['case'].startswith('particle_penalty_')
+                            and r['ranks'] == 2 and r['status'] == 'passed' and r['attempt_status'] == 'passed']
+                if real_mpi:
+                    page.goto(url)
+                    page.wait_for_selector('#performance-results tbody tr')
+                    page.get_by_label('case', exact=True).select_option(real_mpi[0]['case'])
+                    page.get_by_label('ranks', exact=True).select_option('2')
+                    assert '2 ranks' in page.locator('#performance-results').inner_text()
+                    assert page.locator('#performance-chart svg').count() == 1
                 empty = report({"source_sha": None, "baseline": None, "commits": []}, [])
                 page.route("**/performance/data/history.json", lambda route: route.fulfill(json=empty))
                 page.goto(url)
@@ -43,7 +54,15 @@ def main():
                 assert page.request.get(url.replace("index.html", "data/history.json")).ok
                 a, b = attempt(), attempt("b", "2", "failed")
                 a["records"][0]["raw"]["extra"] = '<img src=x onerror="alert(1)">'
-                a["benchmark_sources"] = {"weak_term_assembly": "synthetic-blob"}
+                penalty_case = "particle_penalty_1d_in_3d_vector"
+                a['configuration'] = {**CONFIG, 'particle_penalty_ranks': [1, 2]}
+                a["records"].append(normalize(penalty_raw(penalty_case), a['configuration']))
+                a['records'].append(normalize({**penalty_raw(penalty_case), 'ranks': 2,
+                    'active_particle_ranks': 2}, a['configuration']))
+                a['raw_files'] = ['particle_penalty_benchmark-mpi2.jsonl']
+                a["benchmark_sources"] = {"weak_term_assembly": "synthetic-blob",
+                    "particle_penalty": "synthetic-penalty", "particle_penalty_native": "synthetic-manual",
+                    "particle_penalty_coupling": "synthetic-coupling"}
                 # Keep an archived v1 record with no new timing-contract fields.
                 del b["records"][0]["timing_contract"]
                 data = report({"source_sha": "c", "baseline": "a", "commits": ["a", "b", "c"]}, [a, b])
@@ -57,6 +76,17 @@ def main():
                 assert page.locator("#performance-attempts img").count() == 0
                 page.get_by_label("case", exact=True).select_option("mass_q1")
                 assert "case=mass_q1" in page.url
+                page.get_by_label("case", exact=True).select_option(penalty_case)
+                assert penalty_case in page.locator("#performance-results").inner_text()
+                assert "2.0000" in page.locator("#performance-results").inner_text()
+                assert penalty_case in page.locator("#performance-series").inner_text()
+                assert page.locator("#performance-chart svg").count() == 1
+                page.get_by_label('ranks', exact=True).select_option('2')
+                assert '2 ranks' in page.locator('#performance-results').inner_text()
+                assert page.locator('#performance-results tbody tr').count() == 2
+                assert '2 ranks' in page.locator('#performance-series').inner_text()
+                assert page.locator('#performance-chart svg').count() == 1
+                assert page.get_by_role('link', name='particle_penalty_benchmark-mpi2.jsonl', exact=True, include_hidden=True).count() == 1
                 page.goto(url + "#attempt-a-1-1")
                 page.wait_for_selector("#attempt-a-1-1[open]")
                 assert "synthetic" in page.locator("#attempt-a-1-1").inner_text()

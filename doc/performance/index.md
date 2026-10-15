@@ -29,7 +29,11 @@ Failed attempts never become timing baselines.
 <script src="../_static/performance.js" defer></script>
 ```
 
-Lifted and bulk–bulk trace cases have no equivalent native assembler. Boundary
+The [step-80 particle penalty cases](particle-penalty) compare scalar and vector
+bulk–bulk integration with a pinned native deal.II implementation, including
+codimension two and independent volume meshes.
+
+Legacy lifted and bulk–bulk trace cases have no native timing oracle recorded. Boundary
 flux times different operations in ImmersX and deal.II, so its ratio is also
 N/A. Cold and setup timings, numerical checks and tolerances are available in
 the attempt details and downloadable raw output. Legacy CP8 trace assembly

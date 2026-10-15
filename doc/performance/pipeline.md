@@ -85,6 +85,14 @@ one; it cannot overtake a newer workflow in the same group.
 
 ## Environment and measurement contract
 
+The suite also runs `particle_penalty_benchmark`: ten scalar/vector nonmatching
+cases use the step-80 native penalty oracle. See the
+[particle penalty comparison](particle-penalty) for geometry, correctness and
+timing details. These cases appear in the same history filters and chart, with
+native timing ratios rather than N/A. Each penalty case runs on one and two
+MPI ranks, giving 39 required case/dimension/rank combinations. Harness version
+4 separates the expanded MPI suite from older runs.
+
 The initial workflow uses GitHub-hosted `ubuntu-24.04`, Docker, and the same
 `dealii/dealii:v9.7.1-noble` image as the C++ CI. It resolves and records the
 image digest before executing it. These are **diagnostic** measurements:
@@ -93,10 +101,14 @@ assumed. The container may expose compatibility failures in CP8; those are
 archived as failures, not replaced with local measurements.
 
 The default configuration is Release, three refinements, nine repetitions,
-one thread and one MPI rank. The harness sets `OMP_NUM_THREADS`,
+one thread per rank. The harness sets `OMP_NUM_THREADS`,
 `OPENBLAS_NUM_THREADS`, `MKL_NUM_THREADS` and `DEAL_II_NUM_THREADS` to one.
-Neither executable is launched under `mpirun`: weak-term is serial; lifted
-initializes MPI internally with one rank. No distributed speedup is claimed.
+Weak-term is serial; lifted initializes MPI internally with one rank. The
+particle penalty executable runs directly and under `mpirun -np 2`, using
+distributed background meshes, partitioned integration-cell ownership and
+distributed matrices/vectors. It synchronizes before each timing sample and
+reports the maximum rank wall time. The rank filter keeps MPI and one-rank
+series separate. A two-rank comparison is not a scaling study.
 Both Debug and Release target names are supported by the local harness.
 
 Each attempt records the compiler version, actual benchmark compile commands,
@@ -119,9 +131,9 @@ compilers, flags, builds, meshes or repetition counts never share a series.
 A kernel update or any edit to that benchmark source starts a new series, even
 if the edit is only a comment. Ordinary library changes keep the series.
 
-The shipped harness is version 2. Version 1 archives remain readable and are
-never rewritten or relabelled. This separates the current adapter from the old
-CP8 recipe. The additive timing fields from PR #250 are preserved and included
+The shipped harness is version 4. Earlier archives remain readable and are
+never rewritten or relabelled. Version 2 separated explicit timing contracts
+from the old CP8 recipe; version 4 adds the distributed penalty suite. The additive timing fields from PR #250 are preserved and included
 in compatibility: `timing_scope`, `immersx_assembly_calls` and
 `native_cell_traversals`. Missing scope is `legacy-unspecified`, not an inferred
 claim about materialization or synchronization. Source isolation also separates

@@ -11,6 +11,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Added
 
+- [PR #257](https://github.com/luca-heltai/immersx/pull/257) Compare scalar and vector nonmatching penalty matrices with explicit deal.II particle assembly and step-80, including codimension-two and independent volume supports, in serial and MPI. Check distributed ownership and integration measure, and show separate one/two-rank performance history series.
 - [PR #254](https://github.com/luca-heltai/immersx/pull/254) Allow parameter files to select the coupled Poisson multiplier, static elasticity displacement, and fiber velocity multiplier finite elements while preserving degree-based defaults.
 
 - [PR #251](https://github.com/luca-heltai/immersx/pull/251) Add a performance history page with native comparisons, commit coverage, diagnostic regressions, and an archived benchmark pipeline that runs before documentation builds. Keep changed benchmark sources and explicit timing scopes in separate comparison series without relabelling historical data. Restrict official archive writes and Pages deployment to trusted master events, and verify batch provenance before writing.

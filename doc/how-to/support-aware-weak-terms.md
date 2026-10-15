@@ -78,9 +78,12 @@ trace_mass.add(builder);
 
 The immersed mesh needs no `DoFHandler` or `Field`. Its quadrature points and
 physical weights are located in the background mesh, and each field is
-evaluated on its own background `DoFHandler`. The current path supports
-codimension-one supports and fields on the same background triangulation and
-mapping. It uses `QGauss(p + 2)` on each support cell without splitting that
+evaluated on its own background `DoFHandler`. Linear pairings accept independent
+supports of any positive dimension up to the background dimension; nonlinear
+pairings currently require codimension one. Both require fields on the same
+background triangulation and mapping. The [particle penalty comparison](../performance/particle-penalty)
+checks the extended linear path against independent deal.II assembly.
+It uses `QGauss(p + 2)` on each support cell without splitting that
 cell at background-cell boundaries. This approximates a piecewise FE trace,
 not exact integration over mesh intersections. A Gauss rule exact for a global
 polynomial need not integrate a trace whose derivatives jump at those

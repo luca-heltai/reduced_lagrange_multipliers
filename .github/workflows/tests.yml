@@ -42,6 +42,7 @@ jobs:
           mkdir build_linux_debug
           cd build_linux_debug
           cmake .. -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS=-fopenmp \
+            -DIMMERSX_BUILD_BENCHMARKS=ON \
             -DCMAKE_C_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
           ninja
@@ -92,6 +93,7 @@ jobs:
           mkdir build_linux_release
           cd build_linux_release
           cmake .. -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-fopenmp \
+            -DIMMERSX_BUILD_BENCHMARKS=ON \
             -DCMAKE_C_COMPILER_LAUNCHER=ccache \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
           ninja

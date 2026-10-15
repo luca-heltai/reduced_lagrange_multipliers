@@ -1,5 +1,15 @@
 # Weak term assembly benchmark
 
+The `particle_penalty_benchmark` adds an independent explicit particle oracle
+and the step-80 `DoFHandlerCoupling` penalty matrix reference, scalar and vector,
+for 1-in-2, 2-in-3, 1-in-3, 2-in-2 and 3-in-3 nonmatching meshes. See
+[`doc/performance/particle-penalty.md`](../doc/performance/particle-penalty.md)
+for its correctness checks, timing scope, compatibility-header provenance and
+performance graph integration. It runs with distributed background meshes and
+matrices on one or multiple MPI ranks. CTest checks one and two ranks; the
+performance graph records separate one/two-rank series using maximum-rank wall
+times. This is an assembly comparison, not a scaling study.
+
 Configure an out-of-source Debug build with the optional benchmark enabled:
 
 ```bash

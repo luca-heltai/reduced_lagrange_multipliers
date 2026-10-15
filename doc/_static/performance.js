@@ -105,7 +105,7 @@
           const tr = element("tr", undefined, body);
           const name = element("td", undefined, tr);
           link(r.sha.slice(0, 10), `#attempt-${r.id}`, name);
-          element("span", ` ${r.case} (${r.dimension}D)`, name);
+          element("span", ` ${r.case} (${r.dimension}D, ${r.ranks} ranks)`, name);
           element("td", phase, tr).title = JSON.stringify(r.timing_contract || {scope: "legacy-unspecified"});
           element("td", `${fmt(timing.median_ms)} ± ${fmt(timing.mad_ms)}`, tr);
           element("td", phase === "warm_immersx" ? fmt(r.native_ratio) : "N/A", tr).title = r.native_na_reason || "Ratio is defined only for the paired warm phase";
@@ -124,7 +124,7 @@
         groups.get(key).push(r);
       }));
       groups.forEach((rs, key) => {
-        const option = element("option", `${rs[0].case} ${rs[0].dimension}D ${key}`, chooser); option.value = key;
+        const option = element("option", `${rs[0].case} ${rs[0].dimension}D ${rs[0].ranks} ranks ${key}`, chooser); option.value = key;
       });
       if (groups.has(old)) chooser.value = old;
       const draw = () => chart(groups.get(chooser.value) || [], chooser.value.split("/")[1]);
@@ -145,9 +145,12 @@
         checks: a.records.map((r) => ({case: r.case, dimension: r.dimension, timing_contract: r.timing_contract,
           checks: r.checks, native_na_reason: r.native_na_reason, raw: r.raw}))}, null, 2), details);
       // Known filenames only: no arbitrary URLs supplied by benchmark output.
-      ["configure.log", "CMakeCache.txt", "compile_commands.json", ...["weak_term_assembly", "lifted_integration_support"].flatMap((n) => {
+      ["configure.log", "CMakeCache.txt", "compile_commands.json", ...["weak_term_assembly", "lifted_integration_support", "particle_penalty"].flatMap((n) => {
         const target = `${n}_benchmark${a.configuration.build_type === "Debug" ? "_debug" : ""}`;
-        return [`${target}-build.log`, `${target}.jsonl`, `${target}.stderr`];
+        const mpi = n === "particle_penalty" ? (a.configuration.particle_penalty_ranks || [])
+          .filter((r) => Number.isInteger(r) && r > 1)
+          .flatMap((r) => [`${target}-mpi${r}.jsonl`, `${target}-mpi${r}.stderr`]) : [];
+        return [`${target}-build.log`, `${target}.jsonl`, `${target}.stderr`, ...mpi];
       })].filter((file) => (a.raw_files || []).includes(file)).forEach((file) => { link(file, `data/raw/${encodeURIComponent(a.id)}/${file}`, details); element("br", undefined, details); });
     });
     render();

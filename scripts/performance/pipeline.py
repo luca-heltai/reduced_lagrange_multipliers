@@ -10,7 +10,7 @@ import shutil
 import subprocess
 import tempfile
 
-from history import (SCHEMA, EXPECTED, archive_attempt, attempts, dumps, load,
+from history import (SCHEMA, expected_cases, archive_attempt, attempts, dumps, load,
                      parse_jsonl, pending, report)
 
 HERE = Path(__file__).resolve().parent
@@ -109,7 +109,8 @@ def measure(args):
                   "configuration": config,
                   "environment": {"id": args.environment, "image": args.image,
                       "diagnostic": not args.stable, "cpu": cpu(), "architecture": platform.machine(),
-                      "os": platform.platform(), "threads": 1, "ranks": 1},
+                      "os": platform.platform(), "threads": 1,
+                      "rank_counts": config.get("particle_penalty_ranks", [1])},
                   "records": [], "errors": [],
                   "status": "failed", "raw_path": f"raw/{ident}/"}
         with tempfile.TemporaryDirectory(prefix="immersx-benchmark-") as tmp:
@@ -117,7 +118,12 @@ def measure(args):
             try:
                 result["benchmark_sources"] = {
                     name: git(args.repo, "rev-parse", f"{sha}:benchmarks/{name}.cc")
-                    for name in ("weak_term_assembly", "lifted_integration_support")}
+                    for name in ("weak_term_assembly", "lifted_integration_support", "particle_penalty")
+                    if git(args.repo, "ls-tree", sha, f"benchmarks/{name}.cc")}
+                if "particle_penalty" in result["benchmark_sources"]:
+                    for key, path in (("particle_penalty_native", "benchmarks/native_particle_penalty.h"),
+                                      ("particle_penalty_coupling", "include/immersx/compatibility/dealii_9_9/dof_handler_coupling.h")):
+                        result["benchmark_sources"][key] = git(args.repo, "rev-parse", f"{sha}:{path}")
                 git(args.repo, "worktree", "add", "--detach", str(source), sha)
                 flags = ["-DCMAKE_BUILD_TYPE=" + config["build_type"],
                          "-DIMMERSX_BUILD_BENCHMARKS=ON", "-DENABLE_COUPLED_PROBLEMS=OFF",
@@ -136,31 +142,41 @@ def measure(args):
                 save(out / "compile_commands.json", compile_commands)
                 result["environment"].update({"compiler": command([compiler, "--version"]),
                     "compile_commands": benchmark_commands, "cmake_options": flags,
-                    "threads": 1, "ranks": 1,
+                    "threads": 1, "rank_counts": config.get("particle_penalty_ranks", [1]),
                     "deal_ii_config": next((s for s in cache.splitlines() if s.startswith("deal.II_DIR:")), "unknown")})
                 suffix = "_debug" if config["build_type"] == "Debug" else ""
                 targets = [name + "_benchmark" + suffix for name in
-                           ("weak_term_assembly", "lifted_integration_support")]
+                           ("weak_term_assembly", "lifted_integration_support", "particle_penalty")]
                 for target in targets:
                     rc = capture(["cmake", "--build", str(build), "--target", target, "-j2"], out / (target + "-build.log"))
                     if rc:
                         result["errors"].append({"reason": f"{target} build failed ({rc})"})
                         continue
-                    # Neither executable is launched under mpirun. Lifted initializes
-                    # MPI internally with one rank; the weak-term executable does not.
-                    cmd = [str(build / "benchmarks" / target),
-                           f"--refinements={config['refinements']}", f"--repetitions={config['repetitions']}"]
-                    stdout, stderr = out / (target + ".jsonl"), out / (target + ".stderr")
-                    with stdout.open("w") as so, stderr.open("w") as se:
-                        try:
-                            rc = subprocess.run(cmd, stdout=so, stderr=se, cwd=tmp, timeout=600).returncode
-                        except subprocess.TimeoutExpired:
-                            rc = 124
-                    records, errors = parse_jsonl(stdout.read_text(), config)
-                    result["records"].extend(records)
-                    result["errors"].extend({**error, "source": target + ".jsonl"} for error in errors)
-                    if rc:
-                        result["errors"].append({"reason": f"{target} execution failed ({rc})"})
+                    rank_counts = config.get("particle_penalty_ranks", [1]) if target.startswith("particle_penalty_") else [1]
+                    for ranks in rank_counts:
+                        stem = target + (f"-mpi{ranks}" if ranks > 1 else "")
+                        cmd = [str(build / "benchmarks" / target),
+                               f"--refinements={config['refinements']}", f"--repetitions={config['repetitions']}"]
+                        if ranks > 1:
+                            launcher = shutil.which("mpirun") or shutil.which("mpiexec")
+                            if not launcher:
+                                raise ValueError("MPI launcher unavailable")
+                            result["environment"]["mpi_launcher_version"] = command([launcher, "--version"])
+                            cmd = [launcher, "-np", str(ranks), *cmd]
+                        env = dict(os.environ, OMPI_ALLOW_RUN_AS_ROOT="1", OMPI_ALLOW_RUN_AS_ROOT_CONFIRM="1")
+                        stdout, stderr = out / (stem + ".jsonl"), out / (stem + ".stderr")
+                        with stdout.open("w") as so, stderr.open("w") as se:
+                            try:
+                                rc = subprocess.run(cmd, stdout=so, stderr=se, cwd=tmp, env=env, timeout=600).returncode
+                            except subprocess.TimeoutExpired:
+                                rc = 124
+                        records, errors = parse_jsonl(stdout.read_text(), config)
+                        if any(r["ranks"] != ranks for r in records):
+                            errors.append({"reason": "reported rank count differs from MPI launch"})
+                        result["records"].extend(records)
+                        result["errors"].extend({**error, "source": stem + ".jsonl"} for error in errors)
+                        if rc:
+                            result["errors"].append({"reason": f"{stem} execution failed ({rc})"})
                 versions = sorted({r["raw"]["deal_ii_version"] for r in result["records"]
                                    if "deal_ii_version" in r["raw"]})
                 result["environment"]["deal_ii_version"] = versions
@@ -171,8 +187,8 @@ def measure(args):
             finally:
                 if source.exists():
                     git(args.repo, "worktree", "remove", "--force", str(source))
-        present = {(r["case"], r["dimension"]) for r in result["records"]}
-        result["missing_cases"] = [list(k) for k in EXPECTED if k not in present]
+        present = {(r["case"], r["dimension"], r["ranks"]) for r in result["records"]}
+        result["missing_cases"] = [list(k) for k in expected_cases(config) if k not in present]
         if not result["errors"] and not result["missing_cases"] and all(r["status"] == "passed" for r in result["records"]):
             result["status"] = "passed"
         result["raw_files"] = sorted(path.name for path in out.iterdir() if path.is_file())

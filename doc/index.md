@@ -37,6 +37,7 @@ dealiiX-platform/index
 developer/index
 performance/index
 performance/pipeline
+performance/particle-penalty
 changes
 about/index
 ```
