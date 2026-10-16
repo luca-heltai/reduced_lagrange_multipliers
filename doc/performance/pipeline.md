@@ -195,6 +195,12 @@ commits have no fabricated timing rows. Failed attempts have explicit errors
 and missing-case lists. Ratios are recomputed only for known equivalent
 operations, including the MeshWorker end-to-end nonlinear comparison. A native
 `null` or `"N/A"` in a non-equivalent case stays unavailable; it is never zero.
+The viewer defaults to the dimensionless ImmersX/native ratio, with a dashed
+1× reference, and offers absolute timings as a separate chart mode. Both modes
+use the same compatibility partitions and exclude failed attempts and records.
+Ratios can reduce machine-speed effects but do not justify merging measurements
+from different hardware. Ratio charts do not alter the absolute-time regression
+flags described below.
 Malformed JSON, missing required fields, nonfinite or negative timings/errors,
 zero median times, inconsistent ratios and wrong repetition/rank counts are
 rejected. Unknown additional fields are preserved, not treated as evidence of

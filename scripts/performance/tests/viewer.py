@@ -12,11 +12,63 @@ import tempfile
 import threading
 
 from playwright.sync_api import sync_playwright
-from test_history import attempt, report, CONFIG
+from test_history import attempt, raw, report, CONFIG
 from test_particle_penalty import penalty_raw
 from history import normalize
 
 ROOT = Path(__file__).resolve().parents[3]
+
+
+def check_ratio_charts(page, url):
+    a, b = attempt(), attempt("b", "2")
+    # Different absolute timings, known paired ratios, same compatibility series.
+    b["records"] = [normalize({**raw(), "warm_immersx_median_ms": 3.,
+        "warm_dealii_median_ms": 4., "warm_ratio": 0.75}, CONFIG)]
+    other_cpu = attempt("c", "3")
+    other_cpu["environment"] = {**a["environment"], "cpu": "another synthetic CPU"}
+    failed_attempt = attempt("d", "4", "failed")
+    failed_record = attempt("e", "5")
+    failed_record["records"][0]["status"] = "failed"
+    # Non-equivalent native work must remain N/A, even when timings exist.
+    a["records"].append(normalize({**raw(), "case": "boundary_flux_q1",
+        "relative_rhs_error": 0}, CONFIG))
+    data = report({"source_sha": "f", "baseline": "a", "commits": list("abcdef")},
+                  [a, b, other_cpu, failed_attempt, failed_record])
+    page.route("**/performance/data/history.json", lambda route: route.fulfill(json=data))
+    page.goto(url)
+    page.wait_for_selector("#performance-chart svg circle")
+    assert page.get_by_label("Chart metric", exact=True).input_value() == "ratio"
+    chooser = page.get_by_label("Chart series", exact=True)
+    assert chooser.locator("option").count() == 2  # CPU variants stay separate.
+    assert "boundary_flux" not in chooser.inner_text()
+    svg = page.locator("#performance-chart svg")
+    assert svg.is_visible() and svg.bounding_box()["width"] > 100
+    assert svg.locator("circle").count() == 2  # No failed or missing samples.
+    assert svg.locator("circle title").all_text_contents() == [
+        "a: 2.0000 × native deal.II", "b: 0.75000 × native deal.II"]
+    assert [float(y) for y in svg.locator("circle").evaluate_all(
+        "nodes => nodes.map(n => n.getAttribute('cy'))")] == [30., 130.]
+    assert float(svg.locator("line").get_attribute("y1")) == 110.
+    assert "1× native deal.II" in svg.text_content()
+    chooser.select_option(index=1)
+    assert svg.locator("circle").count() == 1
+    assert "no historical trend yet" in page.locator("#performance-chart").inner_text()
+    page.get_by_label("Chart metric", exact=True).select_option("absolute")
+    assert "metric=absolute" in page.url
+    assert chooser.input_value().endswith("/warm_immersx")
+    assert svg.locator("line").count() == 0
+    assert svg.locator("circle title").all_text_contents() == ["a: 2.0000 ms", "b: 3.0000 ms"]
+    page.reload()
+    page.wait_for_selector("#performance-chart svg circle")
+    assert page.get_by_label("Chart metric", exact=True).input_value() == "absolute"
+    page.get_by_label("case", exact=True).select_option("boundary_flux_q1")
+    assert svg.locator("circle").count() == 1
+    page.get_by_label("Chart metric", exact=True).select_option("ratio")
+    assert page.locator("#performance-chart svg").count() == 0
+    assert "No validated equivalent native comparison" in page.locator("#performance-chart").inner_text()
+    page.get_by_label("case", exact=True).select_option("mass_q1")
+    assert svg.locator("circle").count() == 2
+    page.unroute("**/performance/data/history.json")
 
 
 def main():
@@ -46,11 +98,14 @@ def main():
                     page.get_by_label('ranks', exact=True).select_option('2')
                     assert '2 ranks' in page.locator('#performance-results').inner_text()
                     assert page.locator('#performance-chart svg').count() == 1
+                check_ratio_charts(page, url)
                 empty = report({"source_sha": None, "baseline": None, "commits": []}, [])
                 page.route("**/performance/data/history.json", lambda route: route.fulfill(json=empty))
                 page.goto(url)
                 page.wait_for_function("!document.querySelector('#performance-status').textContent.includes('Loading')")
                 assert "No measurements yet" in page.locator("#performance-status").inner_text()
+                assert page.locator("#performance-chart svg").count() == 0
+                assert "No validated equivalent native comparison" in page.locator("#performance-chart").inner_text()
                 assert page.request.get(url.replace("index.html", "data/history.json")).ok
                 a, b = attempt(), attempt("b", "2", "failed")
                 a["records"][0]["raw"]["extra"] = '<img src=x onerror="alert(1)">'
@@ -100,7 +155,7 @@ def main():
                 browser.close()
         finally:
             server.shutdown(); thread.join(); server.server_close()
-    print("Viewer: empty, partial, failed, filtered, permalink, escaped and unavailable history passed under /immersx/")
+    print("Viewer: ratio values/reference, compatibility, singleton, absolute mode, empty, partial, failed, filtered, permalink, escaped and unavailable history passed under /immersx/")
 
 
 if __name__ == "__main__":

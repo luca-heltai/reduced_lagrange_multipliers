@@ -5,6 +5,16 @@ and host load vary. Compare only matching configurations and environments.
 A native ratio measures overhead against deal.II at the **same commit**;
 a regression compares ImmersX across **different commits**.
 
+The default chart shows **ImmersX / native deal.II**, the ratio of paired warm
+median times. Select **Absolute timings** to inspect individual timing phases.
+A ratio of 1 means equal time; 1.2 means 20% overhead; below 1 means ImmersX is
+faster. The dashed line marks 1×. Ratios reduce sensitivity to machine speed,
+but cache, memory and compiler differences can still affect overhead. The
+viewer therefore keeps incompatible environments and configurations in separate
+series, even in ratio mode. Cases without equivalent native timings and failed
+attempts are excluded from ratio charts, not plotted as zero. A single sample
+is a baseline point, not a historical trend.
+
 The table shows medians and median absolute deviations (MAD), in milliseconds.
 Positive changes mean slower execution. A diagnostic regression requires an
 increase greater than all of: 10%, 0.1 ms, and three times the sum of both MADs.
@@ -20,7 +30,13 @@ Failed attempts never become timing baselines.
   <h2>Commit coverage</h2>
   <div id="performance-coverage"></div>
   <h2>Timing history</h2>
-  <label>Chart series <select id="performance-series"></select></label>
+  <label for="performance-metric">Chart metric</label>
+  <select id="performance-metric">
+    <option value="ratio">ImmersX / native deal.II</option>
+    <option value="absolute">Absolute timings</option>
+  </select>
+  <label for="performance-series">Chart series</label>
+  <select id="performance-series"></select>
   <div id="performance-chart"></div>
   <div id="performance-results" style="overflow-x:auto"></div>
   <h2>Attempts and validation</h2>
