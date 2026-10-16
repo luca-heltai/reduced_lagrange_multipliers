@@ -22,16 +22,39 @@
   function chart(rows, phase) {
     const target = byId("chart");
     target.replaceChildren();
-    if (!rows.length) return;
+    const ratio = phase === "native_ratio";
+    if (!rows.length) {
+      element("p", ratio
+        ? "No validated equivalent native comparison for these filters. Choose absolute timings to inspect other cases."
+        : "No validated timings for these filters.", target);
+      return;
+    }
+    const value = (r) => ratio ? r.native_ratio : r.phases[phase].median_ms;
+    const unit = ratio ? "× native deal.II" : "ms";
     const svg = document.createElementNS(svgNS, "svg");
     svg.setAttribute("viewBox", "0 0 700 220");
     svg.setAttribute("role", "img");
     const title = document.createElementNS(svgNS, "title");
-    title.textContent = `${phase}, milliseconds in commit order. Exact values and MAD appear in the table.`;
+    title.textContent = ratio
+      ? "ImmersX / native deal.II, dimensionless ratio in commit order. 1× means equal time."
+      : `${phase}, milliseconds in commit order. Exact values and MAD appear in the table.`;
     svg.appendChild(title);
-    const max = Math.max(...rows.map((r) => r.phases[phase].median_ms));
-    const coords = rows.map((r, i) => [30 + 640 * i / Math.max(1, rows.length - 1),
-      190 - 160 * r.phases[phase].median_ms / max]);
+    const max = Math.max(ratio ? 1.2 : 0, ...rows.map(value));
+    const y = (v) => 190 - 160 * v / max;
+    if (ratio) {
+      const reference = document.createElementNS(svgNS, "line");
+      reference.setAttribute("x1", "30"); reference.setAttribute("x2", "670");
+      reference.setAttribute("y1", y(1)); reference.setAttribute("y2", y(1));
+      reference.setAttribute("stroke", "currentColor");
+      reference.setAttribute("stroke-dasharray", "5 5");
+      svg.appendChild(reference);
+      const label = document.createElementNS(svgNS, "text");
+      label.setAttribute("x", "30"); label.setAttribute("y", y(1) - 6);
+      label.setAttribute("fill", "currentColor"); label.setAttribute("font-size", "12");
+      label.textContent = "1× native deal.II";
+      svg.appendChild(label);
+    }
+    const coords = rows.map((r, i) => [30 + 640 * i / Math.max(1, rows.length - 1), y(value(r))]);
     const line = document.createElementNS(svgNS, "polyline");
     line.setAttribute("points", coords.map((p) => p.join(",")).join(" "));
     line.setAttribute("fill", "none");
@@ -42,11 +65,13 @@
       dot.setAttribute("cx", x); dot.setAttribute("cy", y); dot.setAttribute("r", "4");
       dot.setAttribute("fill", "currentColor");
       const label = document.createElementNS(svgNS, "title");
-      label.textContent = `${rows[i].sha.slice(0, 10)}: ${fmt(rows[i].phases[phase].median_ms)} ms`;
+      label.textContent = `${rows[i].sha.slice(0, 10)}: ${fmt(value(rows[i]))} ${unit}`;
       dot.appendChild(label); svg.appendChild(dot);
     });
     target.appendChild(svg);
-    element("p", `0–${fmt(max)} ms; ${rows.length} valid measurements, oldest to newest. Gaps are listed above.`, target);
+    element("p", `0–${fmt(max)} ${unit}; ${rows.length} valid measurements, oldest to newest. Gaps are listed above.`, target);
+    if (ratio) element("p", "Ratio of paired warm medians: 1× = equal time; 1.2× = 20% overhead; below 1× = faster than native deal.II. Ratios reduce machine-speed effects, but are not hardware-independent.", target);
+    if (rows.length === 1) element("p", "Only one compatible measurement: no historical trend yet.", target);
   }
   async function main() {
     const response = await fetch(new URL("data/history.json", window.location.href));
@@ -86,8 +111,12 @@
       selectors[name] = select;
       element("span", " ", byId("filters"));
     });
+    const metric = byId("metric");
+    metric.value = params.get("metric") === "absolute" ? "absolute" : "ratio";
+    metric.addEventListener("change", render);
     function render() {
       const filter = new URLSearchParams();
+      if (metric.value === "absolute") filter.set("metric", "absolute");
       Object.entries(selectors).forEach(([key, select]) => { if (select.value) filter.set(key, select.value); });
       if (filter.size) history.replaceState(null, "", `#${filter}`);
       else if (window.location.hash.includes("=")) history.replaceState(null, "", window.location.pathname + window.location.search);
@@ -118,16 +147,22 @@
       const chooser = byId("series"), old = chooser.value;
       chooser.replaceChildren();
       const groups = new Map();
-      rows.filter((r) => Object.keys(r.changes).length).forEach((r) => Object.keys(r.phases).forEach((phase) => {
-        const key = `${r.series}/${phase}`;
-        if (!groups.has(key)) groups.set(key, []);
-        groups.get(key).push(r);
-      }));
+      rows.filter((r) => r.status === "passed" && r.attempt_status === "passed").forEach((r) => {
+        const phases = metric.value === "ratio"
+          ? (Number.isFinite(r.native_ratio) && r.native_ratio > 0 ? ["native_ratio"] : [])
+          : Object.keys(r.phases).sort((a, b) => (b === "warm_immersx") - (a === "warm_immersx"));
+        phases.forEach((phase) => {
+          const key = `${r.series}/${phase}`;
+          if (!groups.has(key)) groups.set(key, []);
+          groups.get(key).push(r);
+        });
+      });
       groups.forEach((rs, key) => {
         const option = element("option", `${rs[0].case} ${rs[0].dimension}D ${rs[0].ranks} ranks ${key}`, chooser); option.value = key;
       });
       if (groups.has(old)) chooser.value = old;
-      const draw = () => chart(groups.get(chooser.value) || [], chooser.value.split("/")[1]);
+      const draw = () => chart(groups.get(chooser.value) || [],
+        metric.value === "ratio" ? "native_ratio" : chooser.value.split("/")[1]);
       chooser.onchange = draw; draw();
     }
     data.attempts.slice().reverse().forEach((a) => {
