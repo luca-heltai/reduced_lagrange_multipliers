@@ -20,8 +20,6 @@
   },
   "harness_sha": "b1ca02d06f52f2644a383aea311bf9e8f09918f3",
   "schema_version": 1,
-  "selected": [
-    "b1ca02d06f52f2644a383aea311bf9e8f09918f3"
-  ],
+  "selected": [],
   "source_sha": "b1ca02d06f52f2644a383aea311bf9e8f09918f3"
 }
