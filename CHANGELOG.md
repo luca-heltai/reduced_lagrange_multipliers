@@ -203,6 +203,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Documentation
 
+- [PR #273](https://github.com/luca-heltai/immersx/pull/273) Render the MetricFlowX coupling equations and elastodynamics state variables correctly, and check all generated pages for math rendering errors in CI.
 - [PR #272](https://github.com/luca-heltai/immersx/pull/272) Add an English onboarding guide for elastostatic–MetricFlowX coupling, from independent applications and file exchange to a monolithic IDAAdapter solve.
 - [PR #263](https://github.com/luca-heltai/immersx/pull/263) Document lifted Poisson composition, modal coefficient ordering and measure, solver policy, adaptive output, Coral execution, and the tested scope of legacy parity.
 - [PR #262](https://github.com/luca-heltai/immersx/pull/262) Document composable static elasticity, its equations and extension points, generated application/Coral inputs, and unsupported legacy capabilities.

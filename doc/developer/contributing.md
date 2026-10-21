@@ -437,6 +437,19 @@ python3 -m pip install -r doc/requirements.txt
 ./scripts/build_doc.sh
 ```
 
+Use `$...$` for inline mathematics and `$$...$$` or a fenced `{math}`
+directive for displayed equations in Markdown. In Doxygen comments, use
+`\f$...\f$` and `\f[...\f]`.
+
+The documentation workflow checks every generated HTML page in Chromium for
+MathJax errors and unrendered LaTeX in prose. Run the same check locally with:
+
+```bash
+python3 -m pip install playwright==1.63.0
+python3 -m playwright install chromium
+python3 scripts/check_doc_math.py
+```
+
 Documentation examples should use the current public API and the real build-tree
 path conventions.
 
