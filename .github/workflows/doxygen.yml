@@ -125,6 +125,8 @@ jobs:
           python3 -m pip install playwright==1.63.0
           python3 -m playwright install --with-deps chromium
           python3 scripts/performance/tests/viewer.py
+      - name: Check mathematics on every documentation page
+        run: python3 scripts/check_doc_math.py
       - uses: actions/upload-pages-artifact@v4
         with:
           path: build/docs/site

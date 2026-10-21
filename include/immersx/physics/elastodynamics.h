@@ -70,7 +70,7 @@ namespace ImmersX
    * The public name deliberately uses *Elastodynamics*: the repository already
    * contains an `ElasticityProblem` for immersed coupling, and this class is a
    * separate uncoupled volumetric problem. The state is
-   * $[d,v]$, with displacement $d$ and velocity $v$.
+   * \f$[d,v]\f$, with displacement \f$d\f$ and velocity \f$v\f$.
    */
   class ElastodynamicsParameters : public dealii::ParameterAcceptor
   {
