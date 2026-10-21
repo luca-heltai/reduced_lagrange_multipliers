@@ -17,6 +17,11 @@ The introductory sequence is:
 7. [Fiber-reinforced elastodynamics](fiber-reinforced-elastodynamics) — two
    nonmatching Problems and a multiplier constraint.
 
+For the elastostatic–flow project, start with the
+[MetricFlowX coupling onboarding guide](metric-flow-x-elastostatic-onboarding).
+It follows independent runs, file exchange, partitioned iteration, and a
+monolithic `IDAAdapter` formulation, with a work split for two collaborators.
+
 [Navier–Stokes](navier-stokes) documents the independent incompressible-flow
 application. The [MetricFlowX and elastodynamics tutorial](metric-flow-x-elastodynamics)
 shows the parameter-driven two-way vessel-wall coupling. The

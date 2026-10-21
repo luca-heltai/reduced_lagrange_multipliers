@@ -34,6 +34,7 @@ how-to/local-co-refinement
 how-to/lifted-poisson
 how-to/lifted-static-elasticity
 tutorials/index
+tutorials/metric-flow-x-elastostatic-onboarding
 concepts/index
 reference/index
 dealiiX-platform/index
