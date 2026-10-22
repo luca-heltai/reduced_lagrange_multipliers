@@ -27,12 +27,14 @@
 #  include <immersx/physics/elastodynamics.h>
 #  include <immersx/physics/elastodynamics_semidiscrete.h>
 #  include <immersx/physics/metric_flow_x.h>
+#  include <immersx/physics/metric_flow_x_pressure.h>
 
 #  include <filesystem>
 #  include <fstream>
 #  include <iostream>
 #  include <stdexcept>
 #  include <string>
+#  include <type_traits>
 #  include <vector>
 
 namespace
@@ -109,26 +111,71 @@ namespace
     solid_problem.assemble_operators();
     solid_problem.set_initial_conditions();
 
-    Adapter    adapter(flow_time, ida_parameters, MPI_COMM_WORLD);
+    Adapter adapter(flow_time, ida_parameters, MPI_COMM_WORLD);
+    adapter.set_schur_primal_coupling();
     const auto solid_fields = adapter.add(solid_problem, "elastodynamics");
     const auto flow_fields =
       adapter.add(metric_flow_x(flow_problem), "blood-flow");
 
-    const auto solid_field       = solid_fields.fields().displacement;
-    const auto area              = flow_fields.fields().area;
-    const auto radius            = sqrt(A0 / numbers::PI);
-    const auto dR                = sqrt(value(area) / numbers::PI) - radius;
-    const auto wall_displacement = lift(dR, wall_lift, radius);
-    const auto lambda_wall       = lift(value(lambda), wall_lift, radius);
-    const auto kinematic_constraint =
-      make_constraint(weak_term(value(solid_field), test(lambda_wall)) -
-                      weak_term(wall_displacement, test(lambda)));
-    const auto coupling_fields =
-      adapter.add(kinematic_constraint, "vessel-wall");
+    const auto coupling_fields = adapter.add(
+      [&](auto &builder) {
+        const auto id          = builder.algebraic_field(lambda.name(),
+                                                lambda.locally_owned_dofs(),
+                                                lambda.locally_relevant_dofs());
+        const auto multiplier  = lambda.with_id(id);
+        const auto radius      = sqrt(A0 / numbers::PI);
+        const auto lambda_wall = lift(value(multiplier), wall_lift, radius);
+        const auto negative_wall_displacement =
+          lift(radius - sqrt(value(flow_fields.fields().area) / numbers::PI),
+               wall_lift,
+               radius);
 
-    adapter.add(weak_term(-1. * value(coupling_fields.fields().multiplier),
-                          test(flow_fields.fields().velocity)),
-                "flow-pressure-feedback");
+        weak_term(value(solid_fields.fields().displacement), test(lambda_wall))
+          .add(builder);
+        weak_term(negative_wall_displacement, test(multiplier)).add(builder);
+        weak_term(lambda_wall, test(solid_fields.fields().velocity))
+          .add(builder);
+
+        const auto pressure      = -1. * value(multiplier);
+        const auto flow_id       = flow_fields.fields().state;
+        auto       pressure_term = builder.term(flow_id, "native-pressure");
+        pressure_term.residual([&, pressure, flow_id, id](const auto &context) {
+          auto contribution = std::make_shared<MetricFlowX::VectorType>(
+            flow_problem.make_state());
+          *contribution = 0.;
+          flow_problem.add_external_pressure_residual(
+            context.time(),
+            context.state(flow_id),
+            metric_flow_x_pressure_provider(pressure, context.state(id)),
+            *contribution);
+          dealii::PackagedOperation<MetricFlowX::VectorType> result;
+          result.reinit_vector = [&flow_problem](auto &dst, const bool) {
+            flow_problem.reinit_state(dst);
+          };
+          result.apply     = [contribution](auto &dst) { dst = *contribution; };
+          result.apply_add = [contribution](auto &dst) {
+            dst += *contribution;
+          };
+          return result;
+        });
+        typename std::decay_t<decltype(builder)>::Model::MatrixOperatorFactory
+          pressure_jacobian = [&, pressure, flow_id](const auto &context) {
+            return metric_flow_x_pressure_operator(flow_problem,
+                                                   pressure,
+                                                   context.state(flow_id),
+                                                   context.time());
+          };
+        pressure_term.state(id, std::move(pressure_jacobian));
+
+        builder.saddle_point(id,
+                             {solid_fields.fields().displacement.id(),
+                              solid_fields.fields().velocity.id(),
+                              flow_fields.fields().state},
+                             detail::make_multiplier_metric(builder,
+                                                            multiplier));
+        return ConstraintFields<std::decay_t<decltype(lambda)>>{multiplier};
+      },
+      "vessel-wall");
 
     auto state     = adapter.make_state();
     auto state_dot = adapter.make_state();
@@ -164,7 +211,13 @@ namespace
       const auto &flow_state =
         adapter.field(solution, flow_fields.fields().state);
       auto pressure = flow_problem.make_state();
-      flow_problem.compute_pressure(flow_state, pressure, time);
+      flow_problem.compute_pressure(
+        flow_state,
+        pressure,
+        time,
+        metric_flow_x_pressure_provider(
+          -1. * value(coupling_fields.fields().multiplier),
+          adapter.field(solution, coupling_fields.fields().multiplier)));
       flow_problem.output_results(flow_state, pressure, step);
       solid_problem.output_results();
       DataOut<1, 3> multiplier_output;

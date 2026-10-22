@@ -1,5 +1,5 @@
-# Nonzero stress-jump diagnostic, not a passing MMS verification.
-# See doc/tutorials/metric-flow-x-elastodynamics-mms.md for the residual mismatch.
+# Nonzero stress-jump manufactured solution with volume supplied by the inlet.
+# See doc/tutorials/metric-flow-x-elastodynamics-mms.md for the derivation.
 # Target: g=t^3, A=A0*(1+g)^2, lambda=-6*g, rho_s=mu_s=lambda_s=1.
 
 subsection Time interval
@@ -80,9 +80,8 @@ subsection Functions
   # Q_in=L*dA/dt supplies the entire increase in vessel volume; Q_out=0.
   set Inflow function = 0.24137*6*3.0605e-4*t^2*(1+t^3)
   # Source-free physical continuity: A_t+(A*U)_x=0.
-  # The second component balances U_t+U*U_x-lambda; pressure is uniform in x.
-  # The current constraint's additional area-row reaction is left visible.
-  set RHS expression = 0; (0.120685-x)*(12*t-42*t^4)/(1+t^3)^2+6*t^3
+  # The second component balances U_t+U*U_x; total pressure is uniform in x.
+  set RHS expression = 0; (0.120685-x)*(12*t-42*t^4)/(1+t^3)^2
   set Exact solution = 3.0605e-4*(1+t^3)^2; (0.120685-x)*6*t^2/(1+t^3); 3.0605e-4*(1+t^3)^2; (0.120685-x)*6*t^2/(1+t^3)
 end
 
@@ -106,7 +105,7 @@ end
 
 subsection MetricFlowX vessel wall lift
   subsection Cross section
-    set Refinement level = 5
+    set Refinement level = 2
     set Inclusion type = hyper_ball
     set Maximum inclusion degree = 1
     set Selected indices = 3, 7

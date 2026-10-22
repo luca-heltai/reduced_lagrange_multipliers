@@ -74,7 +74,8 @@ set(_public_headers
     immersx/physics/navier_stokes_semidiscrete.h
     immersx/physics/poisson_residual.h)
 if(IMMERSX_WITH_METRIC_FLOW_X)
-  list(APPEND _public_headers immersx/physics/metric_flow_x.h)
+  list(APPEND _public_headers immersx/physics/metric_flow_x.h
+                             immersx/physics/metric_flow_x_pressure.h)
 endif()
 
 set(_public_header_targets)
@@ -106,7 +107,7 @@ foreach(_build_type ${_d2_build_types})
                              $<$<CXX_COMPILER_ID:Clang>:-Wno-cpp>
                              $<$<CXX_COMPILER_ID:GNU>:-Wno-cpp>)
       if(IMMERSX_WITH_METRIC_FLOW_X AND
-         _public_header STREQUAL "immersx/physics/metric_flow_x.h")
+         _public_header MATCHES "^immersx/physics/metric_flow_x")
         target_link_libraries(${_public_header_target}
                               ${IMMERSX_METRIC_FLOW_X_TARGET_${_build_type}})
       endif()
@@ -356,33 +357,40 @@ if(IMMERSX_WITH_METRIC_FLOW_X)
                                         TIMEOUT 300
                                         ENVIRONMENT "GTEST_FILTER=MetricFlowX.MPI_*:MetricFlowX.BOTH_*")
       endif()
-      foreach(_mode Serial MPI)
-        if(_mode STREQUAL "MPI" AND NOT _immersx_mpiexec)
-          continue()
-        endif()
-        set(_coupled_name
-            "ImmersX${${_build_type}_ctest_suffix}.application.MetricFlowXCoupled.${_mode}")
-        set(_saved_output_dir "${TEST_OUTPUT_DIR}")
-        set(TEST_OUTPUT_DIR "${_saved_output_dir}/${_build_type}/metric-coupled-${_mode}")
-        set(_coupled_input "${CMAKE_CURRENT_BINARY_DIR}/parameters/metric_coupled_${_build_type}_${_mode}.prm")
-        configure_file(
-          "${CMAKE_CURRENT_SOURCE_DIR}/parameters/metric_flow_x_elastodynamics.prm.in"
-          "${_coupled_input}" @ONLY)
-        set(TEST_OUTPUT_DIR "${_saved_output_dir}")
-        set(_coupled_mpiexec "")
-        set(_coupled_labels "application")
-        if(_mode STREQUAL "MPI")
-          set(_coupled_mpiexec "${_immersx_mpiexec}")
-          set(_coupled_labels "application;mpi")
-        endif()
-        add_test(NAME "${_coupled_name}"
-          COMMAND "${CMAKE_COMMAND}"
-            "-DTEST_EXECUTABLE=$<TARGET_FILE:metric_flow_x_elastodynamics${${_build_type}_postfix}>"
-            "-DPARAMETER_FILE=${_coupled_input}"
-            "-DMPIEXEC=${_coupled_mpiexec}"
-            -P "${CMAKE_CURRENT_SOURCE_DIR}/run_metric_flow_x_coupled.cmake")
-        set_tests_properties("${_coupled_name}" PROPERTIES
-                             TIMEOUT 600 LABELS "${_coupled_labels}")
+      foreach(_case Coupled MMS)
+        foreach(_mode Serial MPI)
+          if(_mode STREQUAL "MPI" AND NOT _immersx_mpiexec)
+            continue()
+          endif()
+          set(_coupled_name
+              "ImmersX${${_build_type}_ctest_suffix}.application.MetricFlowX${_case}.${_mode}")
+          set(_saved_output_dir "${TEST_OUTPUT_DIR}")
+          set(TEST_OUTPUT_DIR "${_saved_output_dir}/${_build_type}/metric-${_case}-${_mode}")
+          set(_coupled_input "${CMAKE_CURRENT_BINARY_DIR}/parameters/metric_${_case}_${_build_type}_${_mode}.prm")
+          if(_case STREQUAL "MMS")
+            set(_coupled_template "${CMAKE_SOURCE_DIR}/tutorials/metric_flow_x_elastodynamics/mms_cube.prm.in")
+          elseif(_case STREQUAL "Coupled")
+            set(_coupled_template "${CMAKE_CURRENT_SOURCE_DIR}/parameters/metric_flow_x_elastodynamics.prm.in")
+          endif()
+          configure_file(
+            "${_coupled_template}"
+            "${_coupled_input}" @ONLY)
+          set(TEST_OUTPUT_DIR "${_saved_output_dir}")
+          set(_coupled_mpiexec "")
+          set(_coupled_labels "application")
+          if(_mode STREQUAL "MPI")
+            set(_coupled_mpiexec "${_immersx_mpiexec}")
+            set(_coupled_labels "application;mpi")
+          endif()
+          add_test(NAME "${_coupled_name}"
+            COMMAND "${CMAKE_COMMAND}"
+              "-DTEST_EXECUTABLE=$<TARGET_FILE:metric_flow_x_elastodynamics${${_build_type}_postfix}>"
+              "-DPARAMETER_FILE=${_coupled_input}"
+              "-DMPIEXEC=${_coupled_mpiexec}"
+              -P "${CMAKE_CURRENT_SOURCE_DIR}/run_metric_flow_x_coupled.cmake")
+          set_tests_properties("${_coupled_name}" PROPERTIES
+                               TIMEOUT 600 LABELS "${_coupled_labels}")
+        endforeach()
       endforeach()
       list(APPEND IMMERSX_TEST_TARGETS ${_metric_flow_x_test_target})
       if(IMMERSX_INSTALL_TESTS)

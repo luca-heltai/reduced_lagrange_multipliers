@@ -4453,8 +4453,11 @@ namespace ImmersX
             const auto values = [&] {
               if constexpr (detail::is_lifted_observable<
                               TrialExpression>::value)
-                return Assembly::template residual<VectorType, MatrixType>(
-                  observable, target, context);
+                {
+                  (void)support;
+                  return Assembly::template residual<VectorType, MatrixType>(
+                    observable, target, context);
+                }
               else
                 return Assembly::template residual<VectorType, MatrixType>(
                   observable, target, context, support);
@@ -4482,9 +4485,12 @@ namespace ImmersX
                                      support = support_](const auto &context) {
                 if constexpr (detail::is_lifted_observable<
                                 TrialExpression>::value)
-                  return Assembly::template linearize_matrix<VectorType,
-                                                             MatrixType>(
-                    observable, target, field, context);
+                  {
+                    (void)support;
+                    return Assembly::template linearize_matrix<VectorType,
+                                                               MatrixType>(
+                      observable, target, field, context);
+                  }
                 else
                   return Assembly::template linearize_matrix<VectorType,
                                                              MatrixType>(
