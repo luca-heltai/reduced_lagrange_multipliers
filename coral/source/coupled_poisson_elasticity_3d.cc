@@ -17,7 +17,7 @@
 #include <immersx/core/weak_term.h>
 #include <immersx/io/utils.h>
 #include <immersx/physics/elastic_static.h>
-#include <immersx/physics/poisson.h>
+#include <immersx/physics/poisson_residual.h>
 
 #include <cmath>
 #include <filesystem>
@@ -56,10 +56,7 @@ namespace ImmersX::Coral
                     "The coupled Poisson-elasticity workflow can run only "
                     "once."));
 
-      poisson_problem.make_grid();
-      poisson_problem.setup_fe();
-      poisson_problem.setup_system();
-      poisson_problem.assemble_system();
+      poisson_problem.setup();
 
       elasticity_problem.setup();
 
@@ -69,9 +66,9 @@ namespace ImmersX::Coral
       const auto displacement  = elastic_fields.fields().displacement;
       const auto poisson_field = poisson_fields.fields().solution;
 
-      const auto pressure =
-        ImmersX::make_lift(CoupledPoissonElasticity::Pressure{}.factor *
-                             ImmersX::value(poisson_field),
+      constexpr double pressure_factor = 2.;
+      const auto       pressure =
+        ImmersX::make_lift(pressure_factor * ImmersX::value(poisson_field),
                            pressure_lift);
       const auto traction = pressure * ImmersX::normal(surface);
       adapter.add(ImmersX::weak_term(traction, ImmersX::test(displacement)),
@@ -91,16 +88,11 @@ namespace ImmersX::Coral
 
       auto residual = adapter.make_state();
       adapter.evaluate_residual(state, residual);
-      residual_norm_storage = residual.l2_norm();
-      pressure_scale_error_storage =
-        std::abs(CoupledPoissonElasticity::Pressure{}.factor - 2.);
+      residual_norm_storage        = residual.l2_norm();
+      pressure_scale_error_storage = std::abs(pressure_factor - 2.);
+      // The displacement residual is K u - f + the pressure traction.
       traction_balance_error_storage =
-        CoupledPoissonElasticity::traction_balance(pressure,
-                                                   surface,
-                                                   displacement,
-                                                   elasticity_problem,
-                                                   poisson_state,
-                                                   elastic_state);
+        adapter.field(residual, displacement).l2_norm();
 
       std::filesystem::create_directories(poisson_parameters.output_directory);
       std::ofstream diagnostics(
@@ -143,7 +135,7 @@ namespace ImmersX::Coral
   private:
     PoissonParameters<1, 3>                   poisson_parameters;
     ElasticStaticParameters<3, 3>             elasticity_parameters;
-    CoupledPoissonElasticity::PressureLift    pressure_lift;
+    TensorProductLift<1, 2, 3>                pressure_lift;
     CoupledPoissonElasticity::CylinderSurface surface;
     LinearSolverParameters                    adapter_parameters;
     PoissonSolver<1, 3>                       poisson_problem;

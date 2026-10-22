@@ -145,6 +145,8 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Fixed
 
+- [PR #276](https://github.com/luca-heltai/immersx/pull/276) Keep the Coral Poisson–elasticity workflow compatible with the simplified application interfaces and report traction balance from its displacement residual.
+
 - [PR #264](https://github.com/luca-heltai/immersx/pull/264) Prevent the Navier–Stokes tutorial from timing out in Debug builds by reusing finite-element evaluations during nonlinear Jacobian assembly.
 - [PR #263](https://github.com/luca-heltai/immersx/pull/263) Use one lifted assembly for scalar and vector constraints, preserve constrained master sparsity, and allow explicit source Dirichlet-value updates while retaining collective static-data and constraint-structure guards. Keep scalar coefficient-output and vector coefficient-creation nodes distinct in the combined Coral registry.
 - [PR #263](https://github.com/luca-heltai/immersx/pull/263) Preserve affine Dirichlet contributions in lifted weak terms, assemble known loads and legacy coupling graphs across MPI owners, use relative inner Schur solves and check the true FGMRES residual, and reconstruct hanging-node values before FE output.
