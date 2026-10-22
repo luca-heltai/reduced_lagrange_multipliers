@@ -14,28 +14,58 @@ native volume, face, boundary, and junction equations.
 
 ![Analytical radial displacement, axial velocity, and volume supplied by the inlet](../_static/metric-flow-x-mms-target.svg)
 
-The plots show the analytical target. No numerical solution is plotted.
+This figure shows the analytical target.
 
 ## Configure and run
 
 The parameter templates are in `tutorials/metric_flow_x_elastodynamics/`:
 
-| Template | Solid cells | Purpose |
-| --- | ---: | --- |
-| `mms_cube.prm.in` | $4\times16\times16$ | Single-rank MMS |
-| `mms_cube_refined.prm.in` | $4\times32\times32$ | Refine the transverse solid mesh |
-| `mms_cube_mpi.prm.in` | $4\times16\times16$ | Separate output directories for MPI |
+| Template | Solid cells | Centerline cells | Purpose |
+| --- | ---: | ---: | --- |
+| `mms_cube.prm.in` | $4\times16\times16$ | 2 | Single-rank MMS |
+| `mms_cube_refined.prm.in` | $8\times32\times32$ | 4 | Refine both meshes |
+| `mms_cube_mpi.prm.in` | $4\times16\times16$ | 2 | Separate output directories for MPI |
 
-All cases use one centerline cell, degree-one elements, an automatically
-matched multiplier space, and the same analytical target. The solid varies
-only in the transverse coordinates, so the refined input keeps the axial
-partition fixed. The cross-section refinement level is two in the base and
-MPI inputs and three in the refined input, so the refined run also improves
-wall geometry.
+All cases use degree-one elements, an automatically matched multiplier
+space, and the same analytical target. Centerline cells have twice the
+length of solid cells in the axial direction: $h_\gamma=2h_x=L/2$ in the
+base case and $L/4$ in the refined case. The solid cells have
+$h_x=4h_y=4h_z$. Both meshes are refined together.
+
+This ratio keeps the DG1 multiplier mesh coarser than the continuous Q1
+solid trace. On this Cartesian tensor-product mesh, four solid axial cells
+provide five continuous axial modes. Four DG1 multiplier cells would
+introduce eight coefficients, so the mechanical pairing alone could not
+distinguish all multiplier modes. Two DG1 cells introduce four coefficients.
+
+The wall lift uses composite Gauss quadrature: two repetitions of four
+points per centerline cell. Each repetition spans one solid axial cell,
+giving four axial quadrature sections per solid cell, or 16 sections in the
+base case and 32 in the refined case. Three points on a single vessel cell
+sample only three sections across four solid cells and can produce
+artificial axial variation even though the target solid displacement is
+independent of $x$. Check quadrature sensitivity separately from mesh
+refinement. The axial settings are:
+
+```text
+subsection MetricFlowX vessel wall lift
+  subsection Representative quadrature
+    set Type = gauss
+    set Number of points = 4
+    set Number of repetitions = 2
+  end
+end
+```
+
+The cross-section refinement level is two in the base and MPI inputs and
+three in the refined input, so refinement also improves wall geometry.
+
 The target area is constant in space and the target velocity is linear, so
-degree one represents both exactly on that centerline cell. Keep flow
+degree one represents both exactly on either centerline mesh. Keep flow
 refinement at zero: the application imports `a0` from the original VTK mesh
-after flow setup and requires matching active cells.
+after flow setup and requires matching active cells. The two-cell and
+four-cell VTK inputs already contain the required partitions and physical
+data on every cell.
 
 Configure with a compatible MetricFlowX package and deal.II with SUNDIALS and
 VTK enabled. For example, from the repository root:
@@ -75,14 +105,15 @@ parameters do not set the IDA step size.
 The solid fills the cube $\Omega=[-\ell,\ell]^3$, with
 $\ell=0.120685$. The straight centerline is
 $\gamma=\{(x,0,0):-\ell\le x\le\ell\}$, of length $L=2\ell=0.24137$.
-The existing `data/metric_flow_x/single_vessel_centered.vtk.in` supplies
+The `data/metric_flow_x/single_vessel_centered_2.vtk.in` and
+`single_vessel_centered_4.vtk.in` inputs supply
 
 $$
 A_0=a_d=3.0605\times10^{-4},\qquad
 R_0=\sqrt{A_0/\pi}\simeq0.00987009324508.
 $$
 
-No new mesh file is needed. The fictitious solid inside the vessel is part of
+The fictitious solid inside the vessel is part of
 the cube. The immersed reference wall is
 $\Gamma_0=\{r=R_0\}$, where $r=\sqrt{y^2+z^2}$. Its radius is fixed in the
 lift; the current area enters the displacement increment.
@@ -284,10 +315,12 @@ Elimination and recovery use the same corrected primal inverse.
 ## Inspect the solution
 
 Outputs are below the build-tree `test_output/` directory, in separate
-`metric-flow-x-mms-cube`, `metric-flow-x-mms-cube-refined`, and
-`metric-flow-x-mms-cube-mpi` directories. Each contains solid output and a
-`flow/interaction/pressure_jump.pvd` multiplier series. Flow output contains
-`area`, `velocity`, `A_hat`, `U_hat`, and `pressure`.
+`metric-flow-x-mms-cube-resolved`, `metric-flow-x-mms-cube-refined-resolved`,
+and `metric-flow-x-mms-cube-mpi-resolved` directories. Each contains solid
+output and a `flow/interaction/pressure_jump.pvd` multiplier series. Flow output contains
+`area`, `velocity`, `A_hat`, `U_hat`, and `pressure`. CTest adds a
+configuration and case prefix, such as `Release/metric-MMS-Serial/`, before
+these output directories.
 
 At the final target time $T=0.1$:
 
@@ -337,35 +370,55 @@ when interpreting differences between the two meshes.
 
 Runs on 2026-10-22 used deal.II 9.8.0-rc1, MPICH 5.0.1, and an installed
 MetricFlowX package reporting version 0.1.0 with both build variants. The
-installed package's source revision was not recorded. Both Release cases
-reached $T=0.1$, in 84 and 78 accepted IDA steps respectively.
+installed package's source revision was not recorded. The corrected base
+case reached $T=0.1$ in 80 accepted IDA steps; the refined case took 69.
+The base case ran in serial and on two ranks in Debug and Release. The
+refined measurement used Release on two ranks.
 
-| Quantity at $T=0.1$ | Base mesh | Refined mesh |
+![Axial displacement before and after matching mesh scales and resolving the lift](../_static/metric-flow-x-mms-axial-comparison.png)
+
+The plot compares $u_y$ at $y=0.015085625$, $z=0$, $t=0.1$. The previous
+single-cell vessel used three axial integration sections; the corrected
+base case uses two vessel cells and 16 sections. The background mesh is
+$4\times16\times16$ in both cases. The refined curve uses the
+$8\times32\times32$ solid, four vessel cells, and 32 axial sections.
+Matching the mesh scales and using composite quadrature removes the large
+axial oscillation on this line.
+The corrected base value still exceeds the exact displacement by about a
+factor of three; the refined curve is much closer to the target. A smoother
+contour alone is not evidence of an accurate MMS solution.
+
+The relative nodal axial variation decreases from $0.655$ to $0.125$ in the
+corrected base case and to $0.0171$ in the refined case.
+For this diagnostic, group nodes with the same $(y,z)$, subtract their mean
+displacement over all axial nodes, and divide the Euclidean norm of these
+differences by the Euclidean norm of the displacement. Count each geometric
+node once. This diagnostic measures axial variation; it is not an $L^2$
+error against the target.
+
+| Quantity at $T=0.1$ | Corrected base mesh | Refined mesh |
 | --- | ---: | ---: |
-| $\|u_h-u^\star\|_{L^2(\Omega)}$ | $1.4582\times10^{-7}$ | $9.7307\times10^{-8}$ |
-| $\|v_h-v^\star\|_{L^2(\Omega)}$ | $4.5251\times10^{-6}$ | $3.1174\times10^{-6}$ |
-| Relative $L^2$ area error | $9.4533\times10^{-7}$ | $9.4533\times10^{-7}$ |
-| $\|U_h-U^\star\|_{L^2(\gamma)}$ | $3.7187\times10^{-9}$ | $3.9794\times10^{-9}$ |
-| Relative $L^2$ multiplier error | $0.3780$ | $0.2896$ |
-| Mean multiplier | $-0.00826795$ | $-0.00426223$ |
-| Added volume | $1.4788592\times10^{-7}$ | $1.4788592\times10^{-7}$ |
-| Volume defect / prescribed influx | $0.04700\%$ | $0.04700\%$ |
+| $\|u_h-u^\star\|_{L^2(\Omega)}$ | $1.8260\times10^{-7}$ | $3.4130\times10^{-8}$ |
+| Relative $L^2$ displacement error | $0.8987$ | $0.1684$ |
+| $\|v_h-v^\star\|_{L^2(\Omega)}$ | $6.1092\times10^{-6}$ | $1.1318\times10^{-6}$ |
+| Relative $L^2$ solid velocity error | $1.0022$ | $0.1861$ |
+| Relative $L^2$ area error | $7.5552\times10^{-7}$ | $1.0055\times10^{-6}$ |
+| $\|U_h-U^\star\|_{L^2(\gamma)}$ | $2.5987\times10^{-9}$ | $4.2567\times10^{-9}$ |
+| Relative $L^2$ multiplier error | $1.3619$ | $0.2445$ |
+| Mean multiplier | $-0.01417113$ | $-0.00746724$ |
+| Added volume | $1.4787187\times10^{-7}$ | $1.4789031\times10^{-7}$ |
+| Volume defect / prescribed influx | $0.03749\%$ | $0.04997\%$ |
 
 The exact multiplier is $-0.006$, and the integrated prescribed influx is
-$1.478164482885\times10^{-7}$. The final inlet traces agree with the prescribed
-flux to six significant digits, and outlet flux magnitudes are below
-$2.4\times10^{-22}$. The remaining volume difference includes time integration
-and output precision errors; it no longer contains an artificial area-row
-multiplier source.
-
-Solid displacement, solid velocity, and multiplier errors decrease under this
-refinement, but remain substantial. Relative displacement errors are
-$0.718$ and $0.480$, and relative solid velocity errors are $0.742$ and $0.513$.
-The area and volume measurements agree between meshes at exported precision;
-the axial-velocity error remains near $4\times10^{-9}$. These two unfitted
-meshes and two wall geometries do not establish an
-asymptotic convergence rate. Refine further and reduce the time tolerances
-before drawing that conclusion.
+$1.478164482885\times10^{-7}$. The coarse solid mesh remains inaccurate:
+the displacement and multiplier errors are larger than the earlier
+underintegrated results. The refined solid reduces both errors substantially, but the two meshes
+and two wall geometries do not establish an asymptotic convergence rate.
+The vessel diameter spans only about 1.31 transverse solid cells in the
+base case and 2.62 in the refined case. Resolve the transverse piecewise
+displacement and wall geometry further, and reduce the time tolerances
+before drawing conclusions about convergence. The old underintegrated
+error table does not validate the corrected inputs.
 
 The measurements integrate the exported Float32 fields. Solid errors use
 three-point tensor-product Gauss quadrature on each cube cell, comparing
@@ -382,4 +435,4 @@ check multiplier row placement, unchanged continuity, the nonlinear
 Jacobian action by finite differences on the single-cell fixture, nonzero
 corrections for tiny right-hand sides, and rejection of failed IDA steps in
 Release. Field errors and volume
-balance provide the independent analytical checks reported above.
+balance provide the analytical comparisons reported above.

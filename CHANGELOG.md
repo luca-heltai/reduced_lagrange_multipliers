@@ -223,7 +223,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Tutorial
 
-- [PR #275](https://github.com/luca-heltai/immersx/pull/275) Add a one-vessel manufactured-solution tutorial with piecewise displacement, nonzero pressure jump, native pressure feedback, and volume supplied by the inlet.
+- [PR #275](https://github.com/luca-heltai/immersx/pull/275) Add a one-vessel manufactured-solution tutorial with piecewise displacement, nonzero pressure jump, native pressure feedback, and volume supplied by the inlet. Keep centerline cells within a factor of two of the solid axial cell lengths and integrate the lift with four points per solid axial cell.
 
 - [PR #234](https://github.com/luca-heltai/immersx/pull/234) Run the tutorial platform through noVNC with remote Slurm execution and selectable Debug or Release packages.
 - [PR #233](https://github.com/luca-heltai/immersx/pull/233) Build multi-architecture Coral, visualizer, and platform images for the dealiiX tutorial stack.
