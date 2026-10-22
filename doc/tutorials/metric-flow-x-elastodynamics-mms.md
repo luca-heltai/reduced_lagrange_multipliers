@@ -344,3 +344,47 @@ Do not claim convergence to this target from successful solver exits or from
 agreement between serial and MPI runs. The piecewise stress field, unfitted
 solid mesh, cross-section geometry, and time error must also be considered
 when interpreting differences between the two meshes.
+
+## Local diagnostic results
+
+Runs on 2026-10-22 used deal.II 9.8.0-rc1, MPICH 5.0.1, and an installed
+MetricFlowX package reporting version 0.1.0 with both build variants. Its
+source revision was not recorded for these runs. Both application variants built,
+and all three inputs advanced to $T=0.1$:
+
+| Run | Accepted IDA steps | Mean pressure jump | Added volume |
+| --- | ---: | ---: | ---: |
+| $4\times16\times16$, Debug, one rank | 130 | $-1.77683\times10^{-5}$ | $1.05442\times10^{-8}$ |
+| $4\times16\times16$, Debug, two ranks | 130 | $-1.77683\times10^{-5}$ | $1.05442\times10^{-8}$ |
+| $4\times32\times32$, Release, one rank | 132 | $-1.76952\times10^{-5}$ | $1.57988\times10^{-8}$ |
+
+The target pressure jump is $-0.006$, and the integrated prescribed inlet
+flow is $1.478164482885\times10^{-7}$. The final inlet trace agrees with
+$Q_{\mathrm{in}}^\star(T)$ to the displayed six significant digits; the
+absolute outlet trace flux is below $10^{-21}$. Nevertheless the computed
+volume increase falls short of the supplied volume by $92.87\%$ on the first
+mesh and $89.31\%$ on the refined mesh. Refinement does not remove the
+constraint-row discrepancy.
+
+These numbers come from the exported Float32 fields. Centerline means and
+volume integrals use two-point Gauss integration of the exported linear
+fields, matching the final file index to the multiplier's physical time.
+Added volume is the final integral of `area` minus its initial integral. In
+ParaView, `Integrate Variables` on each flow snapshot provides these area
+integrals; integrating `pressure_jump` and dividing by the line length gives
+its mean. Output precision limits the useful digits.
+
+For the first single-rank run, a three-output Simpson estimate of
+
+$$
+\int_0^T\int_\gamma
+\frac{R_0}{\sqrt{A_h/\pi}}\lambda_h\,ds\,dt
+$$
+
+is $-1.37584\times10^{-7}$. The measured integrated volume-balance defect is
+$-1.37272\times10^{-7}$. The estimate uses the circular-wall limit and only
+the outputs at $0$, $0.05$, and $0.1$; it is not an exact integration of every
+accepted state. It accounts for the sign and size of the missing volume
+through the additional area-row reaction. These are execution and diagnostic
+results, not evidence that the current coupled application solves the
+manufactured target.
