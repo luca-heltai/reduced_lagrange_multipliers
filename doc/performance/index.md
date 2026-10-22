@@ -61,3 +61,7 @@ series. Missing scope means unspecified legacy timing, not full assembly.
 
 See [the pipeline guide](pipeline) for environment details, commit coverage,
 local execution, backfill and recovery.
+
+The [one-vessel elastodynamics cost analysis](metric-flow-x-elastodynamics)
+profiles coupled Jacobian setup and nested iterative solves, and compares the
+parameter-selected serial UMFPACK path.

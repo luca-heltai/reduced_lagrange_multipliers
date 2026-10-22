@@ -549,9 +549,11 @@ namespace ImmersX::detail
           {
             const auto &block = block_matrix.block(i, j);
             for (const auto row : block_partitions[i])
-              for (auto entry = block.begin(row); entry != block.end(row);
-                   ++entry)
-                sparsity.add(offsets[i] + row, offsets[j] + entry->column());
+              if (block.row_length(row) != 0)
+                for (auto entry = block.begin(row), end = block.end(row);
+                     entry != end;
+                     ++entry)
+                  sparsity.add(offsets[i] + row, offsets[j] + entry->column());
           }
 
       result.reinit(partition, partition, sparsity, communicator_, false);
@@ -560,11 +562,13 @@ namespace ImmersX::detail
           {
             const auto &block = block_matrix.block(i, j);
             for (const auto row : block_partitions[i])
-              for (auto entry = block.begin(row); entry != block.end(row);
-                   ++entry)
-                result.set(offsets[i] + row,
-                           offsets[j] + entry->column(),
-                           entry->value());
+              if (block.row_length(row) != 0)
+                for (auto entry = block.begin(row), end = block.end(row);
+                     entry != end;
+                     ++entry)
+                  result.set(offsets[i] + row,
+                             offsets[j] + entry->column(),
+                             entry->value());
           }
       result.compress(dealii::VectorOperation::insert);
     }

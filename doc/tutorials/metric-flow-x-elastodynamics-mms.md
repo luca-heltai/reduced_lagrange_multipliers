@@ -118,7 +118,9 @@ requests another setup. This bypasses the iterative Schur preconditioner.
 The timer summary separates matrix materialization, factorization, and direct
 backsolves. Materialization uses the existing sparse block assembly; a native
 pressure block that has no assembled matrix is recovered from its operator
-columns. This path is intended for small serial verification problems.
+columns. This path is intended for small serial verification problems. See the
+[cost analysis and profiling report](../performance/metric-flow-x-elastodynamics)
+for measured setup and solve costs.
 
 ## Geometry and coefficients
 
