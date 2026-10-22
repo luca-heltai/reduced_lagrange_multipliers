@@ -11,8 +11,10 @@
 
 #include <gtest/gtest.h>
 #include <immersx/algebra/linear_algebra.h>
+#include <immersx/algebra/local_preconditioner.h>
 #include <immersx/core/sundials_ida_adapter.h>
 
+#include <array>
 #include <cmath>
 #include <stdexcept>
 #include <string>
@@ -556,6 +558,102 @@ TEST(DistributedIDA, MPI_MixedFieldDifferentialComponents) // NOLINT
   adapter.solver().setup_jacobian(0., state, state_dot, 4.);
   adapter.current_jacobian().vmult(action, increment);
   EXPECT_EQ(adapter.field(action, field.fields())[local_index], 5.);
+}
+
+TEST(DistributedIDA, BOTH_SchurRetainsDisplacementVelocityPath)
+{
+  using namespace dealii;
+  using namespace ImmersX;
+  const auto rank = Utilities::MPI::this_mpi_process(MPI_COMM_WORLD);
+  const auto size = Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD);
+  IndexSet   owned(size);
+  owned.add_index(rank);
+  DynamicSparsityPattern sparsity(size, size, owned);
+  sparsity.add(rank, rank);
+  auto mass = std::make_shared<ImmersXLA::MPI::SparseMatrix>();
+  mass->reinit(owned, owned, sparsity, MPI_COMM_WORLD);
+  mass->set(rank, rank, 1.);
+  mass->compress(VectorOperation::insert);
+  Adapter::Composition composition(MPI_COMM_WORLD);
+  const auto           fields = composition.add(
+    [owned, mass](auto &builder) {
+      const auto u = builder.field("u", owned, owned);
+      const auto v = builder.field("v", owned, owned);
+      const auto lambda = builder.algebraic_field("lambda", owned, owned);
+      auto       identity = builder.matrix_operator(*mass);
+      builder.term(u, "kinematic")
+        .derivative(u, identity)
+        .state(v, -1. * identity);
+      builder.term(v, "momentum")
+        .derivative(v, identity)
+        .state(lambda, identity);
+      builder.term(lambda, "position").state(u, identity);
+      const auto inverse = [](const auto &matrix, const auto &prototype) {
+        return make_local_preconditioner<FieldVector,
+                                         ImmersXLA::MPI::SparseMatrix,
+                                         ImmersXLA::MPI::PreconditionJacobi>(
+          matrix, prototype);
+      };
+      builder.preconditioner(u, inverse);
+      builder.preconditioner(v, inverse);
+      builder.saddle_point(lambda, {u, v}, identity);
+      return std::array<FieldId, 3>{u, v, lambda};
+    },
+    "solid");
+  auto state        = composition.make_state();
+  auto dot          = composition.make_state();
+  auto input        = composition.field(state, fields[2]);
+  input             = 1.;
+  auto       action = input;
+  const auto schur  = composition.schur_operator(fields[2], state, &dot, 2.);
+  schur.vmult(action, input);
+  EXPECT_NEAR(action[rank], 0., 1.e-14);
+  const auto coupled =
+    composition.schur_operator(fields[2], state, &dot, 2., true);
+  coupled.vmult(action, input);
+  // For 2u-v=f_u, 2v+lambda=f_v, u=0, elimination gives S=1/4.
+  EXPECT_NEAR(action[rank], 0.25, 1.e-14);
+  coupled.Tvmult(action, input);
+  EXPECT_NEAR(action[rank], 0.25, 1.e-14);
+
+  auto rhs                          = composition.make_state();
+  composition.field(rhs, fields[0]) = 1.;
+  composition.field(rhs, fields[1]) = 2.;
+  composition.field(rhs, fields[2]) = 3.;
+  auto       solution               = composition.make_state();
+  const auto inverse                = composition.schur_preconditioner(
+    fields[2], state, &dot, 2., 100, 1.e-12, true);
+  inverse.vmult(solution, rhs);
+  EXPECT_NEAR(composition.field(solution, fields[0])[rank], 3., 1.e-12);
+  EXPECT_NEAR(composition.field(solution, fields[1])[rank], 5., 1.e-12);
+  EXPECT_NEAR(composition.field(solution, fields[2])[rank], -8., 1.e-12);
+  inverse.Tvmult(solution, rhs);
+  EXPECT_NEAR(composition.field(solution, fields[0])[rank], 4., 1.e-12);
+  EXPECT_NEAR(composition.field(solution, fields[1])[rank], 3., 1.e-12);
+  EXPECT_NEAR(composition.field(solution, fields[2])[rank], -7., 1.e-12);
+}
+
+TEST(DistributedIDA, BOTH_PreservesFatalCallbackException)
+{
+  unsigned int calls    = 0;
+  const auto   callback = [&calls] {
+    ++calls;
+    throw std::runtime_error("original callback failure");
+  };
+  std::exception_ptr pending;
+  using Compatibility::SUNDIALS::Utilities::call_and_possibly_capture_exception;
+  EXPECT_EQ(call_and_possibly_capture_exception(callback, pending), -1);
+  EXPECT_EQ(call_and_possibly_capture_exception(callback, pending), -1);
+  EXPECT_EQ(calls, 1u);
+  ASSERT_TRUE(pending);
+  try
+    {
+      std::rethrow_exception(pending);
+    }
+  catch (const std::runtime_error &exception)
+    {
+      EXPECT_STREQ(exception.what(), "original callback failure");
+    }
 }
 
 #else

@@ -139,6 +139,8 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Fixed
 
+- [PR #N](https://github.com/luca-heltai/immersx/pull/N) Apply vessel-wall traction in solid momentum and native external-pressure feedback in flow, including boundary and interface equations, while preserving source-free continuity. Add an opt-in Schur correction for displacement-velocity coupling, retain small-load corrections, preserve callback errors, and stop on failed IDA steps in Release.
+
 - [PR #264](https://github.com/luca-heltai/immersx/pull/264) Prevent the Navier–Stokes tutorial from timing out in Debug builds by reusing finite-element evaluations during nonlinear Jacobian assembly.
 - [PR #263](https://github.com/luca-heltai/immersx/pull/263) Use one lifted assembly for scalar and vector constraints, preserve constrained master sparsity, and allow explicit source Dirichlet-value updates while retaining collective static-data and constraint-structure guards. Keep scalar coefficient-output and vector coefficient-creation nodes distinct in the combined Coral registry.
 - [PR #263](https://github.com/luca-heltai/immersx/pull/263) Preserve affine Dirichlet contributions in lifted weak terms, assemble known loads and legacy coupling graphs across MPI owners, use relative inner Schur solves and check the true FGMRES residual, and reconstruct hanging-node values before FE output.
@@ -221,7 +223,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Tutorial
 
-- [PR #N](https://github.com/luca-heltai/immersx/pull/N) Add one-vessel stress-jump diagnostic inputs and a tutorial with piecewise displacement, volume supplied by the inlet, and the current solid and flow-area constraint reactions.
+- [PR #N](https://github.com/luca-heltai/immersx/pull/N) Add a one-vessel manufactured-solution tutorial with piecewise displacement, nonzero pressure jump, native pressure feedback, and volume supplied by the inlet.
 
 - [PR #234](https://github.com/luca-heltai/immersx/pull/234) Run the tutorial platform through noVNC with remote Slurm execution and selectable Debug or Release packages.
 - [PR #233](https://github.com/luca-heltai/immersx/pull/233) Build multi-architecture Coral, visualizer, and platform images for the dealiiX tutorial stack.

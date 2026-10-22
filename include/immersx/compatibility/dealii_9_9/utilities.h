@@ -71,8 +71,9 @@ namespace ImmersX::Compatibility
               }
             catch (...)
               {
-                // uh oh:
-                AssertThrow(false, ExcInternalError());
+                // Keep the original exception until the solver returns to
+                // C++. Never throw a second exception through a C callback.
+                return -1;
               }
           }
 

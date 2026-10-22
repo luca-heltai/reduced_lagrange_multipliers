@@ -80,6 +80,17 @@ namespace ImmersX
                         dealii::TimerOutput::wall_times)
     {}
 
+    /** Include one off-diagonal primal step in the Schur approximation. */
+    void
+    set_schur_primal_coupling(const bool enabled = true)
+    {
+      AssertThrow(
+        !connected_,
+        dealii::ExcMessage(
+          "Schur controls must be configured before solver initialization."));
+      include_schur_primal_coupling_ = enabled;
+    }
+
     /** Configure IDA controls before solver() or solve() connects callbacks. */
     void
     set_additional_data(const AdditionalData &data)
@@ -389,13 +400,20 @@ namespace ImmersX
         else
           {
             dst = 0.;
-            dealii::SolverControl control(5000, std::max(1.e-12, tolerance));
+            // Small physical loads still need a correction. An absolute floor
+            // can accept the initial zero iterate and stall the DAE solve.
+            dealii::SolverControl                 control(5000,
+                                          std::min(tolerance,
+                                                   1.e-8 * rhs.l2_norm()));
             dealii::SolverGMRES<GlobalVectorType> solver(control);
             if (current_preconditioner_.has_value())
               if (current_solver_is_flexible_)
                 {
                   typename dealii::SolverFGMRES<
-                    GlobalVectorType>::AdditionalData    flexible_data(100);
+                    GlobalVectorType>::AdditionalData flexible_data(100);
+                  flexible_data.orthogonalization_strategy =
+                    dealii::LinearAlgebra::OrthogonalizationStrategy::
+                      modified_gram_schmidt;
                   dealii::SolverFGMRES<GlobalVectorType> flexible_solver(
                     control, flexible_data);
                   flexible_solver.solve(*current_jacobian_,
@@ -548,12 +566,16 @@ namespace ImmersX
           };
           if (!composition_.saddle_points().empty())
             {
-              const auto &saddle      = composition_.saddle_points().front();
-              current_preconditioner_ = keep_snapshot(
-                composition_.schur_preconditioner(saddle.multiplier,
-                                                  snapshot->state_storage,
-                                                  &snapshot->derivative_storage,
-                                                  alpha));
+              const auto &saddle = composition_.saddle_points().front();
+              current_preconditioner_ =
+                keep_snapshot(composition_.schur_preconditioner(
+                  saddle.multiplier,
+                  snapshot->state_storage,
+                  &snapshot->derivative_storage,
+                  alpha,
+                  1000,
+                  1.e-9,
+                  include_schur_primal_coupling_));
               current_solver_is_flexible_ = true;
             }
           else if (composition_.has_complete_local_preconditioners())
@@ -590,6 +612,7 @@ namespace ImmersX
     GlobalVectorType                   *current_state_              = nullptr;
     bool                                current_solver_is_flexible_ = false;
     bool                                connected_                  = false;
+    bool                                include_schur_primal_coupling_ = false;
   };
 } // namespace ImmersX
 #endif
