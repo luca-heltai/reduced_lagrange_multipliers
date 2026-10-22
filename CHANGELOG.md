@@ -241,6 +241,8 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Testing and CI
 
+- [PR #274](https://github.com/luca-heltai/immersx/pull/274) Avoid deal.II deprecation warnings when building the lifted Poisson parity tests.
+
 - [PR #263](https://github.com/luca-heltai/immersx/pull/263) Bound Coral CI builds to two compiler processes to reduce peak memory when both lifted applications are enabled.
 - [PR #263](https://github.com/luca-heltai/immersx/pull/263) Compare lifted Poisson coupling entries, modal loads, and bulk/multiplier coefficients with legacy Schur and AL solves on cylinders, variable radii, and a network; independently check nonzero forcing and Dirichlet data with hanging nodes in serial and MPI. Use feasible primal/multiplier discretizations and check residuals in the prescribed-constraint roadmap examples.
 - [PR #262](https://github.com/luca-heltai/immersx/pull/262) Compare full static elasticity fields, modal loads and operator actions with native oracles in serial and MPI, and check generated parameter examples, output fields, cycle counts, and mesh refinement through CTest. Keep the ordinary category-overlap fixture targeted when new lifted suites are added.
