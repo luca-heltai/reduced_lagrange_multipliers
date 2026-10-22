@@ -94,11 +94,11 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Changed
 
-- [PR #N](https://github.com/luca-heltai/immersx/pull/N) Keep fiber IDA composition and state local to one solve, write the multiplier through semantic output, and move the uncoupled reference solve to validation tests.
+- [PR #276](https://github.com/luca-heltai/immersx/pull/276) Keep fiber IDA composition and state local to one solve, write the multiplier through semantic output, and move the uncoupled reference solve to validation tests.
 
-- [PR #N](https://github.com/luca-heltai/immersx/pull/N) Keep the Poisson-elasticity application focused on pressure traction and semantic output, with residual and traction checks in integration tests.
+- [PR #276](https://github.com/luca-heltai/immersx/pull/276) Keep the Poisson-elasticity application focused on pressure traction and semantic output, with residual and traction checks in integration tests.
 
-- [PR #N](https://github.com/luca-heltai/immersx/pull/N) Simplify coupled Poisson setup and write its solution and multiplier fields directly through semantic output handlers.
+- [PR #276](https://github.com/luca-heltai/immersx/pull/276) Simplify coupled Poisson setup and write its solution and multiplier fields directly through semantic output handlers.
 
 - [PR #259](https://github.com/luca-heltai/immersx/pull/259) Use fixed lower and upper diameter bounds for local mesh adjustment; the old refinement factor remains a deprecated single-mesh input.
 - [PR #250](https://github.com/luca-heltai/immersx/pull/250) Include matrix materialization in trace assembly timings and report synchronized maximum-rank MPI timings with explicit setup, action, and operation-count metadata.
@@ -202,7 +202,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Removed
 
-- [PR #N](https://github.com/luca-heltai/immersx/pull/N) Remove the fiber driver's `matrix_only_displacement_difference()` diagnostic; validation evolves an independent dense reference instead.
+- [PR #276](https://github.com/luca-heltai/immersx/pull/276) Remove the fiber driver's `matrix_only_displacement_difference()` diagnostic; validation evolves an independent dense reference instead.
 
 - [PR #192](https://github.com/luca-heltai/immersx/pull/192) Purged the transitional representation architecture.
 - [PR #186](https://github.com/luca-heltai/immersx/pull/186) Removed the obsolete representation load interaction.
