@@ -76,6 +76,16 @@ namespace ImmersX
                   dealii::ExcMessage("An output handler needs a basename."));
     }
 
+    /** Prepare output for one registered scalar or vector field. */
+    template <typename SemanticField>
+    OutputHandler(const SemanticField         &field,
+                  const std::filesystem::path &output_directory,
+                  std::string                  basename)
+      : OutputHandler(field.space(), output_directory, std::move(basename))
+    {
+      add_field(field);
+    }
+
     /** Register a scalar semantic field on this handler's FE space. */
     void
     add_field(const ScalarField &field)

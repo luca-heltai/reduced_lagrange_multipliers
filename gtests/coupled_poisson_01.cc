@@ -135,15 +135,9 @@ TEST(CoupledPoisson, MPI_UnifiedConstraintSolve) // NOLINT
 
   // Keep this first proving ground fixed-mesh. Adaptivity and representation
   // transfer are deliberately outside this prototype.
-  bulk_problem.make_grid();
-  bulk_problem.setup_fe();
-  bulk_problem.setup_system();
-  bulk_problem.assemble_system();
+  bulk_problem.setup();
 
-  embedded_problem.make_grid();
-  embedded_problem.setup_fe();
-  embedded_problem.setup_system();
-  embedded_problem.assemble_system();
+  embedded_problem.setup();
 
   using FieldVector  = ImmersXLA::MPI::Vector;
   using GlobalVector = ImmersXLA::MPI::BlockVector;
@@ -242,14 +236,8 @@ TEST(CoupledPoisson, MPI_LinearAdapterComposesStandaloneProblems) // NOLINT
 
   PoissonSolver<2>    bulk_problem(bulk_parameters);
   PoissonSolver<1, 2> embedded_problem(embedded_parameters);
-  const auto          initialize_problem = [](auto &problem) {
-    problem.make_grid();
-    problem.setup_fe();
-    problem.setup_system();
-    problem.assemble_system();
-  };
-  initialize_problem(bulk_problem);
-  initialize_problem(embedded_problem);
+  bulk_problem.setup();
+  embedded_problem.setup();
 
   using FieldVector  = ImmersXLA::MPI::Vector;
   using GlobalVector = ImmersXLA::MPI::BlockVector;

@@ -406,7 +406,7 @@ TEST(AppExecutables, CoupledPoissonConfigurableMultiplier)
     << diagnostics;
   EXPECT_TRUE(
     std::filesystem::is_regular_file(directory / "multiplier_q1.pvd"));
-  std::ifstream input(directory / "multiplier_q1-0.0.vtu");
+  std::ifstream input(directory / "multiplier_q1_0.vtu");
   ASSERT_TRUE(input.good());
   const std::string contents((std::istreambuf_iterator<char>(input)),
                              std::istreambuf_iterator<char>());

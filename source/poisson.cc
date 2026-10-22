@@ -261,6 +261,17 @@ namespace ImmersX
 
   template <int dim, int spacedim>
   void
+  PoissonSolver<dim, spacedim>::setup()
+  {
+    make_grid();
+    setup_fe();
+    setup_system();
+    assemble_system();
+  }
+
+
+  template <int dim, int spacedim>
+  void
   PoissonSolver<dim, spacedim>::solve()
   {
     TimerOutput::Scope t(computing_timer, "Solve");

@@ -4,13 +4,13 @@ This tutorial composes two independent Poisson Problems with a scalar
 Lagrange-multiplier Interaction. The complete steady workflow is:
 
 ```text
-Problem + Problem + Interaction -> LinearAdapter -> solve -> accept -> output
+Problem + Problem + Interaction -> LinearAdapter -> solve -> output
 ```
 
 The application adds the bulk and embedded Problems to a `LinearAdapter`, then
-adds the continuity Interaction using their semantic solution Fields. After
-the solve, each accepted Field is handed back to its owner before native output
-is written. The multiplier is accepted and written by the Interaction itself.
+adds the continuity Interaction using their semantic solution Fields. Each
+Problem is prepared with `setup()`. After the solve, `OutputHandler` writes
+both solution Fields and the multiplier directly from the adapter state.
 
 Run the generated parameter file with:
 

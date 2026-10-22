@@ -94,6 +94,8 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Changed
 
+- [PR #N](https://github.com/luca-heltai/immersx/pull/N) Simplify coupled Poisson setup and write its solution and multiplier fields directly through semantic output handlers.
+
 - [PR #259](https://github.com/luca-heltai/immersx/pull/259) Use fixed lower and upper diameter bounds for local mesh adjustment; the old refinement factor remains a deprecated single-mesh input.
 - [PR #250](https://github.com/luca-heltai/immersx/pull/250) Include matrix materialization in trace assembly timings and report synchronized maximum-rank MPI timings with explicit setup, action, and operation-count metadata.
 - [PR #249](https://github.com/luca-heltai/immersx/pull/249) Reuse trial and test basis values during linear assembly and input FEValues across cells with a shared mapping during nonlinear assembly.
