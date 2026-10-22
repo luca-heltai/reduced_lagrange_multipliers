@@ -1,0 +1,13 @@
+# Reuse the same target and forcing on a finer transverse solid mesh.
+include @IMMERSX_BINARY_DIR@/tutorials/metric_flow_x_elastodynamics/mms_cube_diagnostic.prm
+
+subsection Elastodynamics
+  set Output directory = @TEST_OUTPUT_DIR@/metric-flow-x-mms-cube-refined/solid
+  subsection Domain
+    set Grid generator arguments = 4, 32, 32: -0.120685, -0.120685, -0.120685: 0.120685, 0.120685, 0.120685: false
+  end
+end
+
+subsection MetricFlowSystem<1, 3>
+  set Output directory = @TEST_OUTPUT_DIR@/metric-flow-x-mms-cube-refined/flow
+end

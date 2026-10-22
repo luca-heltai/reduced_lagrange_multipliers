@@ -8,6 +8,11 @@ The runnable example uses one parameter file:
 tutorials/metric_flow_x_elastodynamics/two_way.prm.in
 ```
 
+The [one-vessel stress-jump diagnostic](metric-flow-x-elastodynamics-mms)
+provides a piecewise manufactured target in a cube. Its separate parameter
+files expose differences between that target and the current constraint
+assembly; they are not passing MMS verification cases.
+
 MetricFlowX must provide the same build configuration as ImmersX.
 DebugRelease requires a dual-variant package exporting
 `MetricFlowX::metric_flow_x_Debug` and

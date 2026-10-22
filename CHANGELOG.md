@@ -221,6 +221,8 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Tutorial
 
+- [PR #N](https://github.com/luca-heltai/immersx/pull/N) Add one-vessel stress-jump diagnostic inputs and a tutorial with piecewise displacement, volume supplied by the inlet, and the current solid and flow-area constraint reactions.
+
 - [PR #234](https://github.com/luca-heltai/immersx/pull/234) Run the tutorial platform through noVNC with remote Slurm execution and selectable Debug or Release packages.
 - [PR #233](https://github.com/luca-heltai/immersx/pull/233) Build multi-architecture Coral, visualizer, and platform images for the dealiiX tutorial stack.
 - [PR #127](https://github.com/luca-heltai/immersx/pull/127) Updated the tutorial documentation.

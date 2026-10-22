@@ -1,6 +1,6 @@
 # MetricFlowX vessel-wall coupling
 
-`two_way.prm.in` is the single parameter-driven example for the
+`two_way.prm.in` is the nonzero-inflow example for the
 `metric_flow_x_elastodynamics` application. It configures the flow and solid
 Problems, the tensor-product wall lift, the material data, time integration,
 initial and boundary functions, and output directories.
@@ -11,5 +11,11 @@ generated file, as described in the [tutorial](../../doc/tutorials/metric-flow-x
 The [mathematical formulation](../../doc/tutorials/metric-flow-x-elastodynamics-coupling.md)
 is documented in the tutorial documentation.
 
-Analytical helpers and residual/Jacobian checks are in
-`gtests/metric_flow_x_elastodynamics_mms.h` and the corresponding tests.
+The [one-vessel stress-jump diagnostic](../../doc/tutorials/metric-flow-x-elastodynamics-mms.md)
+derives a continuous, piecewise solid displacement and nonzero pressure-jump
+target. Its inlet supplies the changing vessel volume. Run
+`mms_cube_diagnostic.prm.in`, `mms_cube_diagnostic_refined.prm.in`, and
+`mms_cube_diagnostic_mpi.prm.in` through their generated build-tree `.prm`
+files. These inputs expose the current constraint-row mismatch; they are not
+passing MMS verification cases. The application does not compute their errors
+automatically.

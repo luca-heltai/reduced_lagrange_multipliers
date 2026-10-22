@@ -35,6 +35,7 @@ how-to/lifted-poisson
 how-to/lifted-static-elasticity
 tutorials/index
 tutorials/metric-flow-x-elastostatic-onboarding
+tutorials/metric-flow-x-elastodynamics-mms
 concepts/index
 reference/index
 dealiiX-platform/index

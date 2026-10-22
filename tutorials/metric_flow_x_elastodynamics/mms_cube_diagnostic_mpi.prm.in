@@ -1,0 +1,10 @@
+# Separate outputs preserve the single-rank diagnostic when running two ranks.
+include @IMMERSX_BINARY_DIR@/tutorials/metric_flow_x_elastodynamics/mms_cube_diagnostic.prm
+
+subsection Elastodynamics
+  set Output directory = @TEST_OUTPUT_DIR@/metric-flow-x-mms-cube-mpi/solid
+end
+
+subsection MetricFlowSystem<1, 3>
+  set Output directory = @TEST_OUTPUT_DIR@/metric-flow-x-mms-cube-mpi/flow
+end

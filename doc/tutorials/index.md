@@ -26,8 +26,10 @@ monolithic `IDAAdapter` formulation, with a work split for two collaborators.
 application. The [MetricFlowX and elastodynamics tutorial](metric-flow-x-elastodynamics)
 shows the parameter-driven two-way vessel-wall coupling. The
 [MetricFlowX and elastodynamics coupling formulation](metric-flow-x-elastodynamics-coupling)
-introduces the coupled equations. Four companion pages describe its kinematic,
-static, spatial manufactured, and transient inputs.
+introduces the coupled equations. The
+[one-vessel stress-jump diagnostic](metric-flow-x-elastodynamics-mms) gives
+piecewise analytical fields, an inlet that supplies the changing volume, and
+parameter files that expose the current constraint-row mismatch.
 
 ```{toctree}
 :maxdepth: 1
