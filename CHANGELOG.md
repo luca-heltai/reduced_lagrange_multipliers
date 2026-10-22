@@ -139,7 +139,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Fixed
 
-- [PR #275](https://github.com/luca-heltai/immersx/pull/275) Apply vessel-wall traction in solid momentum and native external-pressure feedback in flow, including boundary and interface equations, while preserving source-free continuity. Add an opt-in Schur correction for displacement-velocity coupling, retain small-load corrections, preserve callback errors, and stop on failed IDA steps in Release.
+- [PR #275](https://github.com/luca-heltai/immersx/pull/275) Apply vessel-wall traction in solid momentum and native external-pressure feedback in flow, including boundary and interface equations, while preserving source-free continuity. Exchange reference-area ghost coefficients before constructing the distributed wall lift. Add an opt-in Schur correction for displacement-velocity coupling, retain small-load corrections, preserve callback errors, and stop on failed IDA steps in Release.
 
 - [PR #264](https://github.com/luca-heltai/immersx/pull/264) Prevent the Navier–Stokes tutorial from timing out in Debug builds by reusing finite-element evaluations during nonlinear Jacobian assembly.
 - [PR #263](https://github.com/luca-heltai/immersx/pull/263) Use one lifted assembly for scalar and vector constraints, preserve constrained master sparsity, and allow explicit source Dirichlet-value updates while retaining collective static-data and constraint-structure guards. Keep scalar coefficient-output and vector coefficient-creation nodes distinct in the combined Coral registry.

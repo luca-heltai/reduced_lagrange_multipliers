@@ -101,8 +101,14 @@ namespace
       metric_flow_parameter("Vtk file path for mesh input"),
       flow_problem.triangulation(),
       MPI_COMM_WORLD);
-    const auto a0 = imported.field("a0");
-    const auto A0 = frozen(a0.field(), a0.coefficients());
+    const auto  a0 = imported.field("a0");
+    FieldVector reference_area;
+    reference_area.reinit(imported.locally_owned_dofs(),
+                          imported.locally_relevant_dofs(),
+                          MPI_COMM_WORLD);
+    reference_area = a0.coefficients();
+    reference_area.update_ghost_values();
+    const auto A0 = frozen(a0.field(), reference_area);
 
     SolidProblem solid_problem(solid_parameters);
     solid_problem.make_grid();
