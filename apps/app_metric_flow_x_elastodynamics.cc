@@ -80,9 +80,9 @@ namespace
     coupled_solver.add_parameter(
       "Linear solver",
       linear_solver,
-      "Coupled IDA linear solver. UMFPACK materializes each Jacobian and requires one MPI rank.",
+      "Coupled IDA linear solver. Direct solvers materialize each Jacobian. UMFPACK requires one rank; MUMPS supports MPI.",
       ParameterAcceptor::prm,
-      Patterns::Selection("iterative|umfpack"));
+      Patterns::Selection("iterative|umfpack|mumps"));
 
     initialize_parameters(parameter_file);
     flow_problem.initialize_params(parameter_file);
@@ -96,6 +96,12 @@ namespace
       linear_solver != "umfpack",
       ExcMessage(
         "The coupled UMFPACK solver requires deal.II configured with UMFPACK."));
+#  endif
+#  ifndef DEAL_II_WITH_MUMPS
+    AssertThrow(
+      linear_solver != "mumps",
+      ExcMessage(
+        "The coupled MUMPS solver requires deal.II configured with MUMPS."));
 #  endif
     flow_problem.setup();
     if (lambda_parameters.finite_element == "auto")
@@ -138,7 +144,12 @@ namespace
 
     Adapter adapter(flow_time, ida_parameters, MPI_COMM_WORLD);
     adapter.set_schur_primal_coupling();
-    adapter.set_serial_direct_solver(linear_solver == "umfpack");
+    if (linear_solver == "iterative")
+      adapter.set_linear_solver(Adapter::LinearSolver::iterative);
+    else if (linear_solver == "umfpack")
+      adapter.set_linear_solver(Adapter::LinearSolver::umfpack);
+    else if (linear_solver == "mumps")
+      adapter.set_linear_solver(Adapter::LinearSolver::mumps);
     const auto solid_fields = adapter.add(solid_problem, "elastodynamics");
     const auto flow_fields =
       adapter.add(metric_flow_x(flow_problem), "blood-flow");

@@ -11,6 +11,8 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Added
 
+- [PR #275](https://github.com/luca-heltai/immersx/pull/275) Allow serial and distributed coupled IDA solves with native deal.II SparseDirectMUMPS when DEAL_II_WITH_MUMPS is enabled, selected through the application parameter file.
+
 - [PR #275](https://github.com/luca-heltai/immersx/pull/275) Allow the coupled MetricFlowX–elastodynamics application to select a serial UMFPACK solve from its parameter file. Materialize and factorize each IDA Jacobian once, and reuse the factorization for subsequent right-hand sides.
 
 - [PR #271](https://github.com/luca-heltai/immersx/pull/271) Show ImmersX/native deal.II overhead ratios by default in performance charts, with an equal-time reference and an absolute-timing option. Keep incompatible measurements separate and explain unavailable comparisons and single-sample histories.

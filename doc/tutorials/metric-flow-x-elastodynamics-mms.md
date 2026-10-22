@@ -122,6 +122,31 @@ columns. This path is intended for small serial verification problems. See the
 [cost analysis and profiling report](../performance/metric-flow-x-elastodynamics)
 for measured setup and solve costs.
 
+For a distributed direct solve, select `Linear solver = mumps`. This uses
+`dealii::SparseDirectMUMPS` directly and requires `DEAL_II_WITH_MUMPS` in the
+deal.II configuration. Run the generated example with:
+
+```bash
+mpirun -np 2 ./metric_flow_x_elastodynamics \
+  tutorials/metric_flow_x_elastodynamics/mms_cube_mumps.prm
+```
+
+MUMPS also works on one rank. It uses the same current Jacobian and factor
+reuse policy as UMFPACK. The matrix and right-hand side retain their native
+ownership; the solution is redistributed from contiguous MUMPS output to the
+coupled fields. The total number of coupled unknowns must be at least the
+number of MPI ranks. This option does not use the PETSc or Trilinos direct
+solver interfaces.
+
+The local macOS installation (deal.II 9.8.0-rc1, MUMPS 5.9.0) fails in
+`DMUMPS_SCATTER_DIST_RHS` on the coupled application, after successful
+factorization, in serial and MPI. Distributed analytical checks also fail in
+that installation. A similar failure is tracked in
+[deal.II issue #19513](https://github.com/dealii/dealii/issues/19513).
+The Linux deal.II 9.7.1 installation passes the serial and MPI analytical
+checks in Debug and Release. These results do not establish that every
+MUMPS-enabled installation can run the application.
+
 ## Geometry and coefficients
 
 The solid fills the cube $\Omega=[-\ell,\ell]^3$, with

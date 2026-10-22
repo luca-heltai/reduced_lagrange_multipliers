@@ -171,6 +171,13 @@ This option provides a direct reference solve for small serial verification
 cases. The matrix-free Jacobian action remains available for checking the true
 linear residual.
 
+Distributed runs can select `Linear solver = mumps` when deal.II enables
+`DEAL_II_WITH_MUMPS`. This calls `dealii::SparseDirectMUMPS` directly and
+reuses each factorization for subsequent right-hand sides. The
+[MMS tutorial](../tutorials/metric-flow-x-elastodynamics-mms) provides a
+parameter file and MPI command. The measurements below use UMFPACK; they do
+not measure MUMPS performance or parallel scaling.
+
 ## Controlled comparisons
 
 These runs use the same base input sequentially, without a sampling profiler

@@ -705,6 +705,130 @@ TEST(DistributedIDA, SerialUMFPACKSolvesCurrentDAEJacobian)
 }
 #  endif
 
+#  ifdef DEAL_II_WITH_MUMPS
+namespace
+{
+  void
+  check_mumps_jacobian(const bool empty_last_rank)
+  {
+    using namespace dealii;
+    const auto         rank  = Utilities::MPI::this_mpi_process(MPI_COMM_WORLD);
+    const auto         ranks = Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD);
+    const unsigned int size  = 2 * (empty_last_rank ? ranks - 1 : ranks);
+    IndexSet           owned(size);
+    if (!empty_last_rank || rank + 1 < ranks)
+      owned.add_range(2 * rank, 2 * rank + 2);
+    owned.compress();
+    DynamicSparsityPattern sparsity(size, size, owned);
+    for (const auto i : owned)
+      {
+        sparsity.add(i, i);
+        sparsity.add(i, (i + 1) % size);
+      }
+    auto mass = std::make_shared<ImmersXLA::MPI::SparseMatrix>();
+    mass->reinit(owned, owned, sparsity, MPI_COMM_WORLD);
+    for (const auto i : owned)
+      {
+        mass->set(i, i, 2.);
+        mass->set(i, (i + 1) % size, .25);
+      }
+    mass->compress(VectorOperation::insert);
+    TimeIntervalParameters time_parameters;
+    IDAParameters          ida_parameters;
+    Adapter adapter(time_parameters, ida_parameters, MPI_COMM_WORLD);
+    adapter.set_linear_solver(Adapter::LinearSolver::mumps);
+    const auto fields =
+      adapter
+        .add([owned, mass](auto &builder) {
+          using Model         = typename std::decay_t<decltype(builder)>::Model;
+          const auto u        = builder.field("u", owned, owned);
+          const auto v        = builder.field("v", owned, owned);
+          const auto lambda   = builder.algebraic_field("lambda", owned, owned);
+          auto       identity = builder.matrix_operator(*mass);
+          typename Model::MatrixOperatorFactory time_coupling =
+            [identity](const auto &context) {
+              return -context.time() * identity;
+            };
+          builder.term(u, "kinematic")
+            .derivative(u, identity)
+            .state(v, time_coupling);
+          builder.term(v, "momentum")
+            .derivative(v, identity)
+            .state(lambda, identity);
+          builder.term(lambda, "position").state(u, identity);
+          return std::array<FieldId, 3>{{u, v, lambda}};
+        })
+        .fields();
+    auto       state    = adapter.make_state();
+    auto       dot      = adapter.make_state();
+    auto       rhs      = adapter.make_state();
+    auto       solution = adapter.make_state();
+    auto       action   = adapter.make_state();
+    const auto exact    = [](const unsigned int field, const unsigned int i) {
+      if (field == 0)
+        return 2. + i;
+      else if (field == 1)
+        return -1. + 2. * i;
+      else if (field == 2)
+        return 4. - i;
+      return 0.;
+    };
+    for (unsigned int setup = 0; setup < 2; ++setup)
+      {
+        const double time = 1. + setup, alpha = 2. + setup;
+        for (const auto i : owned)
+          {
+            const auto m = [&](const unsigned int field) {
+              return 2. * exact(field, i) + .25 * exact(field, (i + 1) % size);
+            };
+            adapter.field(rhs, fields[0])[i] = alpha * m(0) - time * m(1);
+            adapter.field(rhs, fields[1])[i] = alpha * m(1) + m(2);
+            adapter.field(rhs, fields[2])[i] = m(0);
+          }
+        rhs.compress(VectorOperation::insert);
+        adapter.solver().setup_jacobian(time, state, dot, alpha);
+        EXPECT_FALSE(adapter.has_current_preconditioner());
+        for (const double scale : {1., -.5})
+          {
+            auto scaled_rhs = rhs;
+            scaled_rhs *= scale;
+            adapter.solver().solve_with_jacobian(scaled_rhs, solution, 1.e-12);
+            for (unsigned int field = 0; field < fields.size(); ++field)
+              for (const auto i : owned)
+                EXPECT_NEAR(adapter.field(solution, fields[field])[i],
+                            scale * exact(field, i),
+                            1.e-11);
+            adapter.current_jacobian().vmult(action, solution);
+            action -= scaled_rhs;
+            EXPECT_LT(action.l2_norm(), 1.e-10);
+          }
+      }
+    EXPECT_THROW(adapter.set_linear_solver(Adapter::LinearSolver::iterative),
+                 ExceptionBase);
+  }
+} // namespace
+
+TEST(DistributedIDA, BOTH_MUMPSSolvesCurrentDAEJacobian)
+{
+  check_mumps_jacobian(false);
+}
+
+TEST(DistributedIDA, MPI_MUMPSHandlesEmptyExecutionRank)
+{
+  ASSERT_GT(dealii::Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD), 1u);
+  check_mumps_jacobian(true);
+}
+#  else
+TEST(DistributedIDA, MUMPSRejectsUnavailableBackend)
+{
+  TimeIntervalParameters time_parameters;
+  IDAParameters          ida_parameters;
+  Adapter adapter(time_parameters, ida_parameters, MPI_COMM_SELF);
+  EXPECT_THROW(adapter.set_linear_solver(Adapter::LinearSolver::mumps),
+               dealii::ExceptionBase);
+}
+#  endif
+
 TEST(DistributedIDA, MPI_UMFPACKRejectsMultipleRanks)
 {
   TimeIntervalParameters time_parameters;

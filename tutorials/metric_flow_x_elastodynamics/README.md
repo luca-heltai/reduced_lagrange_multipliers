@@ -19,3 +19,6 @@ target. Its inlet supplies the changing vessel volume. Run
 files. These inputs use the corrected momentum and continuity rows, with the
 native pressure feedback described in the tutorial. The application does not
 compute their errors automatically.
+
+`mms_cube_mumps.prm.in` selects native `dealii::SparseDirectMUMPS` for serial
+or MPI runs. It requires deal.II configured with `DEAL_II_WITH_MUMPS`.
