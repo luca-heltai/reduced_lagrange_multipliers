@@ -311,11 +311,10 @@ TEST(FiberReinforcedElastodynamicsValidation, CoupledResidualAndExcessResponse)
   EXPECT_TRUE(driver.fiber_problem().state_is_finite());
   EXPECT_LT(driver.residuals().velocity_constraint, 1.e-8);
   EXPECT_TRUE(std::isfinite(driver.fiber_excess_elastic_energy()));
-  EXPECT_GT(driver.matrix_only_displacement_difference(), 1.e-12);
 }
 
 TEST(FiberReinforcedElastodynamicsValidation,
-     MatrixOnlyReferenceUsesIndependentHistory)
+     CoupledResponseDiffersFromIndependentMatrixHistory)
 {
   ParameterAcceptor::clear();
   FiberReinforcedElastodynamicsParameters<2> parameters;
@@ -370,9 +369,6 @@ TEST(FiberReinforcedElastodynamicsValidation,
       LA::MPI::Vector difference(problem.displacement());
       for (unsigned int i = 0; i < free_dofs.size(); ++i)
         difference[free_dofs[i]] -= displacement[i];
-      EXPECT_NEAR(driver.matrix_only_displacement_difference(),
-                  difference.l2_norm(),
-                  1.e-12);
       EXPECT_GT(difference.l2_norm(), 1.e-12);
     }
 }
@@ -389,8 +385,7 @@ TEST(FiberReinforcedElastodynamicsValidation,
   configure_problem(parameters, true);
   FiberReinforcedElastodynamics<2> driver(parameters);
 
-  // run() exercises setup(), initial conditions, setup_ida(), and the initial
-  // derivative calculation, then continues into IDA after that scope ends.
+  // The coupled initial mass solve must release its observer before IDA runs.
   driver.run();
 
   EXPECT_EQ(driver.time_step_number(), 2u);

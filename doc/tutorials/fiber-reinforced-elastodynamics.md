@@ -29,11 +29,10 @@ on the line selects all ambient components (`spacedim`), not just the
 one-dimensional support component. Use `field.component_mask()` when passing
 that selection to a native assembler.
 
-For the fixed-step backward-Euler path, `matrix_only_displacement_difference()`
-compares the coupled displacement with an uncoupled reference advanced from
-its own displacement and velocity history under the same forcing and time
-steps. It does not reuse the coupled state to construct the reference load.
-This diagnostic is not an independent reference for the IDA path.
+The validation tests compare fixed-step backward-Euler coupling with an
+uncoupled dense reference advanced from its own displacement and velocity
+history under the same forcing and time steps. The application advances only
+the coupled state.
 
 The application exposes matrix and fiber velocity fields and creates an
 independent vector multiplier field. The constraint is assembled from
@@ -58,7 +57,9 @@ components. The default `auto` keeps the degree-based behavior. The choice must
 still yield a solvable constraint system; not every trial/multiplier pair is
 stable.
 
-The application registers these contributors with `IDAAdapter`, accepts the
+The IDA execution keeps the adapter, field handles, and solver vectors local
+to one solve. It registers the two Problems and their velocity-continuity
+constraint directly with `IDAAdapter`, accepts the
 displacement and velocity fields after accepted steps, and writes the two
 Problem outputs plus the multiplier on its own FE space. The application
 supports `2/2` and `3/3` matrix dimension selections; the fiber is

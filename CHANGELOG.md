@@ -94,6 +94,8 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Changed
 
+- [PR #N](https://github.com/luca-heltai/immersx/pull/N) Keep fiber IDA composition and state local to one solve, write the multiplier through semantic output, and move the uncoupled reference solve to validation tests.
+
 - [PR #N](https://github.com/luca-heltai/immersx/pull/N) Keep the Poisson-elasticity application focused on pressure traction and semantic output, with residual and traction checks in integration tests.
 
 - [PR #N](https://github.com/luca-heltai/immersx/pull/N) Simplify coupled Poisson setup and write its solution and multiplier fields directly through semantic output handlers.
@@ -199,6 +201,8 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 - [PR #67](https://github.com/luca-heltai/immersx/pull/67) Fixed the inclusion basis-function scaling.
 
 ### Removed
+
+- [PR #N](https://github.com/luca-heltai/immersx/pull/N) Remove the fiber driver's `matrix_only_displacement_difference()` diagnostic; validation evolves an independent dense reference instead.
 
 - [PR #192](https://github.com/luca-heltai/immersx/pull/192) Purged the transitional representation architecture.
 - [PR #186](https://github.com/luca-heltai/immersx/pull/186) Removed the obsolete representation load interaction.

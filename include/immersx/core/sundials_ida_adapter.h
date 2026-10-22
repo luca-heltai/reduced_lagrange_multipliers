@@ -244,6 +244,20 @@ namespace ImmersX
       return field(state, semantic_field.id());
     }
 
+    /** Write semantic fields without exposing the adapter's execution layout.
+     */
+    template <typename Output>
+    void
+    write_output(Output                 &output,
+                 const GlobalVectorType &state,
+                 const double            time = 0.) const
+    {
+      StateView<FieldVectorType> view(composition_.state_layout(), time);
+      for (std::size_t i = 0; i < composition_.state_layout().n_fields(); ++i)
+        view.bind(FieldId(i), composition_.field(state, FieldId(i)));
+      output.write(view, time);
+    }
+
     dealii::IndexSet
     differential_components()
     {
