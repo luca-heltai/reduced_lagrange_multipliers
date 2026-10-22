@@ -94,6 +94,8 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Changed
 
+- [PR #N](https://github.com/luca-heltai/immersx/pull/N) Keep the Poisson-elasticity application focused on pressure traction and semantic output, with residual and traction checks in integration tests.
+
 - [PR #N](https://github.com/luca-heltai/immersx/pull/N) Simplify coupled Poisson setup and write its solution and multiplier fields directly through semantic output handlers.
 
 - [PR #259](https://github.com/luca-heltai/immersx/pull/259) Use fixed lower and upper diameter bounds for local mesh adjustment; the old refinement factor remains a deprecated single-mesh input.

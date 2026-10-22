@@ -13,15 +13,14 @@
 #include <immersx/core/linear_adapter.h>
 #include <immersx/core/observable.h>
 #include <immersx/core/observable_lift.h>
+#include <immersx/core/weak_term.h>
+#include <immersx/io/output_handler.h>
 #include <immersx/io/utils.h>
 #include <immersx/physics/elastic_static.h>
 #include <immersx/physics/poisson.h>
+#include <immersx/physics/poisson_residual.h>
 
-#include <cmath>
-#include <filesystem>
-#include <fstream>
 #include <iostream>
-#include <type_traits>
 
 #include "coupled_poisson_elasticity.h"
 
@@ -36,19 +35,16 @@ main(int argc, char *argv[])
                                                                   argv,
                                                                   1);
 
-      PoissonParameters<1, 3>                poisson_parameters;
-      ElasticStaticParameters<3, 3>          elasticity_parameters;
-      CoupledPoissonElasticity::PressureLift pressure_lift("/Pressure lift/");
+      PoissonParameters<1, 3>       poisson_parameters;
+      ElasticStaticParameters<3, 3> elasticity_parameters;
+      TensorProductLift<1, 2, 3>    pressure_lift("/Pressure lift/");
       CoupledPoissonElasticity::CylinderSurface surface;
       LinearSolverParameters                    adapter_parameters;
       const std::string prm_file = argc > 1 ? argv[1] : "parameters.prm";
       initialize_parameters(prm_file);
 
       PoissonSolver<1, 3> poisson_problem(poisson_parameters);
-      poisson_problem.make_grid();
-      poisson_problem.setup_fe();
-      poisson_problem.setup_system();
-      poisson_problem.assemble_system();
+      poisson_problem.setup();
 
       ElasticStaticProblem<3, 3> elasticity_problem(elasticity_parameters);
       elasticity_problem.setup();
@@ -59,65 +55,27 @@ main(int argc, char *argv[])
 
       Adapter adapter(adapter_parameters, MPI_COMM_WORLD);
 
-      const auto poisson       = adapter.add(poisson_problem);
-      const auto elastic       = adapter.add(elasticity_problem);
-      const auto displacement  = elastic.fields().displacement;
-      const auto poisson_field = poisson.fields().solution;
+      const auto poisson = adapter.add(poisson_problem).fields();
+      const auto elastic = adapter.add(elasticity_problem).fields();
       const auto pressure =
-        ImmersX::make_lift(CoupledPoissonElasticity::Pressure{}.factor *
-                             ImmersX::value(poisson_field),
-                           pressure_lift);
-      const auto traction = pressure * ImmersX::normal(surface);
-      adapter.add(ImmersX::weak_term(traction, ImmersX::test(displacement)),
+        make_lift(2. * value(poisson.solution), pressure_lift);
+      adapter.add(weak_term(pressure * normal(surface),
+                            test(elastic.displacement)),
                   "pressure-traction");
 
       auto state = adapter.make_state();
       adapter.solve(state);
 
-      poisson_problem.set_solution(
-        adapter.field(state, poisson.fields().solution));
-      elasticity_problem.set_solution(
-        adapter.field(state, elastic.fields().displacement));
-      poisson_problem.output_results();
-      elasticity_problem.output_results(0);
-
-      auto residual = adapter.make_state();
-      adapter.evaluate_residual(state, residual);
-
-      const auto &poisson_state =
-        adapter.field(state, poisson.fields().solution);
-      const auto &elastic_state =
-        adapter.field(state, elastic.fields().displacement);
-      const double pressure_error =
-        std::abs(CoupledPoissonElasticity::Pressure{}.factor - 2.);
-      const double traction_error =
-        CoupledPoissonElasticity::traction_balance(pressure,
-                                                   surface,
-                                                   displacement,
-                                                   elasticity_problem,
-                                                   poisson_state,
-                                                   elastic_state);
-
-      std::cout << "coupled_residual = " << residual.l2_norm() << '\n'
-                << "pressure_scale_error = " << pressure_error << '\n'
-                << "traction_balance_error = " << traction_error << '\n'
-                << "traction_points = " << pressure.lifted_points().size()
-                << '\n';
-
-      std::filesystem::create_directories(poisson_parameters.output_directory);
-      std::ofstream diagnostics(
-        std::filesystem::path(poisson_parameters.output_directory) /
-        "coupled_poisson_elasticity_diagnostics.txt");
-      diagnostics << "coupled_residual = " << residual.l2_norm() << '\n'
-                  << "pressure_scale_error = " << pressure_error << '\n'
-                  << "traction_balance_error = " << traction_error << '\n';
-
-      AssertThrow(residual.l2_norm() < 1.e-9,
-                  dealii::ExcMessage("Coupled solve residual is too large."));
-      AssertThrow(pressure_error < 1.e-14,
-                  dealii::ExcMessage("Pressure scaling check failed."));
-      AssertThrow(traction_error < 1.e-9,
-                  dealii::ExcMessage("Traction balance check failed."));
+      OutputHandler<1, 3, FieldVector> pressure_output(
+        poisson.solution,
+        poisson_parameters.output_directory,
+        poisson_parameters.output_name);
+      OutputHandler<3, 3, FieldVector> displacement_output(
+        elastic.displacement,
+        elasticity_parameters.output_directory,
+        elasticity_parameters.output_name);
+      adapter.write_output(pressure_output, state);
+      adapter.write_output(displacement_output, state);
     }
   catch (const std::exception &exception)
     {
