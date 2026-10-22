@@ -41,10 +41,9 @@ namespace
   dof_keys(const DoFHandler<dim, 3> &dh)
   {
     using Key = std::pair<std::array<long long, 3>, unsigned int>;
-    std::map<types::global_dof_index, Point<3>> points;
-    DoFTools::map_dofs_to_support_points(StaticMappingQ1<dim, 3>::mapping,
-                                         dh,
-                                         points);
+    const auto points =
+      DoFTools::map_dofs_to_support_points(StaticMappingQ1<dim, 3>::mapping,
+                                           dh);
     std::map<types::global_dof_index, Key> local;
     std::vector<types::global_dof_index> indices(dh.get_fe().n_dofs_per_cell());
     for (const auto &cell : dh.active_cell_iterators())
