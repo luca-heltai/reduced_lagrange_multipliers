@@ -11,11 +11,11 @@ generated file, as described in the [tutorial](../../doc/tutorials/metric-flow-x
 The [mathematical formulation](../../doc/tutorials/metric-flow-x-elastodynamics-coupling.md)
 is documented in the tutorial documentation.
 
-The [one-vessel stress-jump diagnostic](../../doc/tutorials/metric-flow-x-elastodynamics-mms.md)
+The [one-vessel manufactured solution](../../doc/tutorials/metric-flow-x-elastodynamics-mms.md)
 derives a continuous, piecewise solid displacement and nonzero pressure-jump
 target. Its inlet supplies the changing vessel volume. Run
-`mms_cube_diagnostic.prm.in`, `mms_cube_diagnostic_refined.prm.in`, and
-`mms_cube_diagnostic_mpi.prm.in` through their generated build-tree `.prm`
-files. These inputs expose the current constraint-row mismatch; they are not
-passing MMS verification cases. The application does not compute their errors
-automatically.
+`mms_cube.prm.in`, `mms_cube_refined.prm.in`, and
+`mms_cube_mpi.prm.in` through their generated build-tree `.prm`
+files. These inputs use the corrected momentum and continuity rows, with the
+native pressure feedback described in the tutorial. The application does not
+compute their errors automatically.

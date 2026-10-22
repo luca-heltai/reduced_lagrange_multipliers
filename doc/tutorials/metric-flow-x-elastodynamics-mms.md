@@ -1,4 +1,4 @@
-# One vessel in a cube: a stress-jump diagnostic
+# One vessel in a cube: a manufactured solution
 
 This example prescribes a nonzero, time-dependent radial displacement, vessel
 area, axial velocity, and pressure-jump multiplier. A continuous, piecewise
@@ -6,13 +6,11 @@ solid displacement supplies the stress jump needed to balance the multiplier.
 The inlet supplies the increase in vessel volume; physical continuity has no
 distributed mass source.
 
-The inputs run the existing `metric_flow_x_elastodynamics` application without
-changing its code. They are a **diagnostic of the current assembly**, not a
-passing manufactured-solution verification. The application puts the solid
-constraint reaction in the displacement/kinematic row and also adds a
-transpose reaction to the flow-area row. The analytical target below exposes
-both differences. Successful time integration does not establish that the
-computed fields match this target.
+The inputs exercise all five residual rows of `metric_flow_x_elastodynamics`.
+Displacement compatibility is imposed in the multiplier row, while its
+traction acts in solid momentum. Continuity has no multiplier reaction.
+The flow receives the external pressure $p_{\mathrm{ext}}=-\lambda$ through
+native volume, face, boundary, and junction equations.
 
 ![Analytical radial displacement, axial velocity, and volume supplied by the inlet](../_static/metric-flow-x-mms-target.svg)
 
@@ -24,14 +22,16 @@ The parameter templates are in `tutorials/metric_flow_x_elastodynamics/`:
 
 | Template | Solid cells | Purpose |
 | --- | ---: | --- |
-| `mms_cube_diagnostic.prm.in` | $4\times16\times16$ | Single-rank diagnostic |
-| `mms_cube_diagnostic_refined.prm.in` | $4\times32\times32$ | Refine the transverse solid mesh |
-| `mms_cube_diagnostic_mpi.prm.in` | $4\times16\times16$ | Separate output directories for MPI |
+| `mms_cube.prm.in` | $4\times16\times16$ | Single-rank MMS |
+| `mms_cube_refined.prm.in` | $4\times32\times32$ | Refine the transverse solid mesh |
+| `mms_cube_mpi.prm.in` | $4\times16\times16$ | Separate output directories for MPI |
 
 All cases use one centerline cell, degree-one elements, an automatically
 matched multiplier space, and the same analytical target. The solid varies
 only in the transverse coordinates, so the refined input keeps the axial
-partition fixed. The cross-section refinement level is five in all inputs.
+partition fixed. The cross-section refinement level is two in the base and
+MPI inputs and three in the refined input, so the refined run also improves
+wall geometry.
 The target area is constant in space and the target velocity is linear, so
 degree one represents both exactly on that centerline cell. Keep flow
 refinement at zero: the application imports `a0` from the original VTK mesh
@@ -58,11 +58,11 @@ there:
 ```bash
 cd build-mms
 ./metric_flow_x_elastodynamics \
-  tutorials/metric_flow_x_elastodynamics/mms_cube_diagnostic.prm
+  tutorials/metric_flow_x_elastodynamics/mms_cube.prm
 ./metric_flow_x_elastodynamics \
-  tutorials/metric_flow_x_elastodynamics/mms_cube_diagnostic_refined.prm
+  tutorials/metric_flow_x_elastodynamics/mms_cube_refined.prm
 mpirun -np 2 ./metric_flow_x_elastodynamics \
-  tutorials/metric_flow_x_elastodynamics/mms_cube_diagnostic_mpi.prm
+  tutorials/metric_flow_x_elastodynamics/mms_cube_mpi.prm
 ```
 
 Reconfigure after changing a template. These inputs select one spatial solve
@@ -219,80 +219,69 @@ with expansion because the inlet supplies all of the added volume. Setting
 both endpoint fluxes to zero would require a distributed mass source.
 
 For this target, the tube-law pressure is uniform along the vessel. With zero
-friction, the native momentum equation and the application's explicit
-cell-volume feedback give
+friction, the native momentum equation uses $p=p_{\mathrm{tube}}(A)-\lambda$:
 
 $$
-\partial_t U+U\partial_s U+\rho_f^{-1}\partial_s p-\lambda=S_U.
+\partial_t U+U\partial_s U+\rho_f^{-1}\partial_s p=S_U.
 $$
 
 Consequently the two RHS expressions are
 
 $$
 S_A=0,\qquad
-S_U=(\ell-x)\frac{12t-42t^4}{(1+t^3)^2}+6t^3.
+S_U=(\ell-x)\frac{12t-42t^4}{(1+t^3)^2}.
 $$
 
-The last term balances the implemented $-\lambda$ pairing. No pressure
-gradient or density factor is inserted into that pairing. This is an
-algebraic diagnostic of the existing residual scaling. It does not replace
-that term with a different pressure model.
+Both tube-law pressure and multiplier are spatially uniform for this target.
+Their pressure gradient vanishes. Native pressure contributions at faces and
+boundaries must still be assembled to cancel the volume contribution.
 
-## What the current assembly changes
+## Residual rows and their forcing
 
-Write the discrete wall constraint as
-$C(u,A)=B^Tu-P_h(A)=0$. The generic `Constraint` adds a transpose reaction to
-each participating field. In the current application these are displacement
-and the area component of the mixed flow state. The relevant rows are
+With $C(u,A)=B^Tu-P_h(A)$, the assembled rows are
 
 $$
 \begin{aligned}
-F_u &= M(\dot u-v)+B\lambda,\\
-F_v &= M\dot v+Ku-f,\\
-F_A &= F_A^{\mathrm{native}}-DP_h(A)^T\lambda,\\
-F_U &= F_U^{\mathrm{native}}-M_\gamma\lambda,\\
+F_u &= M(\dot u-v),\\
+F_v &= M\dot v+Ku-f+B\lambda,\\
+F_A &= F_A^{\mathrm{native}},\\
+F_U &= F_U^{\mathrm{native}}+F_U^{\mathrm{pressure}}(-\lambda),\\
 F_\lambda &= B^Tu-P_h(A).
 \end{aligned}
 $$
 
-Here $M_\gamma$ denotes the centerline value pairing. The explicit flow
-feedback adds the fourth-row term. It does not remove the area reaction
-created by `Constraint`. The assembled solid load $f$ includes the body force
-and outer Neumann traction.
+Here $f$ includes body force and outer Neumann traction. Native algebraic
+trace rows also receive their pressure contributions. The displacement
+constraint produces a traction
+through its derivative with respect to $u$. Introducing $v=\dot u$ places
+that traction in the momentum residual, which is registered under $v$.
+It does not replace displacement compatibility with a velocity constraint.
 
-The solid target has $\dot u^\star=v^\star$, so its first row contains the
-nonzero residual $B\lambda^\star$. Its stress jump also requires a reaction in
-the momentum row, where the current assembly has none. A parameter-defined
-body force enters only that momentum row and cannot move the constraint
-reaction between rows.
+The prescribed RHS is zero in the kinematic, continuity, and multiplier rows.
+The momentum RHS contains $6t\,w$ and the exact outer traction; the flow
+velocity RHS is $S_U$ above. No source compensates for an erroneous multiplier
+reaction in continuity. In particular, $-DP_h(A)$ belongs to the multiplier
+row's area derivative, and $B$ belongs to the momentum row's multiplier
+derivative.
 
-The area reaction is also visible in the continuous circular-wall limit:
+The application shows all coupling terms together: two weak terms for
+compatibility, one for momentum traction, and the native pressure residual
+with its multiplier derivative. The generic symmetric `make_constraint(...)`
+remains appropriate when a constraint's transpose reactions belong to the
+same participant residual rows.
 
-$$
-\delta R'(A)=\frac{1}{2\sqrt{\pi A}},\qquad
-2\pi R_0\delta R'(A^\star)=\frac{1}{1+g},
-$$
+The pressure derivative uses native assembly for its forward action. A
+transpose or explicit matrix request collectively probes the multiplier basis;
+this costs one native assembly per global coefficient. Pressure evaluation
+uses the native `CellId` to preserve DG traces and exchanges ghost coefficients.
+Pressure coefficients are differentiated at the candidate flow state. The
+Jacobian omits derivatives of HLL characteristic-speed weights, following
+the native flow Jacobian's frozen-speed approximation. The
+application also enables one off-diagonal primal correction in the Schur
+approximation, retaining the multiplier-to-velocity-to-displacement path.
+Elimination and recovery use the same corrected primal inverse.
 
-so the assembled area equation corresponds to
-
-$$
-\partial_t A+\partial_s(AU)-\frac{\lambda}{1+g}=S_A.
-$$
-
-At the analytical target, its extra term is $6t^3/(1+t^3)$. The inputs keep
-$S_A=0$ so that this discrepancy remains visible. Adding an equal RHS source
-would mask it. For computed fields, use the actual derivative of the radius
-map and the actual multiplier; substituting $1+g$ assumes the target area.
-Finite cross-section geometry and quadrature introduce additional differences
-from the circular-wall formula.
-
-The row placement follows `ElastodynamicsFields` in
-`include/immersx/physics/elastodynamics_semidiscrete.h`, the field selection in
-`apps/app_metric_flow_x_elastodynamics.cc`, and the participant reactions in
-`WeakTerm::add_constraint_terms()` in `include/immersx/core/weak_term.h`.
-No executable, library, or build-system source is changed by this example.
-
-## Inspect the diagnostic
+## Inspect the solution
 
 Outputs are below the build-tree `test_output/` directory, in separate
 `metric-flow-x-mms-cube`, `metric-flow-x-mms-cube-refined`, and
@@ -332,8 +321,7 @@ V_h(t)=\int_\gamma A_h\,ds,\qquad
 $$
 
 For the target, the increase is
-$V^\star(t)-V^\star(0)=LA_0[(1+t^3)^2-1]$. For computed fields, report any
-area-reaction contribution separately. A centered difference between outputs
+$V^\star(t)-V^\star(0)=LA_0[(1+t^3)^2-1]$. A centered difference between outputs
 only approximates the volume derivative; distinguish that error from a
 conservation defect.
 
@@ -345,46 +333,53 @@ agreement between serial and MPI runs. The piecewise stress field, unfitted
 solid mesh, cross-section geometry, and time error must also be considered
 when interpreting differences between the two meshes.
 
-## Local diagnostic results
+## Local verification results
 
 Runs on 2026-10-22 used deal.II 9.8.0-rc1, MPICH 5.0.1, and an installed
-MetricFlowX package reporting version 0.1.0 with both build variants. Its
-source revision was not recorded for these runs. Both application variants built,
-and all three inputs advanced to $T=0.1$:
+MetricFlowX package reporting version 0.1.0 with both build variants. The
+installed package's source revision was not recorded. Both Release cases
+reached $T=0.1$, in 84 and 78 accepted IDA steps respectively.
 
-| Run | Accepted IDA steps | Mean pressure jump | Added volume |
-| --- | ---: | ---: | ---: |
-| $4\times16\times16$, Debug, one rank | 130 | $-1.77683\times10^{-5}$ | $1.05442\times10^{-8}$ |
-| $4\times16\times16$, Debug, two ranks | 130 | $-1.77683\times10^{-5}$ | $1.05442\times10^{-8}$ |
-| $4\times32\times32$, Release, one rank | 132 | $-1.76952\times10^{-5}$ | $1.57988\times10^{-8}$ |
+| Quantity at $T=0.1$ | Base mesh | Refined mesh |
+| --- | ---: | ---: |
+| $\|u_h-u^\star\|_{L^2(\Omega)}$ | $1.4582\times10^{-7}$ | $9.7307\times10^{-8}$ |
+| $\|v_h-v^\star\|_{L^2(\Omega)}$ | $4.5251\times10^{-6}$ | $3.1174\times10^{-6}$ |
+| Relative $L^2$ area error | $9.4533\times10^{-7}$ | $9.4533\times10^{-7}$ |
+| $\|U_h-U^\star\|_{L^2(\gamma)}$ | $3.7187\times10^{-9}$ | $3.9794\times10^{-9}$ |
+| Relative $L^2$ multiplier error | $0.3780$ | $0.2896$ |
+| Mean multiplier | $-0.00826795$ | $-0.00426223$ |
+| Added volume | $1.4788592\times10^{-7}$ | $1.4788592\times10^{-7}$ |
+| Volume defect / prescribed influx | $0.04700\%$ | $0.04700\%$ |
 
-The target pressure jump is $-0.006$, and the integrated prescribed inlet
-flow is $1.478164482885\times10^{-7}$. The final inlet trace agrees with
-$Q_{\mathrm{in}}^\star(T)$ to the displayed six significant digits; the
-absolute outlet trace flux is below $10^{-21}$. Nevertheless the computed
-volume increase falls short of the supplied volume by $92.87\%$ on the first
-mesh and $89.31\%$ on the refined mesh. Refinement does not remove the
-constraint-row discrepancy.
+The exact multiplier is $-0.006$, and the integrated prescribed influx is
+$1.478164482885\times10^{-7}$. The final inlet traces agree with the prescribed
+flux to six significant digits, and outlet flux magnitudes are below
+$2.4\times10^{-22}$. The remaining volume difference includes time integration
+and output precision errors; it no longer contains an artificial area-row
+multiplier source.
 
-These numbers come from the exported Float32 fields. Centerline means and
-volume integrals use two-point Gauss integration of the exported linear
-fields, matching the final file index to the multiplier's physical time.
-Added volume is the final integral of `area` minus its initial integral. In
-ParaView, `Integrate Variables` on each flow snapshot provides these area
-integrals; integrating `pressure_jump` and dividing by the line length gives
-its mean. Output precision limits the useful digits.
+Solid displacement, solid velocity, and multiplier errors decrease under this
+refinement, but remain substantial. Relative displacement errors are
+$0.718$ and $0.480$, and relative solid velocity errors are $0.742$ and $0.513$.
+The area and volume measurements agree between meshes at exported precision;
+the axial-velocity error remains near $4\times10^{-9}$. These two unfitted
+meshes and two wall geometries do not establish an
+asymptotic convergence rate. Refine further and reduce the time tolerances
+before drawing that conclusion.
 
-For the first single-rank run, a three-output Simpson estimate of
+The measurements integrate the exported Float32 fields. Solid errors use
+three-point tensor-product Gauss quadrature on each cube cell, comparing
+interpolated displacement and velocity with the piecewise analytical fields.
+Centerline errors, means, and volumes use two-point Gauss quadrature on the
+exported linear fields. Relative errors divide by the exact field's $L^2$
+norm. The volume defect is the final area integral minus its initial value
+and the exact integrated inlet flow. Physical times come from the multiplier
+series, because the native flow writer's clock remains at zero.
 
-$$
-\int_0^T\int_\gamma
-\frac{R_0}{\sqrt{A_h/\pi}}\lambda_h\,ds\,dt
-$$
-
-is $-1.37584\times10^{-7}$. The measured integrated volume-balance defect is
-$-1.37272\times10^{-7}$. The estimate uses the circular-wall limit and only
-the outputs at $0$, $0.05$, and $0.1$; it is not an exact integration of every
-accepted state. It accounts for the sign and size of the missing volume
-through the additional area-row reaction. These are execution and diagnostic
-results, not evidence that the current coupled application solves the
-manufactured target.
+CTest runs this MMS in Debug and Release, in serial and on two ranks. These
+application tests check that integration finishes. Separate integration tests
+check multiplier row placement, unchanged continuity, the nonlinear
+Jacobian action by finite differences on the single-cell fixture, nonzero
+corrections for tiny right-hand sides, and rejection of failed IDA steps in
+Release. Field errors and volume
+balance provide the independent analytical checks reported above.

@@ -8,10 +8,9 @@ The runnable example uses one parameter file:
 tutorials/metric_flow_x_elastodynamics/two_way.prm.in
 ```
 
-The [one-vessel stress-jump diagnostic](metric-flow-x-elastodynamics-mms)
-provides a piecewise manufactured target in a cube. Its separate parameter
-files expose differences between that target and the current constraint
-assembly; they are not passing MMS verification cases.
+The [one-vessel manufactured solution](metric-flow-x-elastodynamics-mms)
+provides a piecewise manufactured target in a cube, with forcing for all five
+residual rows, volume supplied by the inlet, and measured field errors.
 
 MetricFlowX must provide the same build configuration as ImmersX.
 DebugRelease requires a dual-variant package exporting
@@ -35,6 +34,11 @@ nonzero-inflow coupled example in serial and on two MPI ranks, using degree
 two to check automatic multiplier selection. Coupled cases write to separate
 build-tree output directories.
 
+The inflow starts with $Q(0)=Q'(0)=0$, matching the initially resting solid
+and zero initial acceleration. Displacement compatibility also imposes
+conditions on the initial velocity and acceleration; a nonzero initial
+inflow derivative is incompatible with these zero initial data.
+
 After configuring and building with MetricFlowX and deal.II SUNDIALS enabled,
 run the generated build-tree input:
 
@@ -51,17 +55,15 @@ reference area, (u) the solid displacement, (n) the radial direction and
 integral_Gamma (u - (sqrt(A/pi) - sqrt(A0/pi))*n) dot (mu*n) dGamma = 0.
 ```
 
-The application assembles the flow feedback as a cell-volume WeakTerm using
-the MetricFlowX velocity extractor:
+The application supplies native external pressure
 
 ```text
-integral_centerline -lambda * v_U ds.
+p_external = -lambda.
 ```
 
-This term uses values on cells. It does not add DG face fluxes. The multiplier
-convention remains `lambda = p_external - p_internal`; the solid receives the
-positive multiplier reaction, and the flow residual receives the negative
-pairing above.
+Native assembly includes volume, face, boundary, and junction contributions.
+The solid receives the positive multiplier traction in momentum. All coupling
+terms appear together in the application.
 
 The application imports `a0` from the VTK mesh already configured for
 MetricFlowX. It represents `a0` as a frozen `FE_DGQ(0)` Observable, so adjacent

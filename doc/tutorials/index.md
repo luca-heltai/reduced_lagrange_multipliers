@@ -27,9 +27,9 @@ application. The [MetricFlowX and elastodynamics tutorial](metric-flow-x-elastod
 shows the parameter-driven two-way vessel-wall coupling. The
 [MetricFlowX and elastodynamics coupling formulation](metric-flow-x-elastodynamics-coupling)
 introduces the coupled equations. The
-[one-vessel stress-jump diagnostic](metric-flow-x-elastodynamics-mms) gives
+[one-vessel manufactured solution](metric-flow-x-elastodynamics-mms) gives
 piecewise analytical fields, an inlet that supplies the changing volume, and
-parameter files that expose the current constraint-row mismatch.
+parameter files for the corrected residual equations.
 
 ```{toctree}
 :maxdepth: 1

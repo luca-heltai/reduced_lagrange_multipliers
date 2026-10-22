@@ -88,10 +88,9 @@ $$
 $$
 
 In the current assembly, positive $\lambda$ enters the solid row through
-$+B\lambda$, while the pressure provider passed to MetricFlowX receives
-$-\lambda$. This sign pair expresses action and reaction under the
-outward-normal and residual conventions used by the two Problems. Thus
-$\lambda$ denotes a pressure jump, rather than external pressure alone.
+$+B\lambda$, in its momentum equation. The flow receives $p_{\mathrm{external}}=-\lambda$
+through native pressure assembly, including its volume, numerical flux,
+boundary, and junction terms. Native assembly supplies the density scaling.
 
 ## Coupled residual
 
@@ -101,16 +100,25 @@ semidiscrete problem has the schematic residual form
 $$
   F(t,y,\dot y)=
   \begin{bmatrix}
-    F_{\mathrm{solid}}(t,u,v,\dot u,\dot v)+B\lambda\\
-    F_{\mathrm{flow}}(t,A,U,\ldots)+F_{\Delta p}(\lambda)\\
+    M(\dot u-v)\\
+    M\dot v+Ku+Cv-f+B\lambda\\
+    F_A^{\mathrm{native}}\\
+    F_U^{\mathrm{native}}+F_U^{\mathrm{pressure}}(-\lambda)\\
     B^T u-P_h(A)
   \end{bmatrix}=0.
 $$
 
 The area affects the solid through the nonlinear radius map in the kinematic
-constraint. The multiplier feeds the pressure jump back into MetricFlowX and
-balances the solid wall residual. The flow equations and their tube-law model
-remain those of MetricFlowX.
+constraint. The multiplier balances solid momentum and supplies native external
+pressure. Algebraic pressure trace equations also receive this pressure.
+Physical continuity contains no multiplier reaction. Differentiating
+compatibility gives $B^Tv-DP_h(A)\dot A=0$, which connects wall velocity
+to the area rate without replacing the displacement constraint.
+
+The application registers the multiplier and shows compatibility, traction,
+and native pressure terms together. The generic symmetric constraint would
+add transpose reactions to displacement and area residuals, which are not the momentum
+rows of this first-order system.
 
 The executable requires MetricFlowX, deal.II with SUNDIALS, and MPI. The
 application and its build requirements are listed in the
