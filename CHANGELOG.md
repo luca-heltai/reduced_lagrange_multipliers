@@ -141,6 +141,8 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Fixed
 
+- [PR #275](https://github.com/luca-heltai/immersx/pull/275) Handle exact Krylov breakdown in the default IDA GMRES path with modified Gram-Schmidt, including deal.II 9.7 builds.
+
 - [PR #275](https://github.com/luca-heltai/immersx/pull/275) Reduce coupled Jacobian setup costs by copying distributed matrices through their native backend, materializing each sum operand once, and avoiding repeated row extraction. Skip quadratic scans of empty blocks when converting the Jacobian to a monolithic matrix. Mark absent operator blocks as zero so block preconditioners skip unnecessary inverse applications.
 
 - [PR #275](https://github.com/luca-heltai/immersx/pull/275) Apply vessel-wall traction in solid momentum and native external-pressure feedback in flow, including boundary and interface equations, while preserving source-free continuity. Exchange reference-area ghost coefficients before constructing the distributed wall lift. Add an opt-in Schur correction for displacement-velocity coupling, retain small-load corrections, preserve callback errors, and stop on failed IDA steps in Release.

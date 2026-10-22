@@ -451,10 +451,14 @@ namespace ImmersX
             dst = 0.;
             // Small physical loads still need a correction. An absolute floor
             // can accept the initial zero iterate and stall the DAE solve.
-            dealii::SolverControl                 control(5000,
+            dealii::SolverControl control(5000,
                                           std::min(tolerance,
                                                    1.e-8 * rhs.l2_norm()));
-            dealii::SolverGMRES<GlobalVectorType> solver(control);
+            // Avoid division by zero at exact Krylov breakdown in deal.II 9.7.
+            typename dealii::SolverGMRES<GlobalVectorType>::AdditionalData data;
+            data.orthogonalization_strategy = dealii::LinearAlgebra::
+              OrthogonalizationStrategy::modified_gram_schmidt;
+            dealii::SolverGMRES<GlobalVectorType> solver(control, data);
             if (current_preconditioner_.has_value())
               if (current_solver_is_flexible_)
                 {
