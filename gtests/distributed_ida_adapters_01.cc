@@ -633,6 +633,87 @@ TEST(DistributedIDA, BOTH_SchurRetainsDisplacementVelocityPath)
   EXPECT_NEAR(composition.field(solution, fields[2])[rank], -7., 1.e-12);
 }
 
+#  ifdef DEAL_II_WITH_UMFPACK
+TEST(DistributedIDA, SerialUMFPACKSolvesCurrentDAEJacobian)
+{
+  using namespace dealii;
+  TimeIntervalParameters time_parameters;
+  IDAParameters          ida_parameters;
+  Adapter adapter(time_parameters, ida_parameters, MPI_COMM_SELF);
+  adapter.set_serial_direct_solver();
+  IndexSet owned(1);
+  owned.add_index(0);
+  DynamicSparsityPattern sparsity(1, 1);
+  sparsity.add(0, 0);
+  auto mass = std::make_shared<ImmersXLA::MPI::SparseMatrix>();
+  mass->reinit(owned, owned, sparsity, MPI_COMM_SELF);
+  mass->set(0, 0, 1.);
+  mass->compress(VectorOperation::insert);
+  const auto fields =
+    adapter
+      .add([owned, mass](auto &builder) {
+        using Model         = typename std::decay_t<decltype(builder)>::Model;
+        const auto u        = builder.field("u", owned, owned);
+        const auto v        = builder.field("v", owned, owned);
+        const auto lambda   = builder.algebraic_field("lambda", owned, owned);
+        auto       identity = builder.matrix_operator(*mass);
+        typename Model::MatrixOperatorFactory time_coupling =
+          [identity](const auto &context) {
+            return -context.time() * identity;
+          };
+        builder.term(u, "kinematic")
+          .derivative(u, identity)
+          .state(v, time_coupling);
+        builder.term(v, "momentum")
+          .derivative(v, identity)
+          .state(lambda, identity);
+        builder.term(lambda, "position").state(u, identity);
+        return std::array<FieldId, 3>{u, v, lambda};
+      })
+      .fields();
+  auto state                    = adapter.make_state();
+  auto dot                      = adapter.make_state();
+  auto rhs                      = adapter.make_state();
+  auto solution                 = adapter.make_state();
+  auto action                   = adapter.make_state();
+  adapter.field(rhs, fields[0]) = 1.;
+  adapter.field(rhs, fields[1]) = 2.;
+  adapter.field(rhs, fields[2]) = 3.;
+  adapter.solver().setup_jacobian(1., state, dot, 2.);
+  EXPECT_FALSE(adapter.has_current_preconditioner());
+  adapter.solver().solve_with_jacobian(rhs, solution, 1.e-12);
+  EXPECT_NEAR(adapter.field(solution, fields[0])[0], 3., 1.e-12);
+  EXPECT_NEAR(adapter.field(solution, fields[1])[0], 5., 1.e-12);
+  EXPECT_NEAR(adapter.field(solution, fields[2])[0], -8., 1.e-12);
+  // A second right-hand side reuses this factorization.
+  rhs *= 2.;
+  adapter.solver().solve_with_jacobian(rhs, solution, 1.e-12);
+  adapter.current_jacobian().vmult(action, solution);
+  action -= rhs;
+  EXPECT_LT(action.l2_norm(), 1.e-12);
+  rhs *= .5;
+  // Both physical time and IDA's derivative scaling change the matrix.
+  adapter.solver().setup_jacobian(2., state, dot, 3.);
+  adapter.solver().solve_with_jacobian(rhs, solution, 1.e-12);
+  EXPECT_NEAR(adapter.field(solution, fields[0])[0], 3., 1.e-12);
+  EXPECT_NEAR(adapter.field(solution, fields[1])[0], 4., 1.e-12);
+  EXPECT_NEAR(adapter.field(solution, fields[2])[0], -10., 1.e-12);
+  adapter.current_jacobian().vmult(action, solution);
+  action -= rhs;
+  EXPECT_LT(action.l2_norm(), 1.e-12);
+  EXPECT_THROW(adapter.set_serial_direct_solver(false), ExceptionBase);
+}
+#  endif
+
+TEST(DistributedIDA, MPI_UMFPACKRejectsMultipleRanks)
+{
+  TimeIntervalParameters time_parameters;
+  IDAParameters          ida_parameters;
+  ASSERT_GT(dealii::Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD), 1u);
+  Adapter adapter(time_parameters, ida_parameters, MPI_COMM_WORLD);
+  EXPECT_THROW(adapter.set_serial_direct_solver(), dealii::ExceptionBase);
+}
+
 TEST(DistributedIDA, BOTH_PreservesFatalCallbackException)
 {
   unsigned int calls    = 0;

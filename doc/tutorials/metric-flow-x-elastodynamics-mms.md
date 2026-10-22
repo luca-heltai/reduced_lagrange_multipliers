@@ -100,6 +100,26 @@ each; `Number of refinement cycles` does not make this coupled executable
 perform a convergence study. IDA controls its own time steps. `Fixed step`
 parameters do not set the IDA step size.
 
+For a serial run, select a sparse direct solve with:
+
+```text
+subsection MetricFlowX coupled solver
+  set Linear solver = umfpack
+end
+```
+
+The default is `iterative`. This selects the full coupled solve; the native
+MetricFlowX `Use direct solver` parameter controls its own local solver.
+The `umfpack` option requires a deal.II build with
+UMFPACK and exactly one MPI rank. Each IDA Jacobian setup materializes the full
+coupled matrix $J=F_y+\alpha F_{\dot y}$ at the current time and state and
+factorizes it. Subsequent linear solves reuse that factorization until IDA
+requests another setup. This bypasses the iterative Schur preconditioner.
+The timer summary separates matrix materialization, factorization, and direct
+backsolves. Materialization uses the existing sparse block assembly; a native
+pressure block that has no assembled matrix is recovered from its operator
+columns. This path is intended for small serial verification problems.
+
 ## Geometry and coefficients
 
 The solid fills the cube $\Omega=[-\ell,\ell]^3$, with

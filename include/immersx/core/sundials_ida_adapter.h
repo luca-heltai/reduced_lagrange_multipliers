@@ -18,6 +18,7 @@
 
 #include <deal.II/lac/precondition.h>
 #include <deal.II/lac/solver_gmres.h>
+#include <deal.II/lac/sparse_direct.h>
 
 #include <immersx/core/detail/execution_composition.h>
 #include <immersx/core/problem_handle.h>
@@ -79,6 +80,38 @@ namespace ImmersX
                         dealii::TimerOutput::summary,
                         dealii::TimerOutput::wall_times)
     {}
+
+    /** Materialize and factorize each IDA Jacobian with UMFPACK in serial.
+     * Must be selected before solver initialization. The factorization is
+     * reused for every right-hand side until IDA requests another Jacobian
+     * setup.
+     */
+    void
+    set_serial_direct_solver(const bool enabled = true)
+    {
+      AssertThrow(
+        !connected_,
+        dealii::ExcMessage(
+          "The direct solver must be selected before solver initialization."));
+      if (enabled)
+        {
+          AssertThrow(dealii::Utilities::MPI::n_mpi_processes(
+                        composition_.communicator()) == 1,
+                      dealii::ExcMessage(
+                        "The UMFPACK solver requires one MPI rank."));
+#  ifndef DEAL_II_WITH_UMFPACK
+          AssertThrow(
+            false,
+            dealii::ExcMessage(
+              "The UMFPACK solver requires deal.II configured with UMFPACK."));
+#  endif
+          AssertThrow(
+            !solve_,
+            dealii::ExcMessage(
+              "The UMFPACK solver cannot be combined with a custom linear solver."));
+        }
+      use_serial_direct_solver_ = enabled;
+    }
 
     /** Include one off-diagonal primal step in the Schur approximation. */
     void
@@ -389,7 +422,23 @@ namespace ImmersX
         AssertThrow(current_jacobian_.has_value(),
                     dealii::ExcMessage("IDA requested a solve without a "
                                        "current Jacobian."));
-        if (solve_)
+        if (use_serial_direct_solver_)
+          {
+            dealii::TimerOutput::Scope backsolve_timer(computing_timer,
+                                                       "Direct backsolve");
+            AssertThrow(
+              direct_solver_,
+              dealii::ExcMessage(
+                "IDA requested a direct solve without a factorization."));
+            dealii::Vector<double> source(rhs.size()), destination(rhs.size());
+            for (dealii::types::global_dof_index i = 0; i < rhs.size(); ++i)
+              source[i] = rhs[i];
+            direct_solver_->vmult(destination, source);
+            for (dealii::types::global_dof_index i = 0; i < rhs.size(); ++i)
+              dst[i] = destination[i];
+            dst.compress(dealii::VectorOperation::insert);
+          }
+        else if (solve_)
           {
             pcout << "IDAAdapter: invoking the configured linear solver."
                   << std::endl;
@@ -528,7 +577,43 @@ namespace ImmersX
       current_jacobian_ = std::move(stable);
       current_preconditioner_.reset();
       current_solver_is_flexible_ = false;
-      if (!solve_)
+      if (use_serial_direct_solver_)
+        {
+          dealii::TimerOutput::Scope direct_timer(computing_timer,
+                                                  "Materialize Jacobian");
+          const auto                 matrix = composition_.monolithic_matrix(
+            composition_.block_matrix(snapshot->state_storage,
+                                      &snapshot->derivative_storage,
+                                      alpha,
+                                      time));
+          dealii::DynamicSparsityPattern sparsity(matrix.m(), matrix.n());
+          for (dealii::types::global_dof_index row = 0; row < matrix.m(); ++row)
+            for (auto entry = matrix.begin(row), end = matrix.end(row);
+                 entry != end;
+                 ++entry)
+              sparsity.add(row, entry->column());
+          dealii::SparsityPattern pattern;
+          pattern.copy_from(sparsity);
+          dealii::SparseMatrix<double> serial_matrix(pattern);
+#  ifndef IMMERSX_USE_PETSC_LA
+          serial_matrix.copy_from(matrix);
+#  else
+          for (dealii::types::global_dof_index row = 0; row < matrix.m(); ++row)
+            for (auto entry = matrix.begin(row), end = matrix.end(row);
+                 entry != end;
+                 ++entry)
+              serial_matrix.set(row, entry->column(), entry->value());
+#  endif
+          direct_timer.stop();
+          dealii::TimerOutput::Scope factor_timer(computing_timer,
+                                                  "Factorize Jacobian");
+          direct_solver_ = std::make_unique<dealii::SparseDirectUMFPACK>();
+          direct_solver_->initialize(serial_matrix);
+          pcout << "IDAAdapter: UMFPACK factorized " << matrix.m() << " rows, "
+                << serial_matrix.n_nonzero_elements() << " matrix entries."
+                << std::endl;
+        }
+      else if (!solve_)
         {
           const auto keep_snapshot = [snapshot](Operator operator_view) {
             Operator result;
@@ -566,6 +651,8 @@ namespace ImmersX
           };
           if (!composition_.saddle_points().empty())
             {
+              dealii::TimerOutput::Scope schur_timer(
+                computing_timer, "Build Schur preconditioner");
               const auto &saddle = composition_.saddle_points().front();
               current_preconditioner_ =
                 keep_snapshot(composition_.schur_preconditioner(
@@ -596,11 +683,13 @@ namespace ImmersX
         }
     }
 
-    Composition                           composition_;
-    LinearSolveFunction                   solve_;
-    const TimeIntervalParameters         &time_parameters_;
-    const IDAParameters                  &ida_parameters_;
-    mutable std::optional<AdditionalData> additional_data_;
+    bool use_serial_direct_solver_ = false;
+    std::unique_ptr<dealii::SparseDirectUMFPACK> direct_solver_;
+    Composition                                  composition_;
+    LinearSolveFunction                          solve_;
+    const TimeIntervalParameters                &time_parameters_;
+    const IDAParameters                         &ida_parameters_;
+    mutable std::optional<AdditionalData>        additional_data_;
     std::unique_ptr<Compatibility::SUNDIALS::IDA<GlobalVectorType>> ida_;
     mutable dealii::ConditionalOStream                              pcout;
     mutable dealii::TimerOutput         computing_timer;

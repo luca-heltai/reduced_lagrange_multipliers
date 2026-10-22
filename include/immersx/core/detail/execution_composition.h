@@ -505,24 +505,25 @@ namespace ImmersX::detail
     BlockMatrixType
     block_matrix(const GlobalVectorType &state,
                  const GlobalVectorType *state_dot = nullptr,
-                 const double            alpha     = 0.) const
+                 const double            alpha     = 0.,
+                 const double            time      = 0.) const
     {
       finalize();
       validate_state(state);
       if (state_dot != nullptr)
         validate_state(*state_dot);
 
-      StateView<FieldVectorType> state_view(layout_, 0.);
+      StateView<FieldVectorType> state_view(layout_, time);
       field_layout_.bind_state(state_view, state);
-      StateView<FieldVectorType> derivative_view(layout_, 0.);
+      StateView<FieldVectorType> derivative_view(layout_, time);
       std::optional<EvaluationContext<FieldVectorType>> context;
       if (state_dot != nullptr)
         {
           field_layout_.bind_state(derivative_view, *state_dot);
-          context.emplace(0., state_view, &derivative_view);
+          context.emplace(time, state_view, &derivative_view);
         }
       else
-        context.emplace(0., state_view, nullptr);
+        context.emplace(time, state_view, nullptr);
       return make_block_matrix(*context, alpha);
     }
 

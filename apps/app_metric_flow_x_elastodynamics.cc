@@ -75,9 +75,28 @@ namespace
     FiniteElementSpaceParameters<1, 3> lambda_parameters(
       "/MetricFlowX multiplier space/", "auto");
 
+    ParameterAcceptor coupled_solver("/MetricFlowX coupled solver/");
+    std::string       linear_solver = "iterative";
+    coupled_solver.add_parameter(
+      "Linear solver",
+      linear_solver,
+      "Coupled IDA linear solver. UMFPACK materializes each Jacobian and requires one MPI rank.",
+      ParameterAcceptor::prm,
+      Patterns::Selection("iterative|umfpack"));
+
     initialize_parameters(parameter_file);
     flow_problem.initialize_params(parameter_file);
 
+    AssertThrow(linear_solver != "umfpack" ||
+                  Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD) == 1,
+                ExcMessage(
+                  "The coupled UMFPACK solver requires one MPI rank."));
+#  ifndef DEAL_II_WITH_UMFPACK
+    AssertThrow(
+      linear_solver != "umfpack",
+      ExcMessage(
+        "The coupled UMFPACK solver requires deal.II configured with UMFPACK."));
+#  endif
     flow_problem.setup();
     if (lambda_parameters.finite_element == "auto")
       lambda_parameters.finite_element =
@@ -119,6 +138,7 @@ namespace
 
     Adapter adapter(flow_time, ida_parameters, MPI_COMM_WORLD);
     adapter.set_schur_primal_coupling();
+    adapter.set_serial_direct_solver(linear_solver == "umfpack");
     const auto solid_fields = adapter.add(solid_problem, "elastodynamics");
     const auto flow_fields =
       adapter.add(metric_flow_x(flow_problem), "blood-flow");
