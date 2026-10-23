@@ -51,6 +51,41 @@ namespace
   };
 } // namespace
 
+TEST(CoupledPoissonElasticity, BOTH_PoissonEndpointData)
+{
+  ParameterAcceptor::clear();
+  PoissonParameters<1, 3> parameters;
+  initialize_parameters_from_string(R"(
+    subsection Poisson
+      set FE degree = 2
+      set Dirichlet boundary ids = 0, 1
+      subsection Domain
+        set Initial refinement = 2
+        set Grid generator = hyper_cube
+        set Grid generator arguments = 0: 1: false
+        set Triangulation type = fullydistributed
+      end
+      subsection Dirichlet boundary conditions
+        set Function expression = 1+x
+        set Variable names = x,y,z,t
+      end
+    end
+  )");
+  PoissonSolver<1, 3> poisson(parameters);
+  poisson.setup();
+  unsigned int constrained = 0;
+  for (const auto dof : poisson.locally_owned_dofs())
+    constrained += poisson.constraints().is_constrained(dof);
+  EXPECT_EQ(Utilities::MPI::sum(constrained, MPI_COMM_WORLD), 2u);
+
+  poisson.solve();
+  const auto points =
+    DoFTools::map_dofs_to_support_points(poisson.mapping(),
+                                         poisson.dof_handler());
+  for (const auto dof : poisson.locally_owned_dofs())
+    EXPECT_NEAR(poisson.solution()[dof], 1. + points.at(dof)[0], 1.e-10);
+}
+
 TEST(CoupledPoissonElasticity, BOTH_PressureTractionBalance)
 {
   ParameterAcceptor::clear();

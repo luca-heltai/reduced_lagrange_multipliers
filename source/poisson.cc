@@ -165,10 +165,27 @@ namespace ImmersX
     constraints_storage.reinit(owned_dofs, relevant_dofs);
     DoFTools::make_hanging_node_constraints(dh, constraints_storage);
     for (const auto boundary_id : par.dirichlet_ids)
-      VectorTools::interpolate_boundary_values(dh,
-                                               boundary_id,
-                                               par.bc,
-                                               constraints_storage);
+      if constexpr (dim == 1 && !DEAL_II_VERSION_GTE(9, 8, 0))
+        {
+          // deal.II 9.7 also interpolates 1D boundary data on artificial cells.
+          for (const auto &cell : dh.active_cell_iterators())
+            if (!cell->is_artificial())
+              for (const auto face : cell->face_indices())
+                if (cell->at_boundary(face) &&
+                    cell->face(face)->boundary_id() == boundary_id)
+                  {
+                    const auto dof = cell->vertex_dof_index(face, 0);
+                    if (constraints_storage.can_store_line(dof) &&
+                        !constraints_storage.is_constrained(dof))
+                      constraints_storage.add_constraint(
+                        dof, {}, par.bc.value(cell->vertex(face)));
+                  }
+        }
+      else
+        VectorTools::interpolate_boundary_values(dh,
+                                                 boundary_id,
+                                                 par.bc,
+                                                 constraints_storage);
     constraints_storage.close();
 
     DynamicSparsityPattern dsp(relevant_dofs);
