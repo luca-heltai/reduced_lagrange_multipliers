@@ -275,7 +275,7 @@ namespace ImmersX
 
 
   template <int dim, int spacedim>
-  typename Domain<dim, spacedim>::TriangulationVariant
+  std::unique_ptr<typename Domain<dim, spacedim>::TriangulationType>
   Domain<dim, spacedim>::make_triangulation_storage(
     const DomainParameters<dim, spacedim> &parameters,
     MPI_Comm                               communicator)
@@ -284,11 +284,9 @@ namespace ImmersX
       parameters.triangulation_type == "fullydistributed" || dim == 1;
 
     if (fully_distributed)
-      return TriangulationVariant(
-        std::in_place_type<FullyDistributedTriangulation>, communicator);
+      return std::make_unique<FullyDistributedTriangulation>(communicator);
 
-    return TriangulationVariant(
-      std::in_place_type<DistributedTriangulation>,
+    return std::make_unique<DistributedTriangulation>(
       communicator,
       typename dealii::Triangulation<dim, spacedim>::MeshSmoothing(
         dealii::Triangulation<dim, spacedim>::smoothing_on_refinement |
@@ -305,10 +303,20 @@ namespace ImmersX
     , communicator_(communicator)
     , triangulation_storage_(
         make_triangulation_storage(parameters_, communicator_))
+    , triangulation_(triangulation_storage_.get())
+  {}
+
+
+  template <int dim, int spacedim>
+  Domain<dim, spacedim>::Domain(
+    const DomainParameters<dim, spacedim> &parameters,
+    TriangulationType                     &triangulation)
+    : parameters_(parameters)
+    , communicator_(triangulation.get_mpi_communicator())
+    , triangulation_(&triangulation)
   {
-    triangulation_ =
-      &std::visit([](auto &tria) -> TriangulationType & { return tria; },
-                  triangulation_storage_);
+    if (triangulation.n_global_active_cells() != 0)
+      import_vtk_fields_if_requested();
   }
 
 
@@ -415,7 +423,7 @@ namespace ImmersX
         if (uses_fully_distributed_triangulation())
           {
             auto &fully_distributed =
-              std::get<FullyDistributedTriangulation>(triangulation_storage_);
+              dynamic_cast<FullyDistributedTriangulation &>(*triangulation_);
             if constexpr (dim == 1)
               fully_distributed.set_partitioner(
                 [](dealii::Triangulation<dim, spacedim> &tria,
@@ -538,8 +546,8 @@ namespace ImmersX
   bool
   Domain<dim, spacedim>::uses_fully_distributed_triangulation() const
   {
-    return std::holds_alternative<FullyDistributedTriangulation>(
-      triangulation_storage_);
+    return dynamic_cast<const FullyDistributedTriangulation *>(
+             triangulation_.get()) != nullptr;
   }
 
 

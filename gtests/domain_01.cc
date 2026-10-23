@@ -40,6 +40,48 @@ TEST(Domain, GeneratesNamedGrid)
 }
 
 
+TEST(Domain, BOTH_ObservesExistingTriangulation)
+{
+  parallel::distributed::Triangulation<2> triangulation(MPI_COMM_SELF);
+  GridGenerator::hyper_cube(triangulation, 0., 1.);
+  triangulation.refine_global(1);
+  DomainParameters<2> parameters("/Tests/DomainObserver/");
+  parameters.triangulation_type = "fullydistributed";
+  parameters.initial_refinement = 3;
+  {
+    Domain<2> domain(parameters, triangulation);
+    EXPECT_EQ(&domain.triangulation(), &triangulation);
+    EXPECT_FALSE(domain.uses_fully_distributed_triangulation());
+    EXPECT_EQ(domain.communicator(), triangulation.get_mpi_communicator());
+    EXPECT_EQ(domain.triangulation().n_global_active_cells(), 4u);
+    EXPECT_EQ(&domain.support().triangulation(), &triangulation);
+    EXPECT_THROW(domain.make_grid(), dealii::ExceptionBase);
+  }
+  triangulation.refine_global(1);
+  EXPECT_EQ(triangulation.n_global_active_cells(), 16u);
+}
+
+
+TEST(Domain, BOTH_InitializesExternalFullyDistributedTriangulation)
+{
+  parallel::fullydistributed::Triangulation<2> triangulation(MPI_COMM_WORLD);
+  DomainParameters<2> parameters("/Tests/DomainExternalFullyDistributed/");
+  parameters.arguments_for_grid = "0: 1: false";
+  parameters.initial_refinement = 1;
+  {
+    Domain<2> domain(parameters, triangulation);
+    EXPECT_TRUE(domain.uses_fully_distributed_triangulation());
+    ASSERT_NO_THROW(domain.make_grid());
+    EXPECT_EQ(&domain.triangulation(), &triangulation);
+    EXPECT_EQ(triangulation.n_global_active_cells(), 4u);
+  }
+  EXPECT_EQ(triangulation.n_global_active_cells(), 4u);
+  Domain<2> observer(parameters, triangulation);
+  EXPECT_TRUE(observer.uses_fully_distributed_triangulation());
+  EXPECT_EQ(&observer.triangulation(), &triangulation);
+}
+
+
 TEST(Domain, CopiesToSerialTriangulation)
 {
   DomainParameters<2> parameters("/Tests/DomainTriangulation/");
@@ -165,6 +207,59 @@ TEST(Domain, ImportsVtkFieldsAndIds)
   EXPECT_EQ(domain.field("vertex_property").descriptor().n_components, 1u);
   EXPECT_EQ(domain.field("cell_property").descriptor().association,
             FieldAssociation::cell_data);
+}
+
+
+TEST(Domain, BOTH_TransfersExternalFieldsWithoutRereading)
+{
+  const auto filename = TestPaths::output_path("domain/external-transfer.vtk");
+  if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
+    {
+      std::filesystem::create_directories(filename.parent_path());
+      std::ofstream output(filename);
+      output << "# vtk DataFile Version 3.0\n"
+             << "External Domain transfer test\n"
+             << "ASCII\n"
+             << "DATASET UNSTRUCTURED_GRID\n"
+             << "POINTS 4 double\n"
+             << "0 0 0  1 0 0  1 1 0  0 1 0\n"
+             << "CELLS 1 5\n"
+             << "4 0 1 2 3\n"
+             << "CELL_TYPES 1\n"
+             << "9\n"
+             << "CELL_DATA 1\n"
+             << "SCALARS a0 double 1\n"
+             << "LOOKUP_TABLE default\n"
+             << "3.5\n";
+    }
+  MPI_Barrier(MPI_COMM_WORLD);
+  parallel::distributed::Triangulation<2> triangulation(MPI_COMM_WORLD);
+  GridGenerator::hyper_cube(triangulation, 0., 1.);
+  DomainParameters<2> parameters("/Tests/DomainExternalFields/");
+  parameters.name_of_grid    = filename.string();
+  parameters.read_vtk_fields = true;
+  {
+    Domain<2> domain(parameters, triangulation);
+    ASSERT_TRUE(domain.has_vtk_fields());
+    const auto a0 = domain.field("a0");
+    if (Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
+      std::filesystem::remove(filename);
+    MPI_Barrier(MPI_COMM_WORLD);
+    triangulation.refine_global(1);
+    EXPECT_EQ(a0.field().dof_handler().n_dofs(), 4u);
+    for (const auto index : a0.field().locally_owned_dofs())
+      EXPECT_DOUBLE_EQ(a0.coefficients()[index], 3.5);
+    for (const auto &cell : triangulation.active_cell_iterators())
+      if (cell->is_locally_owned())
+        cell->set_coarsen_flag();
+    triangulation.execute_coarsening_and_refinement();
+    EXPECT_EQ(triangulation.n_global_active_cells(), 1u);
+    EXPECT_EQ(a0.field().dof_handler().n_dofs(), 1u);
+    for (const auto index : a0.field().locally_owned_dofs())
+      EXPECT_DOUBLE_EQ(a0.coefficients()[index], 3.5);
+  }
+  triangulation.refine_global(1);
+  EXPECT_EQ(triangulation.n_global_active_cells(), 4u);
 }
 
 

@@ -53,6 +53,35 @@ The [Coral registry](coral-backend.md) provides the same workflow as a
 `Co-refine domains` operation on two owning domain handles, with a separate
 report output and explicit downstream FE-space construction.
 
+## Using a mesh owned by a Problem
+
+`Domain` can also observe an existing parallel triangulation:
+
+```cpp
+// Construct the Problem before the Domain: it owns the triangulation.
+Problem problem;
+ImmersX::Domain<2> domain(domain_parameters, problem.triangulation());
+```
+
+The Problem and the parameter object must outlive `domain`. Domain stores an
+`ObserverPointer` to the mesh. Its usual constructor also creates a
+`unique_ptr` owning the mesh; the external-mesh constructor leaves that owner
+empty and takes the MPI communicator from the supplied triangulation.
+
+A populated external mesh is not generated, scaled, or refined by the
+constructor. With `Read fields = true`, the constructor imports the configured
+VTK fields onto that mesh, which must match the input mesh. Access a property
+with `domain.field("a0")`. On a `parallel::distributed::Triangulation`, retained
+fields follow refinement and coarsening through triangulation signals without
+rereading the file. Attach Domain before those mesh changes. The owner remains
+responsible for transferring its own solution.
+
+For an empty external mesh, use `make_grid()` or the preparation/finalization
+workflow above. This also supports `fullydistributed` meshes, for which the
+existing property transfer occurs on the serial preparation mesh before
+partitioning. Observing a mesh does not add adaptive-refinement support to
+`fullydistributed` triangulations.
+
 ## What happens, in order
 
 1. **Initial refinement.** Each empty domain reads or generates its mesh,

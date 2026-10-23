@@ -18,6 +18,7 @@
 
 #include <deal.II/base/config.h>
 
+#include <deal.II/base/observer_pointer.h>
 #include <deal.II/base/parameter_acceptor.h>
 #include <deal.II/base/point.h>
 
@@ -33,7 +34,6 @@
 #include <functional>
 #include <memory>
 #include <string>
-#include <variant>
 #include <vector>
 
 namespace ImmersX
@@ -85,7 +85,8 @@ namespace ImmersX
   };
 
 
-  /** An MPI-aware computational domain owning its deal.II triangulation. */
+  /** An MPI-aware computational domain with an owned or observed triangulation.
+   */
   template <int dim, int spacedim = dim>
   class Domain
   {
@@ -96,13 +97,22 @@ namespace ImmersX
       dealii::parallel::distributed::Triangulation<dim, spacedim>;
     using FullyDistributedTriangulation =
       dealii::parallel::fullydistributed::Triangulation<dim, spacedim>;
-    using TriangulationVariant =
-      std::variant<DistributedTriangulation, FullyDistributedTriangulation>;
     using TriangulationType =
       dealii::parallel::TriangulationBase<dim, spacedim>;
 
     explicit Domain(const DomainParameters<dim, spacedim> &parameters,
                     MPI_Comm communicator = MPI_COMM_WORLD);
+
+    /** Observe a triangulation owned by another object.
+     *
+     * The triangulation and parameters must outlive this Domain. The MPI
+     * communicator is taken from the triangulation. A populated mesh is kept
+     * unchanged and any requested VTK fields are imported onto that mesh;
+     * the input mesh must match it. An empty mesh can instead be initialized
+     * with make_grid() or prepare_grid()/finalize_grid().
+     */
+    Domain(const DomainParameters<dim, spacedim> &parameters,
+           TriangulationType                     &triangulation);
 
     ~Domain();
 
@@ -202,7 +212,7 @@ namespace ImmersX
     field(const std::string &name, unsigned int component = 0) const;
 
   private:
-    static TriangulationVariant
+    static std::unique_ptr<TriangulationType>
     make_triangulation_storage(
       const DomainParameters<dim, spacedim> &parameters,
       MPI_Comm                               communicator);
@@ -212,11 +222,11 @@ namespace ImmersX
 
     struct SerialFields;
 
-    const DomainParameters<dim, spacedim> &parameters_;
-    MPI_Comm                               communicator_;
-    TriangulationVariant                   triangulation_storage_;
-    TriangulationType                     *triangulation_ = nullptr;
-    std::unique_ptr<ImportedFields>        vtk_fields_;
+    const DomainParameters<dim, spacedim>     &parameters_;
+    MPI_Comm                                   communicator_;
+    std::unique_ptr<TriangulationType>         triangulation_storage_;
+    dealii::ObserverPointer<TriangulationType> triangulation_;
+    std::unique_ptr<ImportedFields>            vtk_fields_;
     std::unique_ptr<dealii::Triangulation<dim, spacedim>> serial_triangulation_;
     std::unique_ptr<SerialFields>                         serial_fields_;
     bool grid_prepared_ = false;
