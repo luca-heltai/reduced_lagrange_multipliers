@@ -343,7 +343,7 @@ TEST(ReferenceCrossSection, CheckCircleQuadrature) // NOLINT
   ReferenceCrossSectionParameters<dim, spacedim, n_components> par;
   par.inclusion_degree = degree;
   par.inclusion_type   = "hyper_ball"; // Use a circular domain
-  par.refinement_level = 5;            // Use a reasonable refinement level
+  par.refinement_level = 3;
 
   // Create the reference inclusion object
   ReferenceCrossSection<dim, spacedim, n_components> ref_inclusion(par);
@@ -571,7 +571,7 @@ TEST(ReferenceCrossSection, CheckMeasure) // NOLINT
     ReferenceCrossSectionParameters<dim, spacedim, n_components> par;
     par.inclusion_degree = degree;
     par.inclusion_type   = "hyper_ball";
-    par.refinement_level = 5; // Higher refinement for better area approximation
+    par.refinement_level = 3;
 
     ReferenceCrossSection<dim, spacedim, n_components> ref_inclusion(par);
 

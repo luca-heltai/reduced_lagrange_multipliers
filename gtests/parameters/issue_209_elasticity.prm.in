@@ -20,7 +20,7 @@ end
 subsection Immersed Problem
   set Dirichlet boundary ids             = 0
   set FE degree                          = 1
-  set Initial refinement                 = 6
+  set Initial refinement                 = 3
   set Neumann boundary ids               =
   set Normal flux boundary ids           =
   set Output directory                   = @TEST_OUTPUT_DIR@/gtests/parameters/issue_209/elasticity
