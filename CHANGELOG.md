@@ -254,7 +254,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Testing and CI
 
-- [PR #N](https://github.com/luca-heltai/immersx/pull/N) Preserve compiler cache entries between CI runs by using the restored cache directory and refreshing saved caches.
+- [PR #280](https://github.com/luca-heltai/immersx/pull/280) Preserve compiler cache entries between CI runs by using the restored cache directory and refreshing saved caches.
 
 - [PR #274](https://github.com/luca-heltai/immersx/pull/274) Avoid deal.II deprecation warnings when building the lifted Poisson parity tests.
 
