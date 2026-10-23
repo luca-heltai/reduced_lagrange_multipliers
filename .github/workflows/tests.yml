@@ -55,9 +55,9 @@ jobs:
           cd build_linux_debug
           ctest -N
           if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
-            ctest -L quick --output-on-failure
+            ctest --parallel 2 -L quick --output-on-failure
           else
-            ctest --output-on-failure
+            ctest --parallel 2 --output-on-failure
           fi
 
       - name: Show ccache statistics
@@ -105,9 +105,9 @@ jobs:
           cd build_linux_release
           ctest -N
           if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
-            ctest -L quick --output-on-failure
+            ctest --parallel 2 -L quick --output-on-failure
           else
-            ctest --output-on-failure
+            ctest --parallel 2 --output-on-failure
           fi
 
       - name: Show ccache statistics

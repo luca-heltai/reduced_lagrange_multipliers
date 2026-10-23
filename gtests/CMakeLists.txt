@@ -96,8 +96,8 @@ foreach(_build_type ${_d2_build_types})
 
       set(_public_header_target
           "public_header_${_public_header_id}${${_build_type}_postfix}")
-      add_executable(
-        ${_public_header_target}
+      add_library(
+        ${_public_header_target} OBJECT
         "${CMAKE_CURRENT_BINARY_DIR}/public_header_${_public_header_id}.cpp")
       target_include_directories(${_public_header_target}
                                  PRIVATE ${CMAKE_SOURCE_DIR}/include
@@ -129,7 +129,7 @@ foreach(_build_type ${_d2_build_types})
                      --target
                      "immersx_public_header_self_containment_${_build_type_lower}")
     set_tests_properties(${_public_header_test}
-                         PROPERTIES LABELS "unit;quick" TIMEOUT 300)
+                         PROPERTIES LABELS "unit;quick" TIMEOUT 300 RUN_SERIAL TRUE)
   endif()
 endforeach()
 
@@ -245,6 +245,8 @@ FOREACH(_build_type ${_d2_build_types})
 
     # One aggregate executable keeps the translation units compiled once.
     # CTest provides the user-facing category and process-count matrix.
+    # Category runs and parameter-driven applications share configured output
+    # paths. Their common lock permits configure-only fixtures to run alongside.
     foreach(_category unit integration validation application)
       set(_category_quick FALSE)
       set(_category_timeout 300)
@@ -279,7 +281,8 @@ FOREACH(_build_type ${_d2_build_types})
       endif()
       set_tests_properties(${_serial_test}
                            PROPERTIES LABELS "${_labels}"
-                                      TIMEOUT ${_category_timeout})
+                                      TIMEOUT ${_category_timeout}
+                                      RESOURCE_LOCK ImmersX.TestOutput)
 
       if(_immersx_mpiexec)
         set(_mpi_test
@@ -291,7 +294,9 @@ FOREACH(_build_type ${_d2_build_types})
                          $<TARGET_FILE:${_exe}>)
         set_tests_properties(${_mpi_test}
                              PROPERTIES LABELS "${_labels};mpi"
-                                        TIMEOUT ${_category_timeout})
+                                        TIMEOUT ${_category_timeout}
+                                        PROCESSORS 2
+                                        RESOURCE_LOCK ImmersX.TestOutput)
       endif()
     endforeach()
     IF(IMMERSX_INSTALL_TESTS)
@@ -344,6 +349,7 @@ if(IMMERSX_WITH_METRIC_FLOW_X)
                COMMAND $<TARGET_FILE:${_metric_flow_x_test_target}>)
       set_tests_properties(${_metric_flow_x_serial_test}
                            PROPERTIES LABELS "integration;quick" TIMEOUT 300
+                                      RESOURCE_LOCK ImmersX.TestOutput
                                       ENVIRONMENT "GTEST_FILTER=MetricFlowX.*-*.MPI_*")
       find_program(_immersx_mpiexec NAMES mpirun mpiexec)
       if(_immersx_mpiexec)
@@ -354,7 +360,8 @@ if(IMMERSX_WITH_METRIC_FLOW_X)
                          $<TARGET_FILE:${_metric_flow_x_test_target}>)
         set_tests_properties(${_metric_flow_x_mpi_test}
                              PROPERTIES LABELS "integration;quick;mpi"
-                                        TIMEOUT 300
+                                        TIMEOUT 300 PROCESSORS 2
+                                        RESOURCE_LOCK ImmersX.TestOutput
                                         ENVIRONMENT "GTEST_FILTER=MetricFlowX.MPI_*:MetricFlowX.BOTH_*")
       endif()
       foreach(_case Coupled MMS)
@@ -405,6 +412,9 @@ if(IMMERSX_WITH_METRIC_FLOW_X)
               -P "${CMAKE_CURRENT_SOURCE_DIR}/run_metric_flow_x_coupled.cmake")
           set_tests_properties("${_coupled_name}" PROPERTIES
                                TIMEOUT 600 LABELS "${_coupled_labels}")
+          if(_mode STREQUAL "MPI" OR _mode STREQUAL "MPIMUMPS")
+            set_property(TEST "${_coupled_name}" PROPERTY PROCESSORS 2)
+          endif()
         endforeach()
       endforeach()
       list(APPEND IMMERSX_TEST_TARGETS ${_metric_flow_x_test_target})
