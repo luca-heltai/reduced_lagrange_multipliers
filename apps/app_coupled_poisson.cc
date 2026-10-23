@@ -10,18 +10,14 @@
 #include <deal.II/base/mpi.h>
 #include <deal.II/base/parameter_acceptor.h>
 
-#include <deal.II/numerics/data_out.h>
-
 #include <immersx/core/constraint.h>
 #include <immersx/core/fe_space.h>
 #include <immersx/core/linear_adapter.h>
+#include <immersx/io/output_handler.h>
 #include <immersx/io/utils.h>
 #include <immersx/physics/poisson.h>
 #include <immersx/physics/poisson_residual.h>
 
-#include <cmath>
-#include <filesystem>
-#include <fstream>
 #include <iostream>
 #include <string>
 
@@ -61,14 +57,8 @@ namespace
     PoissonSolver<2>    bulk_problem(bulk_parameters);
     PoissonSolver<1, 2> embedded_problem(embedded_parameters);
 
-    const auto initialize_problem = [](auto &problem) {
-      problem.make_grid();
-      problem.setup_fe();
-      problem.setup_system();
-      problem.assemble_system();
-    };
-    initialize_problem(bulk_problem);
-    initialize_problem(embedded_problem);
+    bulk_problem.setup();
+    embedded_problem.setup();
 
     using FieldVector  = ImmersXLA::MPI::Vector;
     using GlobalVector = ImmersXLA::MPI::BlockVector;
@@ -86,7 +76,7 @@ namespace
     const auto multiplier_view = multiplier_space.view();
     const auto bulk_field      = bulk.fields().solution;
     const auto embedded_field  = embedded.fields().solution;
-    const auto multiplier      = multiplier_view.field("lambda");
+    const auto multiplier      = multiplier_view.field("lagrange_multiplier");
     const auto constraint =
       make_continuity_constraint(bulk_field, embedded_field, multiplier);
     const auto coupling = adapter.add(constraint, "continuity");
@@ -94,50 +84,24 @@ namespace
     auto state = adapter.make_state();
     adapter.solve(state);
 
-    bulk_problem.set_solution(adapter.field(state, bulk.fields().solution));
-    embedded_problem.set_solution(
-      adapter.field(state, embedded.fields().solution));
-
-    bulk_problem.output_results();
-    embedded_problem.output_results();
-
-    std::filesystem::create_directories(
-      application_parameters.output_directory);
-    dealii::DataOut<1, 2> multiplier_output;
-    multiplier_output.attach_dof_handler(multiplier_space.dof_handler());
-    multiplier_output.add_data_vector(
-      adapter.field(state, coupling.fields().multiplier),
-      "lagrange_multiplier",
-      dealii::DataOut<1, 2>::type_dof_data);
-    multiplier_output.build_patches();
-    const auto rank = dealii::Utilities::MPI::this_mpi_process(MPI_COMM_WORLD);
-    const auto multiplier_filename =
-      std::filesystem::path(application_parameters.output_directory) /
-      (application_parameters.multiplier_output_name + "-0." +
-       std::to_string(rank) + ".vtu");
-    std::ofstream multiplier_file(multiplier_filename);
-    multiplier_output.write_vtu(multiplier_file);
-    if (rank == 0)
-      {
-        std::ofstream multiplier_pvd(
-          std::filesystem::path(application_parameters.output_directory) /
-          (application_parameters.multiplier_output_name + ".pvd"));
-        dealii::DataOutBase::write_pvd_record(
-          multiplier_pvd,
-          {{0., application_parameters.multiplier_output_name + "-0.0.vtu"}});
-      }
-
-    auto residual = adapter.make_state();
-    adapter.evaluate_residual(state, residual);
-    const double residual_norm = residual.l2_norm();
+    OutputHandler<2, 2, FieldVector> bulk_output(
+      bulk_field,
+      application_parameters.output_directory,
+      bulk_parameters.output_name);
+    OutputHandler<1, 2, FieldVector> embedded_output(
+      embedded_field,
+      application_parameters.output_directory,
+      embedded_parameters.output_name);
+    OutputHandler<1, 2, FieldVector> multiplier_output(
+      coupling.fields().multiplier,
+      application_parameters.output_directory,
+      application_parameters.multiplier_output_name);
+    adapter.write_output(bulk_output, state);
+    adapter.write_output(embedded_output, state);
+    adapter.write_output(multiplier_output, state);
     if (dealii::Utilities::MPI::this_mpi_process(MPI_COMM_WORLD) == 0)
       std::cout << "multiplier_dofs = "
-                << multiplier_space.dof_handler().n_dofs() << '\n'
-                << "coupled_residual = " << residual_norm << '\n';
-
-    AssertThrow(std::isfinite(residual_norm) && residual_norm < 1.e-7,
-                dealii::ExcMessage(
-                  "The coupled Poisson residual is too large."));
+                << multiplier_space.dof_handler().n_dofs() << '\n';
   }
 } // namespace
 

@@ -17,9 +17,6 @@
 #include <deal.II/fe/fe_system.h>
 
 #include <deal.II/lac/affine_constraints.h>
-#include <deal.II/lac/precondition.h>
-#include <deal.II/lac/solver_control.h>
-#include <deal.II/lac/solver_gmres.h>
 
 #include <immersx/core/constraint.h>
 #include <immersx/core/matrix_operator.h>
@@ -269,17 +266,6 @@ namespace ImmersX
                 ExcMessage("The velocity-continuity interaction was already "
                            "prepared."));
 
-    matrix_space_storage = std::make_unique<FiniteElementSpaceView<dim, dim>>(
-      fe_space(matrix_problem_storage.dof_handler(),
-               matrix_problem_storage.mapping(),
-               matrix_problem_storage.velocity_constraints(),
-               &matrix_problem_storage.locally_relevant_dofs()));
-    fiber_space_storage = std::make_unique<FiniteElementSpaceView<1, dim>>(
-      fe_space(fiber_problem_storage.dof_handler(),
-               fiber_problem_storage.mapping(),
-               fiber_problem_storage.velocity_constraints(),
-               &fiber_problem_storage.locally_relevant_dofs()));
-
     const unsigned int degree = parameters.multiplier_degree == 0 ?
                                   fiber_problem_storage.fe().degree :
                                   parameters.multiplier_degree;
@@ -339,8 +325,18 @@ namespace ImmersX
   {
     AssertThrow(setup_complete,
                 ExcMessage("setup() must precede coupling assembly."));
-    assemble_fiber_constraint_matrices(*matrix_space_storage,
-                                       *fiber_space_storage,
+    const auto matrix_space =
+      fe_space(matrix_problem_storage.dof_handler(),
+               matrix_problem_storage.mapping(),
+               matrix_problem_storage.velocity_constraints(),
+               &matrix_problem_storage.locally_relevant_dofs());
+    const auto fiber_space =
+      fe_space(fiber_problem_storage.dof_handler(),
+               fiber_problem_storage.mapping(),
+               fiber_problem_storage.velocity_constraints(),
+               &fiber_problem_storage.locally_relevant_dofs());
+    assemble_fiber_constraint_matrices(matrix_space,
+                                       fiber_space,
                                        *multiplier_space_storage,
                                        matrix_to_multiplier_storage,
                                        fiber_to_multiplier_storage,
@@ -364,19 +360,9 @@ namespace ImmersX
     current_time_storage     = parameters.time_parameters.initial_time;
     time_step_number_storage = 0;
 
-    matrix_only_displacement_storage = matrix_problem_storage.displacement();
-    matrix_only_velocity_storage     = matrix_problem_storage.velocity();
-
-    VectorType compatibility;
-    VectorType fiber_compatibility;
-    compatibility.reinit(multiplier_storage);
-    fiber_compatibility.reinit(multiplier_storage);
-    matrix_to_multiplier_storage->vmult(compatibility,
-                                        matrix_problem_storage.displacement());
-    fiber_to_multiplier_storage->vmult(fiber_compatibility,
-                                       fiber_problem_storage.displacement());
-    compatibility -= fiber_compatibility;
-    residuals_storage.displacement_compatibility = compatibility.l2_norm();
+    residuals_storage.displacement_compatibility =
+      continuity_defect(matrix_problem_storage.displacement(),
+                        fiber_problem_storage.displacement());
     AssertThrow(
       residuals_storage.displacement_compatibility <=
         parameters.initial_compatibility_tolerance,
@@ -500,33 +486,6 @@ namespace ImmersX
     VectorType next_matrix_velocity;
     VectorType next_fiber_velocity;
 
-    // Keep a matrix-only reference under the same load and time policy.  This
-    // is a diagnostic for the additive/excess interpretation, not a second
-    // coupled solve and not part of the production state.
-    VectorType matrix_only_rhs;
-    build_effective_rhs(matrix_problem_storage,
-                        matrix_only_displacement_storage,
-                        matrix_only_velocity_storage,
-                        next_time,
-                        dt,
-                        matrix_only_rhs);
-    VectorType matrix_only_velocity;
-    matrix_only_velocity.reinit(matrix_problem_storage.locally_owned_dofs(),
-                                MPI_COMM_WORLD);
-    matrix_only_velocity = 0.;
-    SolverControl matrix_only_control(parameters.schur_max_steps,
-                                      parameters.block_tolerance);
-    ImmersXLA::MPI::PreconditionJacobi matrix_only_preconditioner;
-    matrix_only_preconditioner.initialize(matrix_effective_matrix);
-    SolverGMRES<VectorType> matrix_only_solver(matrix_only_control);
-    matrix_only_solver.solve(matrix_effective_matrix,
-                             matrix_only_velocity,
-                             matrix_only_rhs,
-                             matrix_only_preconditioner);
-    matrix_only_velocity_storage = matrix_only_velocity;
-    matrix_only_velocity *= dt;
-    matrix_only_displacement_storage += matrix_only_velocity;
-
     schur_solver->solve(next_matrix_velocity,
                         next_fiber_velocity,
                         multiplier_storage,
@@ -584,30 +543,14 @@ namespace ImmersX
     fiber_residual -= temporary;
     fiber_residual -= fiber_rhs;
 
-    VectorType constraint_residual;
-    VectorType fiber_constraint;
-    constraint_residual.reinit(multiplier_storage);
-    fiber_constraint.reinit(multiplier_storage);
-    matrix_to_multiplier_storage->vmult(constraint_residual,
-                                        matrix_problem_storage.velocity());
-    fiber_to_multiplier_storage->vmult(fiber_constraint,
-                                       fiber_problem_storage.velocity());
-    constraint_residual -= fiber_constraint;
-
-    VectorType displacement_residual;
-    displacement_residual.reinit(multiplier_storage);
-    fiber_constraint = 0.;
-    matrix_to_multiplier_storage->vmult(displacement_residual,
-                                        matrix_problem_storage.displacement());
-    fiber_to_multiplier_storage->vmult(fiber_constraint,
-                                       fiber_problem_storage.displacement());
-    displacement_residual -= fiber_constraint;
-
-    residuals_storage.matrix_velocity     = matrix_residual.l2_norm();
-    residuals_storage.fiber_velocity      = fiber_residual.l2_norm();
-    residuals_storage.velocity_constraint = constraint_residual.l2_norm();
+    residuals_storage.matrix_velocity = matrix_residual.l2_norm();
+    residuals_storage.fiber_velocity  = fiber_residual.l2_norm();
+    residuals_storage.velocity_constraint =
+      continuity_defect(matrix_problem_storage.velocity(),
+                        fiber_problem_storage.velocity());
     residuals_storage.displacement_compatibility =
-      displacement_residual.l2_norm();
+      continuity_defect(matrix_problem_storage.displacement(),
+                        fiber_problem_storage.displacement());
   }
 
 
@@ -628,224 +571,131 @@ namespace ImmersX
 #ifdef DEAL_II_WITH_SUNDIALS
   template <int dim>
   void
-  FiberReinforcedElastodynamics<dim>::setup_ida()
-  {
-    using Adapter = IDAAdapterType;
-
-    ida_storage = std::make_unique<Adapter>(parameters.time_parameters,
-                                            parameters.ida_parameters,
-                                            MPI_COMM_WORLD);
-    const auto matrix_fields =
-      ida_storage->add(matrix_problem_storage, "matrix");
-    const auto fiber_fields = ida_storage->add(fiber_problem_storage, "fiber");
-    const auto matrix_velocity = matrix_fields.fields().velocity;
-    const auto fiber_velocity  = fiber_fields.fields().velocity;
-    const auto multiplier =
-      multiplier_space_storage->field("velocity_multiplier",
-                                      dealii::FEValuesExtractors::Vector(0));
-    const auto constraint =
-      make_continuity_constraint(matrix_velocity, fiber_velocity, multiplier);
-    const auto coupling_fields = ida_storage->add(constraint, "fiber-coupling");
-
-    matrix_fields_storage =
-      std::make_unique<ElastodynamicsFields<dim, dim>>(matrix_fields.fields());
-    fiber_fields_storage =
-      std::make_unique<ElastodynamicsFields<1, dim>>(fiber_fields.fields());
-    coupling_fields_storage =
-      std::make_unique<ConstraintFields<MultiplierField>>(
-        coupling_fields.fields());
-
-    const auto state                = ida_storage->make_state();
-    const auto matrix_to_multiplier = ida_storage->state_matrix_operator(
-      state,
-      coupling_fields_storage->multiplier.id(),
-      matrix_fields_storage->velocity.id());
-    const auto negative_fiber_to_multiplier =
-      ida_storage->state_matrix_operator(
-        state,
-        coupling_fields_storage->multiplier.id(),
-        fiber_fields_storage->velocity.id());
-    const auto matrix_coupling = ida_storage->state_matrix_operator(
-      state,
-      matrix_fields_storage->velocity.id(),
-      coupling_fields_storage->multiplier.id());
-    AssertThrow(
-      matrix_to_multiplier.has_value() &&
-        negative_fiber_to_multiplier.has_value() && matrix_coupling.has_value(),
-      dealii::ExcMessage(
-        "The fiber Constraint must have matrix-based coupling blocks."));
-    matrix_to_multiplier_storage = matrix_to_multiplier->matrix();
-    fiber_to_multiplier_storage  = std::make_shared<MatrixType>();
-    fiber_to_multiplier_storage->copy_from(
-      *negative_fiber_to_multiplier->matrix());
-    *fiber_to_multiplier_storage *= -1.;
-    matrix_coupling_storage = matrix_coupling->matrix();
-
-    ida_storage->set_output_step([this](const double            time,
-                                        const GlobalVectorType &state,
-                                        const GlobalVectorType &state_dot,
-                                        const unsigned int      step) {
-      update_from_ida_state(state, state_dot, time, step);
-      output_results();
-      (void)step;
-    });
-  }
-
-
-  template <int dim>
-  void
-  FiberReinforcedElastodynamics<dim>::update_from_ida_state(
-    const GlobalVectorType &state,
-    const GlobalVectorType &state_dot,
-    const double            time,
-    const unsigned int      step)
-  {
-    current_time_storage     = time;
-    time_step_number_storage = step;
-
-    matrix_problem_storage.accept_state(
-      ida_storage->field(state, matrix_fields_storage->displacement),
-      ida_storage->field(state, matrix_fields_storage->velocity),
-      time,
-      step);
-    fiber_problem_storage.accept_state(
-      ida_storage->field(state, fiber_fields_storage->displacement),
-      ida_storage->field(state, fiber_fields_storage->velocity),
-      time,
-      step);
-    multiplier_storage =
-      ida_storage->field(state, coupling_fields_storage->multiplier);
-
-    auto residual = ida_storage->make_state();
-    ida_storage->solver().residual(time, state, state_dot, residual);
-    residuals_storage.matrix_velocity =
-      ida_storage->field(residual, matrix_fields_storage->velocity).l2_norm();
-    residuals_storage.fiber_velocity =
-      ida_storage->field(residual, fiber_fields_storage->velocity).l2_norm();
-
-    VectorType velocity_constraint;
-    VectorType fiber_constraint;
-    velocity_constraint.reinit(multiplier_storage);
-    fiber_constraint.reinit(multiplier_storage);
-    matrix_to_multiplier_storage->vmult(velocity_constraint,
-                                        matrix_problem_storage.velocity());
-    fiber_to_multiplier_storage->vmult(fiber_constraint,
-                                       fiber_problem_storage.velocity());
-    velocity_constraint -= fiber_constraint;
-    residuals_storage.velocity_constraint = velocity_constraint.l2_norm();
-
-    VectorType displacement_constraint;
-    displacement_constraint.reinit(multiplier_storage);
-    matrix_to_multiplier_storage->vmult(displacement_constraint,
-                                        matrix_problem_storage.displacement());
-    fiber_to_multiplier_storage->vmult(fiber_constraint,
-                                       fiber_problem_storage.displacement());
-    displacement_constraint -= fiber_constraint;
-    residuals_storage.displacement_compatibility =
-      displacement_constraint.l2_norm();
-  }
-
-
-  template <int dim>
-  void
-  FiberReinforcedElastodynamics<dim>::initialize_ida_derivative(
-    GlobalVectorType &state_dot)
-  {
-    MatrixType matrix_mass;
-    matrix_mass.copy_from(matrix_problem_storage.mass_matrix());
-    impose_homogeneous_constraints(
-      matrix_mass, matrix_problem_storage.velocity_constraints());
-
-    MatrixType fiber_mass;
-    fiber_mass.copy_from(fiber_problem_storage.mass_matrix());
-    impose_homogeneous_constraints(
-      fiber_mass, fiber_problem_storage.velocity_constraints());
-
-    // The initial-derivative solver observes these local mass matrices, so it
-    // must not outlive this function.  The persistent Schur solver is reserved
-    // for the backward-Euler path, where it observes member matrices.
-    SchurSolver initial_solver(matrix_mass,
-                               fiber_mass,
-                               *matrix_coupling_storage,
-                               *fiber_to_multiplier_storage,
-                               matrix_problem_storage.locally_owned_dofs(),
-                               fiber_problem_storage.locally_owned_dofs(),
-                               multiplier_space_owner->locally_owned_dofs(),
-                               MPI_COMM_WORLD,
-                               parameters.schur_max_steps,
-                               parameters.schur_tolerance,
-                               parameters.block_tolerance);
-
-    VectorType matrix_rhs;
-    VectorType fiber_rhs;
-    matrix_problem_storage.body_force_at_time(
-      parameters.time_parameters.initial_time, matrix_rhs);
-    fiber_problem_storage.body_force_at_time(
-      parameters.time_parameters.initial_time, fiber_rhs);
-    impose_homogeneous_constraints(
-      matrix_rhs, matrix_problem_storage.velocity_constraints());
-    impose_homogeneous_constraints(
-      fiber_rhs, fiber_problem_storage.velocity_constraints());
-
-    VectorType matrix_acceleration;
-    VectorType fiber_acceleration;
-    VectorType multiplier;
-    initial_solver.solve(matrix_acceleration,
-                         fiber_acceleration,
-                         multiplier,
-                         matrix_rhs,
-                         fiber_rhs);
-    ida_storage->field(state_dot, matrix_fields_storage->velocity) =
-      matrix_acceleration;
-    ida_storage->field(state_dot, fiber_fields_storage->velocity) =
-      fiber_acceleration;
-    ida_storage->field(state_dot, coupling_fields_storage->multiplier) = 0.;
-  }
-
-
-  template <int dim>
-  void
-  FiberReinforcedElastodynamics<dim>::run_with_ida()
-  {
-    setup_ida();
-
-    auto state     = ida_storage->make_state();
-    auto state_dot = ida_storage->make_state();
-    ida_storage->field(state, matrix_fields_storage->displacement) =
-      matrix_problem_storage.displacement();
-    ida_storage->field(state, matrix_fields_storage->velocity) =
-      matrix_problem_storage.velocity();
-    ida_storage->field(state, fiber_fields_storage->displacement) =
-      fiber_problem_storage.displacement();
-    ida_storage->field(state, fiber_fields_storage->velocity) =
-      fiber_problem_storage.velocity();
-    ida_storage->field(state, coupling_fields_storage->multiplier) = 0.;
-
-    ida_storage->field(state_dot, matrix_fields_storage->displacement) =
-      matrix_problem_storage.velocity();
-    ida_storage->field(state_dot, matrix_fields_storage->velocity) = 0.;
-    ida_storage->field(state_dot, fiber_fields_storage->displacement) =
-      fiber_problem_storage.velocity();
-    ida_storage->field(state_dot, fiber_fields_storage->velocity)      = 0.;
-    ida_storage->field(state_dot, coupling_fields_storage->multiplier) = 0.;
-    initialize_ida_derivative(state_dot);
-
-    ida_storage->solve(state, state_dot);
-    matrix_only_displacement_storage = matrix_problem_storage.displacement();
-    matrix_only_velocity_storage     = matrix_problem_storage.velocity();
-  }
-
-
-  template <int dim>
-  void
   FiberReinforcedElastodynamics<dim>::run_ida_execution()
   {
-    AssertThrow(coupling_setup_complete,
-                ExcMessage("Prepare the matrix Problem, fiber Problem, and "
-                           "velocity-continuity interaction before IDA."));
+    AssertThrow(
+      coupling_setup_complete,
+      ExcMessage("Prepare both Problems and the multiplier space before IDA."));
+
     if (!initial_conditions_set)
       set_initial_conditions();
-    run_with_ida();
+
+    IDAAdapterType adapter(parameters.time_parameters,
+                           parameters.ida_parameters,
+                           MPI_COMM_WORLD);
+    const auto matrix = adapter.add(matrix_problem_storage, "matrix").fields();
+    const auto fiber  = adapter.add(fiber_problem_storage, "fiber").fields();
+    const auto lambda =
+      adapter
+        .add(make_continuity_constraint(
+               matrix.velocity,
+               fiber.velocity,
+               multiplier_space_storage->field("lagrange_multiplier",
+                                               FEValuesExtractors::Vector(0))),
+             "fiber-coupling")
+        .fields()
+        .multiplier;
+
+    auto       state           = adapter.make_state();
+    auto       state_dot       = adapter.make_state();
+    const auto coupling_matrix = [&](const auto &row, const auto &column) {
+      const auto block =
+        adapter.state_matrix_operator(state, row.id(), column.id());
+      AssertThrow(
+        block.has_value(),
+        ExcMessage("The fiber Constraint needs matrix-based coupling blocks."));
+      return block->matrix();
+    };
+    matrix_to_multiplier_storage = coupling_matrix(lambda, matrix.velocity);
+    matrix_coupling_storage      = coupling_matrix(matrix.velocity, lambda);
+    fiber_to_multiplier_storage  = std::make_shared<MatrixType>();
+    fiber_to_multiplier_storage->copy_from(
+      *coupling_matrix(lambda, fiber.velocity));
+    *fiber_to_multiplier_storage *= -1.;
+
+    const auto initialize = [&](const auto &problem, const auto &fields) {
+      adapter.field(state, fields.displacement)     = problem.displacement();
+      adapter.field(state, fields.velocity)         = problem.velocity();
+      adapter.field(state_dot, fields.displacement) = problem.velocity();
+    };
+    initialize(matrix_problem_storage, matrix);
+    initialize(fiber_problem_storage, fiber);
+
+    // The initial mass solve observes these matrices only within this scope.
+    {
+      MatrixType matrix_mass, fiber_mass;
+      matrix_mass.copy_from(matrix_problem_storage.mass_matrix());
+      fiber_mass.copy_from(fiber_problem_storage.mass_matrix());
+      impose_homogeneous_constraints(
+        matrix_mass, matrix_problem_storage.velocity_constraints());
+      impose_homogeneous_constraints(
+        fiber_mass, fiber_problem_storage.velocity_constraints());
+      SchurSolver initial_solver(matrix_mass,
+                                 fiber_mass,
+                                 *matrix_coupling_storage,
+                                 *fiber_to_multiplier_storage,
+                                 matrix_problem_storage.locally_owned_dofs(),
+                                 fiber_problem_storage.locally_owned_dofs(),
+                                 multiplier_space_owner->locally_owned_dofs(),
+                                 MPI_COMM_WORLD,
+                                 parameters.schur_max_steps,
+                                 parameters.schur_tolerance,
+                                 parameters.block_tolerance);
+      VectorType  matrix_rhs, fiber_rhs;
+      matrix_problem_storage.body_force_at_time(
+        parameters.time_parameters.initial_time, matrix_rhs);
+      fiber_problem_storage.body_force_at_time(
+        parameters.time_parameters.initial_time, fiber_rhs);
+      impose_homogeneous_constraints(
+        matrix_rhs, matrix_problem_storage.velocity_constraints());
+      impose_homogeneous_constraints(
+        fiber_rhs, fiber_problem_storage.velocity_constraints());
+      VectorType reaction;
+      initial_solver.solve(adapter.field(state_dot, matrix.velocity),
+                           adapter.field(state_dot, fiber.velocity),
+                           reaction,
+                           matrix_rhs,
+                           fiber_rhs);
+    }
+
+    MultiplierOutputHandler output(
+      lambda,
+      std::filesystem::path(parameters.output_directory) / "interaction",
+      parameters.multiplier_output_name);
+    adapter.set_output_step([this, &adapter, &output, matrix, fiber, lambda](
+                              const double            time,
+                              const GlobalVectorType &state,
+                              const GlobalVectorType &state_dot,
+                              const unsigned int      step) {
+      matrix_problem_storage.accept_state(adapter.field(state,
+                                                        matrix.displacement),
+                                          adapter.field(state, matrix.velocity),
+                                          time,
+                                          step);
+      fiber_problem_storage.accept_state(adapter.field(state,
+                                                       fiber.displacement),
+                                         adapter.field(state, fiber.velocity),
+                                         time,
+                                         step);
+      multiplier_storage       = adapter.field(state, lambda);
+      current_time_storage     = time;
+      time_step_number_storage = step;
+      auto residual            = adapter.make_state();
+      adapter.solver().residual(time, state, state_dot, residual);
+      residuals_storage.matrix_velocity =
+        adapter.field(residual, matrix.velocity).l2_norm();
+      residuals_storage.fiber_velocity =
+        adapter.field(residual, fiber.velocity).l2_norm();
+      residuals_storage.velocity_constraint =
+        adapter.field(residual, lambda).l2_norm();
+      residuals_storage.displacement_compatibility =
+        continuity_defect(matrix_problem_storage.displacement(),
+                          fiber_problem_storage.displacement());
+      matrix_problem_storage.output_results();
+      fiber_problem_storage.output_results();
+      adapter.write_output(output, state, time);
+    });
+    adapter.solve(state, state_dot);
   }
 #endif
 
@@ -920,12 +770,17 @@ namespace ImmersX
 
   template <int dim>
   double
-  FiberReinforcedElastodynamics<dim>::matrix_only_displacement_difference()
-    const
+  FiberReinforcedElastodynamics<dim>::continuity_defect(
+    const VectorType &matrix_values,
+    const VectorType &fiber_values) const
   {
-    VectorType difference = matrix_problem_storage.displacement();
-    difference -= matrix_only_displacement_storage;
-    return difference.l2_norm();
+    VectorType matrix_trace, fiber_trace;
+    matrix_trace.reinit(multiplier_storage);
+    fiber_trace.reinit(multiplier_storage);
+    matrix_to_multiplier_storage->vmult(matrix_trace, matrix_values);
+    fiber_to_multiplier_storage->vmult(fiber_trace, fiber_values);
+    matrix_trace -= fiber_trace;
+    return matrix_trace.l2_norm();
   }
 
 

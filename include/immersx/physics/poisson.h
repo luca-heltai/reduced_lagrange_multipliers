@@ -155,6 +155,10 @@ namespace ImmersX
 
     explicit PoissonSolver(const PoissonParameters<dim, spacedim> &par);
 
+    /** Prepare the mesh, finite element, constraints, and assembled system. */
+    void
+    setup();
+
     void
     make_grid();
 

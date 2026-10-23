@@ -12,30 +12,21 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 ### Added
 
 - [PR #275](https://github.com/luca-heltai/immersx/pull/275) Allow Domain to observe an externally owned triangulation, retaining its imported fields without taking ownership of the mesh.
-
 - [PR #275](https://github.com/luca-heltai/immersx/pull/275) Allow serial and distributed coupled IDA solves with native deal.II SparseDirectMUMPS when DEAL_II_WITH_MUMPS is enabled, selected through the application parameter file.
-
 - [PR #275](https://github.com/luca-heltai/immersx/pull/275) Allow the coupled MetricFlowX–elastodynamics application to select a serial UMFPACK solve from its parameter file. Materialize and factorize each IDA Jacobian once, and reuse the factorization for subsequent right-hand sides.
-
 - [PR #271](https://github.com/luca-heltai/immersx/pull/271) Show ImmersX/native deal.II overhead ratios by default in performance charts, with an equal-time reference and an absolute-timing option. Keep incompatible measurements separate and explain unavailable comparisons and single-sample histories.
-
 - [PR #268](https://github.com/luca-heltai/immersx/pull/268) Backport deal.II's expanded SUNDIALS IDA controls, inequality constraints, N_Vector operations, and expert setup access. Use the backport in IDAAdapter and allow configuration before solver initialization.
 - [PR #263](https://github.com/luca-heltai/immersx/pull/263) Allow lifted Poisson modal data to use imported point/cell field aliases, nonlinear expressions, coordinates, time zero, and `pi`/`E`, evaluated from retained ghosted Domain data without another application FE space.
 - [PR #263](https://github.com/luca-heltai/immersx/pull/263) Expose the 3D scalar primitive execution path and modal lift/data, imported-radius, multiplier, coefficient-output, and lifted-output nodes in Coral, with a runnable component-level graph.
 - [PR #263](https://github.com/luca-heltai/immersx/pull/263) Add the compositional `LiftedPoisson` application with configurable bulk and modal FE spaces, imported radii, section-weighted modal constraints, Schur/AL solves, adaptive bulk refinement, and native/lifted output.
 - [PR #262](https://github.com/luca-heltai/immersx/pull/262) Add a component-level Coral static-elasticity graph with nonzero modal data, serial/MPI execution, and configured absolute parameter/output paths.
-
 - [PR #262](https://github.com/luca-heltai/immersx/pull/262) Add parameter-driven composable static elasticity in 2D and 3D, with independent vector modal constraints, section-weighted Schur/AL execution, pressure loads, imported radius and modal data, heterogeneous materials, boundary conditions, and refinement cycles. Legacy elasticity remains available.
-
 - [PR #262](https://github.com/luca-heltai/immersx/pull/262) Add amplitude-preserving selected vector lift modes, supplied physical Constraint metrics, and adapter-bound semantic output.
-
 - [PR #259](https://github.com/luca-heltai/immersx/pull/259) Expose field-preserving domain co-refinement, named refinement parameters, and global reports in the Coral registry, with a fullydistributed Poisson graph tested in serial and MPI.
 - [PR #259](https://github.com/luca-heltai/immersx/pull/259) Provide executable `both` co-refinement configurations for elasticity and reduced Poisson, with serial/MPI integration tests that refine both meshes and retain imported properties through a nonzero solve.
 - [PR #259](https://github.com/luca-heltai/immersx/pull/259) Add local co-refinement of two domains with space, embedded, and both strategies, preserving imported fields through refinement and delayed fullydistributed partitioning.
-
 - [PR #257](https://github.com/luca-heltai/immersx/pull/257) Compare scalar and vector nonmatching penalty matrices with explicit deal.II particle assembly and step-80, including codimension-two and independent volume supports, in serial and MPI. Check distributed ownership and integration measure, and show separate one/two-rank performance history series.
 - [PR #254](https://github.com/luca-heltai/immersx/pull/254) Allow parameter files to select the coupled Poisson multiplier, static elasticity displacement, and fiber velocity multiplier finite elements while preserving degree-based defaults.
-
 - [PR #251](https://github.com/luca-heltai/immersx/pull/251) Add a performance history page with native comparisons, commit coverage, diagnostic regressions, and an archived benchmark pipeline that runs before documentation builds. Keep changed benchmark sources and explicit timing scopes in separate comparison series without relabelling historical data. Restrict official archive writes and Pages deployment to trusted master events, and verify batch provenance before writing.
 - [PR #249](https://github.com/luca-heltai/immersx/pull/249) Added a how-to guide for choosing weak-term integration supports.
 - [PR #247](https://github.com/luca-heltai/immersx/pull/247) Added background-to-background weak terms over independent codimension-one supports, including nonlinear terms with frozen inputs.
@@ -100,6 +91,9 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Changed
 
+- [PR #276](https://github.com/luca-heltai/immersx/pull/276) Keep fiber IDA composition and state local to one solve, write the multiplier through semantic output, and move the uncoupled reference solve to validation tests.
+- [PR #276](https://github.com/luca-heltai/immersx/pull/276) Keep the Poisson-elasticity application focused on pressure traction and semantic output, with residual and traction checks in integration tests.
+- [PR #276](https://github.com/luca-heltai/immersx/pull/276) Simplify coupled Poisson setup and write its solution and multiplier fields directly through semantic output handlers.
 - [PR #259](https://github.com/luca-heltai/immersx/pull/259) Use fixed lower and upper diameter bounds for local mesh adjustment; the old refinement factor remains a deprecated single-mesh input.
 - [PR #250](https://github.com/luca-heltai/immersx/pull/250) Include matrix materialization in trace assembly timings and report synchronized maximum-rank MPI timings with explicit setup, action, and operation-count metadata.
 - [PR #249](https://github.com/luca-heltai/immersx/pull/249) Reuse trial and test basis values during linear assembly and input FEValues across cells with a shared mapping during nonlinear assembly.
@@ -145,21 +139,18 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Fixed
 
+- [PR #276](https://github.com/luca-heltai/immersx/pull/276) Apply 1D Poisson Dirichlet data only to non-artificial cells with deal.II 9.7, preserving the pressure solution across MPI partitions.
+- [PR #276](https://github.com/luca-heltai/immersx/pull/276) Keep the Coral Poisson–elasticity workflow compatible with the simplified application interfaces and report traction balance from its displacement residual.
 - [PR #275](https://github.com/luca-heltai/immersx/pull/275) Handle exact Krylov breakdown in the default IDA GMRES path with modified Gram-Schmidt, including deal.II 9.7 builds.
-
 - [PR #275](https://github.com/luca-heltai/immersx/pull/275) Reduce coupled Jacobian setup costs by copying distributed matrices through their native backend, materializing each sum operand once, and avoiding repeated row extraction. Skip quadratic scans of empty blocks when converting the Jacobian to a monolithic matrix. Mark absent operator blocks as zero so block preconditioners skip unnecessary inverse applications.
-
 - [PR #275](https://github.com/luca-heltai/immersx/pull/275) Apply vessel-wall traction in solid momentum and native external-pressure feedback in flow, including boundary and interface equations, while preserving source-free continuity. Exchange reference-area ghost coefficients before constructing the distributed wall lift. Add an opt-in Schur correction for displacement-velocity coupling, retain small-load corrections, preserve callback errors, and stop on failed IDA steps in Release.
-
 - [PR #264](https://github.com/luca-heltai/immersx/pull/264) Prevent the Navier–Stokes tutorial from timing out in Debug builds by reusing finite-element evaluations during nonlinear Jacobian assembly.
 - [PR #263](https://github.com/luca-heltai/immersx/pull/263) Use one lifted assembly for scalar and vector constraints, preserve constrained master sparsity, and allow explicit source Dirichlet-value updates while retaining collective static-data and constraint-structure guards. Keep scalar coefficient-output and vector coefficient-creation nodes distinct in the combined Coral registry.
 - [PR #263](https://github.com/luca-heltai/immersx/pull/263) Preserve affine Dirichlet contributions in lifted weak terms, assemble known loads and legacy coupling graphs across MPI owners, use relative inner Schur solves and check the true FGMRES residual, and reconstruct hanging-node values before FE output.
 - [PR #262](https://github.com/luca-heltai/immersx/pull/262) Fix vector lifted coupling on locally refined meshes, including nonzero affine boundary data.
 - [PR #262](https://github.com/luca-heltai/immersx/pull/262) Retain static inhomogeneous Dirichlet shifts in lifted weak constraints, update Observable dependencies on semantic registration, and assemble known loads into writable MPI vectors.
-
 - [PR #259](https://github.com/luca-heltai/immersx/pull/259) Use compiler-independent Coral report-operation keys so co-refinement graphs load on Linux and macOS.
 - [PR #259](https://github.com/luca-heltai/immersx/pull/259) Retain the reduced Poisson augmented-Lagrangian solution in the accepted solution vector as well as the output vector, so solution diagnostics reflect the nonzero solve.
-
 - [PR #259](https://github.com/luca-heltai/immersx/pull/259) Retain the reduced Poisson augmented-Lagrangian solution in the accepted solution vector as well as the output vector, so solution diagnostics reflect the nonzero solve.
 - [PR #254](https://github.com/luca-heltai/immersx/pull/254) Register MetricFlowX time parameters before reading input and provide a mixed-flow preconditioner for coupled IDA solves. Exercise standalone and nonzero-inflow coupled applications in serial and MPI.
 - [PR #253](https://github.com/luca-heltai/immersx/pull/253) Preserve every ambient vector component in native nonmatching assembly and give the fiber driver's matrix-only reference independent history.
@@ -207,6 +198,8 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 - [PR #67](https://github.com/luca-heltai/immersx/pull/67) Fixed the inclusion basis-function scaling.
 
 ### Removed
+
+- [PR #276](https://github.com/luca-heltai/immersx/pull/276) Remove the fiber driver's `matrix_only_displacement_difference()` diagnostic; validation evolves an independent dense reference instead.
 
 - [PR #192](https://github.com/luca-heltai/immersx/pull/192) Purged the transitional representation architecture.
 - [PR #186](https://github.com/luca-heltai/immersx/pull/186) Removed the obsolete representation load interaction.
