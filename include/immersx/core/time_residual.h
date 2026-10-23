@@ -474,7 +474,7 @@ namespace ImmersX
       result.vmult_add  = [](VectorType &, const VectorType &) {};
       result.Tvmult     = [](VectorType &v, const VectorType &) { v = 0.; };
       result.Tvmult_add = [](VectorType &, const VectorType &) {};
-      return result;
+      return dealii::null_operator(result);
     }
 
     std::map<FieldId, std::vector<ResidualEntry>>  residuals_;

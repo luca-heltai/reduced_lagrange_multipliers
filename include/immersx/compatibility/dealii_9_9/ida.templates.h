@@ -180,7 +180,7 @@ namespace ImmersX::Compatibility
                   throw;
                 }
             }
-          Assert(status >= 0, ExcIDAError(status));
+          AssertThrow(status >= 0, ExcIDAError(status));
 
           status = IDAGetLastStep(ida_mem, &h);
           Assert(status >= 0, ExcIDAError(status));

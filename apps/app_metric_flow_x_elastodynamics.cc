@@ -19,20 +19,22 @@
 #ifdef IMMERSX_WITH_METRIC_FLOW_X
 
 #  include <immersx/core/constraint.h>
+#  include <immersx/core/domain.h>
 #  include <immersx/core/observable_lift.h>
 #  include <immersx/core/sundials_ida_adapter.h>
 #  include <immersx/core/weak_term.h>
-#  include <immersx/io/imported_finite_element_fields.h>
 #  include <immersx/io/utils.h>
 #  include <immersx/physics/elastodynamics.h>
 #  include <immersx/physics/elastodynamics_semidiscrete.h>
 #  include <immersx/physics/metric_flow_x.h>
+#  include <immersx/physics/metric_flow_x_pressure.h>
 
 #  include <filesystem>
 #  include <fstream>
 #  include <iostream>
 #  include <stdexcept>
 #  include <string>
+#  include <type_traits>
 #  include <vector>
 
 namespace
@@ -73,10 +75,46 @@ namespace
     FiniteElementSpaceParameters<1, 3> lambda_parameters(
       "/MetricFlowX multiplier space/", "auto");
 
+    ParameterAcceptor coupled_solver("/MetricFlowX coupled solver/");
+    std::string       linear_solver = "iterative";
+    coupled_solver.add_parameter(
+      "Linear solver",
+      linear_solver,
+      "Coupled IDA linear solver. Direct solvers materialize each Jacobian. UMFPACK requires one rank; MUMPS supports MPI.",
+      ParameterAcceptor::prm,
+      Patterns::Selection("iterative|umfpack|mumps"));
+
     initialize_parameters(parameter_file);
     flow_problem.initialize_params(parameter_file);
 
-    flow_problem.setup();
+    AssertThrow(linear_solver != "umfpack" ||
+                  Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD) == 1,
+                ExcMessage(
+                  "The coupled UMFPACK solver requires one MPI rank."));
+#  ifndef DEAL_II_WITH_UMFPACK
+    AssertThrow(
+      linear_solver != "umfpack",
+      ExcMessage(
+        "The coupled UMFPACK solver requires deal.II configured with UMFPACK."));
+#  endif
+#  ifndef DEAL_II_WITH_MUMPS
+    AssertThrow(
+      linear_solver != "mumps",
+      ExcMessage(
+        "The coupled MUMPS solver requires deal.II configured with MUMPS."));
+#  endif
+    DomainParameters<1, 3> flow_domain_parameters("/MetricFlowX domain/");
+    flow_domain_parameters.name_of_grid =
+      metric_flow_parameter("Vtk file path for mesh input");
+    flow_domain_parameters.read_vtk_fields = true;
+    Domain<1, 3> flow_domain(flow_domain_parameters,
+                             flow_problem.triangulation());
+    flow_problem.setup(
+      [&](const auto &coarse_mesh, const unsigned int refinement) {
+        flow_domain_parameters.initial_refinement = refinement;
+        flow_domain.prepare_grid(coarse_mesh);
+        flow_domain.finalize_grid();
+      });
     if (lambda_parameters.finite_element == "auto")
       lambda_parameters.finite_element =
         "FE_DGQ(" +
@@ -93,14 +131,16 @@ namespace
                   area_fe->n_dofs_per_cell() == lambda_fe->n_dofs_per_cell(),
                 ExcMessage("The multiplier FE must have the same local "
                            "basis as MetricFlowX area."));
-    const auto                        lambda_view = lambda_space.view();
-    const auto                        lambda      = lambda_view.field("lambda");
-    ImportedFiniteElementFields<1, 3> imported(
-      metric_flow_parameter("Vtk file path for mesh input"),
-      flow_problem.triangulation(),
-      MPI_COMM_WORLD);
-    const auto a0 = imported.field("a0");
-    const auto A0 = frozen(a0.field(), a0.coefficients());
+    const auto  lambda_view = lambda_space.view();
+    const auto  lambda      = lambda_view.field("lambda");
+    const auto  a0          = flow_domain.field("a0");
+    FieldVector reference_area;
+    reference_area.reinit(flow_domain.vtk_fields().locally_owned_dofs(),
+                          flow_domain.vtk_fields().locally_relevant_dofs(),
+                          MPI_COMM_WORLD);
+    reference_area = a0.coefficients();
+    reference_area.update_ghost_values();
+    const auto A0 = frozen(a0.field(), reference_area);
 
     SolidProblem solid_problem(solid_parameters);
     solid_problem.make_grid();
@@ -109,26 +149,77 @@ namespace
     solid_problem.assemble_operators();
     solid_problem.set_initial_conditions();
 
-    Adapter    adapter(flow_time, ida_parameters, MPI_COMM_WORLD);
+    Adapter adapter(flow_time, ida_parameters, MPI_COMM_WORLD);
+    adapter.set_schur_primal_coupling();
+    if (linear_solver == "iterative")
+      adapter.set_linear_solver(Adapter::LinearSolver::iterative);
+    else if (linear_solver == "umfpack")
+      adapter.set_linear_solver(Adapter::LinearSolver::umfpack);
+    else if (linear_solver == "mumps")
+      adapter.set_linear_solver(Adapter::LinearSolver::mumps);
     const auto solid_fields = adapter.add(solid_problem, "elastodynamics");
     const auto flow_fields =
       adapter.add(metric_flow_x(flow_problem), "blood-flow");
 
-    const auto solid_field       = solid_fields.fields().displacement;
-    const auto area              = flow_fields.fields().area;
-    const auto radius            = sqrt(A0 / numbers::PI);
-    const auto dR                = sqrt(value(area) / numbers::PI) - radius;
-    const auto wall_displacement = lift(dR, wall_lift, radius);
-    const auto lambda_wall       = lift(value(lambda), wall_lift, radius);
-    const auto kinematic_constraint =
-      make_constraint(weak_term(value(solid_field), test(lambda_wall)) -
-                      weak_term(wall_displacement, test(lambda)));
-    const auto coupling_fields =
-      adapter.add(kinematic_constraint, "vessel-wall");
+    const auto coupling_fields = adapter.add(
+      [&](auto &builder) {
+        const auto id          = builder.algebraic_field(lambda.name(),
+                                                lambda.locally_owned_dofs(),
+                                                lambda.locally_relevant_dofs());
+        const auto multiplier  = lambda.with_id(id);
+        const auto radius      = sqrt(A0 / numbers::PI);
+        const auto lambda_wall = lift(value(multiplier), wall_lift, radius);
+        const auto negative_wall_displacement =
+          lift(radius - sqrt(value(flow_fields.fields().area) / numbers::PI),
+               wall_lift,
+               radius);
 
-    adapter.add(weak_term(-1. * value(coupling_fields.fields().multiplier),
-                          test(flow_fields.fields().velocity)),
-                "flow-pressure-feedback");
+        weak_term(value(solid_fields.fields().displacement), test(lambda_wall))
+          .add(builder);
+        weak_term(negative_wall_displacement, test(multiplier)).add(builder);
+        weak_term(lambda_wall, test(solid_fields.fields().velocity))
+          .add(builder);
+
+        const auto pressure      = -1. * value(multiplier);
+        const auto flow_id       = flow_fields.fields().state;
+        auto       pressure_term = builder.term(flow_id, "native-pressure");
+        pressure_term.residual([&, pressure, flow_id, id](const auto &context) {
+          auto contribution = std::make_shared<MetricFlowX::VectorType>(
+            flow_problem.make_state());
+          *contribution = 0.;
+          flow_problem.add_external_pressure_residual(
+            context.time(),
+            context.state(flow_id),
+            metric_flow_x_pressure_provider(pressure, context.state(id)),
+            *contribution);
+          dealii::PackagedOperation<MetricFlowX::VectorType> result;
+          result.reinit_vector = [&flow_problem](auto &dst, const bool) {
+            flow_problem.reinit_state(dst);
+          };
+          result.apply     = [contribution](auto &dst) { dst = *contribution; };
+          result.apply_add = [contribution](auto &dst) {
+            dst += *contribution;
+          };
+          return result;
+        });
+        typename std::decay_t<decltype(builder)>::Model::MatrixOperatorFactory
+          pressure_jacobian = [&, pressure, flow_id](const auto &context) {
+            return metric_flow_x_pressure_operator(flow_problem,
+                                                   pressure,
+                                                   context.state(flow_id),
+                                                   context.time());
+          };
+        pressure_term.state(id, std::move(pressure_jacobian));
+
+        builder.saddle_point(id,
+                             {solid_fields.fields().displacement.id(),
+                              solid_fields.fields().velocity.id(),
+                              flow_fields.fields().state},
+                             detail::make_multiplier_metric(builder,
+                                                            multiplier));
+        return ConstraintFields<std::decay_t<decltype(lambda)>>{multiplier};
+      },
+      "vessel-wall");
 
     auto state     = adapter.make_state();
     auto state_dot = adapter.make_state();
@@ -164,7 +255,13 @@ namespace
       const auto &flow_state =
         adapter.field(solution, flow_fields.fields().state);
       auto pressure = flow_problem.make_state();
-      flow_problem.compute_pressure(flow_state, pressure, time);
+      flow_problem.compute_pressure(
+        flow_state,
+        pressure,
+        time,
+        metric_flow_x_pressure_provider(
+          -1. * value(coupling_fields.fields().multiplier),
+          adapter.field(solution, coupling_fields.fields().multiplier)));
       flow_problem.output_results(flow_state, pressure, step);
       solid_problem.output_results();
       DataOut<1, 3> multiplier_output;

@@ -237,18 +237,14 @@ also contributes to numerical fluxes, junctions, and some boundary conditions.
 Its pressure convention is
 $p_{\mathrm{internal}}=p_{\mathrm{tube}}+p_{\mathrm{external}}$.
 
-The current ImmersX coupled application uses the cell-volume term
+The current ImmersX coupled application supplies native external pressure
 
 $$
--\int_{\mathcal C}\lambda\,w_U\,ds,
+p_{\mathrm{external}}=-\lambda.
 $$
 
-where $w_U$ tests flow velocity. This coupling uses values on cells and adds
-no coupling DG face terms.
-
-Use this volume term as the reference for the planned monolithic coupling. If
-the file-based experiment uses the native pressure provider, record the
-difference: the two experiments do not automatically validate each other.
+This includes native volume, face, boundary, and junction pressure terms.
+Use the same native provider convention in the file-based experiment.
 
 Before comparing stages, fix one definition of the feedback operator
 $C_p\lambda$, including sign, units, physical factors, and integration

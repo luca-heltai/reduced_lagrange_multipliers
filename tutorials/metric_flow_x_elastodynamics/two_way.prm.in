@@ -67,7 +67,8 @@ subsection Metric Flow Parameters
 end
 
 subsection Functions
-  set Inflow function = 1e-7*sin(314.1592653589793*t)
+  # Q(0)=Q'(0)=0 is compatible with the initially resting constrained solid.
+  set Inflow function = 5e-8*(1-cos(314.1592653589793*t))
 end
 
 subsection MetricFlowSystem<1, 3>

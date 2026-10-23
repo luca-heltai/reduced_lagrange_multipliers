@@ -1,6 +1,6 @@
 # MetricFlowX vessel-wall coupling
 
-`two_way.prm.in` is the single parameter-driven example for the
+`two_way.prm.in` is the nonzero-inflow example for the
 `metric_flow_x_elastodynamics` application. It configures the flow and solid
 Problems, the tensor-product wall lift, the material data, time integration,
 initial and boundary functions, and output directories.
@@ -11,5 +11,18 @@ generated file, as described in the [tutorial](../../doc/tutorials/metric-flow-x
 The [mathematical formulation](../../doc/tutorials/metric-flow-x-elastodynamics-coupling.md)
 is documented in the tutorial documentation.
 
-Analytical helpers and residual/Jacobian checks are in
-`gtests/metric_flow_x_elastodynamics_mms.h` and the corresponding tests.
+The [one-vessel manufactured solution](../../doc/tutorials/metric-flow-x-elastodynamics-mms.md)
+derives a continuous, piecewise solid displacement and nonzero pressure-jump
+target. Its inlet supplies the changing vessel volume. Run
+`mms_cube.prm.in`, `mms_cube_refined.prm.in`, and
+`mms_cube_mpi.prm.in` through their generated build-tree `.prm`
+files. These inputs use the corrected momentum and continuity rows, with the
+native pressure feedback described in the tutorial. The application does not
+compute their errors automatically.
+
+`mms_cube_mumps.prm.in` selects native `dealii::SparseDirectMUMPS` for serial
+or MPI runs. It requires deal.II configured with `DEAL_II_WITH_MUMPS`.
+
+The cube MMS cases share `single_vessel_centered.vtk`. Their flow refinement
+levels are `1` (base and MPI) and `2` (refined); separate pre-refined VTK inputs
+are not needed. Domain retains `a0` while refining the native coarse mesh.
