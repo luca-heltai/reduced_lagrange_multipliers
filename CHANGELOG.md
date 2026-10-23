@@ -254,9 +254,9 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Testing and CI
 
-- [PR #N](https://github.com/luca-heltai/immersx/pull/N) Keep standalone header and typed category checks while removing unused links and demonstration builds. Skip runtime search paths in configure-only package fixtures and run independent CI tests in two slots with shared output protected.
+- [PR #281](https://github.com/luca-heltai/immersx/pull/281) Keep standalone header and typed category checks while removing unused links and demonstration builds. Skip runtime search paths in configure-only package fixtures and run independent CI tests in two slots with shared output protected.
 
-- [PR #N](https://github.com/luca-heltai/immersx/pull/N) Cancel superseded PR documentation previews while preserving official performance measurements.
+- [PR #281](https://github.com/luca-heltai/immersx/pull/281) Cancel superseded PR documentation previews while preserving official performance measurements.
 
 - [PR #280](https://github.com/luca-heltai/immersx/pull/280) Preserve compiler cache entries between CI runs by using the restored cache directory and refreshing saved caches.
 
