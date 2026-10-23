@@ -9,6 +9,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+env:
+  # Match the directory restored and saved by ccache-action.
+  CCACHE_DIR: ${{ github.workspace }}/.ccache
+
 jobs:
   debug:
     runs-on: ubuntu-latest
@@ -23,11 +27,10 @@ jobs:
       - name: Restore ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: ${{ github.job }}-dealii-9.7.1-noble
+          key: ${{ github.job }}-dealii-9.7.1-noble-v2
           max-size: 1G
-          append-timestamp: false
+          append-timestamp: true
           update-package-index: true
-          install: detect
           verbose: 1
 
       - uses: robinraju/release-downloader@v1
@@ -74,11 +77,10 @@ jobs:
       - name: Restore ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
-          key: ${{ github.job }}-dealii-9.7.1-noble
+          key: ${{ github.job }}-dealii-9.7.1-noble-v2
           max-size: 1G
-          append-timestamp: false
+          append-timestamp: true
           update-package-index: true
-          install: detect
           verbose: 1
 
       - uses: robinraju/release-downloader@v1
