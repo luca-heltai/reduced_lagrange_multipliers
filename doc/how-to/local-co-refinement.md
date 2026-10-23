@@ -88,6 +88,41 @@ and preserves its material and boundary ids. It imports the configured
 properties before refinement and uses the same `finalize_grid()` transfer.
 The final observed mesh must still be empty.
 
+## Partition the embedded mesh with the background
+
+Set the partitioning policy in the same refinement parameter group:
+
+```text
+subsection Local refinement parameters
+  set Embedded partitioning policy = immersed
+end
+```
+
+The default is `default`, which keeps each Domain's ordinary partitioning.
+With `immersed`, co-refinement finalizes the background first, then uses
+`ImmersedRepartitioner`, also used by `ReducedPoisson`, to assign each embedded
+cell to the rank owning the background cell containing its center. If the center
+belongs to cells on several ranks, the lowest rank is selected. This aligns
+ownership at cell centers; an embedded cell may still cross a partition boundary.
+The embedded mesh must lie inside the background mesh.
+
+This option requires a full-dimensional background (`d1 == spacedim`) and a
+`fullydistributed` embedded Domain. One-dimensional Domains always use this
+backend. For higher dimensions, set `Triangulation type = fullydistributed` in
+the embedded Domain's parameter group. Both supported background backends work.
+Unsupported dimension/backend combinations are rejected before mesh preparation.
+
+Imported point and cell fields are transferred after the final ownership is
+established, so the option does not require reading the input again. It applies
+only to `LocalCoRefinement::run()`, before application FE spaces exist; the raw
+`adjust_grids()` compatibility entry point only adjusts refinement.
+
+For a custom deal.II repartitioning policy, call `Domain::prepare_grid()`, adjust
+the preparation mesh, then call `Domain::finalize_grid(policy)`. This overload
+requires a fullydistributed Domain. It evaluates the policy collectively once
+and transfers retained input fields onto that final partition. Neither the
+Domain nor its triangulation retains a reference to the policy.
+
 ## What happens, in order
 
 1. **Initial refinement.** Each empty domain reads or generates its mesh,
@@ -106,8 +141,9 @@ The final observed mesh must still be empty.
 5. **Embedded post-refinement.** Globally refine embedded by its requested
    cycle count, then repeat the entire local adjustment once more. This also
    runs regardless of the strategy.
-6. **Finalization.** Partition both meshes and redistribute their retained
-   input fields onto the final meshes.
+6. **Finalization.** Finalize space first, then partition embedded with the
+   selected policy and redistribute its retained input fields onto the final
+   mesh.
 
 Thus `space` does not mean embedded is untouched: embedded's initial,
 pre-refinement, and post-refinement cycles still apply. Likewise, `embedded`

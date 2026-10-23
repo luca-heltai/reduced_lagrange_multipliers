@@ -94,7 +94,11 @@ namespace
   }
 
   void
-  parity(bool multiple, bool variable, bool network, bool imported_data = false)
+  parity(bool multiple,
+         bool variable,
+         bool network,
+         bool imported_data      = false,
+         bool immersed_partition = false)
   {
     if (variable && !SymbolicFieldEvaluator::available())
       GTEST_SKIP() << "The native variable-radius oracle requires SymEngine.";
@@ -148,6 +152,8 @@ namespace
     rp.read_vtk_fields = variable;
     Domain<3>    bulk(dp);
     Domain<1, 3> representative(rp);
+    if (immersed_partition)
+      ref.embedded_partitioning_policy = "immersed";
     LocalCoRefinement<3, 1, 3>(ref).run(bulk, representative);
     FiniteElementSpaceParameters<3>    fp("/Parity/Background space/");
     FiniteElementSpaceParameters<1, 3> mp("/Parity/Modal space/",
@@ -308,6 +314,10 @@ TEST(LiftedPoisson, BOTH_LegacyVariableRadiusParity)
 TEST(LiftedPoisson, BOTH_LegacyNetworkParity)
 {
   parity(true, true, true);
+}
+TEST(LiftedPoisson, BOTH_LegacyImmersedPartitionParity)
+{
+  parity(true, true, true, false, true);
 }
 TEST(LiftedPoisson, BOTH_LegacyImportedModalDataParity)
 {

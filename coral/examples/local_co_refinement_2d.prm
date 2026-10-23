@@ -17,6 +17,7 @@ subsection Embedded domain
 end
 
 subsection Co-refinement
+  set Embedded partitioning policy = immersed
   set Refinement strategy = both
   set Lower factor = 0.5
   set Upper factor = 2

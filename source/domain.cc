@@ -436,6 +436,26 @@ namespace ImmersX
   void
   Domain<dim, spacedim>::finalize_grid()
   {
+    finalize_grid_impl(nullptr);
+  }
+
+  template <int dim, int spacedim>
+  void
+  Domain<dim, spacedim>::finalize_grid(
+    const dealii::RepartitioningPolicyTools::Base<dim, spacedim> &policy)
+  {
+    AssertThrow(
+      uses_fully_distributed_triangulation(),
+      dealii::ExcMessage(
+        "A final ownership policy requires a fullydistributed Domain."));
+    finalize_grid_impl(&policy);
+  }
+
+  template <int dim, int spacedim>
+  void
+  Domain<dim, spacedim>::finalize_grid_impl(
+    const dealii::RepartitioningPolicyTools::Base<dim, spacedim> *policy)
+  {
     AssertThrow(grid_prepared_,
                 dealii::ExcMessage("Prepare the Domain before finalizing it."));
     if (serial_triangulation_)
@@ -507,6 +527,26 @@ namespace ImmersX
                           source->face(f)->boundary_id());
                     }
                 }
+          }
+        if (policy != nullptr)
+          {
+            auto &fully_distributed =
+              dynamic_cast<FullyDistributedTriangulation &>(*triangulation_);
+            const auto description = dealii::TriangulationDescription::
+              Utilities::create_description_from_triangulation(
+                fully_distributed,
+                policy->partition(fully_distributed),
+                dealii::TriangulationDescription::Settings::default_setting);
+            // Use a one-time description instead of retaining a pointer to the
+            // caller's policy in the triangulation.
+            fully_distributed.clear();
+            for (const auto manifold_id :
+                 serial_triangulation_->get_manifold_ids())
+              if (manifold_id != dealii::numbers::flat_manifold_id)
+                fully_distributed.set_manifold(
+                  manifold_id,
+                  serial_triangulation_->get_manifold(manifold_id));
+            fully_distributed.create_triangulation(description);
           }
         AssertThrow(
           triangulation_->n_global_active_cells() ==
