@@ -17,11 +17,11 @@ on:
   schedule:
     - cron: '23 3 * * *'
 
-# The default queue can replace pending runs. The persistent ledger, not this
-# concurrency group, is responsible for recovering every monitored commit.
+# Superseded PR previews can be canceled. The persistent ledger recovers every
+# monitored master commit, including official runs replaced in the pending queue.
 concurrency:
   group: documentation-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read

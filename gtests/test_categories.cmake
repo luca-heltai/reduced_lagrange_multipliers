@@ -2,7 +2,7 @@
 # applied to the unit and integration category tests below; MPI is orthogonal
 # and is selected by the process-count-specific test command.
 set(IMMERSX_UNIT_TEST_SUITES
-    SimpleClass/*
+    TestCategoryTyped/*
     ContributorCore
     DimensionParameters
     FESpace

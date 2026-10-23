@@ -26,7 +26,7 @@ foreach(_target IN LISTS IMMERSX_APPLICATION_TARGETS)
         LABELS "application"
         TIMEOUT 300
         WORKING_DIRECTORY "${_working_directory}"
-        RESOURCE_LOCK "LiftedElasticity.${_case}")
+        RESOURCE_LOCK ImmersX.TestOutput)
       if(_ranks GREATER 1)
         set_property(TEST "${_name}" APPEND PROPERTY LABELS "mpi")
         set_property(TEST "${_name}" PROPERTY PROCESSORS "${_ranks}")

@@ -20,6 +20,21 @@
 
 #include <string>
 
+// The category guard needs a typed registry entry to check glob matching.
+// Keep this fixture in the common driver so it needs no separate translation
+// unit.
+template <typename T>
+class TestCategoryTyped : public ::testing::Test
+{};
+
+using RegistryTypes = ::testing::Types<int, double>;
+TYPED_TEST_SUITE(TestCategoryTyped, RegistryTypes, );
+
+TYPED_TEST(TestCategoryTyped, RegistryEntry)
+{
+  SUCCEED();
+}
+
 int
 main(int argc, char *argv[])
 {

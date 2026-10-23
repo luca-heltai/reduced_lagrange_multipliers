@@ -4,6 +4,8 @@ configure_file(
   "${BINARY_DIR}/package/MetricFlowXConfig.cmake" COPYONLY)
 # Force a shared-library Makefile build so link.txt is the generated linker
 # invocation, not a static archiver command or a target-property approximation.
+# These fixtures assert library dependencies and do not execute their targets,
+# so they need no runtime search paths.
 execute_process(COMMAND "${CMAKE_COMMAND}"
   -S "${SOURCE_DIR}" -B "${BINARY_DIR}/consumer" -G "Unix Makefiles"
   "-DCMAKE_BUILD_TYPE=${BUILD_TYPE}"
@@ -12,6 +14,7 @@ execute_process(COMMAND "${CMAKE_COMMAND}"
   "-DMetricFlowX_DIR=${BINARY_DIR}/package"
   "-DMETRIC_FIXTURE_PACKAGE=${PACKAGE}"
   -DIMMERSX_BUILD_STATIC=OFF -DIMMERSX_PORTABLE=OFF
+  -DCMAKE_SKIP_RPATH=ON
   -DIMMERSX_USE_CCACHE=OFF -DIMMERSX_BUILD_CORAL_PLUGINS=OFF
   -DENABLE_GOOGLE_TESTING=OFF -DENABLE_DEAL_II_APP_TESTING=OFF
   RESULT_VARIABLE _result OUTPUT_VARIABLE _stdout ERROR_VARIABLE _stderr)
