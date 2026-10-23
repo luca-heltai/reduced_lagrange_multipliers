@@ -900,3 +900,26 @@ TEST(LocalCoRefinement, BOTH_ImmersedVesselInThreeDimensions)
       EXPECT_EQ(ownership_mismatches(space, embedded), 0u);
     }
 }
+
+TEST(LocalCoRefinement, BOTH_ImmersedPartitionOfObservedDomain)
+{
+  DomainParameters<2> ps("/Tests/CoPartitionObserved/Space/");
+  ps.initial_refinement = 2;
+  DomainParameters<1, 2> pe("/Tests/CoPartitionObserved/Embedded/");
+  pe.name_of_grid          = line_input("partition-observed-line");
+  pe.read_vtk_fields       = true;
+  pe.vtk_material_id_field = "material";
+  parallel::fullydistributed::Triangulation<1, 2> owned_by_problem(
+    MPI_COMM_WORLD);
+  Domain<2>               space(ps);
+  Domain<1, 2>            embedded(pe, owned_by_problem);
+  RefinementParameters<1> parameters;
+  parameters.refinement_strategy          = "both";
+  parameters.embedded_partitioning_policy = "immersed";
+  const auto report =
+    LocalCoRefinement<2, 1, 2>(parameters).run(space, embedded);
+  EXPECT_TRUE(report.satisfied());
+  EXPECT_EQ(&embedded.triangulation(), &owned_by_problem);
+  EXPECT_EQ(ownership_mismatches(space, embedded), 0u);
+  check_fields(embedded, 3.5, 7);
+}
