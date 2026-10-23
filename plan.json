@@ -23,8 +23,6 @@
   },
   "harness_sha": "3fe41e63ba51a774e6087d7beb854b3ac813408c",
   "schema_version": 1,
-  "selected": [
-    "3fe41e63ba51a774e6087d7beb854b3ac813408c"
-  ],
+  "selected": [],
   "source_sha": "3fe41e63ba51a774e6087d7beb854b3ac813408c"
 }
