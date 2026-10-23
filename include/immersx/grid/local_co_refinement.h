@@ -10,6 +10,7 @@
 #include <boost/geometry/index/rtree.hpp>
 
 #include <immersx/core/domain.h>
+#include <immersx/coupling/immersed_repartitioner.h>
 #include <immersx/grid/local_co_refinement_parameters.h>
 
 #include <cmath>
@@ -200,7 +201,10 @@ namespace ImmersX
    *
    * The first domain is called space and the second embedded; neither role
    * depends on intrinsic dimension. Both share spacedim and congruent MPI
-   * communicators. Call run() before creating application FE spaces. Domains
+   * communicators. The optional immersed partitioning policy assigns embedded
+   * cell centers to their background owners after finalizing space. It requires
+   * a full-dimensional space and a fullydistributed embedded Domain.
+   * Call run() before creating application FE spaces. Domains
    * must be empty or explicitly prepared with Domain::prepare_grid(); an
    * already finalized mesh is rejected, not replaced.
    *
@@ -261,6 +265,17 @@ namespace ImmersX
                     "Co-refinement requires congruent MPI communicators."));
       // Reject invalid parameters before either domain is populated.
       parameters_.diameter_bounds();
+      if (parameters_.embedded_partitioning_policy == "immersed")
+        {
+          AssertThrow(
+            d1 == spacedim,
+            dealii::ExcMessage(
+              "Immersed partitioning requires a full-dimensional background."));
+          AssertThrow(
+            embedded.uses_fully_distributed_triangulation(),
+            dealii::ExcMessage(
+              "Immersed partitioning requires a fullydistributed embedded Domain."));
+        }
       if (!space.grid_is_prepared())
         space.prepare_grid();
       if (!embedded.grid_is_prepared())
@@ -271,7 +286,17 @@ namespace ImmersX
                                    parameters_,
                                    space.communicator());
       space.finalize_grid();
-      embedded.finalize_grid();
+      if (parameters_.embedded_partitioning_policy == "default")
+        embedded.finalize_grid();
+      else if (parameters_.embedded_partitioning_policy == "immersed")
+        {
+          if constexpr (d1 == spacedim)
+            {
+              const ImmersedRepartitioner<d2, spacedim> policy(
+                space.triangulation());
+              embedded.finalize_grid(policy);
+            }
+        }
       return report;
     }
 

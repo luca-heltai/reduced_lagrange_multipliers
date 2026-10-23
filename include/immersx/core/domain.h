@@ -23,6 +23,7 @@
 #include <deal.II/base/point.h>
 
 #include <deal.II/distributed/fully_distributed_tria.h>
+#include <deal.II/distributed/repartitioning_policy_tools.h>
 #include <deal.II/distributed/tria.h>
 #include <deal.II/distributed/tria_base.h>
 
@@ -147,6 +148,14 @@ namespace ImmersX
     void
     finalize_grid();
 
+    /** Finalize a fullydistributed mesh with a one-time ownership policy.
+     * Apply the policy before transferring retained input fields. The policy
+     * is evaluated collectively and is not retained by the Domain.
+     */
+    void
+    finalize_grid(
+      const dealii::RepartitioningPolicyTools::Base<dim, spacedim> &policy);
+
     bool
     grid_is_prepared() const;
 
@@ -220,6 +229,10 @@ namespace ImmersX
     field(const std::string &name, unsigned int component = 0) const;
 
   private:
+    void
+    finalize_grid_impl(
+      const dealii::RepartitioningPolicyTools::Base<dim, spacedim> *policy);
+
     static std::unique_ptr<TriangulationType>
     make_triangulation_storage(
       const DomainParameters<dim, spacedim> &parameters,

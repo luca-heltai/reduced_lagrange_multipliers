@@ -6,6 +6,8 @@
 
 #include <deal.II/grid/grid_generator.h>
 #include <deal.II/grid/grid_out.h>
+#include <deal.II/grid/grid_tools.h>
+#include <deal.II/grid/manifold_lib.h>
 
 #include <gtest/gtest.h>
 #include <immersx/grid/local_co_refinement.h>
@@ -116,7 +118,9 @@ namespace
   }
 
   std::string
-  line_input(const std::string &name, const bool tree = false)
+  line_input(const std::string &name,
+             const bool         tree    = false,
+             const bool         reverse = false)
   {
     const auto path =
       TestPaths::output_path("local-co-refinement/" + name + ".vtk");
@@ -124,6 +128,8 @@ namespace
       {
         std::filesystem::create_directories(path.parent_path());
         std::vector<Point<2>> vertices{{0.15, 0.5}, {0.85, 0.5}};
+        if (reverse)
+          std::reverse(vertices.begin(), vertices.end());
         std::vector<std::array<unsigned int, 2>> cells{{{0, 1}}};
         if (tree)
           {
@@ -420,6 +426,7 @@ TEST(LocalCoRefinement, ParsesIndependentParameterGroups)
     " subsection First\n"
     "  set Refinement strategy = both\n"
     "  set Lower factor = 0.25\n"
+    "  set Embedded partitioning policy = immersed\n"
     " end\n"
     " subsection Second\n"
     "  set Refinement strategy = embedded\n"
@@ -427,6 +434,8 @@ TEST(LocalCoRefinement, ParsesIndependentParameterGroups)
     " end\n"
     "end\n");
   ParameterAcceptor::parse_all_parameters();
+  EXPECT_EQ(first.embedded_partitioning_policy, "immersed");
+  EXPECT_EQ(second.embedded_partitioning_policy, "default");
   EXPECT_EQ(first.refinement_strategy, "both");
   EXPECT_DOUBLE_EQ(first.lower_factor, 0.25);
   EXPECT_DOUBLE_EQ(first.upper_factor, 2.);
@@ -669,4 +678,248 @@ TEST(LocalCoRefinement, DocumentationExamples)
         }
       svg << "</g>\n</svg>\n";
     }
+}
+
+namespace
+{
+  // The fixtures have axis-aligned background cells. Test ownership by
+  // exhaustive geometric containment, independently of RemotePointEvaluation.
+  template <int dim, int spacedim>
+  unsigned int
+  ownership_mismatches(const Domain<spacedim>      &space,
+                       const Domain<dim, spacedim> &embedded)
+  {
+    std::vector<std::array<double, 2 * spacedim + 1>> local;
+    const unsigned int                                rank =
+      Utilities::MPI::this_mpi_process(space.communicator());
+    for (const auto &cell : space.triangulation().active_cell_iterators())
+      if (cell->is_locally_owned())
+        {
+          const auto box = cell->bounding_box().get_boundary_points();
+          std::array<double, 2 * spacedim + 1> entry;
+          for (unsigned int d = 0; d < spacedim; ++d)
+            {
+              entry[d]            = box.first[d];
+              entry[d + spacedim] = box.second[d];
+            }
+          entry[2 * spacedim] = rank;
+          local.push_back(entry);
+        }
+    const auto batches =
+      Utilities::MPI::all_gather(space.communicator(), local);
+    unsigned int mismatches = 0;
+    for (const auto &cell : embedded.triangulation().active_cell_iterators())
+      if (cell->is_locally_owned())
+        {
+          const auto   center   = cell->center();
+          unsigned int expected = numbers::invalid_unsigned_int;
+          for (const auto &batch : batches)
+            for (const auto &box : batch)
+              {
+                bool contains = true;
+                for (unsigned int d = 0; d < spacedim; ++d)
+                  contains = contains && center[d] >= box[d] - 1.e-12 &&
+                             center[d] <= box[d + spacedim] + 1.e-12;
+                if (contains)
+                  expected =
+                    std::min(expected,
+                             static_cast<unsigned int>(box[2 * spacedim]));
+              }
+          EXPECT_NE(expected, numbers::invalid_unsigned_int);
+          mismatches += expected != rank;
+        }
+    return Utilities::MPI::sum(mismatches, space.communicator());
+  }
+} // namespace
+
+TEST(LocalCoRefinement, BOTH_ImmersedOwnershipPreservesFields)
+{
+  unsigned int default_mismatches = 0;
+  for (const std::string backend : {"distributed", "fullydistributed"})
+    for (const bool reverse : {false, true})
+      for (const std::string policy : {"default", "immersed"})
+        {
+          SCOPED_TRACE(backend + "/" + policy +
+                       (reverse ? "/reverse" : "/forward"));
+          DomainParameters<2> ps("/Tests/CoPartition/Space/");
+          ps.name_of_grid          = square_input("partition-square");
+          ps.triangulation_type    = backend;
+          ps.read_vtk_fields       = true;
+          ps.vtk_material_id_field = "material";
+          ps.initial_refinement    = 2;
+          DomainParameters<1, 2> pe("/Tests/CoPartition/Embedded/");
+          pe.name_of_grid    = line_input("partition-line", false, reverse);
+          pe.read_vtk_fields = true;
+          pe.vtk_material_id_field = "material";
+          pe.initial_refinement    = 1;
+          Domain<2>    space(ps);
+          Domain<1, 2> embedded(pe);
+          embedded.prepare_grid(true);
+          auto &prepared = embedded.refinement_triangulation();
+          prepared.set_manifold(17, FlatManifold<1, 2>());
+          for (const auto &cell : prepared.active_cell_iterators())
+            {
+              cell->set_all_manifold_ids(17);
+              for (const auto &face : cell->face_iterators())
+                if (face->at_boundary())
+                  face->set_boundary_id(13);
+            }
+          RefinementParameters<1> parameters;
+          parameters.refinement_strategy             = "both";
+          parameters.embedded_partitioning_policy    = policy;
+          parameters.embedded_post_refinement_cycles = 1;
+          const auto report =
+            LocalCoRefinement<2, 1, 2>(parameters).run(space, embedded);
+          check_report(space,
+                       embedded,
+                       report,
+                       parameters.lower_factor,
+                       parameters.upper_factor);
+          EXPECT_TRUE(report.satisfied());
+          const auto mismatches = ownership_mismatches(space, embedded);
+          if (policy == "immersed")
+            EXPECT_EQ(mismatches, 0u);
+          else if (policy == "default")
+            default_mismatches += mismatches;
+          check_fields(space, 6.5, 9);
+          check_fields(embedded, 3.5, 7);
+          for (const auto &cell :
+               embedded.triangulation().active_cell_iterators())
+            if (cell->is_locally_owned())
+              {
+                EXPECT_EQ(cell->manifold_id(), 17u);
+                EXPECT_NE((dynamic_cast<const FlatManifold<1, 2> *>(
+                            &embedded.triangulation().get_manifold(17))),
+                          nullptr);
+                for (const auto &face : cell->face_iterators())
+                  if (face->at_boundary())
+                    EXPECT_EQ(face->boundary_id(), 13u);
+              }
+        }
+  if (Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD) == 2)
+    EXPECT_GT(default_mismatches, 0u);
+}
+
+TEST(LocalCoRefinement, RejectsUnsupportedPartitioningBeforePreparation)
+{
+  DomainParameters<2> ps("/Tests/CoPartitionInvalid/Space/");
+  DomainParameters<2> pe("/Tests/CoPartitionInvalid/Embedded/");
+  pe.triangulation_type = "distributed";
+  Domain<2>               space(ps), embedded(pe);
+  RefinementParameters<2> parameters;
+  parameters.embedded_partitioning_policy = "immersed";
+  EXPECT_THROW((LocalCoRefinement<2, 2>(parameters).run(space, embedded)),
+               ExceptionBase);
+  EXPECT_FALSE(space.grid_is_prepared());
+  EXPECT_FALSE(embedded.grid_is_prepared());
+  EXPECT_EQ(space.triangulation().n_global_active_cells(), 0u);
+  EXPECT_EQ(embedded.triangulation().n_global_active_cells(), 0u);
+  DomainParameters<1, 2> pl("/Tests/CoPartitionInvalid/Line/");
+  Domain<1, 2>           line(pl);
+  pe.triangulation_type = "fullydistributed";
+  Domain<2> fully_embedded(pe);
+  EXPECT_THROW(
+    (LocalCoRefinement<1, 2, 2>(parameters).run(line, fully_embedded)),
+    ExceptionBase);
+  EXPECT_FALSE(line.grid_is_prepared());
+  EXPECT_FALSE(fully_embedded.grid_is_prepared());
+  parameters.embedded_partitioning_policy = "invalid";
+  EXPECT_THROW(parameters.diameter_bounds(), ExceptionBase);
+}
+
+TEST(LocalCoRefinement, BOTH_ImmersedPartitionSupportsTwoDimensionalCells)
+{
+  DomainParameters<2> ps("/Tests/CoPartition2D/Space/");
+  ps.initial_refinement = 2;
+  DomainParameters<2> pe("/Tests/CoPartition2D/Embedded/");
+  pe.name_of_grid          = square_input("partition-square-2d");
+  pe.triangulation_type    = "fullydistributed";
+  pe.initial_refinement    = 1;
+  pe.read_vtk_fields       = true;
+  pe.vtk_material_id_field = "material";
+  Domain<2>               space(ps), embedded(pe);
+  RefinementParameters<2> parameters;
+  parameters.refinement_strategy          = "both";
+  parameters.embedded_partitioning_policy = "immersed";
+  const auto report = LocalCoRefinement<2, 2>(parameters).run(space, embedded);
+  EXPECT_TRUE(report.satisfied());
+  EXPECT_EQ(ownership_mismatches(space, embedded), 0u);
+  check_fields(embedded, 6.5, 9);
+}
+
+TEST(LocalCoRefinement, BOTH_ImmersedPartitionHandlesEmptyRanks)
+{
+  DomainParameters<2> ps("/Tests/CoPartitionEmpty/Space/");
+  ps.triangulation_type = "fullydistributed";
+  DomainParameters<1, 2> pe("/Tests/CoPartitionEmpty/Embedded/");
+  pe.name_of_grid          = line_input("partition-empty-line");
+  pe.read_vtk_fields       = true;
+  pe.vtk_material_id_field = "material";
+  pe.initial_refinement    = 2;
+  Domain<2>               space(ps);
+  Domain<1, 2>            embedded(pe);
+  RefinementParameters<1> parameters;
+  parameters.lower_factor                 = 0.001;
+  parameters.upper_factor                 = 10.;
+  parameters.embedded_partitioning_policy = "immersed";
+  const auto report =
+    LocalCoRefinement<2, 1, 2>(parameters).run(space, embedded);
+  EXPECT_TRUE(report.satisfied());
+  EXPECT_EQ(ownership_mismatches(space, embedded), 0u);
+  EXPECT_EQ(embedded.triangulation().n_global_active_cells(), 4u);
+  check_fields(embedded, 3.5, 7);
+  const unsigned int empty =
+    embedded.triangulation().n_locally_owned_active_cells() == 0;
+  EXPECT_EQ(Utilities::MPI::sum(empty, MPI_COMM_WORLD),
+            Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD) - 1);
+}
+
+TEST(LocalCoRefinement, BOTH_ImmersedVesselInThreeDimensions)
+{
+  for (const std::string backend : {"distributed", "fullydistributed"})
+    {
+      DomainParameters<3> ps("/Tests/CoPartition3D/Space/");
+      ps.arguments_for_grid = "0: 1: false";
+      ps.initial_refinement = 2;
+      ps.triangulation_type = backend;
+      DomainParameters<1, 3> pe("/Tests/CoPartition3D/Embedded/");
+      pe.arguments_for_grid = "0.15: 0.85: false";
+      pe.initial_refinement = 1;
+      Domain<3>    space(ps);
+      Domain<1, 3> embedded(pe);
+      embedded.prepare_grid(true);
+      GridTools::transform(
+        [](const Point<3> &p) { return Point<3>(p[0], .37, .41); },
+        embedded.refinement_triangulation());
+      RefinementParameters<1> parameters;
+      parameters.refinement_strategy          = "both";
+      parameters.embedded_partitioning_policy = "immersed";
+      const auto report =
+        LocalCoRefinement<3, 1>(parameters).run(space, embedded);
+      EXPECT_TRUE(report.satisfied());
+      EXPECT_EQ(ownership_mismatches(space, embedded), 0u);
+    }
+}
+
+TEST(LocalCoRefinement, BOTH_ImmersedPartitionOfObservedDomain)
+{
+  DomainParameters<2> ps("/Tests/CoPartitionObserved/Space/");
+  ps.initial_refinement = 2;
+  DomainParameters<1, 2> pe("/Tests/CoPartitionObserved/Embedded/");
+  pe.name_of_grid          = line_input("partition-observed-line");
+  pe.read_vtk_fields       = true;
+  pe.vtk_material_id_field = "material";
+  parallel::fullydistributed::Triangulation<1, 2> owned_by_problem(
+    MPI_COMM_WORLD);
+  Domain<2>               space(ps);
+  Domain<1, 2>            embedded(pe, owned_by_problem);
+  RefinementParameters<1> parameters;
+  parameters.refinement_strategy          = "both";
+  parameters.embedded_partitioning_policy = "immersed";
+  const auto report =
+    LocalCoRefinement<2, 1, 2>(parameters).run(space, embedded);
+  EXPECT_TRUE(report.satisfied());
+  EXPECT_EQ(&embedded.triangulation(), &owned_by_problem);
+  EXPECT_EQ(ownership_mismatches(space, embedded), 0u);
+  check_fields(embedded, 3.5, 7);
 }

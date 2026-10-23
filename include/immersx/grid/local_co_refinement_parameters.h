@@ -40,6 +40,12 @@ namespace ImmersX
                           "",
                           this->prm,
                           dealii::Patterns::Selection("space|embedded|both"));
+      this->add_parameter(
+        "Embedded partitioning policy",
+        embedded_partitioning_policy,
+        "Final embedded ownership: default or background-aligned.",
+        this->prm,
+        dealii::Patterns::Selection("default|immersed"));
       this->add_parameter("Space post-refinement cycles",
                           space_post_refinement_cycles);
       this->add_parameter("Embedded post-refinement cycles",
@@ -70,6 +76,11 @@ namespace ImmersX
                     refinement_strategy == "both",
                   ExcMessage(
                     "Refinement strategy must be space, embedded, or both."));
+      AssertThrow(
+        embedded_partitioning_policy == "default" ||
+          embedded_partitioning_policy == "immersed",
+        ExcMessage(
+          "Embedded partitioning policy must be default or immersed."));
       AssertThrow(max_refinement_level >= 0,
                   ExcMessage("Max refinement level must be non-negative."));
       AssertThrow(
@@ -101,6 +112,11 @@ namespace ImmersX
      * Select which meshes may be refined: space, embedded, or both.
      */
     std::string refinement_strategy = "space";
+    /** Final ownership in LocalCoRefinement: default or background-aligned.
+     * The immersed policy requires a full-dimensional background and a
+     * fullydistributed embedded Domain.
+     */
+    std::string embedded_partitioning_policy = "default";
     /**
      * Number of local space passes around intersecting embedded cell boxes.
      */
