@@ -8,7 +8,7 @@ add_compile_options(
 DEAL_II_PICKUP_TESTS()
 
 # Deal.II regression tests use the same primary categories and quick policy as
-# GoogleTests.  These four fixtures exercise reusable numerical components;
+# GoogleTests.  These fixtures exercise reusable numerical components;
 # the MPI matrix-free transfer test is additionally marked with mpi.
 get_property(_dealii_tests DIRECTORY PROPERTY TESTS)
 foreach(_dealii_test ${_dealii_tests})
@@ -17,8 +17,8 @@ foreach(_dealii_test ${_dealii_tests})
     list(APPEND _dealii_labels mpi)
   elseif(_dealii_test MATCHES "test_fourier")
     set(_dealii_labels "unit;quick")
-  elseif(_dealii_test MATCHES "template")
-    set(_dealii_labels "unit;quick")
   endif()
-  set_tests_properties(${_dealii_test} PROPERTIES LABELS "${_dealii_labels}")
+  # Regression cases build their executables through the shared build tree.
+  set_tests_properties(${_dealii_test} PROPERTIES LABELS "${_dealii_labels}"
+                                                 RUN_SERIAL TRUE)
 endforeach()
