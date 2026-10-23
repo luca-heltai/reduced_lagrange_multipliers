@@ -505,24 +505,25 @@ namespace ImmersX::detail
     BlockMatrixType
     block_matrix(const GlobalVectorType &state,
                  const GlobalVectorType *state_dot = nullptr,
-                 const double            alpha     = 0.) const
+                 const double            alpha     = 0.,
+                 const double            time      = 0.) const
     {
       finalize();
       validate_state(state);
       if (state_dot != nullptr)
         validate_state(*state_dot);
 
-      StateView<FieldVectorType> state_view(layout_, 0.);
+      StateView<FieldVectorType> state_view(layout_, time);
       field_layout_.bind_state(state_view, state);
-      StateView<FieldVectorType> derivative_view(layout_, 0.);
+      StateView<FieldVectorType> derivative_view(layout_, time);
       std::optional<EvaluationContext<FieldVectorType>> context;
       if (state_dot != nullptr)
         {
           field_layout_.bind_state(derivative_view, *state_dot);
-          context.emplace(0., state_view, &derivative_view);
+          context.emplace(time, state_view, &derivative_view);
         }
       else
-        context.emplace(0., state_view, nullptr);
+        context.emplace(time, state_view, nullptr);
       return make_block_matrix(*context, alpha);
     }
 
@@ -548,9 +549,11 @@ namespace ImmersX::detail
           {
             const auto &block = block_matrix.block(i, j);
             for (const auto row : block_partitions[i])
-              for (auto entry = block.begin(row); entry != block.end(row);
-                   ++entry)
-                sparsity.add(offsets[i] + row, offsets[j] + entry->column());
+              if (block.row_length(row) != 0)
+                for (auto entry = block.begin(row), end = block.end(row);
+                     entry != end;
+                     ++entry)
+                  sparsity.add(offsets[i] + row, offsets[j] + entry->column());
           }
 
       result.reinit(partition, partition, sparsity, communicator_, false);
@@ -559,11 +562,13 @@ namespace ImmersX::detail
           {
             const auto &block = block_matrix.block(i, j);
             for (const auto row : block_partitions[i])
-              for (auto entry = block.begin(row); entry != block.end(row);
-                   ++entry)
-                result.set(offsets[i] + row,
-                           offsets[j] + entry->column(),
-                           entry->value());
+              if (block.row_length(row) != 0)
+                for (auto entry = block.begin(row), end = block.end(row);
+                     entry != end;
+                     ++entry)
+                  result.set(offsets[i] + row,
+                             offsets[j] + entry->column(),
+                             entry->value());
           }
       result.compress(dealii::VectorOperation::insert);
     }
@@ -634,8 +639,9 @@ namespace ImmersX::detail
     LocalOperator
     schur_operator(const FieldId           multiplier,
                    const GlobalVectorType &state,
-                   const GlobalVectorType *state_dot = nullptr,
-                   const double            alpha     = 0.) const
+                   const GlobalVectorType *state_dot  = nullptr,
+                   const double            alpha      = 0.,
+                   const bool include_primal_coupling = false) const
     {
       finalize();
       validate_state(state);
@@ -667,6 +673,7 @@ namespace ImmersX::detail
       const auto &context = *derivative_context;
 
       std::vector<LocalOperator> terms;
+      std::vector<LocalOperator> inverses, to, from;
       terms.reserve(metadata->participants.size());
       for (const auto participant : metadata->participants)
         {
@@ -681,7 +688,35 @@ namespace ImmersX::detail
           const auto from_multiplier =
             model_.state_operator(participant, multiplier, context);
           terms.push_back(to_multiplier * *inverse * from_multiplier);
+          if (include_primal_coupling)
+            {
+              inverses.push_back(*inverse);
+              to.push_back(to_multiplier);
+              from.push_back(from_multiplier);
+            }
         }
+
+      // One Neumann correction, D^-1 - D^-1 E D^-1, retains paths through
+      // two primal fields. In first-order mechanics the force enters v,
+      // while displacement compatibility observes u.
+      if (include_primal_coupling)
+        for (unsigned int i = 0; i < inverses.size(); ++i)
+          for (unsigned int j = 0; j < inverses.size(); ++j)
+            if (i != j &&
+                model_.has_state_operator(multiplier,
+                                          metadata->participants[i]) &&
+                model_.has_state_operator(metadata->participants[j],
+                                          multiplier) &&
+                (model_.has_state_operator(metadata->participants[i],
+                                           metadata->participants[j]) ||
+                 model_.has_derivative_operator(metadata->participants[i],
+                                                metadata->participants[j])))
+              terms.push_back(-1. * to[i] * inverses[i] *
+                              linearized_operator(metadata->participants[i],
+                                                  metadata->participants[j],
+                                                  context,
+                                                  alpha) *
+                              inverses[j] * from[j]);
 
       LocalOperator result = terms.front();
       for (std::size_t i = 1; i < terms.size(); ++i)
@@ -698,7 +733,8 @@ namespace ImmersX::detail
                          const GlobalVectorType *state_dot          = nullptr,
                          const double            alpha              = 0.,
                          const unsigned int      maximum_iterations = 1000,
-                         const double            tolerance = 1.e-9) const
+                         const double            tolerance          = 1.e-9,
+                         const bool include_primal_coupling = false) const
     {
       finalize();
       validate_state(state);
@@ -778,7 +814,31 @@ namespace ImmersX::detail
           non_participants.push_back({block, *inverse});
         }
 
-      const auto schur = schur_operator(multiplier, state, state_dot, alpha);
+      const auto schur = schur_operator(
+        multiplier, state, state_dot, alpha, include_primal_coupling);
+      struct PrimalCorrection
+      {
+        unsigned int  row, column;
+        LocalOperator inverse;
+      };
+      std::vector<PrimalCorrection> primal_corrections;
+      if (include_primal_coupling)
+        for (unsigned int i = 0; i < participants.size(); ++i)
+          for (unsigned int j = 0; j < participants.size(); ++j)
+            if (i != j &&
+                (model_.has_state_operator(metadata->participants[i],
+                                           metadata->participants[j]) ||
+                 model_.has_derivative_operator(metadata->participants[i],
+                                                metadata->participants[j])))
+              primal_corrections.push_back(
+                {i,
+                 j,
+                 -1. * participants[i].inverse *
+                   linearized_operator(metadata->participants[i],
+                                       metadata->participants[j],
+                                       context,
+                                       alpha) *
+                   participants[j].inverse});
       const auto multiplier_block = field_layout_.block(multiplier);
       const auto multiplier_preconditioner =
         this->multiplier_preconditioner(multiplier, state, context);
@@ -816,6 +876,7 @@ namespace ImmersX::detail
       };
 
       auto apply = [participants,
+                    primal_corrections,
                     non_participants,
                     multiplier_block,
                     solve_multiplier](GlobalVectorType       &dst,
@@ -858,6 +919,19 @@ namespace ImmersX::detail
                            src.block(participant.block);
           }
 
+        // Use the same corrected primal inverse in elimination and recovery
+        // as in the Schur approximation.
+        for (const auto &correction : primal_corrections)
+          if (transpose)
+            schur_rhs += dealii::transpose_operator(
+                           participants[correction.column].from_multiplier) *
+                         dealii::transpose_operator(correction.inverse) *
+                         src.block(participants[correction.row].block);
+          else
+            schur_rhs += participants[correction.row].to_multiplier *
+                         correction.inverse *
+                         src.block(participants[correction.column].block);
+
         participants.front().to_multiplier.reinit_range_vector(
           multiplier_solution, false);
         multiplier_solution = 0.;
@@ -876,6 +950,21 @@ namespace ImmersX::detail
               participant.inverse *
               (src.block(participant.block) -
                participant.from_multiplier * multiplier_solution);
+
+        for (const auto &correction : primal_corrections)
+          if (transpose)
+            dst.block(participants[correction.column].block) +=
+              dealii::transpose_operator(correction.inverse) *
+              (src.block(participants[correction.row].block) -
+               dealii::transpose_operator(
+                 participants[correction.row].to_multiplier) *
+                 multiplier_solution);
+          else
+            dst.block(participants[correction.row].block) +=
+              correction.inverse *
+              (src.block(participants[correction.column].block) -
+               participants[correction.column].from_multiplier *
+                 multiplier_solution);
       };
 
       auto global_vector_memory =

@@ -34,6 +34,7 @@ namespace ImmersX
   payload_free(const dealii::LinearOperator<Range, Domain, Payload> &op)
   {
     dealii::LinearOperator<Range, Domain> result;
+    result.is_null_operator = op.is_null_operator;
     result.vmult = [op](Range &dst, const Domain &src) { op.vmult(dst, src); };
     result.vmult_add = [op](Range &dst, const Domain &src) {
       op.vmult_add(dst, src);
@@ -243,7 +244,14 @@ namespace ImmersX
     std::shared_ptr<MatrixType>
     clone_matrix(const MatrixType &matrix)
     {
-      if constexpr (has_distributed_partitions<MatrixType>::value)
+      if constexpr (has_distributed_partitions<MatrixType>::value &&
+                    has_reinit_and_copy_from<MatrixType>::value)
+        {
+          auto result = std::make_shared<MatrixType>();
+          copy_matrix(*result, matrix);
+          return result;
+        }
+      else if constexpr (has_distributed_partitions<MatrixType>::value)
         {
           const auto row_partition    = matrix.locally_owned_range_indices();
           const auto column_partition = matrix.locally_owned_domain_indices();
@@ -252,7 +260,8 @@ namespace ImmersX
                                                   matrix.n(),
                                                   row_partition);
           for (const auto row : row_partition)
-            for (auto entry = matrix.begin(row); entry != matrix.end(row);
+            for (auto entry = matrix.begin(row), end = matrix.end(row);
+                 entry != end;
                  ++entry)
               sparsity.add(row, entry->column());
 
@@ -260,7 +269,8 @@ namespace ImmersX
           result->reinit(
             row_partition, column_partition, sparsity, communicator, false);
           for (const auto row : row_partition)
-            for (auto entry = matrix.begin(row); entry != matrix.end(row);
+            for (auto entry = matrix.begin(row), end = matrix.end(row);
+                 entry != end;
                  ++entry)
               result->set(row, entry->column(), entry->value());
           result->compress(dealii::VectorOperation::insert);
@@ -302,7 +312,8 @@ namespace ImmersX
 
           dealii::IndexSet columns(matrix->n());
           for (const auto row : col_partition)
-            for (auto entry = matrix->begin(row); entry != matrix->end(row);
+            for (auto entry = matrix->begin(row), end = matrix->end(row);
+                 entry != end;
                  ++entry)
               columns.add_index(entry->column());
           columns.compress();
@@ -318,7 +329,8 @@ namespace ImmersX
 
           std::map<unsigned int, std::vector<Entry>> to_send;
           for (const auto row : col_partition)
-            for (auto entry = matrix->begin(row); entry != matrix->end(row);
+            for (auto entry = matrix->begin(row), end = matrix->end(row);
+                 entry != end;
                  ++entry)
               to_send[owner_by_column.at(entry->column())].push_back(
                 {{entry->column(), row}, entry->value()});
@@ -352,7 +364,8 @@ namespace ImmersX
           dealii::DynamicSparsityPattern dynamic_sparsity(matrix->n(),
                                                           matrix->m());
           for (typename MatrixType::size_type i = 0; i < matrix->m(); ++i)
-            for (auto entry = matrix->begin(i); entry != matrix->end(i);
+            for (auto entry = matrix->begin(i), end = matrix->end(i);
+                 entry != end;
                  ++entry)
               dynamic_sparsity.add(entry->column(), i);
 
@@ -360,7 +373,8 @@ namespace ImmersX
           sparsity->copy_from(dynamic_sparsity);
           auto result = make_matrix_with_sparsity<MatrixType>(sparsity);
           for (typename MatrixType::size_type i = 0; i < matrix->m(); ++i)
-            for (auto entry = matrix->begin(i); entry != matrix->end(i);
+            for (auto entry = matrix->begin(i), end = matrix->end(i);
+                 entry != end;
                  ++entry)
               result->set(entry->column(), i, entry->value());
           return result;
@@ -382,7 +396,11 @@ namespace ImmersX
       using MatrixOperator = typename MatrixOperatorRange::value_type;
       using MatrixType     = typename MatrixOperator::Matrix;
 
-      auto first = operators.front().matrix();
+      std::vector<std::shared_ptr<MatrixType>> matrices;
+      matrices.reserve(operators.size());
+      for (const auto &entry : operators)
+        matrices.push_back(entry.matrix());
+      auto first = matrices.front();
       if constexpr (has_distributed_partitions<MatrixType>::value)
         {
           const auto row_partition    = first->locally_owned_range_indices();
@@ -391,11 +409,11 @@ namespace ImmersX
           dealii::DynamicSparsityPattern sparsity(first->m(),
                                                   first->n(),
                                                   row_partition);
-          for (const auto &operator_description : operators)
+          for (const auto &matrix : matrices)
             {
-              const auto matrix = operator_description.matrix();
               for (const auto row : row_partition)
-                for (auto entry = matrix->begin(row); entry != matrix->end(row);
+                for (auto entry = matrix->begin(row), end = matrix->end(row);
+                     entry != end;
                      ++entry)
                   sparsity.add(row, entry->column());
             }
@@ -403,11 +421,11 @@ namespace ImmersX
           auto result = std::make_shared<MatrixType>();
           result->reinit(
             row_partition, column_partition, sparsity, communicator, false);
-          for (const auto &operator_description : operators)
+          for (const auto &matrix : matrices)
             {
-              const auto matrix = operator_description.matrix();
               for (const auto row : row_partition)
-                for (auto entry = matrix->begin(row); entry != matrix->end(row);
+                for (auto entry = matrix->begin(row), end = matrix->end(row);
+                     entry != end;
                      ++entry)
                   result->add(row, entry->column(), entry->value());
             }
@@ -418,11 +436,11 @@ namespace ImmersX
         {
           dealii::DynamicSparsityPattern dynamic_sparsity(first->m(),
                                                           first->n());
-          for (const auto &operator_description : operators)
+          for (const auto &matrix : matrices)
             {
-              const auto matrix = operator_description.matrix();
               for (typename MatrixType::size_type i = 0; i < matrix->m(); ++i)
-                for (auto entry = matrix->begin(i); entry != matrix->end(i);
+                for (auto entry = matrix->begin(i), end = matrix->end(i);
+                     entry != end;
                      ++entry)
                   dynamic_sparsity.add(i, entry->column());
             }
@@ -430,11 +448,11 @@ namespace ImmersX
           auto sparsity = std::make_shared<dealii::SparsityPattern>();
           sparsity->copy_from(dynamic_sparsity);
           auto result = make_matrix_with_sparsity<MatrixType>(sparsity);
-          for (const auto &operator_description : operators)
+          for (const auto &matrix : matrices)
             {
-              const auto matrix = operator_description.matrix();
               for (typename MatrixType::size_type i = 0; i < matrix->m(); ++i)
-                for (auto entry = matrix->begin(i); entry != matrix->end(i);
+                for (auto entry = matrix->begin(i), end = matrix->end(i);
+                     entry != end;
                      ++entry)
                   result->add(i, entry->column(), entry->value());
             }
@@ -443,7 +461,7 @@ namespace ImmersX
       else
         {
           for (std::size_t i = 1; i < operators.size(); ++i)
-            first->add(1., *operators[i].matrix());
+            first->add(1., *matrices[i]);
           return first;
         }
     }
