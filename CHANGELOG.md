@@ -254,7 +254,7 @@ skeleton in `.github/CHANGELOG_TEMPLATE.md`.
 
 ### Testing and CI
 
-- [PR #282](https://github.com/luca-heltai/immersx/pull/282) Reduce mesh sizes in the 2D cross-section checks and mixed-boundary time-integrator regression without changing analytic values or tolerances. Keep all eight time steps and run the faster integrator regression in the quick serial/MPI groups.
+- [PR #282](https://github.com/luca-heltai/immersx/pull/282) Reduce mesh sizes in the 2D cross-section checks and mixed-boundary time-integrator regression without changing analytic values or tolerances. Keep all eight time steps and run the faster integrator regression in the quick serial/MPI groups. Synchronize MPI application tests before checking files written by rank zero.
 
 - [PR #281](https://github.com/luca-heltai/immersx/pull/281) Keep standalone header and typed category checks while removing unused links and demonstration builds. Skip runtime search paths in configure-only package fixtures and run independent CI tests in two slots with shared output protected.
 
