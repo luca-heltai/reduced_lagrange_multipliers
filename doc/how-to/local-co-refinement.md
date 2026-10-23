@@ -82,6 +82,12 @@ existing property transfer occurs on the serial preparation mesh before
 partitioning. Observing a mesh does not add adaptive-refinement support to
 `fullydistributed` triangulations.
 
+If the owner has already read a serial coarse mesh, call
+`domain.prepare_grid(coarse_mesh)`. Domain uses the supplied coarse geometry
+and preserves its material and boundary ids. It imports the configured
+properties before refinement and uses the same `finalize_grid()` transfer.
+The final observed mesh must still be empty.
+
 ## What happens, in order
 
 1. **Initial refinement.** Each empty domain reads or generates its mesh,

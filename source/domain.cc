@@ -371,6 +371,23 @@ namespace ImmersX
   void
   Domain<dim, spacedim>::prepare_grid(const bool serial)
   {
+    prepare_grid_impl(serial, nullptr);
+  }
+
+  template <int dim, int spacedim>
+  void
+  Domain<dim, spacedim>::prepare_grid(
+    const dealii::Triangulation<dim, spacedim> &coarse_mesh)
+  {
+    prepare_grid_impl(true, &coarse_mesh);
+  }
+
+  template <int dim, int spacedim>
+  void
+  Domain<dim, spacedim>::prepare_grid_impl(
+    const bool                                  serial,
+    const dealii::Triangulation<dim, spacedim> *coarse_mesh)
+  {
     AssertThrow(!grid_prepared_ && triangulation_->n_global_active_cells() == 0,
                 dealii::ExcMessage(
                   "Cannot prepare an already populated Domain."));
@@ -381,7 +398,10 @@ namespace ImmersX
             typename dealii::Triangulation<dim, spacedim>::MeshSmoothing(
               dealii::Triangulation<dim, spacedim>::smoothing_on_refinement |
               dealii::Triangulation<dim, spacedim>::smoothing_on_coarsening));
-        make_grid_in(parameters_, *serial_triangulation_);
+        if (coarse_mesh != nullptr)
+          serial_triangulation_->copy_triangulation(*coarse_mesh);
+        else
+          make_grid_in(parameters_, *serial_triangulation_);
         if (parameters_.read_vtk_fields &&
             std::filesystem::is_regular_file(parameters_.name_of_grid))
           {

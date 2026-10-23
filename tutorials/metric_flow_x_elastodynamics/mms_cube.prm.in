@@ -44,7 +44,7 @@ subsection Elastodynamics
   end
   subsection Functions
     # max(r^2,R2) gives the interior/exterior branches without dividing by zero.
-    # R2=A0/pi for the existing single_vessel_centered_2.vtk input.
+    # R2=A0/pi for the existing single_vessel_centered.vtk input.
     subsection Body force
       set Function constants = R2=9.7418740666549138e-5
       set Function expression = 0; 6*t*y*R2/max(y^2+z^2,R2); 6*t*z*R2/max(y^2+z^2,R2)
@@ -87,8 +87,8 @@ end
 
 subsection MetricFlowSystem<1, 3>
   set Finite element degree = 1
-  # Keep the two imported cells, each spanning two solid axial cells.
-  set Number of global refinement = 0
+  # Refine the single coarse cell into two cells, each spanning two solid axial cells.
+  set Number of global refinement = 1
   set Number of refinement cycles = 1
   set Output filename = stress_jump
   set Output directory = @TEST_OUTPUT_DIR@/metric-flow-x-mms-cube-resolved/flow
@@ -96,7 +96,7 @@ subsection MetricFlowSystem<1, 3>
   set Verbosity (console depth) = 0
   set Numerical flux type = HLL
   set Outlet boundary condition type = Reflection
-  set Vtk file path for mesh input = @TEST_DATA_DIR@/metric_flow_x/single_vessel_centered_2.vtk
+  set Vtk file path for mesh input = @TEST_DATA_DIR@/metric_flow_x/single_vessel_centered.vtk
 end
 
 subsection MetricFlowX multiplier space

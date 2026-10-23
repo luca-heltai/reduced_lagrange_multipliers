@@ -61,11 +61,17 @@ The cross-section refinement level is two in the base and MPI inputs and
 three in the refined input, so refinement also improves wall geometry.
 
 The target area is constant in space and the target velocity is linear, so
-degree one represents both exactly on either centerline mesh. Keep flow
-refinement at zero: the application imports `a0` from the original VTK mesh
-after flow setup and requires matching active cells. The two-cell and
-four-cell VTK inputs already contain the required partitions and physical
-data on every cell.
+degree one represents both exactly on either centerline mesh. Both cases use
+`single_vessel_centered.vtk`, which contains one coarse cell. The base and MPI
+inputs set `Number of global refinement = 1`; the refined input sets it to `2`.
+These produce two and four centerline cells, respectively.
+
+The flow is constructed before its observing `Domain`. During flow setup,
+Domain copies the coarse mesh with its native vessel and terminal ids, imports
+all VTK properties, transfers them during refinement, and partitions the final
+mesh. The lift uses `flow_domain.field("a0")`; it does not reread the VTK after
+refinement. This requires the `setup(mesh_initializer)` overload from
+[MetricFlowX PR #35](https://github.com/luca-heltai/metric-flow-x/pull/35).
 
 Configure with a compatible MetricFlowX package and deal.II with SUNDIALS and
 VTK enabled. For example, from the repository root:
@@ -152,8 +158,7 @@ MUMPS-enabled installation can run the application.
 The solid fills the cube $\Omega=[-\ell,\ell]^3$, with
 $\ell=0.120685$. The straight centerline is
 $\gamma=\{(x,0,0):-\ell\le x\le\ell\}$, of length $L=2\ell=0.24137$.
-The `data/metric_flow_x/single_vessel_centered_2.vtk.in` and
-`single_vessel_centered_4.vtk.in` inputs supply
+The `data/metric_flow_x/single_vessel_centered.vtk.in` input supplies
 
 $$
 A_0=a_d=3.0605\times10^{-4},\qquad

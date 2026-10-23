@@ -22,3 +22,7 @@ compute their errors automatically.
 
 `mms_cube_mumps.prm.in` selects native `dealii::SparseDirectMUMPS` for serial
 or MPI runs. It requires deal.II configured with `DEAL_II_WITH_MUMPS`.
+
+The cube MMS cases share `single_vessel_centered.vtk`. Their flow refinement
+levels are `1` (base and MPI) and `2` (refined); separate pre-refined VTK inputs
+are not needed. Domain retains `a0` while refining the native coarse mesh.

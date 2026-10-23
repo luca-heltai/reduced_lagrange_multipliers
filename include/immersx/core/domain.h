@@ -135,6 +135,14 @@ namespace ImmersX
     void
     prepare_grid(bool serial = false);
 
+    /** Prepare an existing coarse mesh with its material and boundary ids.
+     * Imported VTK fields are read before refinement and transferred with it.
+     * The final triangulation must still be empty. Call finalize_grid() after
+     * all mesh changes, as for prepare_grid(true).
+     */
+    void
+    prepare_grid(const dealii::Triangulation<dim, spacedim> &coarse_mesh);
+
     /** Partition the prepared mesh and transfer its refined input fields. */
     void
     finalize_grid();
@@ -216,6 +224,10 @@ namespace ImmersX
     make_triangulation_storage(
       const DomainParameters<dim, spacedim> &parameters,
       MPI_Comm                               communicator);
+
+    void
+    prepare_grid_impl(bool                                        serial,
+                      const dealii::Triangulation<dim, spacedim> *coarse_mesh);
 
     void
     import_vtk_fields_if_requested();

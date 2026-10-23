@@ -19,10 +19,10 @@
 #ifdef IMMERSX_WITH_METRIC_FLOW_X
 
 #  include <immersx/core/constraint.h>
+#  include <immersx/core/domain.h>
 #  include <immersx/core/observable_lift.h>
 #  include <immersx/core/sundials_ida_adapter.h>
 #  include <immersx/core/weak_term.h>
-#  include <immersx/io/imported_finite_element_fields.h>
 #  include <immersx/io/utils.h>
 #  include <immersx/physics/elastodynamics.h>
 #  include <immersx/physics/elastodynamics_semidiscrete.h>
@@ -103,7 +103,18 @@ namespace
       ExcMessage(
         "The coupled MUMPS solver requires deal.II configured with MUMPS."));
 #  endif
-    flow_problem.setup();
+    DomainParameters<1, 3> flow_domain_parameters("/MetricFlowX domain/");
+    flow_domain_parameters.name_of_grid =
+      metric_flow_parameter("Vtk file path for mesh input");
+    flow_domain_parameters.read_vtk_fields = true;
+    Domain<1, 3> flow_domain(flow_domain_parameters,
+                             flow_problem.triangulation());
+    flow_problem.setup(
+      [&](const auto &coarse_mesh, const unsigned int refinement) {
+        flow_domain_parameters.initial_refinement = refinement;
+        flow_domain.prepare_grid(coarse_mesh);
+        flow_domain.finalize_grid();
+      });
     if (lambda_parameters.finite_element == "auto")
       lambda_parameters.finite_element =
         "FE_DGQ(" +
@@ -120,16 +131,12 @@ namespace
                   area_fe->n_dofs_per_cell() == lambda_fe->n_dofs_per_cell(),
                 ExcMessage("The multiplier FE must have the same local "
                            "basis as MetricFlowX area."));
-    const auto                        lambda_view = lambda_space.view();
-    const auto                        lambda      = lambda_view.field("lambda");
-    ImportedFiniteElementFields<1, 3> imported(
-      metric_flow_parameter("Vtk file path for mesh input"),
-      flow_problem.triangulation(),
-      MPI_COMM_WORLD);
-    const auto  a0 = imported.field("a0");
+    const auto  lambda_view = lambda_space.view();
+    const auto  lambda      = lambda_view.field("lambda");
+    const auto  a0          = flow_domain.field("a0");
     FieldVector reference_area;
-    reference_area.reinit(imported.locally_owned_dofs(),
-                          imported.locally_relevant_dofs(),
+    reference_area.reinit(flow_domain.vtk_fields().locally_owned_dofs(),
+                          flow_domain.vtk_fields().locally_relevant_dofs(),
                           MPI_COMM_WORLD);
     reference_area = a0.coefficients();
     reference_area.update_ghost_values();

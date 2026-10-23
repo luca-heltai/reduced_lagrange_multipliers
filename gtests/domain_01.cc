@@ -82,6 +82,39 @@ TEST(Domain, BOTH_InitializesExternalFullyDistributedTriangulation)
 }
 
 
+TEST(Domain, BOTH_PreparesExistingCoarseMeshWithIds)
+{
+  dealii::Triangulation<1, 3> coarse_mesh;
+  GridGenerator::hyper_cube(coarse_mesh, 0., 1.);
+  coarse_mesh.begin_active()->set_material_id(42);
+  coarse_mesh.begin_active()->face(0)->set_boundary_id(3);
+  coarse_mesh.begin_active()->face(1)->set_boundary_id(4);
+  parallel::fullydistributed::Triangulation<1, 3> triangulation(MPI_COMM_WORLD);
+  DomainParameters<1, 3> parameters("/Tests/DomainPreparedCoarseMesh/");
+  parameters.name_of_grid       = "unused.vtk";
+  parameters.initial_refinement = 2;
+  Domain<1, 3> domain(parameters, triangulation);
+  domain.prepare_grid(coarse_mesh);
+  EXPECT_EQ(domain.refinement_triangulation().n_active_cells(), 4u);
+  domain.finalize_grid();
+  EXPECT_EQ(domain.triangulation().n_global_active_cells(), 4u);
+  unsigned int left = 0, right = 0;
+  for (const auto &cell : domain.triangulation().active_cell_iterators())
+    if (cell->is_locally_owned())
+      {
+        EXPECT_EQ(cell->material_id(), 42u);
+        for (const auto face : cell->face_indices())
+          if (cell->face(face)->at_boundary())
+            {
+              left += cell->face(face)->boundary_id() == 3;
+              right += cell->face(face)->boundary_id() == 4;
+            }
+      }
+  EXPECT_EQ(Utilities::MPI::sum(left, MPI_COMM_WORLD), 1u);
+  EXPECT_EQ(Utilities::MPI::sum(right, MPI_COMM_WORLD), 1u);
+}
+
+
 TEST(Domain, CopiesToSerialTriangulation)
 {
   DomainParameters<2> parameters("/Tests/DomainTriangulation/");
