@@ -471,7 +471,7 @@ TEST(ElastodynamicsValidation, BOTH_TrapezoidalMatchesNewmarkMMS)
 }
 
 
-TEST(ElastodynamicsValidation, BOTH_Issue209MixedBoundaryMatchesNewmark)
+TEST(Elastodynamics, BOTH_Issue209MixedBoundaryMatchesNewmark)
 {
   using VectorType = ElastodynamicsSolver<2>::VectorType;
 

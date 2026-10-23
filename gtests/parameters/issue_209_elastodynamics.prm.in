@@ -8,7 +8,7 @@ subsection Elastodynamics
   set Output directory            = @TEST_OUTPUT_DIR@/gtests/parameters/issue_209/elastodynamics
   set Output name                 = solution_elastodynamics
   subsection Domain
-    set Initial refinement        = 6
+    set Initial refinement        = 3
     set Grid generator            = hyper_cube
     set Grid generator arguments  = 0:0.1:true
     set Triangulation type        = distributed

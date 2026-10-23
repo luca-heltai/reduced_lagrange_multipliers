@@ -37,6 +37,7 @@ namespace
                        (imported_data ? "imported-" : "selected-")) +
       std::to_string(Utilities::MPI::n_mpi_processes(MPI_COMM_WORLD)));
     run_lifted_poisson(parameters);
+    MPI_Barrier(MPI_COMM_WORLD);
     const auto directory =
       std::filesystem::path(parameters.output.output_directory);
     for (unsigned int cycle = 0; cycle < parameters.refinement_cycles; ++cycle)
