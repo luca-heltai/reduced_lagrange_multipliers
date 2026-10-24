@@ -28,8 +28,6 @@
   },
   "harness_sha": "41e2bac5a4d8c21a5ffc5bdcb5f53b5b589cea9f",
   "schema_version": 1,
-  "selected": [
-    "41e2bac5a4d8c21a5ffc5bdcb5f53b5b589cea9f"
-  ],
+  "selected": [],
   "source_sha": "41e2bac5a4d8c21a5ffc5bdcb5f53b5b589cea9f"
 }
